@@ -1,0 +1,97 @@
+%%{init: {"theme": "base", "sequence": {"messageMargin": 18, "noteMargin": 8}}}%%
+sequenceDiagram
+    autonumber
+    actor C as Customer / 浏览器
+    participant V as Vue 顾客端
+    participant D as Django / DRF
+    participant R as Redis
+    participant M as MySQL
+    participant G as Mock Payment Gateway
+    actor A as Admin / 管理端
+
+    Note over C,A: Project One 主链：浏览 → 登录 → 购物车 → 下单预占 → Mock 支付 → 发货 → 完成
+
+    rect rgb(239, 246, 255)
+        Note over C,M: ① 浏览与登录｜Redis 缓存 + Session/CSRF
+        C->>V: 浏览数码配件
+        V->>D: GET 商品目录
+        D->>R: 读取 Category / Product 缓存
+        alt 缓存命中
+            R-->>D: 返回目录副本
+        else 未命中或 Redis 故障
+            D->>M: 查询权威商品数据
+            M-->>D: 返回商品与 SKU
+            D->>R: Redis 可用时回填（TTL 抖动）
+        end
+        D-->>V: 返回目录
+        C->>V: Username + Password 登录
+        V->>D: POST Login
+        D->>M: 验证 Custom User / 密码哈希
+        D-->>V: Session Cookie + CSRF
+        Note over D,R: 面试点 B：Cache-Aside、on_commit 后失效、穿透/击穿/雪崩、热点回源、Redis 宕机回退 MySQL
+    end
+
+    rect rgb(240, 253, 244)
+        Note over C,M: ② 购物车与创建订单｜MySQL 事务 + 库存并发
+        C->>V: 选择 SKU、数量、地址
+        V->>D: 保存 CartItem（Session + CSRF）
+        D->>M: 一个活动 Cart；同 SKU 唯一；数量 1-99
+        C->>V: 提交订单
+        V->>D: POST Order + Idempotency-Key
+        D->>M: 检查 Key/请求摘要；重读价格与库存
+        Note over D,M: 同 Key 同请求返回原单；同 Key 异请求返回 409<br/>金额由服务端 Decimal 计算
+        D->>M: BEGIN；available → reserved
+        alt 库存充足
+            D->>M: 写 Order / Item / 地址快照 / Reservation / Movement
+            D->>M: 清理对应 CartItem；COMMIT
+            M-->>D: Order = PENDING_PAYMENT
+            D-->>V: 返回公开订单号
+        else 库存不足或任一步失败
+            D->>M: ROLLBACK；Cart 保留
+            D-->>V: 返回业务错误
+        end
+        Note over D,M: 面试点 A：先复现超卖；比较原子条件更新与 select_for_update<br/>证明库存非负、最多一次预占/核销/释放，并记录吞吐与 p95/p99
+    end
+
+    rect rgb(255, 247, 237)
+        Note over C,G: ③ 支付闭环｜后端 Mock Gateway + 状态机 + 幂等
+        C->>V: 点击支付
+        V->>D: POST PaymentAttempt + Idempotency-Key
+        D->>M: 短事务创建/复用 Attempt；COMMIT
+        Note over D,G: 数据库先提交，再经 Provider Adapter 调 Gateway<br/>不能持有订单或库存锁等待网络
+        D->>G: create_payment(order, amount, CNY)
+        alt 返回确定结果
+            G-->>D: SUCCESS / FAILED / PENDING
+            D->>M: 按合法状态机更新 Attempt
+        else 网络超时
+            G-->>D: 结果不确定
+            D->>M: Attempt = UNKNOWN
+            D->>G: query_payment（复用原 Attempt）
+            G-->>D: 查单结果
+        end
+        G-->>D: Webhook(provider, event_id, payload)
+        D->>M: 原始事件先入 Inbox；联合唯一去重
+        D->>D: 验签并校验订单、金额、币种、状态
+        alt 合法成功事件
+            D->>M: 事务：Attempt→SUCCEEDED；Order→PAID；核销 reserved
+            D-->>G: 200；业务副作用一次
+        else 重复、乱序或错误事件
+            D->>M: 保留事件并标记异常；不重复扣库存
+            D-->>G: 幂等响应
+        end
+        Note over D,G: 面试点 C：Attempt 状态机、Webhook Inbox、重复/乱序事件<br/>UNKNOWN 查单收敛、崩溃窗口、迟到成功与 Refund Simulation
+    end
+
+    rect rgb(250, 245, 255)
+        Note over C,A: ④ 模拟履约与终态
+        A->>D: Admin 模拟发货
+        D->>M: 校验权限；PAID → SHIPPED
+        C->>V: 确认收货
+        V->>D: PATCH Order
+        D->>M: SHIPPED → COMPLETED
+        D-->>V: 返回完成状态
+    end
+
+    Note over C,G: 取消规则：待支付取消/过期只释放预占；已支付未发货取消恢复库存并模拟退款；发货后拒绝取消
+    Note over D,G: 迟到成功不能复活终态 Order；记录异常并幂等创建 Refund Simulation
+    Note over R,G: MySQL 始终是订单/支付/核心库存事实源；Redis 可降级<br/>Celery/RabbitMQ、Outbox、Elasticsearch、分布式锁、外部 Sandbox 均需先通过 Gate
