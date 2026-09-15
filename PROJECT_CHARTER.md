@@ -3,12 +3,13 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Day 0 / Charter & Design Baseline Confirmed
+- 当前阶段：Phase 1 / Catalog Public Browse Baseline
 - 文档版本：v1.0
+- 路线图进度更新：2026-09-16
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：宏观范围、首轮领域规则和技术采用边界均已由项目拥有者确认；尚未创建 Git 仓库、Django 项目或业务代码
+- 当前状态：Phase 0 与 Accounts 认证基础已完成；当前准备建立 Category、Product、SKU、Inventory 和顾客公开浏览 API
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -778,121 +779,125 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 
 ## 14. Development Roadmap（开发路线）
 
-### Phase 0 — Day 0 & Foundation
+进度标记：`[x]` 表示已经取得对应实现与验证证据；`[ ]` 表示尚未完成。当前正在推进的纵向切片会额外标注“← 当前”。
 
-- Project Charter v1.0 — Final Design Baseline
-- Business Requirements
-- Domain Context v1.0
-- Core User Journey
-- ERD v1.0 概念关系
-- 已确认的 Order/PaymentAttempt 状态机
-- 已确认的 Modular Monolith App 边界
-- Repository
-- Django/MySQL Skeleton
-- pytest、基础日志与最小 CI
+### Phase 0 — Day 0 & Foundation（已完成）
 
-### Phase 1 — Catalog Vertical Slice
+- [x] Project Charter v1.0 — Final Design Baseline
+- [x] Business Requirements
+- [x] Domain Context v1.0
+- [x] Core User Journey
+- [x] ERD v1.0 概念关系
+- [x] 已确认的 Order/PaymentAttempt 状态机
+- [x] 已确认的 Modular Monolith App 边界
+- [x] Repository
+- [x] Django/MySQL Skeleton
+- [x] pytest、基础日志与最小 CI
 
-- Custom User、Session/CSRF 与权限基础
-- Category/Product/SKU
-- 基础 Inventory
-- 顾客浏览 API 与页面
-- Vue Admin 商品/SKU 最小管理
-- Model/API/Permission 测试
+### Phase 1 — Catalog Vertical Slice（进行中）
+
+- [x] Custom User、Session/CSRF 与权限基础
+- [ ] **Catalog Public Browse Baseline（商品目录公开浏览基线）** ← 当前
+  - [ ] Category/Product/SKU
+  - [ ] 基础 Inventory
+  - [ ] Guest 顾客公开浏览 API
+  - [ ] 本切片的 Model/API/Permission 测试
+- [ ] 顾客浏览 Vue 页面
+- [ ] Vue Admin 商品/SKU 最小管理及对应权限测试
 
 ### Phase 2A — Cart and Order Minimum Business Loop
 
-- 结构化 Address、单默认地址与不可变快照
-- 单活动 Cart、CartItem 唯一和数量边界
-- Order/OrderItem 与创建订单 Idempotency-Key
-- Decimal 金额合同、0 运费和服务端计算
-- Inventory/Reservation/Movement 与事务内预占
-- Order/PaymentAttempt 状态机
-- 事务提交后的最小同步 Provider Adapter、Mock Payment、Event Inbox baseline 和库存核销
-- 模拟发货
+- [ ] 结构化 Address、单默认地址与不可变快照
+- [ ] 单活动 Cart、CartItem 唯一和数量边界
+- [ ] Order/OrderItem 与创建订单 Idempotency-Key
+- [ ] Decimal 金额合同、0 运费和服务端计算
+- [ ] Inventory/Reservation/Movement 与事务内预占
+- [ ] Order/PaymentAttempt 状态机
+- [ ] 事务提交后的最小同步 Provider Adapter、Mock Payment、Event Inbox baseline 和库存核销
+- [ ] 模拟发货
 
 进入高级基础设施前，最小端到端闭环必须以 MySQL + Mock Payment 实际运行并通过目标测试。早期商品和管理数据可以使用 Django Admin 辅助操作。
 
 ### Phase 2B — Correctness and Business Enhancements After the Loop
 
-- 已确认的取消/过期、迟到支付、库存释放与 Refund Simulation
-- 固定满减且不可叠加的 Coupon
-- Favorite
-- Completed OrderItem 的单条 Review
+- [ ] 已确认的取消/过期、迟到支付、库存释放与 Refund Simulation
+- [ ] 固定满减且不可叠加的 Coupon
+- [ ] Favorite
+- [ ] Completed OrderItem 的单条 Review
 
 这些能力在最小闭环稳定后增量加入，不阻塞 Phase 2A 的完成。
 
 ### Phase 3 — Database Correctness & Optimization
 
-- Transaction
-- 唯一约束
-- naive 库存并发失败复现
-- 原子条件更新与 `select_for_update()` 对比及 Evidence-backed ADR
-- N+1、索引、EXPLAIN
-- SQL 数量和延迟基线
+- [ ] Transaction
+- [ ] 唯一约束
+- [ ] naive 库存并发失败复现
+- [ ] 原子条件更新与 `select_for_update()` 对比及 Evidence-backed ADR
+- [ ] N+1、索引、EXPLAIN
+- [ ] SQL 数量和延迟基线
 
 ### Phase 4 — Redis Cache Track
 
-- Category/Product Cache-Aside
-- `transaction.on_commit` 后失效与 TTL 随机抖动
-- 穿透、击穿、雪崩
-- Redis unavailable fallback to MySQL
-- 性能证据
+- [ ] Category/Product Cache-Aside
+- [ ] `transaction.on_commit` 后失效与 TTL 随机抖动
+- [ ] 穿透、击穿、雪崩
+- [ ] Redis unavailable fallback to MySQL
+- [ ] 性能证据
 
 ### Phase 5 — Payment Track Deepening
 
-- Provider Adapter 合约与故障边界深化
-- Mock Gateway 故障场景
-- Webhook Inbox 的重复、乱序、验证失败和处理失败路径
-- 幂等、乱序、重试
-- Refund/Reconciliation 思路
-- Optional Sandbox Gate（不阻塞本阶段完成）
+- [ ] Provider Adapter 合约与故障边界深化
+- [ ] Mock Gateway 故障场景
+- [ ] Webhook Inbox 的重复、乱序、验证失败和处理失败路径
+- [ ] 幂等、乱序、重试
+- [ ] Refund/Reconciliation 思路
+- [ ] Optional Sandbox Gate（不阻塞本阶段完成）
 
 ### Phase 6 — Flash Sale & Concurrency Track
 
-- 超卖复现
-- MySQL 最终事实与方案对比
-- Redis Lua 流量准入/原子前置候选
-- 每个 Customer + FlashSaleItem 最多一笔成功、数量 1
-- Distributed Lock Gate（默认 No-Go）
-- 压测和补偿
+- [ ] 超卖复现
+- [ ] MySQL 最终事实与方案对比
+- [ ] Redis Lua 流量准入/原子前置候选
+- [ ] 每个 Customer + FlashSaleItem 最多一笔成功、数量 1
+- [ ] Distributed Lock Gate（默认 No-Go）
+- [ ] 压测和补偿
 
 ### Phase 7 — Conditional: Async Reliability
 
-- Celery/RabbitMQ
-- Retry/Backoff
-- Idempotent Consumer
-- Transactional Outbox 候选
-- Worker/Broker 故障实验
+- [ ] Celery/RabbitMQ
+- [ ] Retry/Backoff
+- [ ] Idempotent Consumer
+- [ ] Transactional Outbox 候选
+- [ ] Worker/Broker 故障实验
 
 只有真实异步可靠性问题与最近一次工时审计共同支持时才进入本阶段，否则延期；只有确认使用可靠消息且出现数据库提交与消息发布一致性窗口时，才进一步评估 Transactional Outbox。
 
 ### Phase 8 — Conditional: Search
 
-- MySQL Search Baseline
-- Elasticsearch
-- 中文分词和过滤
-- 索引同步、重建和对账
+- [ ] MySQL Search Baseline
+- [ ] Elasticsearch
+- [ ] 中文分词和过滤
+- [ ] 索引同步、重建和对账
 
 只有 MySQL 搜索基线暴露真实限制且最近一次工时审计允许时才进入 Elasticsearch 实现，否则延期。
 
 ### Phase 9 — Deployment, CI & Performance
 
-- Docker Compose
-- Gunicorn/Nginx/Linux
-- GitHub Actions
-- 健康检查、日志和配置
-- 三种负载的性能报告
+- [ ] Docker Compose
+- [ ] Gunicorn/Nginx/Linux
+- [ ] GitHub Actions
+- [ ] 健康检查、日志和配置
+- [ ] 三种负载的性能报告
 
 ### Phase 10 — Portfolio & Interview Package
 
-- README
-- 架构图与 ERD
-- ADR
-- Evidence Packs
-- 演示脚本
-- 简历描述
-- 面试问题与无 AI 讲解演练
+- [ ] README
+- [ ] 架构图与 ERD
+- [ ] ADR
+- [ ] Evidence Packs
+- [ ] 演示脚本
+- [ ] 简历描述
+- [ ] 面试问题与无 AI 讲解演练
 
 开发以纵向业务切片推进；不得先批量创建所有 Model，再批量创建所有 API。测试与验证随每个 Phase 同步完成；每累计 100 个专注小时执行一次范围与证据审计 Gate。
 
@@ -1059,11 +1064,11 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Day 0 的范围与首轮重大设计决定已经确认。本轮只更新文档，不创建代码；下一次得到项目拥有者确认后进入 **Foundation Step 1 — Repository & Django/MySQL Skeleton**：
+Phase 0、Username Policy、注册 API 和 Session Authentication + CSRF 已经完成并取得自动化测试与 CI 证据。当前进入 **Catalog Public Browse Baseline（商品目录公开浏览基线）**：
 
-1. 初始化 Git，并先建立 `.gitignore` 和安全的环境变量约定；
-2. 建立 Django/DRF Modular Monolith Skeleton；
-3. 在第一次迁移前配置 `Custom User(AbstractUser)`、MySQL、时区、pytest/pytest-django、基础日志和最小 CI；
-4. 只创建已确认的 App 边界与健康检查，不批量生成业务 Model；
-5. 验证 Django 启动、MySQL 连接、第一次迁移、测试数据库和最小 CI；
-6. 随后进入第一个 Vertical Slice：Accounts/Auth 基础与 Catalog 浏览闭环。
+1. 由项目拥有者确认 Category、Product、SKU、Inventory 的第一版业务规则、公开字段和失败语义；
+2. 冻结公开浏览 API 契约和测试 Oracle；
+3. 以失败测试开始最小纵向切片；
+4. 建立 Category、Product、SKU、Inventory 模型与 Django Admin 录入能力；
+5. 建立 Guest 可访问的分类列表、商品列表和商品详情 API；
+6. 完成本切片的目标测试、MySQL 回归、迁移漂移检查和 CI 后，再勾选对应路线图条目。

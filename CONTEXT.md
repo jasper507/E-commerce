@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.1
+# Project One — Domain Context v1.2
 
 ## 0. 文档状态
 
-- 当前阶段：Accounts Session Authentication + CSRF Vertical Slice
-- 文档版本：v1.1
+- 当前阶段：Catalog Public Browse Baseline（本地实现与回归已验证，CI 待 PR 后运行）
+- 文档版本：v1.2
 - 范围来源：`PROJECT_CHARTER.md` v1.0
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -302,3 +302,47 @@ Charter v1.0 已经 Final，但下列机械性或证据驱动细节不需要在 
 - 完整项目回归：`31 passed in 12.25s`。
 - `manage.py check`：`System check identified no issues (0 silenced)`。
 - `manage.py makemigrations --check --dry-run`：`No changes detected`。
+
+---
+
+## 14. Catalog Public Browse Baseline
+
+### 14.1 第一版数据模型
+
+- `Category` 保存唯一名称、唯一公开 `slug` 和上下架状态。
+- `Product` 属于一个 Category，保存唯一公开 `slug`、共享名称、介绍和上下架状态；Category 被 Product 引用时使用 `PROTECT`，避免误删目录关系。
+- `SKU` 属于一个 Product，保存全局唯一公开 `code`、常用查询字段 `color`、仅展示的 JSON 对象 `attributes`、两位小数价格和上下架状态；数据库约束保证价格不小于 0。
+- `Inventory` 与 SKU 是一对一关系，保存 `available_stock` 与 `reserved_stock`；数据库约束保证二者不小于 0，删除被引用 SKU 时使用 `PROTECT`。
+- 一对一约束只保证“一个 SKU 最多一条 Inventory”，不保证“一定存在一条”。本基线不使用 signal 或数据库 trigger 自动补记录；缺失时公开接口安全返回 `in_stock=false`。
+- 写入入口暂时只使用 Django Admin。普通删除在目录 Admin 中关闭；Inventory 作为 SKU 的一对一内联维护，`reserved_stock` 暂时只读。新增 SKU 必须同时具备 `catalog.add_sku` 与 `inventory.add_inventory` 权限，避免权限不完整的员工从正常入口创建无 Inventory 的 SKU。
+
+### 14.2 公开 API 契约
+
+| Method | Path | 公开结果与规则 |
+|---|---|---|
+| `GET` | `/api/catalog/categories/` | 返回有效分类的 `slug/name` 列表，不分页 |
+| `GET` | `/api/catalog/products/` | 返回有效商品分页列表；固定每页 20 条，可用 `?category=<category-slug>` 过滤 |
+| `GET` | `/api/catalog/products/<product-slug>/` | 返回商品详情及有效 SKU；不存在、商品下架或所属分类下架时统一返回 `404` |
+
+商品列表只公开 `slug/name/category/lowest_price/in_stock`。详情只公开 `slug/name/description/category/in_stock/skus`，每个 SKU 只公开 `code/color/attributes/price/in_stock`。内部数据库 ID、`available_stock` 和 `reserved_stock` 均不对外暴露；金额继续使用 JSON 字符串。
+
+### 14.3 可见性与库存提示语义
+
+- Guest、Customer 和 Admin 读取公开接口时遵循同一套上下架规则；Admin 身份不会绕过公开可见性。
+- 只有有效 Category 下的有效 Product 才能出现在列表或详情；详情只包含有效 SKU。
+- 有效但库存为 0 的 SKU 仍会显示，并返回 `in_stock=false`。
+- 有效 Product 即使没有有效 SKU，仍可以用于浏览：`lowest_price=null`、`in_stock=false`。
+- `lowest_price` 只在有效 SKU 中计算，不受下架 SKU 价格影响。
+- `in_stock` 只是目录浏览提示，不是下单承诺。购物车与下单阶段必须重新读取 MySQL 中的权威价格、上下架状态和库存，并处理并发变化。
+- 公开接口不读取 Session 身份，只支持安全的 `GET`；因此 Guest 或已登录用户对这些 URL 发写请求时都稳定返回 `405 Method Not Allowed`，不会先被 Session CSRF 检查改写为 `403`。这不削弱认证写接口的 CSRF 防护，因为目录公开视图本身没有写方法。
+
+### 14.4 2026-09-16 本地验证证据
+
+- 使用项目 MySQL 8.4.10 隔离测试数据库执行 Model、API、可见性、权限和约束测试。
+- Catalog/Inventory 目标测试：`19 passed, 8 subtests passed in 3.77s`。
+- 完整项目回归：`50 passed, 8 subtests passed in 14.33s`。
+- 商品列表固定分页大小及查询次数测试通过；代表性数据下列表和详情都不超过 2 条数据库查询，避免随 SKU 数量产生 N+1 查询。
+- Admin 权限组合测试通过：只有 SKU 新增权限时返回 `403`；同时具备 SKU 与 Inventory 新增权限时，SKU 和其一对一 Inventory 可以在同一次 Admin 提交中创建。
+- `manage.py check`：`System check identified no issues (0 silenced)`。
+- `manage.py makemigrations --check --dry-run`：`No changes detected`。
+- 本节记录的是本地验证结果；远端 CI 需要在提交并创建 PR 后单独观察，当前不得宣称 CI 已通过。
