@@ -36,6 +36,16 @@ MQ, search, deployment, CI/CD, and performance work must support a real integrat
 7. Never claim success for tests, deployment, or performance that was not actually observed.
 8. Update durable decisions and evidence in repository files, not only in chat.
 
+## Git Workflow — Main First
+
+- This is currently a solo learning project. Default to developing ordinary, low-risk vertical slices directly on `main`.
+- Do not automatically create a feature branch, Git worktree, or pull request for every task.
+- At the end of a coherent small stage: inspect `git status`, run the relevant tests, stage only the scoped files, create a meaningful commit, and push `main`.
+- Keep commits focused. Never mix unrelated user changes into the same commit, and never weaken testing, review, self-checks, CI, or version-control discipline merely because the project is solo.
+- Recommend an isolated branch only for large refactors, high-risk database changes, inventory concurrency or flash-sale work, payment state machines or webhooks, uncertain experiments, or other large changes that need isolation and easy rollback.
+- Before creating an exceptional branch or worktree, explain why isolation is warranted. After completing it, verify the branch, integrate it safely into `main`, confirm `main` contains the intended commit or equivalent content, and only then consider deleting the branch or worktree.
+- Before every push, re-check the current branch, `git status`, the intended diff, and the latest observed test results.
+
 ## Testing
 
 - Introduce pytest/pytest-django from the project skeleton.

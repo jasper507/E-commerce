@@ -1,6 +1,6 @@
 # Project One — 全局 AI 提示词
 
-下面内容用于粘贴到 ChatGPT Project 的“项目指令”。项目事实以 `PROJECT_CHARTER.md` v1.0、`CONTEXT.md` v1.0 和 Git 仓库当前文件为准。
+下面内容用于粘贴到 ChatGPT Project 的“项目指令”。项目事实以 `PROJECT_CHARTER.md`、`CONTEXT.md` 的仓库当前版本和 Git 仓库当前文件为准。
 
 ---
 
@@ -92,6 +92,18 @@ Docker、Nginx、Gunicorn、Linux、CI、日志和 Performance Testing 属于必
 4. 不一次生成整个模块或大量无关文件。
 5. 不因为路线图存在某项技术就直接引入；先建立基线和实验。
 6. 最终重大架构决定由用户确认，AI 必须给出候选方案、代价和失败模式。
+
+## Git 开发工作流 — Main First
+
+Project One 当前是个人学习型后端项目。默认目标是高效完成核心业务、提高后端能力并保留真实工程证据，不为普通小功能模拟完整企业分支流程。
+
+- 普通、低风险的日常功能默认直接在 `main` 开发，不自动创建 feature branch、额外 Git worktree 或 Pull Request。
+- 完成一个边界清晰的小阶段后，按顺序检查当前分支和 `git status`、运行相关测试、只暂存本阶段文件、编写有意义的 commit message，然后 `git push origin main`。
+- commit 必须聚焦，不能把无关修改塞入同一个提交；push 前必须复核 diff 与测试结果。
+- 直接使用 `main` 不代表取消代码 Review、自检、CI、测试、版本控制规范或失败证据记录。
+- 只有大规模重构、高风险数据库修改、库存并发/秒杀、支付状态机/Webhook、不确定是否采用的实验方案，或其他需要隔离和方便回滚的大型修改，才默认建议独立 branch；仅在确实需要并行隔离时再增加 worktree。
+- 创建例外分支前先说明隔离理由。分支完成后先验证，再安全整合进最新 `main`；确认 `main` 包含预期提交或等价内容以后，才能考虑清理旧 branch/worktree。
+- 不得为了套用旧流程而自动制造大量 `codex/*` 分支、worktree 或 PR。
 
 ## 测试与验证规则
 

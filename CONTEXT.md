@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.2
+# Project One — Domain Context v1.3
 
 ## 0. 文档状态
 
-- 当前阶段：Catalog Public Browse Baseline（本地实现与回归已验证，CI 待 PR 后运行）
-- 文档版本：v1.2
+- 当前阶段：Catalog Public Browse Baseline 已进入 `main`；下一纵向切片待确认
+- 文档版本：v1.3
 - 范围来源：`PROJECT_CHARTER.md` v1.0
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -345,4 +345,35 @@ Charter v1.0 已经 Final，但下列机械性或证据驱动细节不需要在 
 - Admin 权限组合测试通过：只有 SKU 新增权限时返回 `403`；同时具备 SKU 与 Inventory 新增权限时，SKU 和其一对一 Inventory 可以在同一次 Admin 提交中创建。
 - `manage.py check`：`System check identified no issues (0 silenced)`。
 - `manage.py makemigrations --check --dry-run`：`No changes detected`。
-- 本节记录的是本地验证结果；远端 CI 需要在提交并创建 PR 后单独观察，当前不得宣称 CI 已通过。
+- 本节记录的是本地验证结果；远端 CI 应在对应 commit push 后单独观察，不能因为直接使用 `main` 就跳过，也不得在未观察时宣称已经通过。PR 不再是触发或核对 CI 的默认前提。
+
+---
+
+## 15. Git Development Workflow — Main First
+
+### 15.1 默认规则
+
+- Project One 当前是个人学习型后端项目，默认直接在最新 `main` 上完成普通、低风险、范围清晰的纵向切片。
+- 不再要求每个功能创建 feature branch、Codex worktree 或 Pull Request；AI 也不得把这些步骤当成普通任务的自动前置条件。
+- 一个清晰小阶段完成后，依次检查当前分支与 `git status`、运行相关测试、复核 diff、只暂存本阶段文件、创建聚焦且有意义的 commit，然后 `git push origin main` 并观察 CI。
+- main-first 只减少不必要的流程，不降低测试、代码 Review、自检、CI、版本控制、失败复现和证据标准。
+
+### 15.2 使用独立分支的例外
+
+以下修改默认建议独立 branch；只有确实需要并行隔离时才额外创建 worktree：
+
+- 大规模重构；
+- 高风险数据库修改；
+- 库存并发、秒杀等复杂并发功能；
+- 支付状态机、Webhook 等高风险模块；
+- 不确定是否采用的实验性方案；
+- 其他需要隔离或方便回滚的大型修改。
+
+例外分支必须说明隔离理由，完成后先验证，再与最新 `main` 安全整合。只有确认 `main` 包含预期提交或等价内容后，才能考虑删除 branch/worktree。PR 用于高风险变更、需要集中 Review 或用户明确要求的场景，不是所有功能的默认要求。
+
+### 15.3 2026-09-16 迁移记录
+
+- `codex/catalog-public-browse` 的 Catalog/Inventory 提交为 `acd49aa`。
+- 远端 `main` 先通过 PR #6 的提交 `def9d16` 包含相同内容，随后以 `99adb1a` 合并 `codex/catalog-public-browse`；`def9d16` 与 `acd49aa` 的文件内容比较无差异，因此历史虽然保留两个来源提交，但没有重复实现。
+- 清理旧 worktree 前必须先确认其工作区干净、本地 `main` 与 `origin/main` 一致，并从主项目目录使用 `git worktree remove`，不得直接删除文件夹。
+- 在最新 `main` 上重新验证：Catalog/Inventory 为 `19 passed, 8 subtests passed`，完整回归为 `50 passed, 8 subtests passed`；Django 配置检查通过且没有迁移漂移。

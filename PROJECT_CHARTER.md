@@ -3,13 +3,13 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase 1 / Catalog Public Browse Baseline
+- 当前阶段：Phase 1 / Catalog Public Browse Baseline 已完成
 - 文档版本：v1.0
 - 路线图进度更新：2026-09-16
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：Phase 0 与 Accounts 认证基础已完成；当前准备建立 Category、Product、SKU、Inventory 和顾客公开浏览 API
+- 当前状态：Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已完成并进入 `main`；下一纵向切片待确认
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -797,11 +797,11 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 ### Phase 1 — Catalog Vertical Slice（进行中）
 
 - [x] Custom User、Session/CSRF 与权限基础
-- [ ] **Catalog Public Browse Baseline（商品目录公开浏览基线）** ← 当前
-  - [ ] Category/Product/SKU
-  - [ ] 基础 Inventory
-  - [ ] Guest 顾客公开浏览 API
-  - [ ] 本切片的 Model/API/Permission 测试
+- [x] **Catalog Public Browse Baseline（商品目录公开浏览基线）**
+  - [x] Category/Product/SKU
+  - [x] 基础 Inventory
+  - [x] Guest 顾客公开浏览 API
+  - [x] 本切片的 Model/API/Permission 测试
 - [ ] 顾客浏览 Vue 页面
 - [ ] Vue Admin 商品/SKU 最小管理及对应权限测试
 
@@ -1014,6 +1014,18 @@ AI 主要交付前端样板不代表前端成为黑盒。项目拥有者必须�
 
 核心业务逻辑不得默认从 Level 5 开始。
 
+### Git Development Workflow — Main First
+
+Project One 当前由项目拥有者个人开发。现阶段 Git 流程优先服务于学习效率、核心业务交付和后端技术深度，不要求为每个普通功能模拟完整企业协作流程。
+
+- 普通、低风险、范围清晰的日常功能默认直接在 `main` 开发。
+- 一个清晰小阶段完成后，先检查当前分支、`git status`、diff 和测试结果，再执行范围明确的 `git add`、有意义的 `git commit` 与 `git push origin main`。
+- commit 必须聚焦且可解释；不得混入大量无关修改。直接在 `main` 开发不降低测试、Review、自检、CI、版本控制和证据标准。
+- 大规模重构、高风险数据库修改、库存并发/秒杀、支付状态机/Webhook、不确定是否采用的实验方案，以及需要隔离或方便回滚的大型修改，才建议使用独立 branch；worktree 只在确实需要并行隔离时使用。
+- AI 不得为普通小功能自动创建大量 `codex/*` 分支、worktree 或 PR。创建例外分支前必须说明风险和隔离收益。
+- 例外分支完成后，先在分支验证，再与最新 `main` 安全整合；确认 `main` 包含预期提交或等价内容后，才能清理旧 branch/worktree。
+- Pull Request 是高风险变更、需要集中 Review 或用户明确要求时的工具，不是所有功能的默认完成门槛。
+
 ---
 
 ## 18. Project Knowledge Structure（项目知识结构）
@@ -1064,11 +1076,9 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Phase 0、Username Policy、注册 API 和 Session Authentication + CSRF 已经完成并取得自动化测试与 CI 证据。当前进入 **Catalog Public Browse Baseline（商品目录公开浏览基线）**：
+Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已经完成并进入 `main`。下一步：
 
-1. 由项目拥有者确认 Category、Product、SKU、Inventory 的第一版业务规则、公开字段和失败语义；
-2. 冻结公开浏览 API 契约和测试 Oracle；
-3. 以失败测试开始最小纵向切片；
-4. 建立 Category、Product、SKU、Inventory 模型与 Django Admin 录入能力；
-5. 建立 Guest 可访问的分类列表、商品列表和商品详情 API；
-6. 完成本切片的目标测试、MySQL 回归、迁移漂移检查和 CI 后，再勾选对应路线图条目。
+1. 由项目拥有者完成 Catalog 的学习检查和代码复盘；
+2. 确认 Phase 1 的下一个最小纵向切片及测试 Oracle；
+3. 普通低风险工作默认直接在最新 `main` 开发，完成小阶段后执行检查、测试、聚焦 commit 和 push；
+4. 如果下一任务进入库存并发、秒杀、支付状态机/Webhook 或其他高风险范围，再按本 Charter 的 main-first 例外规则创建隔离分支。
