@@ -67,3 +67,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 ) from exc
 
             raise
+
+
+class LoginSerializer(serializers.Serializer):
+    username = NormalizedUsernameField()
+    password = serializers.CharField(
+        write_only=True,
+        trim_whitespace=False,
+    )
+
+
+class SessionUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "is_staff")
