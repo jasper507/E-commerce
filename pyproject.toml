@@ -1,5 +1,5 @@
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
 pythonpath = ["backend"]
-testpaths = ["tests"]
+testpaths = ["tests", "backend/apps"]
 addopts = "-ra --strict-markers"
