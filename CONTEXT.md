@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.0
+# Project One — Domain Context v1.1
 
 ## 0. 文档状态
 
-- 当前阶段：Day 0 / Confirmed Domain & Design Baseline
-- 文档版本：v1.0
+- 当前阶段：Accounts Session Authentication + CSRF Vertical Slice
+- 文档版本：v1.1
 - 范围来源：`PROJECT_CHARTER.md` v1.0
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -271,3 +271,34 @@ Charter v1.0 已经 Final，但下列机械性或证据驱动细节不需要在 
 - 四个条件技术 Gate 和 Optional Sandbox 的未来 Go/No-Go 记录。
 
 这些细节在对应 Vertical Slice、ADR 或实验计划中确认。它们可以细化实现，但不得绕过第 10 节已确认的不变量和边界。
+
+---
+
+## 13. Accounts Session Authentication + CSRF Vertical Slice
+
+### 13.1 API 契约
+
+| Method | Path | 成功结果 | 认证与 CSRF |
+|---|---|---|---|
+| `GET` | `/api/auth/csrf/` | `204 No Content` 并设置 `csrftoken` Cookie | Guest 可访问 |
+| `POST` | `/api/auth/register/` | `201 Created`，创建普通用户但不自动登录 | Guest 可访问；必须通过 CSRF 校验 |
+| `POST` | `/api/auth/login/` | `200 OK`，返回 `id/username/is_staff` 并创建 Session | Guest 可访问；必须通过 CSRF 校验 |
+| `GET` | `/api/auth/me/` | `200 OK`，返回当前 Session 用户 | 必须通过 Session Authentication；安全 GET 不要求 CSRF Header |
+| `POST` | `/api/auth/logout/` | `204 No Content` 并清除 Session；重复请求保持 `204` | Guest/Customer/Admin 均可调用；必须通过 CSRF 校验 |
+
+### 13.2 已确认安全语义
+
+- 注册、登录和退出都是会改变服务端状态的 Web 请求，必须显式执行 CSRF 校验；`AllowAny` 只表示不要求已有登录身份。
+- Vue 读取非 HttpOnly 的 `csrftoken` Cookie，并通过 `X-CSRFToken` Header 回传；`sessionid` Cookie 保持 HttpOnly，前端 JavaScript 不读取身份凭据。
+- 登录成功后 Django 轮换 Session ID 和 CSRF Token；退出必须使用登录后当前有效的 CSRF Token。
+- Username 登录输入沿用 trim + lowercase 规范化规则；错误密码、不存在用户和 inactive 用户返回相同的通用错误，不透露账号状态。
+- `/api/auth/me/` 对未登录请求保持 DRF SessionAuthentication 的原生 `403 Forbidden`。
+- Customer 与 Admin 共用登录接口；响应中的 `is_staff` 可供界面展示，但不能替代后端权限检查。
+
+### 13.3 2026-09-15 验证证据
+
+- 使用 Django 5.2.17、DRF 3.18.1、pytest 9.1.1、pytest-django 4.14.0 和项目 MySQL 8.4.10 隔离测试数据库。
+- 新增 Session/CSRF 目标测试：`12 passed`。
+- 完整项目回归：`31 passed in 12.25s`。
+- `manage.py check`：`System check identified no issues (0 silenced)`。
+- `manage.py makemigrations --check --dry-run`：`No changes detected`。
