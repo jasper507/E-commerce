@@ -2,7 +2,12 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from apps.ordering.models import CartItem
+from apps.ordering.models import (
+    AddressSnapshot,
+    CartItem,
+    Order,
+    OrderItem,
+)
 
 
 def item_availability(item):
@@ -78,3 +83,58 @@ class CartItemSerializer(serializers.ModelSerializer):
     def get_unavailable_reason(self, item):
         _, reason = item_availability(item)
         return reason
+
+
+class CreateOrderSerializer(serializers.Serializer):
+    address_id = serializers.IntegerField(min_value=1)
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = (
+            "product_name_snapshot",
+            "sku_code_snapshot",
+            "color_snapshot",
+            "attributes_snapshot",
+            "unit_price",
+            "quantity",
+            "discount_amount",
+            "line_total",
+        )
+
+
+class AddressSnapshotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AddressSnapshot
+        fields = (
+            "recipient_name",
+            "phone",
+            "province",
+            "city",
+            "district",
+            "detail",
+        )
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    address = AddressSnapshotSerializer(
+        source="address_snapshot",
+        read_only=True,
+    )
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = (
+            "public_id",
+            "status",
+            "currency",
+            "subtotal",
+            "discount_total",
+            "shipping_fee",
+            "total",
+            "address",
+            "items",
+            "created_at",
+        )

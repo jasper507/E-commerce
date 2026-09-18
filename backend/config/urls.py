@@ -10,6 +10,7 @@ urlpatterns = [
     path("api/addresses/", include("apps.accounts.address_urls")),
     path("api/catalog/", include("apps.catalog.urls")),
     path("api/cart/", include("apps.ordering.urls")),
+    path("api/orders/", include("apps.ordering.order_urls")),
     path("admin/", admin.site.urls),
     path("health/", health_check, name="health"),
 ]
