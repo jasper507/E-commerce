@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import NotFoundView from '../views/NotFoundView.vue'
+import AddressesView from '../views/AddressesView.vue'
 import CartView from '../views/CartView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: CartView,
+    },
+    {
+      path: '/addresses',
+      name: 'addresses',
+      component: AddressesView,
     },
     {
       path: '/:pathMatch(.*)*',

@@ -12,6 +12,7 @@
       <nav aria-label="主导航">
         <RouterLink :to="{ name: 'catalog-products' }">浏览商品</RouterLink>
         <RouterLink :to="{ name: 'cart' }">购物车</RouterLink>
+        <RouterLink :to="{ name: 'addresses' }">收货地址</RouterLink>
         <RouterLink :to="{ name: 'login' }">登录</RouterLink>
       </nav>
     </header>

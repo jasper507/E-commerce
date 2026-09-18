@@ -11,7 +11,17 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.accounts.address_services import (
+    AddressRuleError,
+    create_address,
+    delete_address,
+    set_default_address,
+    update_address,
+)
+from apps.accounts.models import Address
 from apps.accounts.serializers import (
+    AddressSerializer,
+    AddressWriteSerializer,
     LoginSerializer,
     RegistrationSerializer,
     SessionUserSerializer,
@@ -71,6 +81,82 @@ class LogoutView(APIView):
     def post(self, request):
         django_logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def address_rule_error_response(error):
+    response_status = (
+        status.HTTP_404_NOT_FOUND
+        if error.code == "address_not_found"
+        else status.HTTP_400_BAD_REQUEST
+    )
+    return Response(
+        {"code": error.code, "detail": error.detail},
+        status=response_status,
+    )
+
+
+class AddressCollectionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        addresses = Address.objects.filter(user=request.user)
+        return Response(AddressSerializer(addresses, many=True).data)
+
+    def post(self, request):
+        serializer = AddressWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        address = create_address(
+            user=request.user,
+            **serializer.validated_data,
+        )
+        return Response(
+            AddressSerializer(address).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class AddressDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def patch(self, request, address_id):
+        serializer = AddressWriteSerializer(
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        try:
+            address = update_address(
+                user=request.user,
+                address_id=address_id,
+                **serializer.validated_data,
+            )
+        except AddressRuleError as error:
+            return address_rule_error_response(error)
+        return Response(AddressSerializer(address).data)
+
+    def delete(self, request, address_id):
+        try:
+            delete_address(
+                user=request.user,
+                address_id=address_id,
+            )
+        except AddressRuleError as error:
+            return address_rule_error_response(error)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AddressSetDefaultView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, address_id):
+        try:
+            address = set_default_address(
+                user=request.user,
+                address_id=address_id,
+            )
+        except AddressRuleError as error:
+            return address_rule_error_response(error)
+        return Response(AddressSerializer(address).data)
 
 
 def csrf_failure(request, reason=""):

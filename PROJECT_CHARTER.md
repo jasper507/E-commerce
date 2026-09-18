@@ -3,13 +3,13 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Interview Core MVP-1 / Authenticated Cart 已实现并通过自动验证，等待学习复盘
+- 当前阶段：Interview Core MVP-2 / Minimum Address 已实现并通过自动验证，等待学习复盘
 - 文档版本：v1.1
 - 路线图进度更新：2026-09-18
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已进入 `main`；Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已在本地 `main` 工作区实现并通过验证，尚未 commit/push；完整 Vue Admin 已从 Interview Core 移出；MVP-1 进入业务能力与工程能力复盘
+- 当前状态：Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已进入 `main`；MVP-2 Minimum Address 已在 Codex 工作树实现并通过自动验证，尚未 commit/push；完整 Vue Admin 已从 Interview Core 移出；MVP-2 等待业务能力与工程能力复盘
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -804,7 +804,7 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 - [x] Django/MySQL Skeleton
 - [x] pytest、基础日志与最小 CI
 
-### Phase 1 — Catalog Vertical Slice（实现完成，等待工作区收口）
+### Phase 1 — Catalog Vertical Slice（已进入 main）
 
 - [x] Custom User、Session/CSRF 与权限基础
 - [x] **Catalog Public Browse Baseline（商品目录公开浏览基线）**
@@ -812,13 +812,13 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
   - [x] 基础 Inventory
   - [x] Guest 顾客公开浏览 API
   - [x] 本切片的 Model/API/Permission 测试
-- [x] 顾客浏览 Vue 页面（2026-09-17 本地验证完成，尚未提交；证据见 `docs/verification/guest-catalog-browse.md`）
+- [x] 顾客浏览 Vue 页面（证据见 `docs/verification/guest-catalog-browse.md`）
 - [x] Django Admin 作为 Interview Core 的商品/SKU/Inventory 管理入口
 - [ ] 完整 Vue Admin：延期，不阻塞 Interview Core；只有深度主线出现明确演示需求时才局部实现
 
 ### Phase 2A — Interview Core MVP（进行中）
 
-#### MVP-1 — Authenticated Cart（← 当前，代码完成，等待学习复盘）
+#### MVP-1 — Authenticated Cart（已进入 main）
 
 - [x] 复用 Session/CSRF 的极简登录状态，不扩展新的前端状态框架
 - [x] 单活动 Cart、`(cart, sku)` 唯一和数量 1–99
@@ -828,14 +828,18 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 
 MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 CRUD Fast Track；用户重点理解身份/所有权、同 SKU 合并、数量边界、服务端价格边界和 Cart 非库存承诺。
 
-#### MVP-2 — Minimum Address
+#### MVP-2 — Minimum Address（← 当前，代码完成，等待学习复盘）
 
-- [ ] 结构化 Address、单默认地址与最小创建/选择流程
-- [ ] 下单时生成不可变 AddressSnapshot；不做省市联动、地图或产品级地址体验
+- [x] 结构化 Address 与收货手机号规范化
+- [x] 首地址自动默认、每用户最多一个默认地址、切换默认与删除默认后的确定性补位
+- [x] 只访问本人地址的 Session/CSRF API 与最薄 Vue 创建/编辑/删除/设默认流程
+- [x] MySQL 约束、权限、字段校验、事务与双线程并发切换默认测试
+- [ ] AddressSnapshot 留到 MVP-3 创建订单时生成；本阶段不做省市联动、地图或产品级地址体验
 
 #### MVP-3 — Order + Inventory Reservation
 
 - [ ] Order/OrderItem 与创建订单 Idempotency-Key
+- [ ] 从选定 Address 复制不可变 AddressSnapshot，历史订单不依赖当前可修改地址
 - [ ] Decimal 金额合同、0 运费和服务端重新计算
 - [ ] Inventory Reservation/Movement 与事务内预占
 - [ ] 在同一事务末尾清理相应 CartItem；失败完整回滚
@@ -1124,10 +1128,10 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已经进入 `main`；Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已在本地 `main` 工作区实现并验证，尚未提交。下一步：
+Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已进入 `main`；MVP-2 Minimum Address 已在当前 Codex 工作树实现并完成自动验证，尚未 commit/push。下一步：
 
-1. 按 `docs/learning/mvp-1-cart-study-guide.md` 依次学习测试 Oracle、数据约束、业务服务、HTTP/权限链和薄 Vue，不逐行背 CRUD 样板；
-2. 用户能够解释同 SKU 合并、1–99、失效 SKU、服务端价格、库存非承诺和越权隔离后，MVP-1 才达到 Learning Done；
-3. 使用 `docs/verification/mvp-1-authenticated-cart.md` 复核自动验证证据；开发数据库尚未迁移，浏览器人工验收尚未执行；
-4. 完成学习复盘后进入 MVP-2 Minimum Address；MVP-2 继续走 CRUD Fast Track，但 AddressSnapshot 留到 MVP-3 深入；
-5. Order/库存预占、并发实验和支付状态机属于高风险 `Depth` 工作，届时按 Learning Mode 与隔离规则推进。
+1. 按 `docs/learning/mvp-2-minimum-address-study-guide.md` 依次学习业务测试/规则、模型约束、Service/Transaction、HTTP/权限链和薄 Vue，不逐行背 CRUD 样板；
+2. 用户能够解释默认地址为何不是普通布尔 CRUD、应用层与数据库不变量的边界、并发切换、越权防护和 AddressSnapshot 的必要性后，MVP-2 才达到 Learning Done；
+3. 使用 `docs/verification/mvp-2-minimum-address.md` 复核自动验证证据；开发数据库尚未迁移，浏览器人工验收尚未执行；
+4. 复核当前 detached Codex 工作树的 diff，再把聚焦改动安全落到最新 `main` 并按 main-first 流程提交/推送；
+5. 进入 MVP-3 后，AddressSnapshot、Order、库存预占、金额合同和 Idempotency-Key 属于 `Depth` 工作，按 Learning Mode 与高风险隔离规则推进。

@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.5
+# Project One — Domain Context v1.7
 
 ## 0. 文档状态
 
-- 当前阶段：Interview Core MVP-1 / Authenticated Cart 已实现并通过自动验证，等待业务能力与工程能力复盘；本地改动尚未 commit/push
-- 文档版本：v1.6
+- 当前阶段：Interview Core MVP-2 / Minimum Address 已实现并通过自动验证，等待业务能力与工程能力复盘；当前 Codex 工作树改动尚未 commit/push
+- 文档版本：v1.7
 - 范围来源：`PROJECT_CHARTER.md` v1.1
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -419,3 +419,45 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 本切片不包含 Address、Order、Reservation、Redis、MQ 或 Payment。
 - 已确认并实现的 Oracle：空购物车 GET 不写数据库，第一次加入时创建 Cart；重复 SKU 合并数量；合并后超过 99 拒绝且保持原值；当前失效或库存不足的 SKU 不能新增/更新；已经存在的条目保留、标记不可用并允许删除；加入时按当前库存提供快速反馈，但不锁价、不预占库存，下单仍必须重新校验。
 - 自动验证已通过：购物车目标测试 14 passed、4 subtests passed；全量回归 64 passed、12 subtests passed；Vue 生产构建通过。开发数据库没有迁移，浏览器人工验收尚未执行。
+
+---
+
+## 18. MVP-2 Minimum Address（2026-09-18）
+
+### 18.1 业务规则与取舍
+
+- 已登录 Customer 可创建、列出、编辑、删除和设为默认自己的结构化地址；Guest 无权访问，知道别人的地址 ID 也统一得到 `404`。
+- 字段为收件人、收货手机号、省、市、区/县和详细地址。手机号去除空格、连字符和可选 `+86` 后，必须匹配 `^1[3-9][0-9]{9}$`；格式合法不代表号码真实。
+- 零地址时没有默认地址；首个地址无论客户端是否勾选都会自动成为默认；只要存在地址，Service 路径始终保留恰好一个默认地址。
+- 设置新默认地址时，旧默认地址与新默认地址在同一 `transaction.atomic()` 中切换。直接取消当前默认而不提供替代地址会被拒绝，避免产生含糊的“有地址但无默认”状态。
+- 删除默认地址后，按 `created_at, id` 选择最早创建的剩余地址接任；删除最后一个地址后回到零地址、零默认。该规则稳定、可预测并可测试。
+- 不做省市联动、地图、地址补全、复杂 UX，也不在本阶段创建 AddressSnapshot。订单地址快照属于 MVP-3 创建订单事务的一部分。
+
+### 18.2 应用层与数据库保证
+
+- 应用层 Service 先对当前 User 行执行 `select_for_update()`，把同一用户的地址写操作串行化；它负责首地址自动默认、默认切换、删除补位和“至少一个默认”的跨行规则。
+- MySQL 使用 `default_marker`：默认地址存 `1`，普通地址存 `NULL`。`UNIQUE(user, default_marker)` 利用 MySQL 允许多个 `NULL` 的语义，保证每个用户最多一行 `1`；CheckConstraint 只允许 `1/NULL`。
+- 数据库可以独立保证“最多一个默认”，但不能用普通行约束保证“只要存在地址就至少一个默认”；后者由 Service 与测试保证。绕过 Service 直接写 ORM/SQL 仍可能制造全部为 `NULL` 的地址集合，因此核心写入口必须集中在 Service。
+- 两个请求同时设默认时都会先竞争同一 User 行锁，随后按顺序执行；最终后完成切换的请求对应地址成为默认。数据库唯一约束继续作为绕过 Service 或未来代码错误的最后防线。
+
+### 18.3 API 契约
+
+| Method | Path | 作用 |
+|---|---|---|
+| `GET` | `/api/addresses/` | 读取当前用户地址，默认地址排在最前 |
+| `POST` | `/api/addresses/` | 创建地址；首地址自动默认，可用 `is_default=true` 切换默认 |
+| `PATCH` | `/api/addresses/{id}/` | 局部修改当前用户地址；可用 `is_default=true` 设为默认 |
+| `DELETE` | `/api/addresses/{id}/` | 删除当前用户地址；删除默认后按规则补位 |
+| `POST` | `/api/addresses/{id}/default/` | 显式、可重复地把当前用户地址设为默认 |
+
+所有接口要求 Session 身份，所有写请求要求 CSRF。权限通过每次查询同时带 `user=request.user` 实现，不依赖前端隐藏按钮。
+
+### 18.4 2026-09-18 本地验证证据
+
+- Python 3.11.9、Django 5.2.17、DRF 3.18.1、pytest 9.1.1、MySQL 8.4.10。
+- Address Model/API/并发目标测试：`16 passed, 6 subtests passed in 16.66s`。
+- Accounts 相关回归：`44 passed, 6 subtests passed in 32.00s`。
+- 完整项目回归：`80 passed, 18 subtests passed in 46.58s`。
+- `manage.py check` 为 0 issues；`makemigrations --check --dry-run` 为 No changes detected。
+- Vue `type-check` 与生产 `build` 通过，Vite 转换 43 modules；没有新增前端依赖。
+- pytest 使用并销毁隔离 `test_project_one`；未运行 `migrate`，未迁移或写入开发数据库。浏览器人工验收尚未执行。

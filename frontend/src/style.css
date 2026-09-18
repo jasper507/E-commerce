@@ -509,7 +509,9 @@ h3 {
 
 .auth-card,
 .cart-item,
-.cart-summary {
+.cart-summary,
+.address-form,
+.address-card {
   border: 1px solid var(--border);
   border-radius: 1rem;
   background: var(--surface);
@@ -537,7 +539,8 @@ h3 {
 }
 
 .stack-form input,
-.cart-item-actions input {
+.cart-item-actions input,
+.address-form input {
   width: 100%;
   min-height: 2.75rem;
   padding: 0.65rem 0.75rem;
@@ -621,6 +624,67 @@ h3 {
   line-height: 1.5;
 }
 
+.address-form {
+  margin-top: 2rem;
+  padding: 1.5rem;
+}
+
+.address-form .section-heading {
+  margin-bottom: 0;
+}
+
+.address-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.address-detail-field {
+  grid-column: 1 / -1;
+}
+
+.checkbox-label {
+  display: flex !important;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.65rem !important;
+}
+
+.checkbox-label input {
+  width: 1.1rem;
+  min-height: 1.1rem;
+}
+
+.address-state,
+.address-list {
+  margin-top: 1.25rem;
+}
+
+.address-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.address-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem;
+}
+
+.address-card p:last-child,
+.address-card h2 {
+  margin-bottom: 0;
+}
+
+.address-card-heading,
+.address-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 @media (max-width: 820px) {
   .product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -668,9 +732,19 @@ h3 {
   }
 
   .cart-item,
-  .cart-item-actions {
+  .cart-item-actions,
+  .address-card,
+  .address-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .address-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .address-detail-field {
+    grid-column: auto;
   }
 
   .cart-item-actions input {
