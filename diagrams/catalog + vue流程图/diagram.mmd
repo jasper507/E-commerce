@@ -1,0 +1,106 @@
+sequenceDiagram
+    autonumber
+    actor U as 游客浏览器
+    participant V as Vue Router + Views
+    participant F as 原生 fetch Client
+    participant P as Vite /api 代理
+    participant B as Django URL + DRF + Serializer
+    participant O as Django ORM
+    participant D as MySQL
+
+    Note over U,D: Project One · Guest Catalog Browse 商品发现闭环<br/>进入目录 → 分类筛选 → 后端分页 → 查看详情和 SKU → 返回继续浏览
+    Note over P,B: 本图是本地开发链路；生产同源反向代理尚未部署<br/>公开 Catalog GET 不读取 Session，不要求 CSRF；写方法返回 405
+
+    rect rgb(239, 246, 255)
+        Note over U,D: ① 首次进入列表：两条独立请求并行加载
+        U->>V: 打开 /products，解析 category 与 page
+        V->>V: 创建 loading 状态，清除旧 error
+        par 公开分类
+            V->>F: fetchCategories()
+            F->>P: GET /api/catalog/categories/
+            P->>B: 转发给 PublicCategoryListView
+            B->>O: 构造有效 Category QuerySet
+            O->>D: 执行 SELECT
+            D-->>B: 有效分类数据
+            B-->>F: 200 JSON 数组，经代理返回
+            F-->>V: Category[]，渲染分类按钮
+        and 分页商品
+            V->>F: fetchProducts(category, page)
+            F->>P: GET /api/catalog/products/?category=...&page=...
+            P->>B: 转发给 PublicProductListView
+            B->>O: 组合有效 Product 与 Category 条件<br/>JOIN Category + Min 有效 SKU 价格 + Exists 库存
+            opt 有 category 参数
+                B->>O: 追加 category__slug 过滤条件
+            end
+            Note over O,D: QuerySet 惰性执行：此时只组合查询<br/>分类过滤进入最终 SQL，并非先查全部再查分类
+            B->>O: 分页器求总数，再取当前页
+            O->>D: 查询 1：COUNT；查询 2：最终 SELECT，固定 20 条/页
+            D-->>B: count 与当前页商品
+            B-->>F: 200 JSON：count/next/previous/results，经代理返回
+            F-->>V: ProductPage
+        end
+        V->>V: loading=false
+        alt results 有商品
+            V-->>U: 商品卡片、金额字符串、库存提示、分页按钮
+        else results 为空
+            V-->>U: empty：没有商品，可返回全部商品
+        end
+    end
+
+    rect rgb(240, 253, 244)
+        Note over U,D: ② 分类和分页由 URL 驱动，不在前端假分页
+        alt 点击分类
+            U->>V: 更新 category；重置 page=1
+        else 点击上一页/下一页
+            U->>V: 保留 category；更新 page
+        end
+        V->>V: watch 路由参数变化<br/>AbortController 取消旧请求，重新 loading
+        V->>F: 使用相对 URL 请求新页面
+        F->>P: GET /api/catalog/products/?category=...&page=...
+        P->>B: 新请求仍经过 Django 公开规则
+        B->>O: 重新组合 QuerySet
+        O->>D: COUNT + 当前页 SELECT
+        D-->>F: 分页 JSON，经 DRF 和代理返回
+        F-->>V: 只接收未取消请求的结果
+        V-->>U: 替换列表；刷新/前进/后退保留 URL 状态
+    end
+
+    rect rgb(255, 247, 237)
+        Note over U,D: ③ 商品详情与 SKU；返回时保留原分类和页码
+        U->>V: 点击 /products/:slug
+        V->>V: loading=true，清除旧详情/错误
+        V->>F: fetchProductDetail(slug)
+        F->>P: GET /api/catalog/products/:slug/
+        P->>B: PublicProductDetailView 按公开可见性读取
+        B->>O: 按 slug 查询有效 Product + 有效 Category
+        O->>D: 查询 1：Product JOIN Category
+        alt 找到公开可见商品
+            O->>D: 查询 2：预取有效 SKU JOIN Inventory
+            D-->>B: Product + public_skus
+            B-->>F: 200 JSON：商品与 SKU，经代理返回
+            F-->>V: ProductDetail；loading=false
+            V-->>U: 名称、介绍、规格、价格、缺货状态<br/>无 SKU 显示“暂无可售规格”
+        else 不存在 / Product 下架 / Category 下架
+            B-->>F: 统一 404，经代理返回
+            F-->>V: ApiError(status=404)
+            V-->>U: 专用 404 页面，返回商品列表
+        end
+        U->>V: 返回列表，保留 category/page，再次请求当前页
+    end
+
+    rect rgb(255, 241, 242)
+        Note over U,D: ④ 失败恢复：列表、分类、详情分别维护错误状态
+        alt 网络失败或 HTTP 非成功状态
+            F-->>V: 网络异常 / ApiError；fetch 检查 response.ok
+            V-->>U: error 提示 + 重试<br/>越界分页可返回第一页
+            U->>V: 恢复网络后点击重试
+            V->>F: 清除 error，loading=true，重发当前 GET
+            Note over F,D: 重试走同一条真实 HTTP → ORM → MySQL 链路，不伪造成功数据
+            F-->>V: 成功 JSON，恢复正常 UI
+        else 未匹配的前端 URL
+            V-->>U: 前端路由 404，无需访问 Catalog API
+        end
+    end
+
+    Note over U,D: 金额始终是字符串，例如 "129.00"；前端只展示，不决定订单金额<br/>in_stock 只是浏览快照，不预占库存，不承诺下单；下单必须由后端重新校验
+    Note over U,D: 本阶段形成“商品发现闭环”，尚未形成“交易闭环”<br/>明确排除 Admin、购物车、登录 UI、搜索、图片上传、下单和支付

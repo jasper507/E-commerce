@@ -43,6 +43,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local browser verification artifacts (not application source)
+.playwright-cli/
+output/playwright/
+
 # IDE and operating-system files
 .idea/
 .vscode/

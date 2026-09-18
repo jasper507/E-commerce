@@ -1,0 +1,178 @@
+[
+  {
+    "model": "catalog.category",
+    "pk": 101,
+    "fields": {"name": "鼠标", "slug": "mice", "is_active": true}
+  },
+  {
+    "model": "catalog.category",
+    "pk": 102,
+    "fields": {"name": "键盘", "slug": "keyboards", "is_active": true}
+  },
+  {
+    "model": "catalog.category",
+    "pk": 103,
+    "fields": {"name": "空分类", "slug": "empty-category", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 201,
+    "fields": {
+      "category": 101,
+      "name": "无线鼠标 M1",
+      "slug": "wireless-mouse-m1",
+      "description": "双模无线鼠标，用于验证有货与缺货 SKU。",
+      "is_active": true
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 202,
+    "fields": {"category": 101, "name": "即将补货鼠标", "slug": "restocking-mouse", "description": "", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 203,
+    "fields": {"category": 101, "name": "测试鼠标 01", "slug": "test-mouse-01", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 204,
+    "fields": {"category": 101, "name": "测试鼠标 02", "slug": "test-mouse-02", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 205,
+    "fields": {"category": 101, "name": "测试鼠标 03", "slug": "test-mouse-03", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 206,
+    "fields": {"category": 101, "name": "测试鼠标 04", "slug": "test-mouse-04", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 207,
+    "fields": {"category": 101, "name": "测试鼠标 05", "slug": "test-mouse-05", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 208,
+    "fields": {"category": 101, "name": "测试鼠标 06", "slug": "test-mouse-06", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 209,
+    "fields": {"category": 101, "name": "测试鼠标 07", "slug": "test-mouse-07", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 210,
+    "fields": {"category": 101, "name": "测试鼠标 08", "slug": "test-mouse-08", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 211,
+    "fields": {"category": 101, "name": "测试鼠标 09", "slug": "test-mouse-09", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 212,
+    "fields": {"category": 101, "name": "测试鼠标 10", "slug": "test-mouse-10", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 213,
+    "fields": {"category": 101, "name": "测试鼠标 11", "slug": "test-mouse-11", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 214,
+    "fields": {"category": 101, "name": "测试鼠标 12", "slug": "test-mouse-12", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 215,
+    "fields": {"category": 101, "name": "测试鼠标 13", "slug": "test-mouse-13", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 216,
+    "fields": {"category": 101, "name": "测试鼠标 14", "slug": "test-mouse-14", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 217,
+    "fields": {"category": 101, "name": "测试鼠标 15", "slug": "test-mouse-15", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 218,
+    "fields": {"category": 101, "name": "测试鼠标 16", "slug": "test-mouse-16", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 219,
+    "fields": {"category": 101, "name": "测试鼠标 17", "slug": "test-mouse-17", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 220,
+    "fields": {"category": 101, "name": "测试鼠标 18", "slug": "test-mouse-18", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 221,
+    "fields": {"category": 101, "name": "测试鼠标 19", "slug": "test-mouse-19", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 222,
+    "fields": {"category": 101, "name": "测试鼠标 20", "slug": "test-mouse-20", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 223,
+    "fields": {"category": 101, "name": "测试鼠标 21", "slug": "test-mouse-21", "description": "分页测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.product",
+    "pk": 224,
+    "fields": {"category": 102, "name": "机械键盘 K1", "slug": "mechanical-keyboard-k1", "description": "键盘分类测试商品", "is_active": true}
+  },
+  {
+    "model": "catalog.sku",
+    "pk": 301,
+    "fields": {"product": 201, "code": "M1-BLACK", "color": "黑色", "attributes": {"connection": "bluetooth"}, "price": "129.00", "is_active": true}
+  },
+  {
+    "model": "catalog.sku",
+    "pk": 302,
+    "fields": {"product": 201, "code": "M1-WHITE", "color": "白色", "attributes": {"connection": "2.4g"}, "price": "139.00", "is_active": true}
+  },
+  {
+    "model": "catalog.sku",
+    "pk": 303,
+    "fields": {"product": 201, "code": "M1-HIDDEN", "color": "灰色", "attributes": {}, "price": "99.00", "is_active": false}
+  },
+  {
+    "model": "catalog.sku",
+    "pk": 304,
+    "fields": {"product": 224, "code": "K1-BLACK", "color": "黑色", "attributes": {"switch": "red"}, "price": "399.00", "is_active": true}
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 401,
+    "fields": {"sku": 301, "available_stock": 8, "reserved_stock": 0}
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 402,
+    "fields": {"sku": 302, "available_stock": 0, "reserved_stock": 0}
+  },
+  {
+    "model": "inventory.inventory",
+    "pk": 403,
+    "fields": {"sku": 303, "available_stock": 50, "reserved_stock": 0}
+  }
+]

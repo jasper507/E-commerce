@@ -18,7 +18,7 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 
 - Single-merchant B2C、单仓库、数码配件、面向中国、CNY。
 - 角色为 Guest、Customer、Admin 三类顶层角色；Admin 包含 Operator 的运营职责，第一版不拆分更多内部岗位，也不做多商家和商家结算。
-- 一个 Vue 3 + TypeScript/Vite 工程，内部包含顾客端与功能完整但视觉简洁的管理端两套路由和 Layout。
+- 一个 Vue 3 + TypeScript/Vite 工程承担顾客端最小闭环和必要的后端演示入口；普通商品、SKU、库存和订单运营 CRUD 优先使用 Django Admin。完整自定义 Vue Admin 不再阻塞 Interview Core，只有能够直接展示三条旗舰主线时才局部增加管理页面。
 - Django + DRF Modular Monolith，MySQL 是核心事实来源。
 - 模拟物流；Mock Payment Gateway 是必做核心，第三方 Sandbox 只是 Optional Bonus，Production Payment 和真钱明确不做。
 - 不做微服务、Kubernetes、真实物流和复杂售后；Kafka 只作为未来可选扩展。
@@ -60,9 +60,21 @@ Docker、Nginx、Gunicorn、Linux、CI、日志和 Performance Testing 属于必
 
 必须区分：已确认业务规则、待比较的 Experiment Candidate 和引用真实证据的 Validated Decision。原子条件更新是库存并发的优先候选，但必须与 `select_for_update()` 实测比较；Redis Key/TTL/Lua 路径也必须由实验决定，不能预写胜出结论。
 
+## 分层学习与 CRUD Fast Track
+
+所有工作先按学习价值分成三层，不再要求每个文件使用同样的学习深度：
+
+1. `Depth`：Order、库存事务与并发、Redis 缓存一致性、支付状态与幂等、架构取舍和实验结论。必须使用 Learning Mode，由用户掌握不变量、测试 Oracle、失败模式、方案比较和证据解释。
+2. `Supporting`：Accounts、Catalog、Cart、Address、权限、API 契约和前后端联调。用户需要掌握请求链、关键约束和业务边界；可使用 Pair Mode。
+3. `Boilerplate`：普通 CRUD、Admin 注册、重复 Serializer/View/Form/Table、fixture、HTML/CSS 和构建样板。行为确认后可使用 Delivery Mode，由 AI 直接实现并验证。
+
+`CRUD Fast Track` 的完成标准是：主流程可运行；权限与数据归属正确；关键数据库约束存在；至少覆盖一个正常例子和一个重要失败例子；用户能够沿 HTTP → View/Serializer → ORM → MySQL 解释调用链并独立修改一个小条件。它不要求逐行学习重复框架代码，也不能把库存、金额、状态机、幂等或并发规则误判为普通 CRUD。
+
+Interview Core 先完成最窄 MVP：浏览 → 登录 → Cart → Address → Order/库存预占 → Mock Payment → 模拟发货 → 完成。普通业务功能和条件中间件不得阻塞该闭环。闭环完成后，立即转入 MySQL 库存并发、Redis 缓存正确性和支付状态/幂等三条深度主线，而不是继续横向堆功能。
+
 ## 默认协作方式
 
-默认使用 Learning Mode，不直接替用户完成核心逻辑。
+核心逻辑默认使用 Learning Mode；Supporting 使用 Pair Mode；普通 CRUD 和 Boilerplate 默认走 CRUD Fast Track/Delivery Mode。目标是减少重复学习成本，同时保持关键代码和证据处于用户可控范围。
 
 每个新功能先要求用户提供或共同形成：
 

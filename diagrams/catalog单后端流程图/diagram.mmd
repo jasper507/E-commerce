@@ -1,0 +1,80 @@
+sequenceDiagram
+    autonumber
+    actor U as 顾客浏览器 / APIClient
+    actor T as APITestCase 测试方法
+    participant R as 根 URL 路由<br/>config/urls.py
+    participant C as Catalog 路由<br/>catalog/urls.py
+    participant V as DRF View<br/>views.py
+    participant O as Django ORM
+    participant D as MySQL 数据库
+    participant P as 分页器
+    participant S as Serializer<br/>serializers.py
+
+    rect rgb(239, 246, 255)
+        Note over U,S: 场景一：公开商品列表 GET /api/catalog/products/?category=mice
+        U->>R: 发送 GET /api/catalog/products/
+        R->>C: 匹配 api/catalog/，转交 Catalog URL
+        C->>V: 匹配 products/，调用 PublicProductListView
+        Note right of V: AllowAny；不读取 Session 身份<br/>ListAPIView 只提供读取能力
+        V->>O: get_queryset()
+        O->>D: 查询有效 Category 下的有效 Product
+        O->>D: JOIN Category；计算有效 SKU 最低价
+        O->>D: EXISTS 有效 SKU 且 available_stock > 0
+        D-->>O: 返回 Product 行和临时计算列
+        opt 请求带 category=mice
+            O->>D: 再按 category slug 过滤
+            D-->>O: 返回该分类的结果
+        end
+        O-->>V: QuerySet：Product + category + lowest_price + in_stock
+        V->>P: 固定每页 20 条并生成 count/next/previous
+        P->>S: 序列化当前页，many=True
+        S->>S: 只保留公开字段并嵌套 Category
+        S-->>P: 商品 JSON 列表
+        P-->>V: 分页 JSON：count/next/previous/results
+        V-->>U: HTTP 200 JSON
+        Note over U,S: 列表中的 in_stock 是浏览快照，不是下单承诺；结账时后端必须重新校验
+    end
+
+    rect rgb(240, 253, 244)
+        Note over U,S: 场景二：商品详情 GET /api/catalog/products/wireless-mouse-m1/
+        U->>R: 发送带 Product slug 的 GET
+        R->>C: 转交 Catalog URL
+        C->>V: 调用 PublicProductDetailView
+        V->>O: 按 slug 查询有效 Product 和有效 Category
+        O->>D: 查询 1：Product JOIN Category
+        D-->>O: Product 与 Category
+        O->>D: 查询 2：预取有效 SKU JOIN Inventory
+        D-->>O: SKU 与可能存在的 Inventory
+        O-->>V: Product.public_skus 临时属性
+        alt 找到有效 Product
+            V->>S: PublicProductDetailSerializer(product)
+            loop 每个有效 SKU
+                S->>S: Inventory 存在且 available_stock > 0？
+                S->>S: 生成 SKU 的布尔 in_stock
+            end
+            S->>S: any(...) 计算 Product 顶层 in_stock
+            S-->>V: Product、Category、SKUs 的公开 JSON
+            V-->>U: HTTP 200 JSON
+        else Product 下架、Category 下架或 slug 不存在
+            V-->>U: HTTP 404 Not Found
+        end
+        Note over U,S: SKU 没有 Inventory 时安全返回 in_stock=false；内部库存数字不会公开
+    end
+
+    rect rgb(255, 247, 237)
+        Note over T,S: 场景三：测试把同一条请求链当作 Executable Specification
+        T->>O: Arrange：objects.create(...) 准备 Category/Product/SKU/Inventory
+        O->>D: INSERT 测试数据
+        D-->>O: 创建完成
+        T->>U: Act：self.client.get(reverse(...))
+        Note over U,S: APIClient 代替真实浏览器，仍经过 URL → View → ORM → MySQL → Serializer
+        U-->>T: 返回 response
+        T->>T: response.json()["results"] 取得商品列表
+        T->>T: 字典推导式按 slug 整理为 products
+        T->>T: Assert：状态码、JSON、隐藏内容、私有字段、查询次数
+        Note over T,S: 测试失败表示实际行为与规格不一致；测试通过才形成可重复证据
+    end
+
+    rect rgb(248, 250, 252)
+        Note over U,S: 公开边界：下架内容不公开；详情不可见统一 404；POST 等写请求返回 405；公开响应不暴露 id 和库存数量
+    end

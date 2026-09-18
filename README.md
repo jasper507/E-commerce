@@ -1,16 +1,22 @@
 # Project One — Django E-commerce
 
 Project One is a backend-heavy Django/DRF modular monolith for building and
-demonstrating reproducible engineering evidence. The current foundation creates
-only infrastructure and the confirmed application boundaries. Business models
-will be added through vertical slices.
+demonstrating reproducible engineering evidence. Accounts Session/CSRF and the
+public Catalog baseline are implemented. The Guest Catalog Browse Vue UI is
+locally verified. Interview Core MVP-1 Authenticated Cart is implemented and
+automatically verified in the local working tree; it is awaiting learning review
+and has not been committed or pushed.
 
 ## Foundation layout
 
 - `backend/config`: Django settings, root URLs, and health check.
-- `backend/apps/accounts`: the custom user model required before migration.
-- `backend/apps/catalog`, `inventory`, `ordering`, and `payments`: empty domain
-  boundaries reserved for later vertical slices.
+- `backend/apps/accounts`: custom user and Session/CSRF authentication APIs.
+- `backend/apps/catalog`, `inventory`: public Category/Product/SKU browse APIs
+  and the baseline SKU inventory model.
+- `backend/apps/ordering`: authenticated Cart/CartItem models, rules, and API;
+  order models remain for a later slice.
+- `backend/apps/payments`: boundary reserved for the payment slice.
+- `frontend`: Vue 3 + TypeScript/Vite catalog, Session login, and cart UI.
 - `tests`: pytest/pytest-django tests that use an isolated MySQL database.
 - `compose.yaml`: project-owned MySQL 8.4 service on `127.0.0.1:3307`.
 
@@ -57,3 +63,36 @@ production refuse the local default Django secret and database password.
 Pytest may create and destroy only the configured database whose name starts
 with `test_`. The default is `test_project_one`; do not point it at development
 or production data.
+
+## Guest Catalog Browse UI
+
+See `frontend/README.md` for local startup and
+`docs/verification/guest-catalog-browse.md` for the observed verification results,
+an isolated browser fixture, the end-to-end request flow, and learning outcomes.
+
+The UI uses native `fetch`, Vue Router, and a development-only Vite `/api` proxy.
+It now includes minimal Session login and authenticated cart operations. It does
+not implement custom Vue Admin, address, checkout, inventory reservation,
+payment, search, or image upload. The cart does not lock price or reserve stock.
+
+## MVP-1 Authenticated Cart
+
+The API exposes `GET /api/cart/`, `POST /api/cart/items/`, and
+`PATCH/DELETE /api/cart/items/{sku_code}/`. Unsafe requests reuse the existing
+Session/CSRF contract. Database constraints enforce one cart per user, one item
+per `(cart, sku)`, and quantity 1–99. See
+`docs/learning/mvp-1-cart-study-guide.md` for the recommended code-reading order
+and `docs/verification/mvp-1-authenticated-cart.md` for observed test evidence.
+
+## Interview Core execution strategy
+
+- Build the narrow MVP first: browse → login → cart → address → order and
+  inventory reservation → Mock Payment → simulated fulfilment → completion.
+- Use CRUD Fast Track for ordinary forms, serializers, views, Admin work, and
+  thin Vue pages after behavior is confirmed. Keep permissions, ownership,
+  database constraints, focused tests, and diff review.
+- Study Order/inventory concurrency, Redis cache correctness, and payment
+  state/idempotency in depth. These areas are not ordinary CRUD.
+- Use Django Admin for routine operations. A complete custom Vue Admin, coupon,
+  favorite, review, MQ, search, and third-party payment are not Interview Core
+  blockers.

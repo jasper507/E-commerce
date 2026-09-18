@@ -19,22 +19,24 @@ MQ, search, deployment, CI/CD, and performance work must support a real integrat
 
 ## Default Learning Contract
 
-- Default to Learning Mode for new concepts and core business logic.
-- The user owns business rules, invariants, expected behavior, architecture decisions, and interpretation of evidence.
-- Start with questions or hints, then concepts, pseudocode, minimal local code, and only then a full reference implementation.
-- Do not generate an entire core module before the user understands its design.
-- Boilerplate and familiar repetitive work may use Pair or Delivery Mode after the user defines behavior.
+- Use Learning Mode for order, inventory, Redis, payment, concurrency, state machines, idempotency, architecture trade-offs, and interpretation of evidence.
+- Use CRUD Fast Track for routine create/read/update/delete flows, Admin registration, serializers, ordinary forms/tables, fixtures, and other familiar boilerplate. After the behavior is confirmed, AI may implement these directly in Pair or Delivery Mode.
+- A CRUD fast pass still requires the user to understand the request flow, ownership/permission boundary, important database constraints, one normal example, and one important failure example. It does not require line-by-line study of repetitive framework code.
+- The user owns core business rules, invariants, expected behavior, architecture decisions, test oracles, and interpretation of evidence.
+- For depth-track work, start with the simplest baseline, reproduce the problem, compare alternatives, implement the smallest coherent change, and then verify it. Do not generate an entire core module before the user understands its design.
+- Classify work before implementation as `Depth`, `Supporting`, or `Boilerplate`; do not apply the same learning depth to every file.
 
 ## Work Protocol
 
 1. Read relevant code, tests, and project documents first.
 2. State the business problem and the current vertical slice.
-3. Establish a simple baseline before introducing advanced infrastructure.
-4. For major decisions, compare alternatives, failure modes, and trade-offs.
-5. Implement the smallest coherent change.
-6. Run targeted verification and relevant regression tests.
-7. Never claim success for tests, deployment, or performance that was not actually observed.
-8. Update durable decisions and evidence in repository files, not only in chat.
+3. Classify the work as Depth, Supporting, or Boilerplate and choose Learning, Pair, or Delivery Mode accordingly.
+4. Establish a simple MVP/MySQL/Mock baseline before introducing advanced infrastructure.
+5. For major decisions, compare alternatives, failure modes, and trade-offs.
+6. Implement the smallest coherent change.
+7. Run targeted verification and relevant regression tests.
+8. Never claim success for tests, deployment, or performance that was not actually observed.
+9. Update durable decisions and evidence in repository files, not only in chat.
 
 ## Git Workflow — Main First
 

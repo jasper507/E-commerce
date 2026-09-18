@@ -1,19 +1,19 @@
-# Project One — Project Charter v1.0
+# Project One — Project Charter v1.1
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase 1 / Catalog Public Browse Baseline 已完成
-- 文档版本：v1.0
-- 路线图进度更新：2026-09-16
+- 当前阶段：Interview Core MVP-1 / Authenticated Cart 已实现并通过自动验证，等待学习复盘
+- 文档版本：v1.1
+- 路线图进度更新：2026-09-18
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已完成并进入 `main`；下一纵向切片待确认
+- 当前状态：Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已进入 `main`；Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已在本地 `main` 工作区实现并通过验证，尚未 commit/push；完整 Vue Admin 已从 Interview Core 移出；MVP-1 进入业务能力与工程能力复盘
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
-本 Charter 的 `Final` 表示当前项目范围和创建项目骨架前必须确定的设计方向已经冻结，可以进入实现；它不表示所有实现都已经完成或通过测试。标为“实验候选”的技术方案仍必须经过真实基线、失败复现和比较后，才能在 ADR 中成为最终实现结论。后续重大变化按照第 19 节记录。
+本 Charter 的 `Final` 表示当前项目范围和创建项目骨架前必须确定的设计方向已经冻结，可以进入实现；它不表示所有实现都已经完成或通过测试。v1.1 将执行策略收窄为 Interview Core MVP + 三条深度主线，并加入 CRUD Fast Track；标为“实验候选”的技术方案仍必须经过真实基线、失败复现和比较后，才能在 ADR 中成为最终实现结论。后续重大变化按照第 19 节记录。
 
 ---
 
@@ -67,6 +67,16 @@ Project One 是一个以单商家电商为业务载体的后端系统工程实�
 
 最终价值优先级与实现顺序不同。实现时先完成最小可运行闭环，形成 MySQL + Mock Payment 基线；再稳定复现问题并展开三条旗舰主线；辅助技术最后根据真实问题、证据需求和工时审计结果引入。不得先堆叠 Redis、MQ 或 Elasticsearch，再回头补业务闭环。
 
+### Interview Core 学习分层
+
+项目不再要求所有模块逐行、同深度学习：
+
+- `Depth`：Order、库存事务与并发、Redis 缓存正确性、支付状态与幂等、架构取舍和证据解释。必须深入理解、参与规则与测试 Oracle，并能独立修改和调试。
+- `Supporting`：Accounts、Catalog、Cart、Address、权限与前后端请求链。需要理解输入、输出、所有权、关键约束和在闭环中的位置，可使用 Pair Mode。
+- `Boilerplate`：普通 CRUD、Admin、重复 Serializer/View/Form/Table、fixture、HTML/CSS 与构建样板。行为确认后走 CRUD Fast Track，由 AI 直接交付并验证，用户完成关键 Diff Review。
+
+CRUD Fast Track 不等于无测试或黑盒：至少保留权限/数据归属、关键数据库约束、一个正常例子和一个重要失败例子；金额、库存、状态机、幂等与并发规则不得归类为普通 CRUD。
+
 ---
 
 ## 3. Business Scope（业务范围）
@@ -83,10 +93,10 @@ Project One 是一个以单商家电商为业务载体的后端系统工程实�
 - 物流：模拟发货与物流状态，不连接真实物流公司
 - 支付：Mock Payment Gateway 是核心必做；第三方 Sandbox 仅为通过 Gate 后的 Optional Bonus；不接 Production，不处理真钱
 - 前端：一个 Vue 3 + TypeScript/Vite 工程中的顾客端路由与 Layout
-- 管理端：同一 Vue 工程中的独立管理端路由与 Layout，功能完整但视觉简洁
-- 开发早期：允许使用 Django Admin 辅助验证后端
+- 管理端：Interview Core 使用 Django Admin 承担普通商品、SKU、库存和订单运营 CRUD；只在能够直接展示库存、缓存或支付主线时增加极简 Vue 管理/实验页面
+- 开发早期及 Interview Core：允许持续使用 Django Admin 验证和维护后端数据
 
-顾客端与管理端是两个逻辑界面，但共享一个 Vue 工程、认证状态、API Client、TypeScript 类型和通用基础组件。管理权限必须由 Django 后端验证，不能依赖前端隐藏路由或按钮。
+顾客端 Vue 只承担最小业务闭环和必要演示；完整自定义 Vue Admin 不再是 Interview Core 的完成条件。任何管理权限都必须由 Django 后端验证，不能依赖前端隐藏路由或按钮。
 
 ### 3.2 用户角色
 
@@ -103,12 +113,10 @@ Project One 是一个以单商家电商为业务载体的后端系统工程实�
 - 管理包含收货人姓名、收货手机号和地址信息的收货地址；
 - 浏览商品并选择 SKU；
 - 管理购物车；
-- 使用符合规则的优惠券；
 - 创建和查询自己的订单；
 - 发起 Mock 测试支付；若未来 Optional Sandbox Gate 通过，可额外体验第三方测试支付；
 - 查看订单状态；
-- 在满足资格后发表评价；
-- 收藏商品。
+- Coupon、Review 与 Favorite 属于闭环完成后的可选业务扩展，不属于 Interview Core。
 
 #### Admin（管理员，包含 Operator 运营职责）
 
@@ -116,7 +124,7 @@ Project One 是一个以单商家电商为业务载体的后端系统工程实�
 - 上架、下架和调整商品；
 - 查看与处理订单；
 - 模拟发货；
-- 管理优惠券和秒杀活动；
+- 若对应可选阶段实际进入，再管理优惠券和秒杀活动；
 - 查看支付事件、已引入的异步任务结果和基础运行指标。
 
 单商家模型中，Admin 代表平台卖家侧并承担 Operator 的日常运营职责。第一版不单独设置 Seller、仓库员、客服或财务等顶层角色。Customer 使用普通用户身份；Admin 使用 Django 的 `is_staff`、Groups 和 Permissions 表达管理权限，不再维护一套重复的角色字段；`is_superuser` 只用于系统维护，不作为日常业务角色。
@@ -196,6 +204,8 @@ SHIPPED / COMPLETED
 - 推荐系统；
 - 社交 Feed；
 - 原生移动 App；
+- 完整自定义 Vue 管理后台；Interview Core 使用 Django Admin，只有深度主线需要时才增加极简实验入口；
+- Coupon、Favorite、Review 和复杂搜索 UI 不属于 Interview Core 的完成门槛；
 - 微服务拆分；
 - Kubernetes；
 - Service Mesh；
@@ -504,7 +514,7 @@ PaymentAttempt v1.0 合法转换：
 ### 架构约束
 
 - Django/DRF 是唯一业务后端部署单元。
-- Vue 顾客端与管理端共享一个工程；部署目标为浏览器、Vue 与 Django API 同源。
+- 若未来增加极简 Vue 管理或实验入口，它与顾客端共享一个工程；Interview Core 的普通运营管理使用 Django Admin；部署目标为浏览器、Vue 与 Django API 同源。
 - MySQL 保存订单、支付和核心库存的最终持久事实。
 - Redis 在 MySQL baseline 后按必做旗舰主线引入，但不是核心事实来源；相关辅助状态必须能够重建、降级或对账。
 - Elasticsearch 是可重建、可延期的条件性派生索引。
@@ -606,13 +616,13 @@ Mock Payment Gateway、PaymentAttempt、Webhook Inbox 和幂等证据属于支�
 | Elasticsearch | MySQL 搜索在功能或测量上不足 | 相关性、中文分词、延迟、同步和重建结果 |
 | Alipay/Stripe Sandbox | Mock 支付 Evidence Pack 已完成、工时审计允许且测试账号可快速使用 | 一次真实测试协议、签名/验签、Webhook 和查单证据 |
 
-并非所有候选技术都必须在 1200 小时核心版落地。四个 Gate 的默认态度已经确认：Distributed Lock 默认不用；Celery/RabbitMQ 只解决真实异步需求；Transactional Outbox 只解决真实可靠消息问题；Elasticsearch 只在 MySQL 搜索基线不足时引入。Sandbox 只是 Optional Bonus：优先对支付宝 Sandbox 做最多 2 小时的账号可用性检查，受阻可切换 Stripe 测试环境或直接延期。任何条件技术一旦引入，都必须完成真实集成、故障或一致性验证，不能只添加依赖。
+并非所有候选技术都必须在 Interview Core 落地。四个 Gate 的默认态度已经确认：Distributed Lock 默认不用；Celery/RabbitMQ 只解决真实异步需求；Transactional Outbox 只解决真实可靠消息问题；Elasticsearch 只在 MySQL 搜索基线不足时引入。Sandbox 只是 Optional Bonus：优先对支付宝 Sandbox 做最多 2 小时的账号可用性检查，受阻可切换 Stripe 测试环境或直接延期。任何条件技术一旦引入，都必须完成真实集成、故障或一致性验证，不能只添加依赖。
 
 ---
 
 ## 11. Three Flagship Engineering Tracks（三条旗舰深度主线）
 
-三条旗舰主线是已确认的必做范围，共享 540 小时初始预算；各主线的实际小时数根据每 100 小时审计、失败复现难度和证据风险动态调整。开始深入优化前，必须先有对应的最小业务闭环以及 MySQL 或 Mock baseline。
+三条旗舰主线是已确认的必做范围，共享 720 小时建议预算；各主线的实际小时数根据 MVP 进度、失败复现难度和证据风险动态调整。开始深入优化前，必须先有对应的最小业务闭环以及 MySQL 或 Mock baseline。
 
 ### Track A — Inventory Concurrency & Flash Sale Correctness
 
@@ -783,7 +793,7 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 
 ### Phase 0 — Day 0 & Foundation（已完成）
 
-- [x] Project Charter v1.0 — Final Design Baseline
+- [x] Project Charter v1.1 — Current Design Baseline
 - [x] Business Requirements
 - [x] Domain Context v1.0
 - [x] Core User Journey
@@ -794,7 +804,7 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 - [x] Django/MySQL Skeleton
 - [x] pytest、基础日志与最小 CI
 
-### Phase 1 — Catalog Vertical Slice（进行中）
+### Phase 1 — Catalog Vertical Slice（实现完成，等待工作区收口）
 
 - [x] Custom User、Session/CSRF 与权限基础
 - [x] **Catalog Public Browse Baseline（商品目录公开浏览基线）**
@@ -802,19 +812,39 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
   - [x] 基础 Inventory
   - [x] Guest 顾客公开浏览 API
   - [x] 本切片的 Model/API/Permission 测试
-- [ ] 顾客浏览 Vue 页面
-- [ ] Vue Admin 商品/SKU 最小管理及对应权限测试
+- [x] 顾客浏览 Vue 页面（2026-09-17 本地验证完成，尚未提交；证据见 `docs/verification/guest-catalog-browse.md`）
+- [x] Django Admin 作为 Interview Core 的商品/SKU/Inventory 管理入口
+- [ ] 完整 Vue Admin：延期，不阻塞 Interview Core；只有深度主线出现明确演示需求时才局部实现
 
-### Phase 2A — Cart and Order Minimum Business Loop
+### Phase 2A — Interview Core MVP（进行中）
 
-- [ ] 结构化 Address、单默认地址与不可变快照
-- [ ] 单活动 Cart、CartItem 唯一和数量边界
+#### MVP-1 — Authenticated Cart（← 当前，代码完成，等待学习复盘）
+
+- [x] 复用 Session/CSRF 的极简登录状态，不扩展新的前端状态框架
+- [x] 单活动 Cart、`(cart, sku)` 唯一和数量 1–99
+- [x] 查看、加入、修改数量和删除 CartItem；用户只能操作自己的 Cart
+- [x] 价格由后端读取；Cart 不承诺下单价格或库存，加入 Cart 不预占库存
+- [x] 后端约束、权限/API 测试和极简 Vue 联调
+
+MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 CRUD Fast Track；用户重点理解身份/所有权、同 SKU 合并、数量边界、服务端价格边界和 Cart 非库存承诺。
+
+#### MVP-2 — Minimum Address
+
+- [ ] 结构化 Address、单默认地址与最小创建/选择流程
+- [ ] 下单时生成不可变 AddressSnapshot；不做省市联动、地图或产品级地址体验
+
+#### MVP-3 — Order + Inventory Reservation
+
 - [ ] Order/OrderItem 与创建订单 Idempotency-Key
-- [ ] Decimal 金额合同、0 运费和服务端计算
-- [ ] Inventory/Reservation/Movement 与事务内预占
-- [ ] Order/PaymentAttempt 状态机
+- [ ] Decimal 金额合同、0 运费和服务端重新计算
+- [ ] Inventory Reservation/Movement 与事务内预占
+- [ ] 在同一事务末尾清理相应 CartItem；失败完整回滚
+
+#### MVP-4 — Mock Payment + Completion
+
+- [ ] Order/PaymentAttempt 最小状态机
 - [ ] 事务提交后的最小同步 Provider Adapter、Mock Payment、Event Inbox baseline 和库存核销
-- [ ] 模拟发货
+- [ ] Django Admin 或极简 API 模拟发货；Customer 确认完成
 
 进入高级基础设施前，最小端到端闭环必须以 MySQL + Mock Payment 实际运行并通过目标测试。早期商品和管理数据可以使用 Django Admin 辅助操作。
 
@@ -825,7 +855,7 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 - [ ] Favorite
 - [ ] Completed OrderItem 的单条 Review
 
-这些能力在最小闭环稳定后增量加入，不阻塞 Phase 2A 的完成。
+这些能力全部移入闭环后的可选 Backlog，不阻塞 Interview Core。若时间不足，Coupon、Favorite 与 Review 可以保持 No-Go；取消/过期、迟到支付、库存释放和 Refund Simulation 只在支付深度主线需要对应故障证据时进入。
 
 ### Phase 3 — Database Correctness & Optimization
 
@@ -908,18 +938,18 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 ### Business Done
 
 - 顾客端业务主链端到端可运行；
-- Vue 管理端可管理商品、SKU、库存、订单和关键事件；
+- Django Admin 可完成普通商品、SKU、库存和订单运营；只有深度主线需要时才提供极简 Vue 管理/实验入口；
 - 权限与历史快照行为正确；
 - Session/CSRF、Decimal 金额、订单幂等、状态机与库存预占/核销/释放合同均有端到端和自动化证据；
 - 模拟支付和物流状态可完整演示。
-- 简单取消、库存最多释放一次和 Refund Simulation 可以演示，并有自动化测试证明重复请求不会产生重复副作用。
+- 未支付取消/过期与库存最多释放一次在支付深度主线中验证；Paid 取消、迟到支付和 Refund Simulation 根据 Track C 证据需要进入，不阻塞首次 MVP 闭环。
 - 第三方 Sandbox 和 Production Payment 不属于 Business Done；Mock 支付闭环和支付证据包必须完成。
 
 ### Engineering Done
 
 - 库存并发、缓存正确性、支付幂等三条旗舰主线均有 Evidence Pack；
 - 三条主线均包含失败复现、至少两种方案比较和证据支持的结论；实验最终可以合理选择“不采用”某个候选；
-- Distributed Lock、Celery/RabbitMQ、Transactional Outbox、Elasticsearch 和第三方 Sandbox 不属于 1200 小时核心版的完成阻塞项；若实际引入，必须提供真实集成以及可靠性、故障或一致性证据；
+- Distributed Lock、Celery/RabbitMQ、Transactional Outbox、Elasticsearch 和第三方 Sandbox 不属于 Interview Core 的完成阻塞项；若实际引入，必须提供真实集成以及可靠性、故障或一致性证据；
 - Docker Compose 可以复现完整环境；
 - 自动化测试和 CI 通过；
 - 浏览、下单、秒杀至少三种负载有基线和优化对比；
@@ -946,15 +976,14 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 
 ## 16. Time Budget（工时预算）
 
-当前正式预算基线为 1200 个专注小时，初始分配如下：
+1200 个专注小时保留为长期上限规划，不是 Interview Core 必须耗尽的工时。v1.1 的新增工时优先按以下比例投入，并在满足可演示、可复现、本人能解释的 Definition of Done 后停止扩张：
 
 | 方向 | 比例 | 初始预算 |
 |---|---:|---:|
-| 完整业务闭环及后端基础 | 25% | 300 小时 |
-| 三条旗舰主线及实验 | 45% | 540 小时 |
-| 部署、CI、可观测性和性能 | 15% | 180 小时 |
-| Vue 顾客端与 Vue 管理端 | 10% | 120 小时 |
-| 文档、演示和面试准备 | 5% | 60 小时 |
+| Interview Core MVP、普通 CRUD 与薄 Vue | 20% | 240 小时 |
+| 三条旗舰主线及实验 | 60% | 720 小时 |
+| Docker、CI、日志、测试环境与可复现支撑 | 10% | 120 小时 |
+| Evidence Pack、演示和面试准备 | 10% | 120 小时 |
 | **合计** | **100%** | **1200 小时** |
 
 这是可调整的初始规划，不是要求每类必须精确耗尽的固定配额。测试、调试和验证嵌入各类别，不另设最后补做的测试预算。工时不包含无效等待和走神时间；AI 可以减少前端和其他样板代码时间，但不能替代学习、运行、调试、验证和复盘。
@@ -976,7 +1005,7 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 
 ### Learning Mode — 默认
 
-用于新技术和核心逻辑。用户先定义问题、例子、不变量、预期和初稿；AI 追问、提示与 Review。
+用于 `Depth` 工作和新的核心逻辑。用户先定义问题、例子、不变量、预期和初稿；AI 追问、提示与 Review。
 
 订单、库存、支付等核心业务规则，三条旗舰主线，架构取舍，测试预期以及实验结果解释属于项目拥有者的核心学习责任。AI 可以提供帮助阶梯，但不能替项目拥有者决定并背诵这些结论。
 
@@ -989,6 +1018,17 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 ### Delivery Mode
 
 用于低风险、机械性或重复工作。接口契约与预期行为确认后，AI 可以直接实现 Vue 页面脚手架、HTML、CSS、常规表单与表格、重复组件、TypeScript 类型、API 调用样板和普通 CRUD，但必须展示改动并运行相应验证。
+
+### CRUD Fast Track
+
+普通 CRUD 不再使用完整学习检查。AI 可在已确认行为后一次性交付最小实现，用户只需：
+
+- 沿一条请求解释 URL、认证/权限、View/Serializer、ORM、MySQL 与响应；
+- 确认所有权和关键数据库约束；
+- 查看聚焦 Diff，运行目标测试；
+- 能独立修改一个字段、校验或筛选条件。
+
+Cart 中的 HTTP CRUD 和页面样板可以快速交付，但同 SKU 合并、数量边界、用户隔离和服务端价格边界属于 `Supporting` 规则，不能跳过。Order、库存、Redis 与 Payment 一律不得降级为 CRUD Fast Track。
 
 ### Frontend Delivery Boundary（前端交付边界）
 
@@ -1053,7 +1093,7 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 下列变化必须先讨论并记录：
 
-- 改变本版 Charter v1.0 的宏观业务边界或已确认设计基线；
+- 改变本版 Charter v1.1 的宏观业务边界或已确认设计基线；
 - 从单商家改为多商家；
 - 增加多仓库或多币种；
 - 拆分微服务；
@@ -1068,17 +1108,26 @@ LEARNING_LOG.md          个人理解、错误与复盘
 - 删除三条旗舰主线中的任何一条；
 - 将 Celery/RabbitMQ 或 Elasticsearch 从条件性技术升级为核心必做项；
 - 将 Distributed Lock、Transactional Outbox 或第三方 Sandbox 升级为核心必做项；
-- 改变 1200 小时五类初始分配时，应在最近一次 100 小时审计中记录原因、影响和取舍。
+- 改变 1200 小时四类 v1.1 分配时，应在最近一次范围与证据审计中记录原因、影响和取舍。
 
 普通字段、页面样式和局部实现不需要 ADR。
+
+### v1.1 范围调整记录（2026-09-18）
+
+- 保留最窄真实交易闭环与三条旗舰深度主线；完整指纵向状态链完整，不再等同于电商功能数量齐全。
+- 完整 Vue Admin、Coupon、Favorite、Review 和复杂搜索 UI 移出 Interview Core；普通运营 CRUD 使用 Django Admin。
+- 学习方式改为 `Depth / Supporting / Boilerplate` 三层，并为普通 CRUD 建立 Fast Track；快速交付不取消权限、约束、关键失败测试和 Diff Review。
+- Phase 2A 重排为 MVP-1 Cart、MVP-2 Address、MVP-3 Order/Inventory Reservation、MVP-4 Mock Payment/Completion。
+- 1200 小时保留为长期上限而非必须耗尽的工时；新增投入优先保护 Interview Core、三条深度主线和 Evidence Pack。
 
 ---
 
 ## 20. Immediate Next Step（下一步）
 
-Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已经完成并进入 `main`。下一步：
+Phase 0、Accounts 认证基础和 Catalog Public Browse Baseline 已经进入 `main`；Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已在本地 `main` 工作区实现并验证，尚未提交。下一步：
 
-1. 由项目拥有者完成 Catalog 的学习检查和代码复盘；
-2. 确认 Phase 1 的下一个最小纵向切片及测试 Oracle；
-3. 普通低风险工作默认直接在最新 `main` 开发，完成小阶段后执行检查、测试、聚焦 commit 和 push；
-4. 如果下一任务进入库存并发、秒杀、支付状态机/Webhook 或其他高风险范围，再按本 Charter 的 main-first 例外规则创建隔离分支。
+1. 按 `docs/learning/mvp-1-cart-study-guide.md` 依次学习测试 Oracle、数据约束、业务服务、HTTP/权限链和薄 Vue，不逐行背 CRUD 样板；
+2. 用户能够解释同 SKU 合并、1–99、失效 SKU、服务端价格、库存非承诺和越权隔离后，MVP-1 才达到 Learning Done；
+3. 使用 `docs/verification/mvp-1-authenticated-cart.md` 复核自动验证证据；开发数据库尚未迁移，浏览器人工验收尚未执行；
+4. 完成学习复盘后进入 MVP-2 Minimum Address；MVP-2 继续走 CRUD Fast Track，但 AddressSnapshot 留到 MVP-3 深入；
+5. Order/库存预占、并发实验和支付状态机属于高风险 `Depth` 工作，届时按 Learning Mode 与隔离规则推进。

@@ -1,10 +1,10 @@
-# Project One — Domain Context v1.3
+# Project One — Domain Context v1.5
 
 ## 0. 文档状态
 
-- 当前阶段：Catalog Public Browse Baseline 已进入 `main`；下一纵向切片待确认
-- 文档版本：v1.3
-- 范围来源：`PROJECT_CHARTER.md` v1.0
+- 当前阶段：Interview Core MVP-1 / Authenticated Cart 已实现并通过自动验证，等待业务能力与工程能力复盘；本地改动尚未 commit/push
+- 文档版本：v1.6
+- 范围来源：`PROJECT_CHARTER.md` v1.1
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
@@ -182,14 +182,14 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 | Learning Mode | 学习模式 | 用于核心业务和新技术。用户拥有业务规则、不变量、测试预期、架构取舍和实验结论，AI 按帮助阶梯提供支持。`Confirmed` |
 | Pair Mode | 结对模式 | 用于已理解但不熟练的工作，例如部署配置、API 集成和错误处理；用户与 AI 共同完成并验证。 |
 | Delivery Mode | 交付模式 | 用于低风险、机械和重复工作。AI 可以主要完成 HTML、CSS、常规 Vue 页面和 CRUD 样板，但用户必须读懂、运行、调试并能够修改。`Confirmed` |
-| Focused Hour | 专注小时 | 实际投入学习、设计、编码、测试、调试、实验或复盘的时间；无效等待不计算。当前规划基线为 1200 小时，每 100 小时审计一次。`Confirmed` |
+| Focused Hour | 专注小时 | 实际投入学习、设计、编码、测试、调试、实验或复盘的时间；无效等待不计算。1200 小时仅作为长期投入上限，不要求耗尽；按 MVP 阶段、范围变化和 Evidence Pack 风险进行审计。`Confirmed` |
 | Experiment Protocol | 实验记录协议 | 保存代码/Git 与依赖/服务版本、固定数据集和 seed、并发模型与数量、预热、持续时间、运行次数、硬件/OS/容器资源、p50/p95/p99、吞吐、错误率、实验前后不变量检查、所有有效运行和原始输出；不能只保留最好的一次。`Confirmed` |
 
 ---
 
 ## 9. 条件性技术
 
-以下技术在路线图中存在，但不是 1200 小时核心版的完成阻塞项。只有出现真实问题、比较过简单方案并通过工时审计后才引入；No-Go（暂不采用）也是有效工程结论。一旦引入，必须进行真实集成与故障验证。
+以下技术在路线图中存在，但不是 Interview Core 的完成阻塞项。只有出现真实问题、比较过简单方案并通过范围与证据审计后才引入；No-Go（暂不采用）也是有效工程结论。一旦引入，必须进行真实集成与故障验证。
 
 | English Term | 通俗中文 | 引入门槛 |
 |---|---|---|
@@ -261,7 +261,7 @@ Docker Compose、Linux、Nginx、Gunicorn、CI、日志、健康检查和性能�
 
 ## 12. 按纵向切片确定的实现细节
 
-Charter v1.0 已经 Final，但下列机械性或证据驱动细节不需要在 Day 0 假装全部冻结：
+Charter v1.1 是当前设计基线，但下列机械性或证据驱动细节不需要在 Day 0 假装全部冻结：
 
 - 每个 Model 的非业务字段名、精确长度、外键删除动作和查询驱动索引；
 - API URL、分页、过滤和错误详情等局部契约；Order 与 PaymentAttempt 的幂等规则不得因此改变；
@@ -377,3 +377,45 @@ Charter v1.0 已经 Final，但下列机械性或证据驱动细节不需要在 
 - 远端 `main` 先通过 PR #6 的提交 `def9d16` 包含相同内容，随后以 `99adb1a` 合并 `codex/catalog-public-browse`；`def9d16` 与 `acd49aa` 的文件内容比较无差异，因此历史虽然保留两个来源提交，但没有重复实现。
 - 清理旧 worktree 前必须先确认其工作区干净、本地 `main` 与 `origin/main` 一致，并从主项目目录使用 `git worktree remove`，不得直接删除文件夹。
 - 在最新 `main` 上重新验证：Catalog/Inventory 为 `19 passed, 8 subtests passed`，完整回归为 `50 passed, 8 subtests passed`；Django 配置检查通过且没有迁移漂移。
+
+---
+
+## 16. Guest Catalog Browse UI（2026-09-17）
+
+- 新增一个 `frontend/` Vue 3 + TypeScript/Vite 工程，使用 Vue Router 与原生 `fetch`；没有 Axios 或 Vitest。
+- 当前只实现商品发现闭环：进入列表 → 分类过滤 → Django 后端分页 → 商品详情/SKU → 返回原分类/页码继续浏览。购物车、下单、支付不是本阶段范围。
+- 列表 URL 保存 `category` 与 `page`；切换分类回到第一页。详情返回保留查询参数。`next/previous` 只用作是否可翻页的标记，前端构造同源相对 API URL。
+- 分类、列表、详情分别维护 loading/error；列表成功空结果使用 empty，详情公开不可见使用 404，网络或 HTTP 错误可重试。越界分页可返回第一页；未知前端路由也有 404。
+- 请求切换时先取消旧请求；每次请求用自己的局部 AbortController，旧请求不能覆盖新结果或提前关闭新请求的 loading。
+- 金额继续使用 `string`/`string | null`；库存数量不公开，`in_stock` 只是浏览快照，不是预占或购买承诺。
+- 开发期新增 Vite `/api` proxy 指向 `127.0.0.1:8000`。没有修改 Django 认证、CORS、数据库模型、迁移或部署配置；生产同源代理与 SPA fallback 尚未实现。
+- 本轮实际验证：前端类型检查与构建通过；真实 Chromium 请求覆盖列表、分类、分页、详情、empty、缺货、404、离线重试和快速分类切换；Catalog/Inventory `19 passed in 4.81s`，完整回归 `50 passed in 15.75s`；Django check 与迁移漂移检查通过。
+- 浏览器验证使用临时 `test_project_one` + 合成 fixture，没有迁移或写入开发库。停止 testserver 后使用 pytest 重建并销毁测试库，已查询确认测试库不存在。
+- 工作区尚未 commit/push，远端 CI 未验证；具体操作、限制与工程能力映射见 `docs/verification/guest-catalog-browse.md`。
+
+---
+
+## 17. Interview Core 学习策略与 MVP 路线（2026-09-18）
+
+### 17.1 分层学习
+
+- `Depth`：Order、库存事务/并发、Redis 缓存正确性、Payment 状态/幂等。用户必须掌握不变量、测试 Oracle、失败复现、方案比较和证据解释。
+- `Supporting`：Accounts、Catalog、Cart、Address、权限和 API 契约。用户掌握请求链、所有权、关键约束和业务边界，可由 AI 协助完成局部实现。
+- `Boilerplate`：普通 CRUD、Admin、重复 Serializer/View/Form/Table、fixture、HTML/CSS 和构建样板。行为确认后使用 CRUD Fast Track，由 AI 交付并验证；用户 Review 聚焦 Diff，不逐行背诵。
+
+CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正常例子和一个重要失败例子，也不能把金额、库存、状态机、幂等或并发规则当作普通 CRUD。
+
+### 17.2 Interview Core 范围
+
+- 保留最窄真实闭环：浏览 → 登录 → Cart → Address → Order/库存预占 → Mock Payment → 模拟发货 → 完成。
+- 完整 Vue Admin 不再阻塞 Interview Core；普通运营使用 Django Admin，只有三条深度主线出现明确演示需要时才增加极简实验入口。
+- Coupon、Favorite、Review、复杂搜索 UI、MQ、Elasticsearch、Transactional Outbox、分布式锁和第三方 Sandbox 均不阻塞 Interview Core，并继续受各自 Gate 控制。
+- 闭环完成后不横向补普通功能，直接进入 MySQL 库存并发、Redis 缓存正确性和支付状态/幂等三条主线。
+
+### 17.3 当前切片：MVP-1 Authenticated Cart
+
+- 普通 CRUD 部分：查看 Cart、加入 CartItem、修改数量、删除 CartItem，以及对应 Serializer/View/URL 和极简 Vue 页面，走 CRUD Fast Track。
+- 必须理解的 Supporting 规则：每位 Customer 一个活动 Cart；`(cart, sku)` 唯一；数量范围 1–99；用户只能操作自己的 Cart；同 SKU 重复加入语义明确；价格只由后端读取；Cart 不预占库存，也不承诺最终价格或库存。
+- 本切片不包含 Address、Order、Reservation、Redis、MQ 或 Payment。
+- 已确认并实现的 Oracle：空购物车 GET 不写数据库，第一次加入时创建 Cart；重复 SKU 合并数量；合并后超过 99 拒绝且保持原值；当前失效或库存不足的 SKU 不能新增/更新；已经存在的条目保留、标记不可用并允许删除；加入时按当前库存提供快速反馈，但不锁价、不预占库存，下单仍必须重新校验。
+- 自动验证已通过：购物车目标测试 14 passed、4 subtests passed；全量回归 64 passed、12 subtests passed；Vue 生产构建通过。开发数据库没有迁移，浏览器人工验收尚未执行。
