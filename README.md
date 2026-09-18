@@ -4,9 +4,8 @@ Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence. Accounts Session/CSRF and the
 public Catalog baseline are implemented. The Guest Catalog Browse Vue UI is
 locally verified. Interview Core MVP-1 Authenticated Cart is on `main`.
-MVP-2 Minimum Address is implemented and automatically verified in the current
-Codex working tree; it is awaiting learning review and has not been committed or
-pushed.
+MVP-2 Minimum Address is implemented, automatically verified, and committed on
+the local `main`; it is awaiting learning review and has not been pushed.
 
 ## Foundation layout
 

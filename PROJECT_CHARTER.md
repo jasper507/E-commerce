@@ -9,7 +9,7 @@
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已进入 `main`；MVP-2 Minimum Address 已在 Codex 工作树实现并通过自动验证，尚未 commit/push；完整 Vue Admin 已从 Interview Core 移出；MVP-2 等待业务能力与工程能力复盘
+- 当前状态：Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart 与 MVP-2 Minimum Address 已进入本地 `main`；MVP-2 已通过自动验证但尚未 push；完整 Vue Admin 已从 Interview Core 移出；MVP-2 等待业务能力与工程能力复盘
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -1128,10 +1128,10 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI 与 MVP-1 Authenticated Cart 已进入 `main`；MVP-2 Minimum Address 已在当前 Codex 工作树实现并完成自动验证，尚未 commit/push。下一步：
+Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart 与 MVP-2 Minimum Address 已进入本地 `main`；MVP-2 已完成自动验证但尚未 push。下一步：
 
 1. 按 `docs/learning/mvp-2-minimum-address-study-guide.md` 依次学习业务测试/规则、模型约束、Service/Transaction、HTTP/权限链和薄 Vue，不逐行背 CRUD 样板；
 2. 用户能够解释默认地址为何不是普通布尔 CRUD、应用层与数据库不变量的边界、并发切换、越权防护和 AddressSnapshot 的必要性后，MVP-2 才达到 Learning Done；
 3. 使用 `docs/verification/mvp-2-minimum-address.md` 复核自动验证证据；开发数据库尚未迁移，浏览器人工验收尚未执行；
-4. 复核当前 detached Codex 工作树的 diff，再把聚焦改动安全落到最新 `main` 并按 main-first 流程提交/推送；
+4. 复核本地 `main` 的提交与验证记录；需要同步远端时再执行 `git push origin main` 并观察 CI；
 5. 进入 MVP-3 后，AddressSnapshot、Order、库存预占、金额合同和 Idempotency-Key 属于 `Depth` 工作，按 Learning Mode 与高风险隔离规则推进。

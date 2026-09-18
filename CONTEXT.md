@@ -2,7 +2,7 @@
 
 ## 0. 文档状态
 
-- 当前阶段：Interview Core MVP-2 / Minimum Address 已实现并通过自动验证，等待业务能力与工程能力复盘；当前 Codex 工作树改动尚未 commit/push
+- 当前阶段：Interview Core MVP-2 / Minimum Address 已实现、通过自动验证并进入本地 `main`，等待业务能力与工程能力复盘；尚未 push
 - 文档版本：v1.7
 - 范围来源：`PROJECT_CHARTER.md` v1.1
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
@@ -391,7 +391,7 @@ Charter v1.1 是当前设计基线，但下列机械性或证据驱动细节不�
 - 开发期新增 Vite `/api` proxy 指向 `127.0.0.1:8000`。没有修改 Django 认证、CORS、数据库模型、迁移或部署配置；生产同源代理与 SPA fallback 尚未实现。
 - 本轮实际验证：前端类型检查与构建通过；真实 Chromium 请求覆盖列表、分类、分页、详情、empty、缺货、404、离线重试和快速分类切换；Catalog/Inventory `19 passed in 4.81s`，完整回归 `50 passed in 15.75s`；Django check 与迁移漂移检查通过。
 - 浏览器验证使用临时 `test_project_one` + 合成 fixture，没有迁移或写入开发库。停止 testserver 后使用 pytest 重建并销毁测试库，已查询确认测试库不存在。
-- 工作区尚未 commit/push，远端 CI 未验证；具体操作、限制与工程能力映射见 `docs/verification/guest-catalog-browse.md`。
+- 对应内容已经进入 `main`；本节记录的是当时的本地验证证据，具体操作、限制与工程能力映射见 `docs/verification/guest-catalog-browse.md`。
 
 ---
 

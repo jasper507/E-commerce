@@ -1,6 +1,6 @@
 # MVP-2 Minimum Address — 自动验证记录
 
-日期：2026-09-18（Asia/Shanghai）。基于 `88f408c` 的 detached Codex 工作树实现，尚未 commit/push。
+日期：2026-09-18（Asia/Shanghai）。基于 `88f408c` 实现并完成验证，随后已提交并快进到本地 `main`；尚未 push。
 
 ## 1. 实现范围
 
@@ -39,7 +39,7 @@
 - MySQL 8.4.10，Docker 服务 `project-one-ecommerce-db-1` 为 healthy
 - Node.js 24.16.0 / npm 11.13.0
 
-当前 Codex 工作树没有自己的 Python `.venv`，测试复用 `C:\project-one-ecommerce\.venv` 中的锁定依赖，但命令工作目录和被测代码始终是当前工作树。前端先执行 `npm ci`，只根据现有 lockfile 安装到被 Git 忽略的 `node_modules`，没有更改依赖声明。
+实施期间的 Codex 工作树没有自己的 Python `.venv`，因此测试复用 `C:\project-one-ecommerce\.venv` 中的锁定依赖；命令工作目录和被测代码始终指向当时的实现工作树。前端先执行 `npm ci`，只根据现有 lockfile 安装到被 Git 忽略的 `node_modules`，没有更改依赖声明。
 
 ## 4. 实际运行结果
 
@@ -78,6 +78,6 @@ pytest 结束后查询不到 `test_project_one`，说明隔离测试数据库已
 - 并发测试证明两个 Service 调用最终只有一个默认，但不承诺哪个请求一定最后胜出；
 - 数据库独立保证“最多一个默认”，Service 保证“存在地址时至少一个默认”。绕过 Service 直接写全部 `NULL` 仍可能破坏后者；
 - AddressSnapshot、历史订单不变性和创建订单事务将在 MVP-3 验证；
-- 当前工作树是 detached HEAD，改动尚未落到 `main`、未 commit/push，远端 CI 未观察。
+- 改动已进入本地 `main`，但尚未 push，远端 CI 未观察。
 
 因此当前结论是：MVP-2 代码、MySQL 自动测试和 Vue 静态/生产构建验证通过；不是浏览器人工验收完成、开发数据库升级完成或完整下单闭环完成。
