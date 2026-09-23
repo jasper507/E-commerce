@@ -511,7 +511,9 @@ h3 {
 .cart-item,
 .cart-summary,
 .address-form,
-.address-card {
+.address-card,
+.checkout-card,
+.order-summary-card {
   border: 1px solid var(--border);
   border-radius: 1rem;
   background: var(--surface);
@@ -624,6 +626,75 @@ h3 {
   line-height: 1.5;
 }
 
+.cart-checkout-button,
+.checkout-submit {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.checkout-error {
+  margin-top: 1.25rem;
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1.25rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+.checkout-main,
+.order-success {
+  display: grid;
+  gap: 1rem;
+}
+
+.checkout-card,
+.order-summary-card {
+  padding: 1.35rem;
+}
+
+.checkout-address,
+.checkout-item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.checkout-address input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.checkout-address span:nth-child(2),
+.checkout-item div {
+  display: grid;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.checkout-address small,
+.checkout-item small {
+  color: var(--muted);
+}
+
+.order-success {
+  margin-top: 2rem;
+}
+
+.order-summary-card p:not(.sku-code) {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.order-summary-card h2 {
+  overflow-wrap: anywhere;
+}
+
 .address-form {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -694,6 +765,10 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
   .cart-summary {
     position: static;
   }
@@ -734,7 +809,8 @@ h3 {
   .cart-item,
   .cart-item-actions,
   .address-card,
-  .address-actions {
+  .address-actions,
+  .checkout-item {
     align-items: stretch;
     flex-direction: column;
   }

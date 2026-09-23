@@ -3,13 +3,13 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Interview Core MVP-2 / Minimum Address 已实现并通过自动验证，等待学习复盘
+- 当前阶段：Interview Core MVP-3 / Order + Inventory Reservation 已实现并通过自动验证，等待学习复盘
 - 文档版本：v1.1
 - 路线图进度更新：2026-09-18
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart 与 MVP-2 Minimum Address 已进入本地 `main`；MVP-2 已通过自动验证但尚未 push；完整 Vue Admin 已从 Interview Core 移出；MVP-2 等待业务能力与工程能力复盘
+- 当前状态：Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart、MVP-2 Minimum Address 与 MVP-3 Order/Inventory Reservation 已进入本地 `main`；MVP-3 已通过自动验证但尚未 push；完整 Vue Admin 已从 Interview Core 移出；MVP-3 等待业务能力与工程能力复盘
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -828,21 +828,23 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 
 MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 CRUD Fast Track；用户重点理解身份/所有权、同 SKU 合并、数量边界、服务端价格边界和 Cart 非库存承诺。
 
-#### MVP-2 — Minimum Address（← 当前，代码完成，等待学习复盘）
+#### MVP-2 — Minimum Address（已进入 main）
 
 - [x] 结构化 Address 与收货手机号规范化
 - [x] 首地址自动默认、每用户最多一个默认地址、切换默认与删除默认后的确定性补位
 - [x] 只访问本人地址的 Session/CSRF API 与最薄 Vue 创建/编辑/删除/设默认流程
 - [x] MySQL 约束、权限、字段校验、事务与双线程并发切换默认测试
-- [ ] AddressSnapshot 留到 MVP-3 创建订单时生成；本阶段不做省市联动、地图或产品级地址体验
+- [x] AddressSnapshot 已在 MVP-3 创建订单事务中生成；MVP-2 本身不做省市联动、地图或产品级地址体验
 
-#### MVP-3 — Order + Inventory Reservation
+#### MVP-3 — Order + Inventory Reservation（← 当前，代码完成，等待学习复盘）
 
-- [ ] Order/OrderItem 与创建订单 Idempotency-Key
-- [ ] 从选定 Address 复制不可变 AddressSnapshot，历史订单不依赖当前可修改地址
-- [ ] Decimal 金额合同、0 运费和服务端重新计算
-- [ ] Inventory Reservation/Movement 与事务内预占
-- [ ] 在同一事务末尾清理相应 CartItem；失败完整回滚
+- [x] Order/OrderItem 与创建订单 Idempotency-Key
+- [x] 从选定 Address 复制不可变 AddressSnapshot，历史订单不依赖当前可修改地址
+- [x] Decimal 金额合同、0 运费和服务端重新计算
+- [x] Inventory Reservation/Movement 与事务内预占
+- [x] 在同一事务末尾清理相应 CartItem；失败完整回滚
+- [x] Model/API/权限/事务/快照/幂等与同 Key 双线程并发自动测试
+- [x] 最薄 Vue `/checkout` 创建订单入口与学习/验证文档
 
 #### MVP-4 — Mock Payment + Completion
 
@@ -1128,10 +1130,10 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart 与 MVP-2 Minimum Address 已进入本地 `main`；MVP-2 已完成自动验证但尚未 push。下一步：
+Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart、MVP-2 Minimum Address 与 MVP-3 Order/Inventory Reservation 已在本地 `main` 完成；MVP-3 已完成自动验证但尚未 push。下一步：
 
-1. 按 `docs/learning/mvp-2-minimum-address-study-guide.md` 依次学习业务测试/规则、模型约束、Service/Transaction、HTTP/权限链和薄 Vue，不逐行背 CRUD 样板；
-2. 用户能够解释默认地址为何不是普通布尔 CRUD、应用层与数据库不变量的边界、并发切换、越权防护和 AddressSnapshot 的必要性后，MVP-2 才达到 Learning Done；
-3. 使用 `docs/verification/mvp-2-minimum-address.md` 复核自动验证证据；开发数据库尚未迁移，浏览器人工验收尚未执行；
+1. 按 `docs/learning/mvp-3-order-inventory-study-guide.md` 先学业务 Oracle，再学模型约束、事务/锁/幂等、HTTP 链和薄 Vue；
+2. 用户能够解释 Cart 到 Order 的事实转换、Snapshot、Reservation/Movement、同 Key 重放/冲突和失败回滚后，MVP-3 才达到 Learning Done；
+3. 使用 `docs/verification/mvp-3-order-inventory.md` 复核自动验证证据；开发数据库尚未迁移，浏览器人工验收尚未执行；
 4. 复核本地 `main` 的提交与验证记录；需要同步远端时再执行 `git push origin main` 并观察 CI；
-5. 进入 MVP-3 后，AddressSnapshot、Order、库存预占、金额合同和 Idempotency-Key 属于 `Depth` 工作，按 Learning Mode 与高风险隔离规则推进。
+5. 下一实现切片为 MVP-4 Mock Payment + Completion。Payment 状态、Event Inbox、库存核销和 Gateway 网络边界继续使用 Learning Mode，不能在数据库库存事务内调用外部 Gateway。

@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.7
+# Project One — Domain Context v1.8
 
 ## 0. 文档状态
 
-- 当前阶段：Interview Core MVP-2 / Minimum Address 已实现、通过自动验证并进入本地 `main`，等待业务能力与工程能力复盘；尚未 push
-- 文档版本：v1.7
+- 当前阶段：Interview Core MVP-3 / Order + Inventory Reservation 已实现并通过自动验证，等待业务能力与工程能力复盘；尚未 push
+- 文档版本：v1.8
 - 范围来源：`PROJECT_CHARTER.md` v1.1
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -461,3 +461,44 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - `manage.py check` 为 0 issues；`makemigrations --check --dry-run` 为 No changes detected。
 - Vue `type-check` 与生产 `build` 通过，Vite 转换 43 modules；没有新增前端依赖。
 - pytest 使用并销毁隔离 `test_project_one`；未运行 `migrate`，未迁移或写入开发数据库。浏览器人工验收尚未执行。
+
+---
+
+## 19. MVP-3 Order + Inventory Reservation（2026-09-18）
+
+### 19.1 本阶段交易事实
+
+- 创建订单只接受当前用户选中的 `address_id`，最终价格、金额、可售状态和库存全部由 Django 在事务中重新读取；客户端金额不是事实来源。
+- Order 使用内部 BigInt 主键和不可猜测 UUID `public_id`，初始状态固定为 `PENDING_PAYMENT`；当前只有 CNY、0 优惠与 0 运费。
+- OrderItem 复制 Product 名称、SKU code/color/attributes、当前单价、数量和行金额；AddressSnapshot 复制下单时完整结构化地址。后续修改或删除源数据不改变历史订单。
+- 每个 OrderItem 创建唯一 InventoryReservation，初始为 `RESERVED`，保存 15 分钟预留期限；同时创建 RESERVE InventoryMovement 记录 available/reserved 变化量。
+- 当前切片只负责预留，不负责 PaymentAttempt、库存核销、取消/过期触发或释放。
+
+### 19.2 事务、锁与幂等
+
+- `create_order_from_cart()` 使用一个 MySQL `transaction.atomic()` 完成：幂等判断、地址/Cart 读取、库存验证、Order/快照/Reservation/Movement 写入、available→reserved 和 CartItem 清理。
+- 同一用户先锁 User 行，随后锁自己的 Address、Cart/CartItem；Inventory 按 `sku_id` 固定顺序 `select_for_update()`，降低不同请求反序拿锁的死锁风险。
+- 任一商品失效或库存不足时，整组写入回滚，Order/Reservation/Movement 不存在，Inventory 与 Cart 保持原值。
+- POST `/api/orders/` 必须携带 1–128 个可打印字符的 `Idempotency-Key`。数据库唯一约束为 `(user, idempotency_key)`；服务保存规范化 `{address_id}` 的 SHA-256 摘要。
+- 同用户同 Key 同摘要返回原 Order，即使第一次成功已经清空 Cart；同 Key 异摘要返回 `409 Conflict`。并发同 Key 请求先通过 User 行锁串行化，唯一约束继续作为最后防线。
+- 当前 `select_for_update()` 是正确性 baseline，不是性能最终结论。原子条件更新仍是 Phase 3 的优先比较候选，必须通过真实热点库存实验决定。
+
+### 19.3 API 与前端边界
+
+| Method | Path | 语义 |
+|---|---|---|
+| `GET` | `/api/orders/` | 只列出当前用户自己的订单 |
+| `POST` | `/api/orders/` | 幂等创建待支付订单并原子预留库存 |
+| `GET` | `/api/orders/{public_id}/` | 只读取当前用户自己的订单详情 |
+
+- 所有接口要求 Session，POST 额外要求 CSRF 与 Idempotency-Key；他人 Address 和 Order 都不会因知道 ID 而越权访问。
+- Vue `/checkout` 只读取 Cart/Address、选择地址、生成并在不确定重试中复用 Key、提交请求和展示订单结果；它不计算可信金额、不扣库存、不保证权限或幂等。
+
+### 19.4 2026-09-18 本地验证证据
+
+- Order Model/API/双线程并发目标测试：`14 passed, 9 subtests passed in 13.40s`。
+- 完整项目回归：`94 passed, 27 subtests passed in 44.52s`。
+- `manage.py check` 为 0 issues；`makemigrations --check --dry-run` 为 No changes detected。
+- Vue `type-check` 与生产 `build` 通过，Vite 转换 46 modules；没有新增前端依赖。
+- `git diff --check` 通过，只有 Windows 工作树 LF/CRLF 提醒。
+- 未运行 `manage.py migrate`，未迁移或写入开发数据库；未执行浏览器人工验收；尚未 push，远端 CI 未观察。

@@ -179,6 +179,9 @@ onBeforeUnmount(() => controller?.abort())
           <p><span>商品数量</span><strong>{{ cart.total_quantity }}</strong></p>
           <p class="cart-total"><span>当前小计</span><strong>¥{{ cart.subtotal }}</strong></p>
           <small>这不是订单价格，也不代表库存已被保留。</small>
+          <RouterLink class="primary-button cart-checkout-button" :to="{ name: 'checkout' }">
+            前往结账
+          </RouterLink>
         </aside>
       </div>
     </template>

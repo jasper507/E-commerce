@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import NotFoundView from '../views/NotFoundView.vue'
 import AddressesView from '../views/AddressesView.vue'
 import CartView from '../views/CartView.vue'
+import CheckoutView from '../views/CheckoutView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
 import ProductListView from '../views/ProductListView.vue'
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/addresses',
       name: 'addresses',
       component: AddressesView,
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component: CheckoutView,
     },
     {
       path: '/:pathMatch(.*)*',
