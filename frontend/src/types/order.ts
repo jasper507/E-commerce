@@ -1,3 +1,4 @@
+// 下单时复制的历史地址，不会因用户日后编辑地址簿而变化。
 export interface OrderAddressSnapshot {
   recipient_name: string
   phone: string
@@ -22,6 +23,7 @@ export interface Order {
   public_id: string
   status: string
   currency: 'CNY'
+  // 金额沿 API 契约保持两位小数字符串，前端不使用浮点数重算应付金额。
   subtotal: string
   discount_total: string
   shipping_fee: string

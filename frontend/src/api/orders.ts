@@ -41,6 +41,8 @@ export async function createOrder(
   addressId: number,
   idempotencyKey: string,
 ): Promise<Order> {
+  // 同一次下单重试要复用 Idempotency-Key：网络断开不代表后端没有创建订单。
+  // 地址 ID 只是用户选择；价格、库存、快照和订单归属全部由 Django 在事务中确认。
   const response = await fetch(`${ORDER_API_BASE}/`, {
     method: 'POST',
     credentials: 'same-origin',
@@ -52,6 +54,58 @@ export async function createOrder(
     },
     body: JSON.stringify({ address_id: addressId }),
   })
+  if (!response.ok) {
+    const details = await errorDetails(response)
+    throw new OrderApiError(response.status, details.message, details.code)
+  }
+  return (await response.json()) as Order
+}
+
+export async function fetchOrders(signal?: AbortSignal): Promise<Order[]> {
+  const response = await fetch(`${ORDER_API_BASE}/`, {
+    credentials: 'same-origin',
+    headers: { Accept: 'application/json' },
+    signal,
+  })
+  if (!response.ok) {
+    const details = await errorDetails(response)
+    throw new OrderApiError(response.status, details.message, details.code)
+  }
+  return (await response.json()) as Order[]
+}
+
+export async function fetchOrder(
+  publicId: string,
+  signal?: AbortSignal,
+): Promise<Order> {
+  const response = await fetch(
+    `${ORDER_API_BASE}/${encodeURIComponent(publicId)}/`,
+    {
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
+      signal,
+    },
+  )
+  if (!response.ok) {
+    const details = await errorDetails(response)
+    throw new OrderApiError(response.status, details.message, details.code)
+  }
+  return (await response.json()) as Order
+}
+
+export async function confirmReceipt(publicId: string): Promise<Order> {
+  // 页面只发出“确认收货”意图；是否属于本人、是否已发货，由后端状态机判断。
+  const response = await fetch(
+    `${ORDER_API_BASE}/${encodeURIComponent(publicId)}/confirm-receipt/`,
+    {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+        'X-CSRFToken': await ensureCsrfCookie(),
+      },
+    },
+  )
   if (!response.ok) {
     const details = await errorDetails(response)
     throw new OrderApiError(response.status, details.message, details.code)

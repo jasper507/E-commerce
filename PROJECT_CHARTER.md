@@ -3,13 +3,13 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Interview Core MVP-3 / Order + Inventory Reservation 已实现并通过自动验证，等待学习复盘
+- 当前阶段：Interview Core MVP-4 / Mock Payment + Completion 已实现最小闭环，MySQL 验证待恢复
 - 文档版本：v1.1
-- 路线图进度更新：2026-09-18
+- 路线图进度更新：2026-09-23
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart、MVP-2 Minimum Address 与 MVP-3 Order/Inventory Reservation 已进入本地 `main`；MVP-3 已通过自动验证但尚未 push；完整 Vue Admin 已从 Interview Core 移出；MVP-3 等待业务能力与工程能力复盘
+- 当前状态：Phase 0 至 MVP-3 已进入本地 `main` 且 MVP-3 已提交；MVP-4 最小 Mock Payment、库存核销、模拟发货与确认收货代码已写入本地 `main` 工作区，尚未提交。MVP-4 SQLite 功能烟测已通过，真实 MySQL 目标测试、开发库迁移及浏览器验收尚未完成；完整 Vue Admin 仍不属于 Interview Core。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -836,7 +836,7 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [x] MySQL 约束、权限、字段校验、事务与双线程并发切换默认测试
 - [x] AddressSnapshot 已在 MVP-3 创建订单事务中生成；MVP-2 本身不做省市联动、地图或产品级地址体验
 
-#### MVP-3 — Order + Inventory Reservation（← 当前，代码完成，等待学习复盘）
+#### MVP-3 — Order + Inventory Reservation（已提交）
 
 - [x] Order/OrderItem 与创建订单 Idempotency-Key
 - [x] 从选定 Address 复制不可变 AddressSnapshot，历史订单不依赖当前可修改地址
@@ -848,9 +848,12 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 
 #### MVP-4 — Mock Payment + Completion
 
-- [ ] Order/PaymentAttempt 最小状态机
-- [ ] 事务提交后的最小同步 Provider Adapter、Mock Payment、Event Inbox baseline 和库存核销
-- [ ] Django Admin 或极简 API 模拟发货；Customer 确认完成
+- [x] Order/PaymentAttempt 最小状态机的代码与 SQLite 功能烟测
+- [x] 事务提交后的最小同步 Provider Adapter、Mock Payment、Event Inbox baseline 和库存核销代码
+- [x] Django Admin 模拟发货；Customer 确认完成的代码与 SQLite 功能烟测
+- [ ] MySQL 隔离测试数据库中的约束、并发与全项目回归，以及浏览器端到端验收
+
+本切片未执行开发数据库迁移，不处理真实资金。15 分钟超时关闭、取消、库存释放、迟到成功退款模拟仍属于 Phase 2B；本阶段不能宣称这些分支已完成。
 
 进入高级基础设施前，最小端到端闭环必须以 MySQL + Mock Payment 实际运行并通过目标测试。早期商品和管理数据可以使用 Django Admin 辅助操作。
 
@@ -1130,10 +1133,9 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Phase 0、Accounts 认证基础、Catalog Public Browse、Guest Catalog Browse UI、MVP-1 Authenticated Cart、MVP-2 Minimum Address 与 MVP-3 Order/Inventory Reservation 已在本地 `main` 完成；MVP-3 已完成自动验证但尚未 push。下一步：
+Phase 0 至 MVP-3 已在本地 `main` 完成，MVP-3 已提交。MVP-4 最小可靠支付闭环已写入本地 `main` 工作区，下一步：
 
-1. 按 `docs/learning/mvp-3-order-inventory-study-guide.md` 先学业务 Oracle，再学模型约束、事务/锁/幂等、HTTP 链和薄 Vue；
-2. 用户能够解释 Cart 到 Order 的事实转换、Snapshot、Reservation/Movement、同 Key 重放/冲突和失败回滚后，MVP-3 才达到 Learning Done；
-3. 使用 `docs/verification/mvp-3-order-inventory.md` 复核自动验证证据；开发数据库尚未迁移，浏览器人工验收尚未执行；
-4. 复核本地 `main` 的提交与验证记录；需要同步远端时再执行 `git push origin main` 并观察 CI；
-5. 下一实现切片为 MVP-4 Mock Payment + Completion。Payment 状态、Event Inbox、库存核销和 Gateway 网络边界继续使用 Learning Mode，不能在数据库库存事务内调用外部 Gateway。
+1. 按 `docs/learning/mvp-4-mock-payment-study-guide.md` 先学业务 Oracle，再学状态机、双层幂等、Gateway 网络边界、Event Inbox、库存核销和薄 Vue；
+2. 使用 `docs/verification/mvp-4-mock-payment.md` 区分已运行的 SQLite 烟测与尚未执行的 MySQL 约束、并发、全量回归和浏览器验收；
+3. MySQL 测试环境恢复后，先运行隔离测试库中的目标与全项目回归；开发数据库迁移须由项目拥有者确认后另行执行；
+4. 学习与验证完成后，由项目拥有者复核本地 `main` 的 diff 和提交时机；本次不自动提交或推送。

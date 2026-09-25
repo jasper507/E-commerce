@@ -54,6 +54,7 @@ async function addToCart(skuCode: string): Promise<void> {
     cartMessage.value = `已加入购物车，当前共 ${cart.total_quantity} 件商品。`
   } catch (error) {
     if (error instanceof CartApiError && error.status === 403) {
+      // 未登录时保留当前商品路由，登录成功后回到原来的购买位置。
       await router.push({
         name: 'login',
         query: { redirect: route.fullPath },
@@ -70,6 +71,7 @@ async function addToCart(skuCode: string): Promise<void> {
 }
 
 async function loadProduct(): Promise<void> {
+  // 路由中的商品变化后取消旧请求，防止上一件商品的结果短暂显示在新地址下。
   requestController?.abort()
   const controller = new AbortController()
   requestController = controller

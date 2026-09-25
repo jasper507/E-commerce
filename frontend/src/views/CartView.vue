@@ -63,6 +63,7 @@ async function saveQuantity(skuCode: string): Promise<void> {
     syncQuantities(result)
   } catch (error) {
     showError(error)
+    // 后端拒绝数量或库存变更时，把输入恢复为最近一次确认的购物车数量。
     const original = cart.value?.items.find((item) => item.sku_code === skuCode)
     if (original) quantities[skuCode] = original.quantity
   } finally {

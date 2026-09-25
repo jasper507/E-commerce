@@ -25,6 +25,7 @@ const canSubmit = computed(
     cart.value?.items.every((item) => item.is_available) === true,
 )
 
+// 每次明确的新下单意图使用新 Key；同一次请求结果不确定时继续复用现有 Key。
 function newIdempotencyKey(): string {
   return `checkout-${crypto.randomUUID()}`
 }
@@ -69,6 +70,7 @@ async function submitOrder(): Promise<void> {
   submitting.value = true
   errorMessage.value = ''
   try {
+    // 页面金额只是提示；服务端会重新读 SKU 价格并原子预占库存。
     order.value = await createOrder(
       selectedAddressId.value,
       idempotencyKey.value,
@@ -81,6 +83,7 @@ async function submitOrder(): Promise<void> {
 }
 
 watch(selectedAddressId, () => {
+  // 地址变更意味着请求内容变了，不能沿用旧 Key，否则后端会按“同 Key 异参数”返回 409。
   idempotencyKey.value = newIdempotencyKey()
 })
 
@@ -128,6 +131,12 @@ onMounted(() => void loadCheckout())
           收货：{{ order.address.recipient_name }}，{{ order.address.province }}{{ order.address.city }}{{ order.address.district }}{{ order.address.detail }}
         </p>
       </article>
+      <RouterLink
+        class="primary-button"
+        :to="{ name: 'order-detail', params: { publicId: order.public_id } }"
+      >
+        查看订单
+      </RouterLink>
       <RouterLink class="secondary-button" :to="{ name: 'catalog-products' }">
         继续浏览商品
       </RouterLink>

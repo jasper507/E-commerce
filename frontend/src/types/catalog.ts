@@ -16,6 +16,7 @@ export interface ProductSku {
   color: string
   attributes: Record<string, unknown>
   price: string
+  // 这是浏览时的库存提示，不是下单预占成功的承诺。
   in_stock: boolean
 }
 

@@ -43,6 +43,7 @@ async function cartRequest(
   path: string,
   init: RequestInit = {},
 ): Promise<Cart> {
+  // 购物车 API 返回后端重新计算的整车快照；前端输入的数量和显示金额都不是订单事实。
   const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
   if (init.body) headers.set('Content-Type', 'application/json')
@@ -60,6 +61,7 @@ async function cartRequest(
 }
 
 async function csrfHeaders(): Promise<Record<string, string>> {
+  // 加入、修改和删除购物车属于写请求，必须通过 Django 的 CSRF 校验。
   return { 'X-CSRFToken': await ensureCsrfCookie() }
 }
 

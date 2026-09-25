@@ -513,7 +513,8 @@ h3 {
 .address-form,
 .address-card,
 .checkout-card,
-.order-summary-card {
+.order-summary-card,
+.order-list-card {
   border: 1px solid var(--border);
   border-radius: 1rem;
   background: var(--surface);
@@ -695,6 +696,78 @@ h3 {
   overflow-wrap: anywhere;
 }
 
+.order-list-state,
+.order-list {
+  margin-top: 2rem;
+}
+
+.order-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-list-card {
+  padding: 1.35rem;
+}
+
+.order-list-heading,
+.order-list-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.order-list-heading h2 {
+  overflow-wrap: anywhere;
+  font-size: 1.05rem;
+}
+
+.order-list-heading .stock-badge {
+  flex: none;
+}
+
+.order-list-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.order-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1.25rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+.order-detail-main {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-detail-main .order-summary-card p:last-child,
+.order-address {
+  margin-bottom: 0;
+}
+
+.order-action-feedback {
+  margin-top: 1.25rem;
+}
+
+.order-action-button {
+  width: 100%;
+  margin: 1rem 0 0.75rem;
+}
+
+.payment-attempt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
 .address-form {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -769,6 +842,10 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .order-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
   .cart-summary {
     position: static;
   }
@@ -812,6 +889,12 @@ h3 {
   .address-actions,
   .checkout-item {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .order-list-heading,
+  .order-list-footer {
+    align-items: flex-start;
     flex-direction: column;
   }
 

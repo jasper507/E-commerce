@@ -75,6 +75,7 @@ async function loadAddresses(): Promise<void> {
 }
 
 function formPayload(): AddressInput {
+  // 未勾选“设为默认”时不发送 false，避免误触后端“不能取消唯一默认地址”的规则。
   const payload: AddressInput = {
     recipient_name: form.recipient_name,
     phone: form.phone,
@@ -96,6 +97,7 @@ async function submitAddress(): Promise<void> {
     } else {
       await updateAddress(form.id, formPayload())
     }
+    // 重新读取服务端结果：首地址自动默认、删除默认后的补位都不是前端自行推算的。
     resetForm()
     await loadAddresses()
   } catch (error) {

@@ -13,6 +13,7 @@ export class AuthApiError extends Error {
 }
 
 function csrfToken(): string {
+  // Django 用 Session Cookie 识别用户；修改数据还要单独携带 CSRF Token，防止跨站伪造请求。
   const prefix = 'csrftoken='
   const cookie = document.cookie
     .split(';')
@@ -41,6 +42,7 @@ async function errorMessage(response: Response): Promise<string> {
 }
 
 export async function ensureCsrfCookie(): Promise<string> {
+  // 先向后端取得 CSRF Cookie，再从浏览器 Cookie 中读取它；前端不能自行伪造 Token。
   const response = await fetch(`${AUTH_API_BASE}/csrf/`, {
     credentials: 'same-origin',
   })
@@ -58,6 +60,7 @@ export async function login(
   password: string,
 ): Promise<SessionUser> {
   const token = await ensureCsrfCookie()
+  // 同源请求会带上 Session Cookie，密码只交给 Django 校验，不在前端持久保存。
   const response = await fetch(`${AUTH_API_BASE}/login/`, {
     method: 'POST',
     credentials: 'same-origin',

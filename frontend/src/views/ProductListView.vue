@@ -81,6 +81,7 @@ async function loadCategories(): Promise<void> {
 }
 
 async function loadProducts(): Promise<void> {
+  // 分类或页码变化先终止旧请求；否则慢返回的旧页面可能覆盖新的筛选结果。
   productController?.abort()
   const controller = new AbortController()
   productController = controller
@@ -109,6 +110,7 @@ async function loadProducts(): Promise<void> {
 }
 
 function selectCategory(category: string): void {
+  // 分类写入 URL，刷新和返回列表时仍能恢复筛选；换分类从第一页开始。
   void router.push({
     name: 'catalog-products',
     query: category ? { category } : {},

@@ -31,6 +31,7 @@ async function readErrorMessage(response: Response): Promise<string> {
 }
 
 async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
+  // AbortSignal 让页面切换筛选条件时取消旧请求，避免旧结果覆盖新结果。
   const response = await fetch(`${CATALOG_API_BASE}${path}`, {
     method: 'GET',
     headers: {

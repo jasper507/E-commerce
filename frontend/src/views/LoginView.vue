@@ -13,6 +13,7 @@ const submitting = ref(false)
 const errorMessage = ref('')
 
 function safeRedirect(): string {
+  // 只接受站内相对路径，避免把登录后的用户重定向到外部恶意站点。
   const candidate = route.query.redirect
   return typeof candidate === 'string' &&
     candidate.startsWith('/') &&

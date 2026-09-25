@@ -42,6 +42,7 @@ async function addressRequest<T>(
   path: string,
   init: RequestInit = {},
 ): Promise<T> {
+  // Cookie 保持登录身份；地址归属和默认地址规则仍由后端校验，前端不能靠隐藏按钮保证权限。
   const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
   if (init.body) headers.set('Content-Type', 'application/json')

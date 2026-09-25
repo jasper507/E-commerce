@@ -5,9 +5,12 @@ import AddressesView from '../views/AddressesView.vue'
 import CartView from '../views/CartView.vue'
 import CheckoutView from '../views/CheckoutView.vue'
 import LoginView from '../views/LoginView.vue'
+import OrderDetailView from '../views/OrderDetailView.vue'
+import OrdersView from '../views/OrdersView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
 import ProductListView from '../views/ProductListView.vue'
 
+// 路由只决定显示哪个页面；登录、订单归属和管理权限仍由 Django API 校验。
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -44,6 +47,16 @@ const router = createRouter({
       path: '/checkout',
       name: 'checkout',
       component: CheckoutView,
+    },
+    {
+      path: '/orders',
+      name: 'orders',
+      component: OrdersView,
+    },
+    {
+      path: '/orders/:publicId',
+      name: 'order-detail',
+      component: OrderDetailView,
     },
     {
       path: '/:pathMatch(.*)*',

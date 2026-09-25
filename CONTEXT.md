@@ -502,3 +502,29 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - Vue `type-check` 与生产 `build` 通过，Vite 转换 46 modules；没有新增前端依赖。
 - `git diff --check` 通过，只有 Windows 工作树 LF/CRLF 提醒。
 - 未运行 `manage.py migrate`，未迁移或写入开发数据库；未执行浏览器人工验收；尚未 push，远端 CI 未观察。
+
+---
+
+## 20. MVP-4 Mock Payment + Completion（2026-09-23）
+
+### 20.1 本阶段最小闭环
+
+- MVP-3 的 `PENDING_PAYMENT` Order 与 `RESERVED` InventoryReservation 现在可以经后端 Mock Gateway 确认支付，进入 `PAID`，并在同一数据库事务中把预占库存核销为 `COMMITTED`，写一次 COMMIT InventoryMovement；`available_stock` 不再减少第二次。
+- 顾客可在订单详情发起模拟支付、查原 Attempt 的结果；具备 `ordering.change_order` 权限的 Django Admin 可模拟发货，订单本人可确认收货，形成 `PENDING_PAYMENT → PAID → SHIPPED → COMPLETED`。
+- Mock 支付不涉及真钱；顾客页面没有可任意选择“支付成功”的输入，成功事实由经签名校验的后端 Event 路径确认。
+
+### 20.2 支付正确性边界
+
+- PaymentAttempt 创建使用短事务与 `(user, idempotency_key)` 唯一约束；同 Key 同 Order 返回原 Attempt，异 Order 冲突。一个 Order 最多一个活跃 Attempt，成功后不能再建，失败后可用新 Key，默认最多 3 次。
+- Attempt 事务提交后才调用 Gateway；超时成为 `UNKNOWN`，不能当作失败再建 Attempt，必须查原 Attempt。MockGatewayPayment 持久保存模拟 Provider 的结果，供查单恢复。
+- PaymentEvent 先保存原始 payload，再独立事务验签、校验 Order/金额/币种/状态并处理；`(provider, event_id)` 唯一防事件重放，无效签名用内容摘要形成的内部 synthetic ID 留存与去重，避免抢占将来的合法事件号。Mock Webhook HTTP 入口只在本机开发/测试环境开放，限制 16 KiB 请求体。
+- Order、Attempt、Reservation、Inventory 与 COMMIT Movement 在支付成功处理事务内一起提交；处理失败回滚业务变更，Inbox 标记 `ERROR` 可重试。
+- 订单详情页/列表页只承担展示和请求，不决定可信金额、支付成功、库存和权限。
+
+### 20.3 已验证与仍待验证
+
+- 本机 `manage.py check` 为 0 issues；迁移生成后 `makemigrations --check --dry-run` 为 No changes detected，但因 MySQL 不可连接而有迁移历史检查警告。
+- 在单个进程内覆盖为临时 SQLite `:memory:` 的支付 API 功能烟测：27 passed、1 deselected、6 subtests passed；未写入开发数据库。
+- 相同临时 SQLite 设置下的全项目非并发回归：123 passed、3 deselected、35 subtests passed；它覆盖一般功能回归，但不等于真实 MySQL 锁或并发验证。
+- Vue `type-check`、生产 `build` 和 `git diff --check` 已通过。真实 MySQL 双线程并发、MySQL 环境下的全项目回归与浏览器端到端验收尚未执行；Docker 引擎和本机 MySQL 端口均不可用。
+- 未执行开发数据库迁移、commit 或 push。15 分钟超时关闭、取消/释放、迟到成功退款模拟仍属 Phase 2B，不能将此切片理解为生产级支付。
