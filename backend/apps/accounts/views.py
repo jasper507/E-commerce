@@ -38,6 +38,7 @@ class CsrfTokenView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
+        # 前端先获取 CSRF Cookie，后续 Session 写请求才能通过 CSRF 检查。
         get_token(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -47,6 +48,7 @@ class LoginView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+        # authenticate 验证密码哈希；django_login 建立 Session，不给前端发长期 Token。
         serializer = LoginSerializer(
             data=request.data,
         )
@@ -84,6 +86,8 @@ class LogoutView(APIView):
 
 
 def address_rule_error_response(error):
+    """归属失败统一映射为 404，避免暴露其他用户地址是否存在。"""
+
     response_status = (
         status.HTTP_404_NOT_FOUND
         if error.code == "address_not_found"
@@ -99,6 +103,7 @@ class AddressCollectionView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
+        # 所有个人数据查询均在服务端限定当前用户，前端隐藏按钮不是权限边界。
         addresses = Address.objects.filter(user=request.user)
         return Response(AddressSerializer(addresses, many=True).data)
 

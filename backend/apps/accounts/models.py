@@ -21,6 +21,8 @@ recipient_phone_validator = RegexValidator(
 
 
 class User(AbstractUser):
+    """登录名写入前统一转小写；收货手机号不参与登录身份识别。"""
+
     username = models.CharField(
         _("username"),
         max_length=30,
@@ -53,6 +55,8 @@ class User(AbstractUser):
 
 
 class Address(models.Model):
+    """可修改的顾客地址；下单历史使用独立快照，不回读此表。"""
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -67,8 +71,8 @@ class Address(models.Model):
     city = models.CharField(max_length=50)
     district = models.CharField(max_length=50)
     detail = models.CharField(max_length=255)
-    # MySQL UNIQUE constraints allow multiple NULL values. Storing 1 only for
-    # the default row lets the database enforce at most one default per user.
+    # MySQL 的 UNIQUE 允许多个 NULL：默认地址记 1，其他地址记 NULL。
+    # 因此数据库能兜底“每人最多一个默认”；“至少一个”仍由 Service 保证。
     default_marker = models.PositiveSmallIntegerField(
         null=True,
         blank=True,

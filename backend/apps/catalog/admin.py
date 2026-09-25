@@ -5,11 +5,15 @@ from apps.inventory.models import Inventory
 
 
 class NoDeleteAdminMixin:
+    """目录记录有订单等历史引用，不通过 Admin 直接硬删除。"""
+
     def has_delete_permission(self, request, obj=None):
         return False
 
 
 class InventoryInline(admin.StackedInline):
+    """新建 SKU 时同步填写它的一对一库存，避免出现不可管理的空库存。"""
+
     model = Inventory
     extra = 1
     min_num = 1
@@ -52,6 +56,7 @@ class SKUAdmin(NoDeleteAdminMixin, admin.ModelAdmin):
     inlines = (InventoryInline,)
 
     def has_add_permission(self, request):
+        # 创建 SKU 会连带创建 Inventory，必须同时拥有两种新增权限。
         return super().has_add_permission(request) and request.user.has_perm(
             "inventory.add_inventory"
         )

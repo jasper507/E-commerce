@@ -11,6 +11,8 @@ from apps.ordering.models import (
 
 
 def item_availability(item):
+    """给购物车页面显示当前可用性；真正的库存判定发生在下单事务里。"""
+
     sku = item.sku
     product = sku.product
     inventory = getattr(sku, "inventory", None)
@@ -27,15 +29,21 @@ def item_availability(item):
 
 
 class AddCartItemSerializer(serializers.Serializer):
+    """只校验加入购物车请求的字段和数量范围。"""
+
     sku_code = serializers.CharField(max_length=64)
     quantity = serializers.IntegerField(min_value=1, max_value=99)
 
 
 class UpdateCartItemSerializer(serializers.Serializer):
+    """只接收目标数量，SKU 身份来自 URL。"""
+
     quantity = serializers.IntegerField(min_value=1, max_value=99)
 
 
 class CartItemSerializer(serializers.ModelSerializer):
+    """展示 SKU 的当前信息；这里不是成交后的商品快照。"""
+
     sku_code = serializers.CharField(source="sku.code", read_only=True)
     product_slug = serializers.CharField(
         source="sku.product.slug",
@@ -86,10 +94,14 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 
 class CreateOrderSerializer(serializers.Serializer):
+    """客户端只选择地址，价格和应付金额必须由后端读取 SKU 后计算。"""
+
     address_id = serializers.IntegerField(min_value=1)
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    """输出下单时保存的商品与价格快照。"""
+
     class Meta:
         model = OrderItem
         fields = (
@@ -105,6 +117,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class AddressSnapshotSerializer(serializers.ModelSerializer):
+    """输出下单时保存的收货地址，不依赖顾客当前地址。"""
+
     class Meta:
         model = AddressSnapshot
         fields = (
@@ -118,6 +132,8 @@ class AddressSnapshotSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    """把订单事实、商品快照和地址快照组合为顾客可见响应。"""
+
     address = AddressSnapshotSerializer(
         source="address_snapshot",
         read_only=True,

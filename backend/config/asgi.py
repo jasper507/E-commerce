@@ -1,4 +1,4 @@
-"""ASGI entry point for Project One."""
+"""Project One 的 ASGI 服务入口。"""
 
 import os
 

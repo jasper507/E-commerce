@@ -17,6 +17,8 @@ class ProductPagination(PageNumberPagination):
 
 
 class PublicCategoryListView(generics.ListAPIView):
+    """公开只读目录；Guest 无需 Session，写方法直接得到 405。"""
+
     serializer_class = PublicCategorySerializer
     authentication_classes = ()
     permission_classes = (AllowAny,)
@@ -25,12 +27,16 @@ class PublicCategoryListView(generics.ListAPIView):
 
 
 class PublicProductListView(generics.ListAPIView):
+    """只列上架商品，并用数据库聚合计算当前可售规格的浏览摘要。"""
+
     serializer_class = PublicProductListSerializer
     authentication_classes = ()
     permission_classes = (AllowAny,)
     pagination_class = ProductPagination
 
     def get_queryset(self):
+        # 聚合与 Exists 在数据库执行，避免列表页为每个商品逐个查 SKU/库存。
+        # lowest_price 排除下架 SKU；in_stock 只是浏览提示，不是库存承诺。
         queryset = (
             Product.objects.filter(
                 is_active=True,
@@ -60,6 +66,8 @@ class PublicProductListView(generics.ListAPIView):
 
 
 class PublicProductDetailView(generics.RetrieveAPIView):
+    """只展示公开商品与上架 SKU，并预取库存以稳定查询次数。"""
+
     serializer_class = PublicProductDetailSerializer
     authentication_classes = ()
     permission_classes = (AllowAny,)

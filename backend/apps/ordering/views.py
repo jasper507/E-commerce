@@ -6,6 +6,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.ordering.models import CartItem, Order
+from apps.ordering.fulfillment_services import (
+    FulfillmentRuleError,
+    confirm_receipt,
+)
 from apps.ordering.serializers import (
     AddCartItemSerializer,
     CartItemSerializer,
@@ -23,6 +27,8 @@ from apps.ordering.services import (
 
 
 def cart_items_for(user):
+    """购物车查询始终按登录用户过滤，并预加载展示所需关联对象。"""
+
     return (
         CartItem.objects.filter(cart__user=user)
         .select_related("sku__product__category", "sku__inventory")
@@ -31,6 +37,8 @@ def cart_items_for(user):
 
 
 def cart_payload(user):
+    """组织购物车页面数据；这里的金额只供展示，下单时由 Service 重新计算。"""
+
     items = list(cart_items_for(user))
     subtotal = sum(
         (item.sku.price * item.quantity for item in items),
@@ -45,6 +53,8 @@ def cart_payload(user):
 
 
 def rule_error_response(error):
+    """把购物车业务错误转成稳定的 HTTP 响应，供前端按 code 处理。"""
+
     response_status = (
         status.HTTP_404_NOT_FOUND
         if error.code == "cart_item_not_found"
@@ -57,6 +67,8 @@ def rule_error_response(error):
 
 
 class CartDetailView(APIView):
+    """读取当前登录用户的购物车。"""
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -64,6 +76,8 @@ class CartDetailView(APIView):
 
 
 class CartItemCollectionView(APIView):
+    """先校验输入格式，再交给 Service 处理合并数量和库存提示。"""
+
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -89,6 +103,8 @@ class CartItemCollectionView(APIView):
 
 
 class CartItemDetailView(APIView):
+    """当前用户的购物车项修改与删除入口。"""
+
     permission_classes = (IsAuthenticated,)
 
     def patch(self, request, sku_code):
@@ -107,6 +123,7 @@ class CartItemDetailView(APIView):
         return Response(cart_payload(request.user))
 
     def delete(self, request, sku_code):
+        # 删除未下单的购物车项不影响库存；所有权仍在 ORM 查询条件中限制。
         deleted, _ = CartItem.objects.filter(
             cart__user=request.user,
             sku__code=sku_code,
@@ -120,6 +137,8 @@ class CartItemDetailView(APIView):
 
 
 def orders_for(user):
+    """订单列表和详情共用所有权过滤，避免仅凭公开 UUID 读取他人订单。"""
+
     return (
         Order.objects.filter(user=user)
         .select_related("address_snapshot")
@@ -129,6 +148,8 @@ def orders_for(user):
 
 
 class OrderCollectionView(APIView):
+    """列出本人订单；创建时由 Service 完成金额、预占和幂等检查。"""
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -138,6 +159,7 @@ class OrderCollectionView(APIView):
         serializer = CreateOrderSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        # 幂等键由客户端对一次下单意图生成；不能把重复点击变成两笔订单。
         idempotency_key = request.headers.get("Idempotency-Key", "").strip()
         if not idempotency_key:
             return Response(
@@ -179,13 +201,31 @@ class OrderCollectionView(APIView):
 
 
 class OrderDetailView(APIView):
+    """只返回当前顾客自己的订单及下单时的快照。"""
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, public_id):
         order = orders_for(request.user).filter(public_id=public_id).first()
         if order is None:
             return Response(
-                {"detail": "Order does not exist."},
+                {"detail": "订单不存在，或你无权查看这张订单。"},
                 status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(OrderSerializer(order).data)
+
+
+class OrderConfirmReceiptView(APIView):
+    """确认收货的 HTTP 入口；状态转换和所有权校验以 Service 为准。"""
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, public_id):
+        try:
+            order, _ = confirm_receipt(public_id=public_id, user=request.user)
+        except FulfillmentRuleError as error:
+            return Response(
+                {"code": error.code, "detail": error.detail},
+                status=error.http_status,
             )
         return Response(OrderSerializer(order).data)

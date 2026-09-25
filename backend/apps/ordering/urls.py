@@ -1,3 +1,5 @@
+"""购物车 API；数量、可售性等写入规则由 ordering.services 处理。"""
+
 from django.urls import path
 
 from apps.ordering.views import (

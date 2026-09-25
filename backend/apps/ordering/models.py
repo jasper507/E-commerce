@@ -7,6 +7,8 @@ from django.db import models
 
 
 class Cart(models.Model):
+    """每位顾客一辆活动购物车；唯一关系从数据库层保证不会有第二辆。"""
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -20,6 +22,8 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
+    """购物车的一种 SKU；同车同 SKU 合并，数量限制在 1～99。"""
+
     cart = models.ForeignKey(
         Cart,
         on_delete=models.CASCADE,
@@ -54,6 +58,8 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    """下单时形成的交易事实；金额和状态不能由客户端直接决定。"""
+
     class Status(models.TextChoices):
         PENDING_PAYMENT = "PENDING_PAYMENT", "Pending payment"
         PAID = "PAID", "Paid"
@@ -93,6 +99,7 @@ class Order(models.Model):
 
     class Meta:
         ordering = ("-created_at", "-id")
+        # 约束是最后一道防线：同一用户的幂等键唯一，金额非负且必须满足总价公式。
         constraints = (
             models.UniqueConstraint(
                 fields=("user", "idempotency_key"),
@@ -135,6 +142,8 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    """购买明细快照：商品后续改名、改价也不应改写成交时的内容。"""
+
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
@@ -160,6 +169,7 @@ class OrderItem(models.Model):
 
     class Meta:
         ordering = ("id",)
+        # 折扣不能超过原价；明细应付金额由单价、数量和折扣共同决定。
         constraints = (
             models.CheckConstraint(
                 condition=models.Q(quantity__gte=1, quantity__lte=99),
@@ -201,6 +211,8 @@ class OrderItem(models.Model):
 
 
 class AddressSnapshot(models.Model):
+    """收货地址的下单时快照，不随顾客后来修改地址而变化。"""
+
     order = models.OneToOneField(
         Order,
         on_delete=models.CASCADE,
@@ -215,3 +227,22 @@ class AddressSnapshot(models.Model):
 
     def __str__(self):
         return f"{self.order.public_id}: {self.recipient_name}"
+
+
+class Shipment(models.Model):
+    """模拟发货事实；一对一关系从数据库层防止同一订单重复发货。"""
+
+    order = models.OneToOneField(
+        Order,
+        on_delete=models.PROTECT,
+        related_name="shipment",
+    )
+    shipped_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="processed_shipments",
+    )
+    shipped_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Shipment for {self.order.public_id}"

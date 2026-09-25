@@ -4,6 +4,8 @@ from apps.catalog.models import Category, Product, SKU
 
 
 def sku_is_in_stock(sku):
+    """目录页只展示是否有货；下单仍要重新读取并锁定权威库存。"""
+
     inventory = getattr(sku, "inventory", None)
     return bool(inventory and inventory.available_stock > 0)
 
@@ -67,4 +69,5 @@ class PublicProductDetailSerializer(serializers.ModelSerializer):
         )
 
     def get_in_stock(self, product):
+        # public_skus 由详情 View 预取，避免逐个 SKU 再查数据库。
         return any(sku_is_in_stock(sku) for sku in product.public_skus)

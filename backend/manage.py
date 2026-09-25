@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Django 管理命令入口，例如 check、makemigrations 和运行开发服务器。"""
 
 import os
 import sys
@@ -11,8 +11,7 @@ def main() -> None:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
-            "Django is not available. Activate .venv and install "
-            "requirements/dev.txt first."
+            "未找到 Django。请先启用项目 .venv，并安装 requirements/dev.txt。"
         ) from exc
     execute_from_command_line(sys.argv)
 

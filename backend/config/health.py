@@ -1,4 +1,4 @@
-"""Infrastructure health endpoint."""
+"""基础设施健康检查入口。"""
 
 import logging
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @require_GET
 def health_check(request):
-    """Return success only when Django can execute a minimal MySQL query."""
+    """只有 Django 能执行最小数据库查询时才返回健康，不凭进程存活猜测数据库可用。"""
 
     try:
         with connections["default"].cursor() as cursor:

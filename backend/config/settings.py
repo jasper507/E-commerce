@@ -1,4 +1,4 @@
-"""Project One settings shared by local development, tests, and deployment."""
+"""Project One 的开发、测试与部署共用配置；环境变量决定实际运行边界。"""
 
 import os
 from pathlib import Path
@@ -9,8 +9,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 
-# .env is a local convenience only. Real deployment configuration must be
-# supplied by the deployment environment and must never be committed.
+# .env 只方便本地开发；真实部署必须由运行环境提供配置，敏感值绝不能提交到 Git。
 load_dotenv(PROJECT_ROOT / ".env")
 
 
@@ -129,6 +128,10 @@ MYSQL_PASSWORD = env_value("MYSQL_PASSWORD", INSECURE_LOCAL_DB_PASSWORD)
 MYSQL_HOST = env_value("MYSQL_HOST", "127.0.0.1")
 MYSQL_PORT = env_int("MYSQL_PORT", 3307)
 MYSQL_TEST_DATABASE = env_value("MYSQL_TEST_DATABASE", "test_project_one")
+PAYMENT_MAX_ATTEMPTS = env_int("PAYMENT_MAX_ATTEMPTS", 3)
+
+if PAYMENT_MAX_ATTEMPTS < 1:
+    raise ImproperlyConfigured("PAYMENT_MAX_ATTEMPTS must be at least 1.")
 
 if not MYSQL_TEST_DATABASE.startswith("test_"):
     raise ImproperlyConfigured(

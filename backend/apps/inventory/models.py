@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Inventory(models.Model):
+    """每个 SKU 一条库存：available 可下单，reserved 已被未支付订单占用。"""
+
     sku = models.OneToOneField(
         "catalog.SKU",
         on_delete=models.PROTECT,
@@ -27,6 +29,8 @@ class Inventory(models.Model):
 
 
 class InventoryReservation(models.Model):
+    """一条订单明细对应一次预占；状态区分占用、核销和释放。"""
+
     class Status(models.TextChoices):
         RESERVED = "RESERVED", "Reserved"
         COMMITTED = "COMMITTED", "Committed"
@@ -48,6 +52,7 @@ class InventoryReservation(models.Model):
         choices=Status.choices,
         default=Status.RESERVED,
     )
+    # 期限只是业务时间点；必须由后续关闭流程处理，字段本身不会自动释放库存。
     expires_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -65,6 +70,8 @@ class InventoryReservation(models.Model):
 
 
 class InventoryMovement(models.Model):
+    """库存变化审计流水；保留增减量，便于追查库存数字的来源。"""
+
     class Type(models.TextChoices):
         RESERVE = "RESERVE", "Reserve"
         COMMIT = "COMMIT", "Commit"
@@ -87,6 +94,7 @@ class InventoryMovement(models.Model):
 
     class Meta:
         ordering = ("created_at", "id")
+        # 同一预占的同类动作最多记一笔，配合 Service 的状态检查防止重复核销/释放。
         constraints = (
             models.UniqueConstraint(
                 fields=("reservation", "movement_type"),

@@ -14,6 +14,8 @@ username_model_field = User._meta.get_field("username")
 
 
 class NormalizedUsernameField(serializers.CharField):
+    """入口先做登录名规范化，避免大小写或首尾空格绕过唯一性检查。"""
+
     def to_internal_value(self, data):
         username = super().to_internal_value(data)
         return User.normalize_username(username)
@@ -56,6 +58,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        # 唯一性预检查不能替代数据库约束：并发注册可能同时通过预检查。
+        # 捕获数据库冲突后转换为用户可理解的字段错误。
         try:
             with transaction.atomic():
                 return User.objects.create_user(**validated_data)
@@ -88,6 +92,8 @@ class SessionUserSerializer(serializers.ModelSerializer):
 
 
 def normalize_recipient_phone(value):
+    """只做格式归一化；合法格式不代表号码真实存在或归用户控制。"""
+
     compact = re.sub(r"[\s-]+", "", value)
     if compact.startswith("+86"):
         compact = compact[3:]
@@ -110,6 +116,8 @@ class RecipientPhoneField(serializers.CharField):
 
 
 class AddressWriteSerializer(serializers.Serializer):
+    """负责单条请求字段校验；默认地址跨行规则交给 Service。"""
+
     recipient_name = serializers.CharField(max_length=50)
     phone = RecipientPhoneField(max_length=32)
     province = serializers.CharField(max_length=50)

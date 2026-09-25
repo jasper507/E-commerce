@@ -31,23 +31,31 @@ ZERO_MONEY = Decimal("0.00")
 
 @dataclass(frozen=True)
 class CartRuleError(Exception):
+    """购物车业务错误：code 供前端稳定判断，detail 供用户阅读。"""
+
     code: str
     detail: str
 
 
 @dataclass(frozen=True)
 class OrderRuleError(Exception):
+    """下单业务错误：由 API 层转换成约定的 HTTP 状态和响应。"""
+
     code: str
     detail: str
     http_status: int
 
 
 def _locked_cart_for(user):
+    """取得并锁住当前用户的购物车，串行化同一购物车的新增操作。"""
+
     cart, _ = Cart.objects.get_or_create(user=user)
     return Cart.objects.select_for_update().get(pk=cart.pk)
 
 
 def _purchasable_sku(sku_code):
+    """检查 SKU 当前是否可加入购物车；最终能否下单仍须在下单事务中重查。"""
+
     try:
         sku = (
             SKU.objects.select_related("product__category", "inventory")
@@ -71,6 +79,8 @@ def _purchasable_sku(sku_code):
 
 
 def _ensure_stock(sku, quantity):
+    """给购物车操作即时反馈；这里的库存读数不构成购买时的库存承诺。"""
+
     if quantity > sku.inventory.available_stock:
         raise CartRuleError(
             "insufficient_stock",
@@ -79,10 +89,14 @@ def _ensure_stock(sku, quantity):
 
 
 def _money(value):
+    """统一按人民币分位舍入，避免金额计算出现不一致的小数位。"""
+
     return value.quantize(MONEY_PLACES, rounding=ROUND_HALF_UP)
 
 
 def _request_fingerprint(address_id):
+    """将下单参数规范化后求摘要，用来识别同一个幂等键下的不同请求。"""
+
     normalized = json.dumps(
         {"address_id": address_id},
         sort_keys=True,
@@ -92,6 +106,8 @@ def _request_fingerprint(address_id):
 
 
 def _order_with_details(order_id):
+    """一次取出订单、地址快照和商品快照，供 API 返回已落库的事实。"""
+
     return (
         Order.objects.select_related("address_snapshot")
         .prefetch_related("items")
@@ -101,6 +117,18 @@ def _order_with_details(order_id):
 
 @transaction.atomic
 def create_order_from_cart(*, user, address_id, idempotency_key):
+    """用一次数据库事务完成下单、库存预占和购物车清理。
+
+    执行顺序：先锁用户并检查幂等键，再锁地址、购物车和库存；随后用服务端
+    当前 SKU 价格计算金额，写入订单与历史快照，把可售库存转为预留库存，
+    最后删除本次下单的购物车项。任一步抛错时事务整体回滚，订单、库存、
+    流水和购物车不会只成功一半。支付网关调用不在此函数内，应在提交后进行。
+
+    面试重点：相同用户、相同键、相同参数返回原订单；相同键但参数不同返回
+    冲突。锁住用户行使同一用户的并发下单按顺序检查，数据库唯一约束提供
+    最后一层保护，不能只依赖前端禁用按钮。
+    """
+
     locked_user = User.objects.select_for_update().get(pk=user.pk)
     fingerprint = _request_fingerprint(address_id)
     existing = Order.objects.filter(
@@ -116,6 +144,7 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
             )
         return _order_with_details(existing.pk), False
 
+    # 地址必须属于当前用户；订单保存独立快照，之后编辑地址不会改写历史订单。
     try:
         address = Address.objects.select_for_update().get(
             pk=address_id,
@@ -128,6 +157,7 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
             404,
         ) from exc
 
+    # 购物车项与库存都在同一事务里锁住；库存按 SKU 顺序取锁，降低并发死锁风险。
     cart = Cart.objects.select_for_update().filter(user=locked_user).first()
     if cart is None:
         raise OrderRuleError("cart_empty", "Cart is empty.", 400)
@@ -148,6 +178,7 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
         .order_by("sku_id")
     }
 
+    # 不能信任购物车保存时的价格和库存：商品可能下架、涨价或被其他订单买走。
     for item in cart_items:
         sku = item.sku
         if not sku.product.category.is_active:
@@ -176,6 +207,7 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
                 409,
             )
 
+    # 金额全部用服务端 Decimal 重算；第一版无优惠、运费为 0，仍保留完整公式。
     priced_items = []
     for item in cart_items:
         unit_price = _money(item.sku.price)
@@ -213,6 +245,8 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
         detail=address.detail,
     )
 
+    # 预占只在 available 与 reserved 之间转移，不表示最终售出；支付成功后再核销。
+    # expires_at 记录 15 分钟期限，本阶段尚不自动触发超时关闭或库存释放。
     expires_at = timezone.now() + timedelta(minutes=15)
     for cart_item, unit_price, _, discount_amount, line_total in priced_items:
         sku = cart_item.sku
@@ -246,12 +280,20 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
             reserved_delta=cart_item.quantity,
         )
 
+    # 最后清理购物车；若前面或这里失败，同一事务会恢复库存并保留购物车项。
     CartItem.objects.filter(pk__in=[item.pk for item in cart_items]).delete()
     return _order_with_details(order.pk), True
 
 
 @transaction.atomic
 def add_cart_item(*, user, sku_code, quantity):
+    """新增或合并同一 SKU 的购物车项。
+
+    同一购物车内 `(cart, sku)` 唯一；锁购物车后计算目标数量，避免普通重复点击
+    意外写出两行。99 件上限与当前库存是加入购物车时的反馈，不保证结账成功；
+    下单服务还会重新检查并锁住库存。
+    """
+
     sku = _purchasable_sku(sku_code)
     cart = _locked_cart_for(user)
     item = CartItem.objects.filter(cart=cart, sku=sku).first()
@@ -281,6 +323,12 @@ def add_cart_item(*, user, sku_code, quantity):
 
 @transaction.atomic
 def update_cart_item(*, user, sku_code, quantity):
+    """仅更新当前用户已有的购物车项，并在写入前重新检查 SKU 与库存。
+
+    查询条件包含 `cart__user`，因此知道别人的 SKU 编码也不能修改其购物车；
+    锁住待更新的行，防止同一行的并发修改互相覆盖。本操作不预占库存。
+    """
+
     try:
         item = (
             CartItem.objects.select_for_update()

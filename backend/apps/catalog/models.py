@@ -17,6 +17,8 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    """商品的共享信息；真正的价格和可购买规格保存在 SKU。"""
+
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
@@ -35,6 +37,8 @@ class Product(models.Model):
 
 
 class SKU(models.Model):
+    """实际购买单位，价格和可售状态都落在具体规格上。"""
+
     product = models.ForeignKey(
         Product,
         on_delete=models.PROTECT,
@@ -57,6 +61,7 @@ class SKU(models.Model):
 
     def clean(self):
         super().clean()
+        # 展示型规格只接受 JSON 对象；常用查询字段应保持为普通列。
         if not isinstance(self.attributes, dict):
             raise ValidationError(
                 {"attributes": "SKU attributes must be a JSON object."}
