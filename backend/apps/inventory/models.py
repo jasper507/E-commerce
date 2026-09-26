@@ -35,6 +35,7 @@ class InventoryReservation(models.Model):
         RESERVED = "RESERVED", "Reserved"
         COMMITTED = "COMMITTED", "Committed"
         RELEASED = "RELEASED", "Released"
+        RESTORED = "RESTORED", "Restored after paid cancellation"
 
     order_item = models.OneToOneField(
         "ordering.OrderItem",
@@ -76,6 +77,7 @@ class InventoryMovement(models.Model):
         RESERVE = "RESERVE", "Reserve"
         COMMIT = "COMMIT", "Commit"
         RELEASE = "RELEASE", "Release"
+        RESTORE = "RESTORE", "Restore after paid cancellation"
 
     inventory = models.ForeignKey(
         Inventory,

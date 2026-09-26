@@ -150,3 +150,35 @@ class MockGatewayPayment(models.Model):
 
     def __str__(self):
         return f"Mock payment for {self.attempt.public_id} ({self.outcome})"
+
+
+class RefundSimulation(models.Model):
+    """一次成功支付对应最多一次模拟退款；不代表真实资金已退回。"""
+
+    class Status(models.TextChoices):
+        SIMULATED = "SIMULATED", "Simulated"
+
+    class Reason(models.TextChoices):
+        LATE_SUCCESS = "LATE_SUCCESS", "Payment succeeded after order closed"
+        PAID_CANCEL = "PAID_CANCEL", "Paid order canceled before shipment"
+
+    attempt = models.OneToOneField(
+        PaymentAttempt,
+        on_delete=models.PROTECT,
+        related_name="refund_simulation",
+    )
+    order = models.ForeignKey(
+        "ordering.Order",
+        on_delete=models.PROTECT,
+        related_name="refund_simulations",
+    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    currency = models.CharField(max_length=3)
+    reason = models.CharField(max_length=16, choices=Reason.choices)
+    status = models.CharField(
+        max_length=16, choices=Status.choices, default=Status.SIMULATED
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Mock refund for attempt {self.attempt_id} ({self.reason})"

@@ -47,7 +47,7 @@ class PaymentAttemptCollectionView(APIView):
             PaymentAttempt.objects.filter(
                 order__public_id=order_public_id, user=request.user
             )
-            .select_related("order")
+            .select_related("order", "refund_simulation")
             .order_by("-created_at", "-id")
         )
         return Response(PaymentAttemptSerializer(attempts, many=True).data)
@@ -76,7 +76,7 @@ class PaymentAttemptDetailView(APIView):
 
     def get(self, request, public_id):
         attempt = (
-            PaymentAttempt.objects.select_related("order")
+            PaymentAttempt.objects.select_related("order", "refund_simulation")
             .filter(public_id=public_id, user=request.user)
             .first()
         )

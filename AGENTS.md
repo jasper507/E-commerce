@@ -17,6 +17,14 @@ Read `PROJECT_CHARTER.md` before planning or changing this project. Use `PROJECT
 
 MQ, search, deployment, CI/CD, and performance work must support a real integration or experiment, not merely add dependencies.
 
+## Interview-First Decision Gate
+
+- The portfolio outcome is **one demonstrable business loop plus three deep interview stories**. The loop is browse → login → cart → address → order/inventory reservation → mock payment/inventory commit → simulated shipping → receipt. The stories are inventory concurrency and flash sale correctness; Redis cache consistency and failure fallback; payment state, webhook handling, and idempotency.
+- Every database, code, architecture, infrastructure, or project-scope design must state which part of that outcome it strengthens. Before a significant change, give the business problem, the invariant or failure scenario, the smallest suitable design, one meaningful alternative and trade-off, and the evidence needed to support an interview claim. Supporting work may state this briefly. If a proposal has no clear contribution, defer or drop it.
+- For each deep story, preserve a reproducible path from a simple baseline and observed failure or limitation to the chosen implementation, verification, measured result where relevant, and remaining trade-off. Synthetic traffic and mock integrations are acceptable; never present them as production evidence.
+- Prefer the next coherent piece of core logic over broadening ordinary commerce features or repeating low-value tests. Verify enough to support the specific claim, then advance. Do not add technology just to list it on a résumé.
+- In project progress replies, say where the work sits in the roadmap, how it strengthens the business loop or one of the three stories, and the next concrete step. Keep the plan understandable to a beginner and make the interview explanation something the project owner can give independently.
+
 ## Default Learning Contract
 
 - Use Learning Mode for order, inventory, Redis, payment, concurrency, state machines, idempotency, architecture trade-offs, and interpretation of evidence.

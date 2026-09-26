@@ -130,6 +130,19 @@ MYSQL_PORT = env_int("MYSQL_PORT", 3307)
 MYSQL_TEST_DATABASE = env_value("MYSQL_TEST_DATABASE", "test_project_one")
 PAYMENT_MAX_ATTEMPTS = env_int("PAYMENT_MAX_ATTEMPTS", 3)
 
+# 可选的本地目录实验；不会把 Session、库存或支付存储改为 Redis。
+CATALOG_CACHE_ENABLED = env_bool("CATALOG_CACHE_ENABLED", False)
+CATALOG_CACHE_REDIS_URL = env_value("CATALOG_CACHE_REDIS_URL", "redis://127.0.0.1:6380/0")
+CATALOG_CACHE_KEY_PREFIX = env_value("CATALOG_CACHE_KEY_PREFIX", "project-one:development")
+CATALOG_CACHE_TTL = env_int("CATALOG_CACHE_TTL", 30)
+CATALOG_CACHE_TTL_JITTER = env_int("CATALOG_CACHE_TTL_JITTER", 5)
+
+if CATALOG_CACHE_TTL < 1 or not 0 <= CATALOG_CACHE_TTL_JITTER < CATALOG_CACHE_TTL:
+    raise ImproperlyConfigured("Catalog cache requires TTL > jitter >= 0.")
+
+if CATALOG_CACHE_ENABLED and not IS_LOCAL_ENVIRONMENT:
+    raise ImproperlyConfigured("Catalog cache is currently a local development/test experiment.")
+
 if PAYMENT_MAX_ATTEMPTS < 1:
     raise ImproperlyConfigured("PAYMENT_MAX_ATTEMPTS must be at least 1.")
 

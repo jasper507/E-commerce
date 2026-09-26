@@ -1,8 +1,11 @@
-from django.db.models import Exists, Min, OuterRef, Prefetch, Q
+from django.db import transaction
+from django.db.models import Exists, Min, OuterRef, Prefetch, Q, prefetch_related_objects
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
+from apps.catalog.cache import ProductDetailCache
 from apps.catalog.models import Category, Product, SKU
 from apps.catalog.serializers import (
     PublicCategorySerializer,
@@ -66,7 +69,7 @@ class PublicProductListView(generics.ListAPIView):
 
 
 class PublicProductDetailView(generics.RetrieveAPIView):
-    """只展示公开商品与上架 SKU，并预取库存以稳定查询次数。"""
+    """每次确认 MySQL 可见性，缓存仅保存可重建的公开浏览详情。"""
 
     serializer_class = PublicProductDetailSerializer
     authentication_classes = ()
@@ -78,13 +81,28 @@ class PublicProductDetailView(generics.RetrieveAPIView):
             category__is_active=True,
         )
         .select_related("category")
-        .prefetch_related(
+    )
+
+    def retrieve(self, request, *args, **kwargs):
+        product = self.get_object()
+        detail_cache = ProductDetailCache(product.pk)
+        # 事务内可能读到未提交修改，不读/回填全局共享缓存。
+        if transaction.get_connection().in_atomic_block:
+            detail_cache.available = False
+        payload = detail_cache.get()
+        if payload is not None:
+            return Response(payload)
+
+        prefetch_related_objects(
+            [product],
             Prefetch(
                 "skus",
                 queryset=SKU.objects.filter(is_active=True)
                 .select_related("inventory")
                 .order_by("price", "code"),
                 to_attr="public_skus",
-            )
+            ),
         )
-    )
+        payload = self.get_serializer(product).data
+        detail_cache.set(payload)
+        return Response(payload)

@@ -1,0 +1,263 @@
+# Project One — Django 电商项目
+
+Project One 是一个面向后端实习面试的单商家电商学习项目。采用 Django、
+Django REST Framework（DRF，用于构建 HTTP API 的框架）和 Vue，重点是
+形成可复现的技术证据，让项目拥有者能够独立解释实现、失败场景和设计取舍。
+
+后端采用 Modular Monolith（模块化单体：按业务划分模块，但作为一个应用运行）。
+MySQL 保存订单、支付和库存事实；Redis 只保存可以重新生成的公开商品详情副本。
+支付、退款和物流均为模拟，不涉及真钱或真实物流服务。
+
+这是项目的中文说明入口。项目范围以 [PROJECT_CHARTER.md](PROJECT_CHARTER.md)
+为准，术语和当前进度见 [CONTEXT.md](CONTEXT.md)，协作规则见
+[PROJECT_INSTRUCTIONS.md](PROJECT_INSTRUCTIONS.md)。
+
+## 项目目标与当前进度
+
+目标是一条可演示的业务闭环，加上三条能够讲清楚的后端技术主线：
+
+1. 库存并发与秒杀正确性：验证事务、锁竞争、库存预占、核销和释放。
+2. Redis 缓存一致性与故障降级：验证缓存命中、更新失效、过期、陈旧窗口和故障回源。
+3. 支付状态与幂等：验证重复请求、重复/乱序事件、查单恢复和退款模拟。
+
+当前代码已经实现最小闭环：
+
+```text
+浏览商品 → 登录 → 购物车 → 收货地址
+→ 下单并预占库存 → Mock 支付并核销库存
+→ 管理员模拟发货 → 顾客确认收货
+```
+
+后端还实现了待支付取消/过期、已支付未发货取消，以及迟到成功事件的幂等退款模拟。
+取消 API 已实现，当前顾客页面尚未提供取消按钮。
+
+当前处于 **Track B / Phase 4A：商品详情 Cache-Aside 缓存第一段**。
+已经完成真实隔离 MySQL + Redis 专项验证，并复现了旧请求在失效后回填旧值的竞态。
+本段尚不保证强一致，也没有生产性能或高并发容量结论。
+
+## 目录结构
+
+| 路径 | 作用 |
+| --- | --- |
+| `backend/config` | Django 配置、总路由和健康检查 |
+| `backend/apps/accounts` | 自定义用户、Session/CSRF 认证和当前用户的收货地址 |
+| `backend/apps/catalog` | 分类、商品、SKU 的公开浏览接口及商品详情缓存 |
+| `backend/apps/inventory` | 库存、预占记录和库存变动流水 |
+| `backend/apps/ordering` | 购物车、订单、快照、取消/过期和模拟履约 |
+| `backend/apps/payments` | Mock 支付、事件处理、查单恢复和退款模拟 |
+| `frontend` | Vue 3 + TypeScript/Vite 顾客端 |
+| `tests` | 基础测试和测试数据；业务测试位于各 Django App 的 `tests` 目录 |
+| `docs/learning` | 各阶段代码阅读顺序、学习指南和练习 |
+| `docs/verification` | 实际测试结果、实验条件、复现步骤和限制 |
+| `compose.yaml` | 本地 MySQL，以及按需启动的开发/测试 Redis |
+
+SKU（商品规格）是真正定价和购买的单位。例如一个鼠标 Product 可以有黑色、
+白色两个 SKU，每个 SKU 各有一条 Inventory 库存记录。
+
+## Windows PowerShell 本地运行
+
+以下命令从项目根目录执行。需要 Python 3.11、Docker 和前端所需的 Node.js/npm。
+Python 依赖版本记录在 `requirements`，前端依赖记录在 `frontend/package-lock.json`。
+
+### 1. 准备 Python 环境
+
+仅在没有项目虚拟环境时创建：
+
+```powershell
+py -3.11 -m venv .venv
+```
+
+安装项目依赖：
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements\dev.txt
+```
+
+虚拟环境用于把本项目依赖与系统 Python 分开。后续直接使用其中的 Python，
+无需先激活环境。
+
+### 2. 启动并检查 MySQL
+
+```powershell
+docker compose up -d db
+docker compose ps
+```
+
+`db` 应显示运行且健康。MySQL 仅绑定 `127.0.0.1:3307`，避免占用常见的
+本机 MySQL `3306` 端口。容器数据保存在 `mysql_data` 卷中。
+
+检查应用配置与数据库迁移状态：
+
+```powershell
+.\.venv\Scripts\python.exe backend\manage.py check
+.\.venv\Scripts\python.exe backend\manage.py showmigrations
+```
+
+`check` 无问题时会显示 `0 issues`；`showmigrations` 中 `[X]` 表示已应用，
+`[ ]` 表示未应用。迁移会修改数据库结构，应先确认目标库和已有数据。
+**只在首次初始化或确认需要应用迁移后执行**：
+
+```powershell
+.\.venv\Scripts\python.exe backend\manage.py migrate
+```
+
+通过自动测试不代表开发数据库已迁移，也不代表已有演示数据。
+空数据库可以通过 Django Admin 维护模拟目录数据；未上架商品不会出现在公开接口。
+
+### 3. 启动后端
+
+```powershell
+.\.venv\Scripts\python.exe backend\manage.py runserver 127.0.0.1:8000
+```
+
+访问 [健康检查](http://127.0.0.1:8000/health/)，正常响应为：
+
+```json
+{"status": "ok", "database": "ok"}
+```
+
+这个响应表示后端能够连接数据库，不代表全部业务或 Redis 已通过验证。
+
+### 4. 启动前端
+
+另开 PowerShell 终端，从项目根目录执行：
+
+```powershell
+Set-Location .\frontend
+npm ci
+npm run dev
+```
+
+`npm ci` 按锁文件安装依赖，`npm run dev` 启动开发服务器。访问 Vite 输出的本地地址。
+前端使用相对 `/api` URL，由开发期代理转发到 Django 的 `8000` 端口。
+
+当前页面包括商品列表、商品详情、登录、购物车、地址、结算、订单列表和订单详情。
+前端路由只决定显示哪个页面；身份、数据归属、价格、库存和订单状态由后端校验。
+
+`npm run preview` 只预览前端构建结果，不是完整的前后端部署方案。
+
+## 主要接口与业务边界
+
+| 模块 | 主要接口 | 边界 |
+| --- | --- | --- |
+| 公开目录 | `/api/catalog/categories/`、`/api/catalog/products/`、`/api/catalog/products/{slug}/` | 游客可读；不能通过公开接口写入 |
+| 认证 | `/api/auth/` 下的认证接口 | Session Cookie 保存登录状态，写请求使用 CSRF 防护 |
+| 购物车 | `/api/cart/`、`/api/cart/items/`、`/api/cart/items/{sku_code}/` | 只操作当前用户购物车；每个 SKU 一项，数量 1–99 |
+| 地址 | `/api/addresses/`、`/api/addresses/{id}/`、`/api/addresses/{id}/default/` | 只操作本人地址；首地址自动默认，删除默认地址会补位 |
+| 订单 | `/api/orders/`、`/api/orders/{public_id}/` | 本人查询；创建订单使用 Idempotency-Key |
+| 取消/收货 | `/api/orders/{public_id}/cancel/`、`/api/orders/{public_id}/confirm-receipt/` | 后端检查归属和允许的订单状态 |
+| 支付 | `/api/payments/attempts/` 及详情、`reconcile/` 接口 | 只操作本人支付尝试；超时后查询原尝试，不随意新建 |
+| 管理 | `/admin/` | 使用 Django Admin 及后端权限管理目录和模拟发货 |
+
+Idempotency（幂等）表示重复同一个业务动作不会重复产生副作用。
+创建订单使用 `Idempotency-Key`：同一用户、同 Key、同参数返回原订单，
+同 Key 换参数返回冲突。支付事件也有独立的去重和状态检查。
+
+购物车不锁价格、不预占库存。下单时后端从 MySQL 重新读取价格、可售状态和库存，
+在同一事务中创建订单、商品/地址快照、库存预占和流水，并清理购物车。
+事务中的任一步失败，整组写入回滚，不能留下半张订单。
+
+订单主链为 `PENDING_PAYMENT → PAID → SHIPPED → COMPLETED`。
+支付成功核销预占库存；取消/过期按规则释放或恢复库存。发货后的订单拒绝简单取消。
+Mock Webhook 只用于受限制的本地开发/测试，不是生产支付接入。
+
+到期关闭由 `expire_pending_orders` 一次性管理命令扫描处理，当前没有定时调度。
+时间字段不会自动释放库存；未确认结果的支付尝试也可能阻止关闭，不能承诺到点必释放。
+
+## 按需启用商品详情 Redis 缓存
+
+Cache-Aside（旁路缓存）表示先读取缓存，未命中时查询数据库并回填。
+功能默认关闭，当前只允许在开发/测试环境启用。
+
+从项目根目录执行：
+
+```powershell
+docker compose --profile cache up -d --wait redis
+$env:CATALOG_CACHE_ENABLED = 'true'
+.\.venv\Scripts\python.exe backend\manage.py runserver 127.0.0.1:8000
+```
+
+若已有后端进程，先停止原进程，再从设置该变量的终端启动。
+环境变量对这个终端及其子进程生效，不会改写 `.env`。
+开发 Redis 使用 `127.0.0.1:6380`，没有持久化卷，副本可从数据库重建。
+
+当前缓存规则：
+
+- 只缓存公开商品详情 JSON；每次仍从 MySQL 检查商品及分类是否上架。
+- 未命中读 MySQL；Redis 读失败回源，写入失败仍返回本次数据库结果。
+- 目录普通 `save()` 在数据库提交成功后删除相关缓存；回滚不失效。
+- TTL（自动过期时间）初始为 30 秒，随机抖动正负 5 秒；命中不延长 TTL。
+- 价格、SKU 和有货提示可能陈旧；下单不信任缓存，不从 Redis 扣核心库存。
+- 库存变化不主动失效详情；批量 `update()` 不触发保存信号。
+- 并发旧值回填、故障期间失效丢失已复现，尚未解决；TTL 从实际回填时计算。
+
+详见[缓存学习指南](docs/learning/phase-4-product-detail-cache-study-guide.md)和
+[缓存验证记录](docs/verification/phase-4-product-detail-cache.md)。
+
+## 测试与已有证据
+
+后端测试使用隔离 MySQL 测试库，默认名为 `test_project_one`，名称必须以
+`test_` 开头。测试会创建、使用并清理该测试库，不能指向开发或生产数据，
+也不能让两个 pytest 进程并行使用同名测试库。
+
+运行后端测试：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+```
+
+真实 Redis 集成测试需要单独启动测试服务，并明确指定 URL：
+
+```powershell
+docker compose --profile cache-test up -d --wait redis-test
+$env:PROJECT_ONE_TEST_REDIS_URL = 'redis://127.0.0.1:6381/0'
+.\.venv\Scripts\python.exe -m pytest backend\apps\catalog\tests\test_detail_cache.py -q -s --tb=short
+```
+
+测试 Redis 使用独立端口 `6381`。每个用例使用随机 Key 前缀，只删除自己创建的 Key，
+不执行 `FLUSHDB`。没有指定测试 URL 时缓存集成测试会跳过；指定后连接失败会报错。
+不要把该 URL 指向外部账号或共享服务。
+
+前端检查在 `frontend` 目录执行：
+
+```powershell
+npm run type-check
+npm run build
+```
+
+截至 2026-09-26，缓存切片验证记录包含：
+
+| 检查范围 | 已记录结果 |
+| --- | --- |
+| 原商品目录回归 | 16 passed，6 subtests passed |
+| 真实 MySQL + Redis 缓存专项 | 20 passed；补充隔离检查后复测仍通过 |
+| 相关购物车、下单、并发、取消和支付回归 | 70 passed，10 subtests passed |
+| 商品详情 SQL 数 | 基线/未命中 2 条，命中 1 条 |
+| Django 系统检查、迁移漂移、依赖及 diff 检查 | 通过 |
+
+这些是对应阶段的实际记录，不是创建本说明文件时重新运行的结果。
+SQL 数量减少不能直接换算为响应速度或吞吐量提升；本机合成实验不能冒充线上经验。
+开发库迁移状态、完整浏览器验收和生产部署也不能由这些结果推断。
+
+其他证据见[下单竞争验证](docs/verification/phase-3-checkout-contention.md)、
+[待支付关闭](docs/verification/phase-2b-unpaid-order-closure.md)和
+[退款模拟](docs/verification/phase-2b-refund-simulation.md)。
+
+## 配置与安全
+
+- `.env.example` 记录支持的环境变量；`.env` 被 Git 忽略，不能提交密码、Token 或密钥。
+- 默认凭据仅用于本地学习。非本地环境拒绝默认 Django 密钥和数据库密码。
+- MySQL 是核心事实来源；Redis 中不保存订单、支付和核心库存的唯一副本。
+- 商品与业务事实的删除、真实数据库操作和部署需要单独确认；文档里的命令不代表已经执行。
+
+## 下一步与学习方式
+
+下一步先围绕已复现的旧值回填竞态比较最小修正方案，再推进热点回源和
+Redis 故障集中回源实验；继续保留库存并发和支付幂等的证据链。
+
+普通 CRUD（增删改查）、重复表单和 Admin 注册采用快速实现与关键行为审查；
+订单、库存、缓存、状态机和幂等采用深入学习。每个技术亮点都应能按
+“业务问题 → 简单基线 → 失败复现 → 方案取舍 → 实际验证 → 剩余限制”独立讲解。
+
+目前不追求完整自定义 Vue Admin、多商家、真实支付、真实物流或微服务。
+MQ、搜索、分布式锁等能力只在真实问题和实验依据支持时引入。

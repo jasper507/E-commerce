@@ -1,16 +1,16 @@
 from decimal import Decimal
 from queue import Queue
-from threading import Barrier, Thread
+from threading import Barrier, Event, Thread
 
 from django.contrib.auth import get_user_model
-from django.db import close_old_connections
+from django.db import close_old_connections, transaction
 from django.test import TransactionTestCase
 
 from apps.accounts.models import Address
 from apps.catalog.models import Category, Product, SKU
 from apps.inventory.models import Inventory, InventoryMovement, InventoryReservation
 from apps.ordering.models import Cart, CartItem, Order
-from apps.ordering.services import create_order_from_cart
+from apps.ordering.services import OrderRuleError, create_order_from_cart
 
 
 User = get_user_model()
@@ -92,5 +92,57 @@ class OrderConcurrencyTests(TransactionTestCase):
         self.assertEqual(Order.objects.count(), 1)
         self.assertEqual(InventoryReservation.objects.count(), 1)
         self.assertEqual(InventoryMovement.objects.count(), 1)
+        self.inventory.refresh_from_db()
+        self.assertEqual((self.inventory.available_stock, self.inventory.reserved_stock), (8, 2))
+
+    def test_locked_inventory_returns_busy_without_creating_order_and_can_retry(self):
+        locked = Event()
+        release = Event()
+        holder_errors = Queue()
+
+        def hold_inventory_lock():
+            close_old_connections()
+            try:
+                with transaction.atomic():
+                    Inventory.objects.select_for_update().get(pk=self.inventory.pk)
+                    locked.set()
+                    if not release.wait(timeout=10):
+                        raise TimeoutError("Timed out waiting to release inventory lock")
+            except Exception as exc:
+                holder_errors.put(exc)
+            finally:
+                close_old_connections()
+
+        holder = Thread(target=hold_inventory_lock)
+        holder.start()
+        try:
+            self.assertTrue(locked.wait(timeout=10))
+            with self.assertRaises(OrderRuleError) as raised:
+                create_order_from_cart(
+                    user=self.user,
+                    address_id=self.address.pk,
+                    idempotency_key="stock-busy-key",
+                )
+            self.assertEqual(raised.exception.code, "stock_busy")
+            self.assertEqual(raised.exception.http_status, 409)
+        finally:
+            release.set()
+            holder.join(timeout=10)
+
+        self.assertFalse(holder.is_alive())
+        self.assertTrue(holder_errors.empty())
+        self.assertFalse(Order.objects.exists())
+        self.assertFalse(InventoryReservation.objects.exists())
+        self.assertTrue(CartItem.objects.filter(cart__user=self.user).exists())
+        self.inventory.refresh_from_db()
+        self.assertEqual((self.inventory.available_stock, self.inventory.reserved_stock), (10, 0))
+
+        order, created = create_order_from_cart(
+            user=self.user,
+            address_id=self.address.pk,
+            idempotency_key="stock-busy-key",
+        )
+        self.assertTrue(created)
+        self.assertEqual(order.status, Order.Status.PENDING_PAYMENT)
         self.inventory.refresh_from_db()
         self.assertEqual((self.inventory.available_stock, self.inventory.reserved_stock), (8, 2))

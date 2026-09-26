@@ -66,6 +66,47 @@ Pytest may create and destroy only the configured database whose name starts
 with `test_`. The default is `test_project_one`; do not point it at development
 or production data.
 
+## Track B: local product detail cache
+
+Product detail has an optional Cache-Aside experiment. MySQL checks Product and
+Category visibility on every request; Redis holds only the public JSON response.
+Orders continue to use MySQL prices and inventory. Caching is disabled by default
+and is currently restricted to development/test environments.
+
+Install the updated requirements, then start the optional local service:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements\dev.txt
+docker compose --profile cache up -d --wait redis
+$env:CATALOG_CACHE_ENABLED = 'true'
+.\.venv\Scripts\python.exe backend\manage.py runserver
+```
+
+This enables caching only in this shell's server process. It does not edit `.env`,
+migrate the development database, or change existing MySQL data. Default Redis
+port is `6380`; the cache is disposable and has no persistence volume.
+
+Real integration tests use a separate Redis container on port `6381` and pytest's
+isolated MySQL database. Do not run concurrent pytest processes against the same
+test database:
+
+```powershell
+docker compose --profile cache-test up -d --wait redis-test
+$env:PROJECT_ONE_TEST_REDIS_URL = 'redis://127.0.0.1:6381/0'
+.\.venv\Scripts\python.exe -m pytest backend\apps\catalog\tests\test_detail_cache.py -q -s
+```
+
+Each test owns a random key prefix and deletes only its own keys, never FLUSHDB.
+Without an explicit test Redis URL these integration tests skip; an explicitly
+configured but unreachable Redis causes a failure. Never point this setting at
+an external or shared service. The failure experiment reserves an unused local
+port; it does not shut down Redis or change its global settings.
+
+See [the study guide](docs/learning/phase-4-product-detail-cache-study-guide.md)
+for the flow and stale-data boundaries, and
+[the verification record](docs/verification/phase-4-product-detail-cache.md)
+for actual observations and the reproduced stale-refill limitation.
+
 ## Guest Catalog Browse UI
 
 See `frontend/README.md` for local startup and

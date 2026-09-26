@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.8
+# Project One — Domain Context v1.9
 
 ## 0. 文档状态
 
-- 当前阶段：Interview Core MVP-3 / Order + Inventory Reservation 已实现并通过自动验证，等待业务能力与工程能力复盘；尚未 push
-- 文档版本：v1.8
+- 当前阶段：Track B / Phase 4A 商品详情 Cache-Aside 第一段已实现，专项验证通过；已复现旧值回填竞态，尚未解决；本地 main 未 commit/push
+- 文档版本：v1.9
 - 范围来源：`PROJECT_CHARTER.md` v1.1
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -150,10 +150,10 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 |---|---|---|
 | Source of Truth | 最终事实来源 | 多个系统数据冲突时，最终以哪个系统为准。MySQL 是订单、支付和核心库存的最终持久事实来源。`Confirmed` |
 | MySQL | 关系型数据库 | 保存核心业务事实，并提供事务、约束、索引和行锁等能力。库存和订单关键语义不能用 SQLite 测试结果代替。`Confirmed` |
-| Redis | 内存数据系统 | 用于可重建目录缓存、热点保护和必要的原子准入。Redis 是缓存正确性旗舰主线，但不能成为订单、支付和核心库存的唯一事实来源。`Required Later` |
+| Redis | 内存数据系统 | Phase 4A 已实现可选的本地商品详情缓存并通过真实集成测试；热点保护、原子准入仍待后续实验。不能成为订单、支付和核心库存的唯一事实来源。 |
 | Cache | 缓存 | 保存可重新获得的数据副本，以减少数据库压力和响应时间。缓存更快不代表缓存一定正确。 |
-| Cache-Aside | 旁路缓存模式 | 第一批缓存 Category、Product 等可重建公开目录数据；未命中读 MySQL 并回填，数据库更新事务提交后使用 `transaction.on_commit` 触发失效。`Required Later` |
-| Cache Consistency | 缓存一致性 | 目录缓存使用 Cache-Aside、数据库事务提交后失效、TTL 随机抖动；Redis 不可用时回退 MySQL。这些是必须实现并验证的方向。`Required Later` |
+| Cache-Aside | 旁路缓存模式 | Phase 4A 商品详情公开 JSON 未命中读 MySQL 并回填；正常模型 save 在 `transaction.on_commit` 触发失效。每次读取仍检查 MySQL 上架状态；列表/分类不缓存。 |
+| Cache Consistency | 缓存一致性 | Phase 4A 已验证提交后失效、TTL 抖动及连接故障回源；也已复现失效失败和并发旧值回填窗口，尚不保证强一致。见第 21 节。 |
 | Cache Experiment Parameters | 缓存实验参数 | 具体 Key 结构、基础 TTL 与抖动范围、空值缓存及热点保护参数必须由 baseline 和实验决定。`Experiment Candidate` |
 | Resilience | 故障韧性 | Redis 或其他辅助系统故障时，核心系统按明确规则降级、恢复或对账，不能丢失核心事实；下单仍重新读取 MySQL 权威价格与库存。`Confirmed` |
 | Redis Lua | Redis Lua 脚本 | 作为秒杀流量准入或原子前置判断的实验候选，必须通过并发测试、崩溃窗口和 MySQL 对账决定最终路径。`Experiment Candidate` |
@@ -528,3 +528,46 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 相同临时 SQLite 设置下的全项目非并发回归：123 passed、3 deselected、35 subtests passed；它覆盖一般功能回归，但不等于真实 MySQL 锁或并发验证。
 - Vue `type-check`、生产 `build` 和 `git diff --check` 已通过。真实 MySQL 双线程并发、MySQL 环境下的全项目回归与浏览器端到端验收尚未执行；Docker 引擎和本机 MySQL 端口均不可用。
 - 未执行开发数据库迁移、commit 或 push。15 分钟超时关闭、取消/释放、迟到成功退款模拟仍属 Phase 2B，不能将此切片理解为生产级支付。
+
+---
+
+## 21. Track B / Phase 4A 商品详情缓存（2026-09-26）
+
+### 21.1 当前切片与范围
+
+- 业务闭环及 Phase 2B 取消/退款模拟、Phase 3 下单竞争已有代码和独立验证记录。
+  其最新结果见 `docs/verification/phase-2b-*.md` 与 `phase-3-*.md`，上面的
+  历史 MVP-4 环境限制段落保留为当时记录。
+- 本段以公开商品详情为入口展开 Redis 一致性与故障降级主线，属于 Depth /
+  Learning Mode。只缓存公开 JSON；列表、分类、身份和交易不使用 Redis 缓存。
+- MySQL 先确认商品及分类上架状态，然后 GET Redis；未命中读取 SKU/库存，
+  由原 Serializer 输出并尽力回填。基线/未命中 2 SQL，命中 1 SQL。
+- Key 使用环境前缀、`catalog:detail:v1` 和 Product 主键；TTL 初始 30 秒，
+  抖动正负 5 秒，只是本地实验参数。功能默认关闭，限开发/测试环境。
+
+### 21.2 一致性与故障边界
+
+- 当前 Admin/普通 model.save 在数据库提交后失效 Product、Category 关联商品
+  和 SKU 旧/新归属商品。回滚不失效；事务内详情绕过缓存读和写。
+- 商品/分类下架后发起的新请求仍由 MySQL 返回 404；库存提示、价格和 SKU
+  浏览状态可陈旧，下单继续读取权威 MySQL 值。Inventory 修改不触发缓存失效。
+- Redis GET 异常回源且本请求跳过回填，SET/DEL 异常不破坏 MySQL 成功结果。
+  客户端连接/命令超时各 100 ms，无重试；尚无集中回源保护。
+- 批量 update 不触发保存信号；提交后删除也可能被在途旧读回填。Redis
+  故障期失效失败，恢复后旧副本仍可能命中。这两个窗口已实际复现，尚未修复。
+  TTL 从回填时计算，不能说“修改提交后严格最多陈旧 35 秒”。
+
+### 21.3 实际验证与下一步
+
+- 修改前查询基线：1 passed，观察 2 SQL；修改后原目录回归：16 passed、
+  6 subtests passed。
+- 真实隔离 MySQL + Redis 缓存专项：首次 20 passed in 12.52s；补充数据库
+  隔离断言及连接池清理后复测 20 passed in 13.14s。不是 SQLite 或假 Redis。
+- 相关购物车/下单/完整下单并发/取消/支付回归：70 passed、10 subtests passed。
+- Django check、迁移漂移、依赖检查与 diff whitespace 检查通过。
+- 未修改开发数据库、`.env`、前端、交易实现或既有未提交修改；没有新增迁移、
+  commit/push。测试 Redis 独立端口 6381，逐测试 UUID 前缀清理，无 FLUSHDB。
+- 证据与复现：`docs/verification/phase-4-product-detail-cache.md`；学习流程：
+  `docs/learning/phase-4-product-detail-cache-study-guide.md`。
+- 下一步沿用延迟旧回填实验，先比较最小修正与取舍，再推进热点回源和 Redis
+  故障集中回源验证。尚未得到生产性能、容量或强一致性结论。

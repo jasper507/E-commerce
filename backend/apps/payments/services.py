@@ -13,7 +13,8 @@ from django.utils import timezone
 from apps.inventory.models import Inventory, InventoryMovement, InventoryReservation
 from apps.ordering.models import Order
 from apps.payments.gateway import MockGateway, canonical_payload
-from apps.payments.models import PaymentAttempt, PaymentEvent
+from apps.payments.models import PaymentAttempt, PaymentEvent, RefundSimulation
+from apps.payments.refund_services import simulate_refund
 
 
 ACTIVE_ATTEMPT_STATUSES = {
@@ -261,7 +262,7 @@ def process_payment_event(*, event_id):
     """在一个事务里验事件、推进状态，并在成功时原子核销库存。
 
     锁顺序为 Event → Order → Attempt → Reservation → Inventory。相同 Event 的
-    重放直接返回；不同 Event 表示同一次成功时，还会被 Attempt/Order 终态挡住。
+    重放直接返回；终态后的不同成功 Event 只复用同一退款模拟。
     金额、币种和订单必须与服务端原始交易事实一致，前端页面不参与确认。
     """
 
@@ -314,6 +315,23 @@ def process_payment_event(*, event_id):
         return _reject(event, "payment_mismatch")
 
     outcome = parsed["status"]
+    if order.status in {Order.Status.CANCELED, Order.Status.EXPIRED} and outcome == "SUCCEEDED":
+        # 可信的迟到成功代表资金侧已成功；订单已关闭，库存不可再次核销或释放。
+        # RefundSimulation 与 Attempt/Event 一同提交，重放由 Attempt 唯一关系兜底。
+        attempt.status = PaymentAttempt.Status.SUCCEEDED
+        attempt.active_marker = None
+        attempt.save(update_fields=("status", "active_marker", "updated_at"))
+        simulate_refund(
+            order=order, attempt=attempt, reason=RefundSimulation.Reason.LATE_SUCCESS
+        )
+        event.processing_status = PaymentEvent.ProcessingStatus.PROCESSED
+        event.error_code = "late_success_refund_simulated"
+        event.processed_at = timezone.now()
+        event.save(
+            update_fields=("attempt", "processing_status", "error_code", "processed_at")
+        )
+        return event
+
     # 已成功的 Attempt 不允许被迟到的失败/处理中事件倒退。
     if attempt.status == PaymentAttempt.Status.SUCCEEDED:
         if outcome != "SUCCEEDED" or order.status not in {

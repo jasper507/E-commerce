@@ -17,6 +17,11 @@ class PaymentAttemptSerializer(serializers.ModelSerializer):
     """只公开顾客理解支付进度所需字段，不泄露内部主键或供应商标识。"""
 
     order_public_id = serializers.UUIDField(source="order.public_id", read_only=True)
+    refund_status = serializers.SerializerMethodField()
+
+    def get_refund_status(self, attempt):
+        refund = getattr(attempt, "refund_simulation", None)
+        return refund.status if refund is not None else None
 
     class Meta:
         model = PaymentAttempt
@@ -26,5 +31,6 @@ class PaymentAttemptSerializer(serializers.ModelSerializer):
             "status",
             "amount",
             "currency",
+            "refund_status",
             "created_at",
         )

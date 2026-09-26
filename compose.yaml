@@ -28,5 +28,29 @@ services:
       retries: 20
       start_period: 20s
 
+  redis:
+    image: redis:8.10.1
+    profiles: [cache]
+    command: [redis-server, --save, "", --appendonly, "no"]
+    ports:
+      - "127.0.0.1:6380:6379"
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
+  redis-test:
+    image: redis:8.10.1
+    profiles: [cache-test]
+    command: [redis-server, --save, "", --appendonly, "no"]
+    ports:
+      - "127.0.0.1:6381:6379"
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
 volumes:
   mysql_data:

@@ -3,6 +3,7 @@
 from django.urls import path
 
 from apps.ordering.views import (
+    OrderCancelView,
     OrderCollectionView,
     OrderConfirmReceiptView,
     OrderDetailView,
@@ -13,6 +14,11 @@ app_name = "orders"
 
 urlpatterns = [
     path("", OrderCollectionView.as_view(), name="order-list"),
+    path(
+        "<uuid:public_id>/cancel/",
+        OrderCancelView.as_view(),
+        name="order-cancel",
+    ),
     path(
         "<uuid:public_id>/confirm-receipt/",
         OrderConfirmReceiptView.as_view(),

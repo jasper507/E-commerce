@@ -8,7 +8,7 @@ from typing import Protocol
 
 from django.conf import settings
 
-from apps.payments.models import MockGatewayPayment
+from apps.payments.models import MockGatewayPayment, RefundSimulation
 
 
 def canonical_payload(payload):
@@ -37,6 +37,8 @@ class PaymentProvider(Protocol):
     def verify_event(self, payload, signature): ...
 
     def parse_event(self, payload): ...
+
+    def simulate_refund(self, *, order, attempt, reason): ...
 
 
 class MockGateway:
@@ -119,3 +121,31 @@ class MockGateway:
         }:
             raise ValueError("invalid_event_status")
         return payload
+
+    def simulate_refund(self, *, order, attempt, reason):
+        """Mock 供应商只保存模拟事实；调用方的事务保证状态和库存同进退。"""
+
+        if (
+            attempt.order_id != order.pk
+            or attempt.provider != self.provider
+            or attempt.amount != order.total
+            or attempt.currency != order.currency
+            or attempt.status != attempt.Status.SUCCEEDED
+        ):
+            raise ValueError("refund_payment_mismatch")
+        refund, _ = RefundSimulation.objects.get_or_create(
+            attempt=attempt,
+            defaults={
+                "order": order,
+                "amount": attempt.amount,
+                "currency": attempt.currency,
+                "reason": reason,
+            },
+        )
+        if (
+            refund.order_id != order.pk
+            or refund.amount != attempt.amount
+            or refund.currency != attempt.currency
+        ):
+            raise ValueError("refund_record_mismatch")
+        return refund

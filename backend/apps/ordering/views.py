@@ -10,6 +10,10 @@ from apps.ordering.fulfillment_services import (
     FulfillmentRuleError,
     confirm_receipt,
 )
+from apps.ordering.lifecycle_services import (
+    OrderLifecycleError,
+    cancel_order,
+)
 from apps.ordering.serializers import (
     AddCartItemSerializer,
     CartItemSerializer,
@@ -211,6 +215,22 @@ class OrderDetailView(APIView):
             return Response(
                 {"detail": "订单不存在，或你无权查看这张订单。"},
                 status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(OrderSerializer(order).data)
+
+
+class OrderCancelView(APIView):
+    """顾客主动取消本人的待付款或已付款未发货订单。"""
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, public_id):
+        try:
+            order, _ = cancel_order(public_id=public_id, user=request.user)
+        except OrderLifecycleError as error:
+            return Response(
+                {"code": error.code, "detail": error.detail},
+                status=error.http_status,
             )
         return Response(OrderSerializer(order).data)
 

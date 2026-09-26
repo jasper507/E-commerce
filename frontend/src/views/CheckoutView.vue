@@ -36,6 +36,14 @@ function showError(error: unknown): void {
       error instanceof CartApiError ||
       error instanceof AddressApiError) &&
       error.status === 403)
+  if (error instanceof OrderApiError && error.code === 'stock_busy') {
+    errorMessage.value = '商品正在被其他顾客下单，请稍后重试。'
+    return
+  }
+  if (error instanceof OrderApiError && error.code === 'insufficient_stock') {
+    errorMessage.value = '商品库存不足，无法下单。'
+    return
+  }
   errorMessage.value = loginRequired.value
     ? '请先登录，再提交订单。'
     : error instanceof Error && error.message

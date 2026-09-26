@@ -5,7 +5,7 @@ from datetime import timedelta
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.contrib.auth import get_user_model
-from django.db import transaction
+from django.db import DatabaseError, transaction
 from django.utils import timezone
 
 from apps.accounts.models import Address
@@ -27,6 +27,8 @@ from apps.ordering.models import (
 User = get_user_model()
 MONEY_PLACES = Decimal("0.01")
 ZERO_MONEY = Decimal("0.00")
+# MySQL ER_LOCK_NOWAIT：只把库存锁竞争转换为可重试的业务错误。
+MYSQL_LOCK_NOWAIT_ERROR = 3572
 
 
 @dataclass(frozen=True)
@@ -162,8 +164,10 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
     if cart is None:
         raise OrderRuleError("cart_empty", "Cart is empty.", 400)
 
+    # 联查的目录数据只作本次服务端报价快照；锁范围限于本人的购物车项。
+    # 否则共享的 SKU/Product/Category 排他锁会先阻塞请求，绕过库存 NOWAIT。
     cart_items = list(
-        CartItem.objects.select_for_update()
+        CartItem.objects.select_for_update(of=("self",))
         .select_related("sku__product__category")
         .filter(cart=cart)
         .order_by("sku_id", "id")
@@ -171,12 +175,21 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
     if not cart_items:
         raise OrderRuleError("cart_empty", "Cart is empty.", 400)
 
-    inventories = {
-        inventory.sku_id: inventory
-        for inventory in Inventory.objects.select_for_update()
-        .filter(sku_id__in=[item.sku_id for item in cart_items])
-        .order_by("sku_id")
-    }
+    try:
+        inventories = {
+            inventory.sku_id: inventory
+            for inventory in Inventory.objects.select_for_update(nowait=True)
+            .filter(sku_id__in=[item.sku_id for item in cart_items])
+            .order_by("sku_id")
+        }
+    except DatabaseError as exc:
+        if not exc.args or exc.args[0] != MYSQL_LOCK_NOWAIT_ERROR:
+            raise
+        raise OrderRuleError(
+            "stock_busy",
+            "Inventory is being updated. Please try again.",
+            409,
+        ) from exc
 
     # 不能信任购物车保存时的价格和库存：商品可能下架、涨价或被其他订单买走。
     for item in cart_items:
@@ -246,7 +259,7 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
     )
 
     # 预占只在 available 与 reserved 之间转移，不表示最终售出；支付成功后再核销。
-    # expires_at 记录 15 分钟期限，本阶段尚不自动触发超时关闭或库存释放。
+    # expires_at 记录 15 分钟期限；到期扫描命令负责触发关闭和库存释放。
     expires_at = timezone.now() + timedelta(minutes=15)
     for cart_item, unit_price, _, discount_amount, line_total in priced_items:
         sku = cart_item.sku
