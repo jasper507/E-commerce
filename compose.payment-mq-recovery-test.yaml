@@ -1,0 +1,7 @@
+# Coordinate the real broker outage only in the isolated recovery experiment.
+services:
+  payment-worker-test:
+    command: [python, -m, apps.payments.tests.mq_retry_worker]
+    environment:
+      PROJECT_ONE_MQ_RETRY_TEST_WORKER: "true"
+      PROJECT_ONE_MQ_RECOVERY_PUBLICATION_WINDOW: "true"

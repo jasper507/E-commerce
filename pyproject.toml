@@ -3,4 +3,7 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 pythonpath = ["backend"]
 testpaths = ["tests", "backend/apps"]
 addopts = "-ra --strict-markers"
-markers = ["redis_integration: requires explicit PROJECT_ONE_TEST_REDIS_URL and isolated MySQL"]
+markers = [
+    "redis_integration: requires explicit PROJECT_ONE_TEST_REDIS_URL and isolated MySQL",
+    "rabbitmq_integration: requires the isolated payment-mq-test profile and Linux Worker",
+]

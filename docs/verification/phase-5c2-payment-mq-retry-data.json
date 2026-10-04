@@ -1,0 +1,120 @@
+{
+  "environment": {
+    "database": "test_project_one",
+    "broker_port": 5673,
+    "vhost": "project_one_test",
+    "queue": "payment-events-test",
+    "eager": false
+  },
+  "scenarios": [
+    {
+      "scenario": "invariant_error_not_retried",
+      "processing_attempts": 1,
+      "failure_kind": "BLOCKED",
+      "next_retry_at": null,
+      "order_state": "PENDING_PAYMENT",
+      "payment_state": "CREATED",
+      "inventory": [
+        19,
+        1
+      ],
+      "commit_movements": 0,
+      "queue": {
+        "ack_delta": 1,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "three_real_timeouts_then_exhausted",
+      "failures": [
+        {
+          "count": 1,
+          "failure_kind": "TRANSIENT",
+          "failed_at": "2026-10-04T15:24:34.067971+00:00",
+          "next_retry_at": "2026-10-04T15:24:39.067971+00:00"
+        },
+        {
+          "count": 2,
+          "failure_kind": "TRANSIENT",
+          "failed_at": "2026-10-04T15:24:40.092287+00:00",
+          "next_retry_at": "2026-10-04T15:24:50.092287+00:00"
+        },
+        {
+          "count": 3,
+          "failure_kind": "EXHAUSTED",
+          "failed_at": "2026-10-04T15:24:51.115522+00:00",
+          "next_retry_at": null
+        }
+      ],
+      "processing_attempts": 3,
+      "failure_kind": "EXHAUSTED",
+      "next_retry_at": null,
+      "order_state": "PENDING_PAYMENT",
+      "payment_state": "CREATED",
+      "inventory": [
+        19,
+        1
+      ],
+      "commit_movements": 0,
+      "mysql_1205_observations": 3,
+      "claims": [
+        {
+          "count": 1,
+          "as_of": "2026-10-04T15:24:33.042151+00:00"
+        },
+        {
+          "count": 2,
+          "as_of": "2026-10-04T15:24:39.070595+00:00"
+        },
+        {
+          "count": 3,
+          "as_of": "2026-10-04T15:24:50.093998+00:00"
+        }
+      ],
+      "queue": {
+        "ack_delta": 4,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "transient_then_automatic_success_with_early_duplicate",
+      "failures": [
+        {
+          "count": 1,
+          "failure_kind": "TRANSIENT",
+          "failed_at": "2026-10-04T15:25:04.248230+00:00",
+          "next_retry_at": "2026-10-04T15:25:09.248230+00:00"
+        }
+      ],
+      "final_processed_at": "2026-10-04T15:25:09.273064+00:00",
+      "processing_attempts": 2,
+      "order_state": "PAID",
+      "payment_state": "SUCCEEDED",
+      "inventory": [
+        19,
+        0
+      ],
+      "event_count": 1,
+      "payment_attempt_count": 1,
+      "commit_movements": 1,
+      "mysql_1205_observations": 1,
+      "claims": [
+        {
+          "count": 1,
+          "as_of": "2026-10-04T15:25:03.214285+00:00"
+        },
+        {
+          "count": 2,
+          "as_of": "2026-10-04T15:25:09.249486+00:00"
+        }
+      ],
+      "queue": {
+        "ack_delta": 4,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    }
+  ]
+}

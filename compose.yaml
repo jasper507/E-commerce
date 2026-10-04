@@ -52,5 +52,121 @@ services:
       timeout: 2s
       retries: 10
 
+  rabbitmq:
+    image: rabbitmq:4.3.6-management-alpine
+    hostname: payment-mq
+    profiles: [payment-mq]
+    environment:
+      RABBITMQ_DEFAULT_USER: project_one
+      RABBITMQ_DEFAULT_PASS: ${PAYMENT_MQ_PASSWORD:-project-one-mq-local-only}
+      RABBITMQ_DEFAULT_VHOST: project_one
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    volumes:
+      - payment_mq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  rabbitmq-test:
+    image: rabbitmq:4.3.6-management-alpine
+    hostname: payment-mq-test
+    profiles: [payment-mq-test]
+    environment:
+      RABBITMQ_DEFAULT_USER: project_one_test
+      RABBITMQ_DEFAULT_PASS: ${PAYMENT_MQ_TEST_PASSWORD:-project-one-mq-test-only}
+      RABBITMQ_DEFAULT_VHOST: project_one_test
+    ports:
+      - "127.0.0.1:5673:5672"
+      - "127.0.0.1:15673:15672"
+    volumes:
+      - payment_mq_test_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  payment-worker:
+    build:
+      context: .
+      dockerfile: docker/payments/Dockerfile
+    image: project-one-payment-worker:local
+    profiles: [payment-mq]
+    working_dir: /app/backend
+    command:
+      - celery
+      - -A
+      - config
+      - worker
+      - --loglevel=INFO
+      - --pool=prefork
+      - --concurrency=1
+      - --queues=${CELERY_TASK_DEFAULT_QUEUE:-payments}
+    environment:
+      DJANGO_ENV: development
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
+      MYSQL_DATABASE: project_one
+      MYSQL_TEST_DATABASE: test_project_one
+      MYSQL_USER: project_one
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-project-one-local-only}
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      CATALOG_CACHE_ENABLED: "false"
+      PAYMENT_EVENTS_ASYNC: "true"
+      CELERY_BROKER_URL: amqp://project_one:${PAYMENT_MQ_PASSWORD:-project-one-mq-local-only}@rabbitmq:5672/project_one
+      CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-payments}
+    volumes:
+      - ./backend:/app/backend:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  payment-worker-test:
+    build:
+      context: .
+      dockerfile: docker/payments/Dockerfile
+    image: project-one-payment-worker:local
+    profiles: [payment-mq-test]
+    working_dir: /app/backend
+    command:
+      - celery
+      - -A
+      - config
+      - worker
+      - --loglevel=INFO
+      - --pool=prefork
+      - --concurrency=1
+      - --queues=payment-events-test
+    environment:
+      DJANGO_ENV: test
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
+      MYSQL_DATABASE: test_project_one
+      MYSQL_TEST_DATABASE: test_project_one
+      MYSQL_USER: project_one
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-project-one-local-only}
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      CATALOG_CACHE_ENABLED: "false"
+      PAYMENT_EVENTS_ASYNC: "true"
+      CELERY_BROKER_URL: amqp://project_one_test:${PAYMENT_MQ_TEST_PASSWORD:-project-one-mq-test-only}@rabbitmq-test:5672/project_one_test
+      CELERY_TASK_DEFAULT_QUEUE: payment-events-test
+    volumes:
+      - ./backend:/app/backend:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq-test:
+        condition: service_healthy
+
 volumes:
   mysql_data:
+  payment_mq_data:
+  payment_mq_test_data:

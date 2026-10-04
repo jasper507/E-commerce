@@ -94,9 +94,16 @@ class PaymentEvent(models.Model):
 
     class ProcessingStatus(models.TextChoices):
         RECEIVED = "RECEIVED", "Received"
+        PROCESSING = "PROCESSING", "Processing"
         PROCESSED = "PROCESSED", "Processed"
         REJECTED = "REJECTED", "Rejected"
         ERROR = "ERROR", "Error"
+
+    class FailureKind(models.TextChoices):
+        NONE = "NONE", "None"
+        TRANSIENT = "TRANSIENT", "Transient"
+        BLOCKED = "BLOCKED", "Needs investigation"
+        EXHAUSTED = "EXHAUSTED", "Attempts exhausted"
 
     provider = models.CharField(max_length=32)
     event_id = models.CharField(max_length=128)
@@ -115,6 +122,12 @@ class PaymentEvent(models.Model):
         default=ProcessingStatus.RECEIVED,
     )
     error_code = models.CharField(max_length=64, blank=True)
+    # 总次数包含首次；必须在业务事务之外提交，不能因业务回滚而重置预算。
+    processing_attempt_count = models.PositiveSmallIntegerField(default=0, editable=False)
+    failure_kind = models.CharField(
+        max_length=16, choices=FailureKind.choices, default=FailureKind.NONE, editable=False
+    )
+    next_retry_at = models.DateTimeField(null=True, blank=True, editable=False)
     received_at = models.DateTimeField(auto_now_add=True)
     processed_at = models.DateTimeField(null=True, blank=True)
 

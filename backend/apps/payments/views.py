@@ -139,15 +139,20 @@ class MockPaymentWebhookView(APIView):
             )
         except PaymentRuleError as error:
             return payment_error_response(error)
+        if event.processing_status == PaymentEvent.ProcessingStatus.PROCESSED:
+            response_status = status.HTTP_200_OK
+        elif event.processing_status == PaymentEvent.ProcessingStatus.REJECTED:
+            response_status = status.HTTP_400_BAD_REQUEST
+        elif settings.PAYMENT_EVENTS_ASYNC:
+            # 202 只表示通知已保存、待处理/排查，不保证付款或 Broker 投递成功。
+            response_status = status.HTTP_202_ACCEPTED
+        else:
+            response_status = status.HTTP_400_BAD_REQUEST
         return Response(
             {
                 "event_id": event.event_id,
                 "processing_status": event.processing_status,
                 "error_code": event.error_code,
             },
-            status=(
-                status.HTTP_200_OK
-                if event.processing_status == PaymentEvent.ProcessingStatus.PROCESSED
-                else status.HTTP_400_BAD_REQUEST
-            ),
+            status=response_status,
         )

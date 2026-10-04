@@ -130,6 +130,36 @@ MYSQL_PORT = env_int("MYSQL_PORT", 3307)
 MYSQL_TEST_DATABASE = env_value("MYSQL_TEST_DATABASE", "test_project_one")
 PAYMENT_MAX_ATTEMPTS = env_int("PAYMENT_MAX_ATTEMPTS", 3)
 
+# 默认保留同步基线；本期异步运行仅允许本地/隔离测试，不自动迁移开发库。
+PAYMENT_EVENTS_ASYNC = env_bool("PAYMENT_EVENTS_ASYNC", False)
+if PAYMENT_EVENTS_ASYNC and not IS_LOCAL_ENVIRONMENT:
+    raise ImproperlyConfigured("Payment MQ is currently a local development/test slice.")
+
+CELERY_BROKER_URL = env_value(
+    "CELERY_BROKER_URL",
+    "amqp://project_one:project-one-mq-local-only@127.0.0.1:5672/project_one",
+)
+CELERY_TASK_DEFAULT_QUEUE = env_value("CELERY_TASK_DEFAULT_QUEUE", "payments")
+CELERY_TASK_ROUTES = {
+    "payments.process_event": {"queue": CELERY_TASK_DEFAULT_QUEUE},
+}
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TASK_DEFAULT_DELIVERY_MODE = "persistent"
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_RESULT_BACKEND = None
+CELERY_TASK_CREATE_MISSING_QUEUES = True
+CELERY_BROKER_CONNECTION_TIMEOUT = 3
+CELERY_BROKER_TRANSPORT_OPTIONS = {"confirm_publish": True}
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+# RabbitMQ 4.3 rejects transient non-exclusive queues. Celery's control and
+# event queues use durable declarations while their default expiry cleans up
+# unused queues; this does not replace payment Inbox recovery.
+CELERY_CONTROL_QUEUE_DURABLE = True
+CELERY_EVENT_QUEUE_DURABLE = True
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = "UTC"
+
 # 可选的本地目录实验；不会把 Session、库存或支付存储改为 Redis。
 CATALOG_CACHE_ENABLED = env_bool("CATALOG_CACHE_ENABLED", False)
 CATALOG_CACHE_REDIS_URL = env_value("CATALOG_CACHE_REDIS_URL", "redis://127.0.0.1:6380/0")

@@ -1,0 +1,59 @@
+{
+  "environment": {
+    "database": "test_project_one",
+    "broker_port": 5673,
+    "vhost": "project_one_test",
+    "queue": "payment-events-test",
+    "eager": false
+  },
+  "scenarios": [
+    {
+      "scenario": "accepted_then_worker",
+      "http_status": 202,
+      "inbox_state": "PROCESSED",
+      "processing_attempts": 1,
+      "order_state": "PAID",
+      "payment_state": "SUCCEEDED",
+      "inventory": [
+        19,
+        0
+      ],
+      "commit_movements": 1,
+      "queue": {
+        "ack_delta": 1,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "three_messages_one_event",
+      "task_ids": [
+        "90d709aa-edba-4d74-90f7-6190820fe6f6",
+        "9e70849e-f3e2-41a3-b9e0-ad546311021f",
+        "6e8064ff-60f2-421f-a30b-e18f9c3e8aac"
+      ],
+      "processing_attempts": 1,
+      "event_count": 1,
+      "payment_attempt_count": 1,
+      "commit_movements": 1,
+      "queue": {
+        "ack_delta": 3,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "invalid_then_valid",
+      "invalid_state": "REJECTED",
+      "invalid_code": "invalid_signature_or_provider",
+      "valid_state": "PROCESSED",
+      "order_state": "PAID",
+      "commit_movements": 1,
+      "queue": {
+        "ack_delta": 2,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    }
+  ]
+}

@@ -10,7 +10,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Permission
 from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.db import close_old_connections, connection
+from django.db import OperationalError, close_old_connections, connection
 from django.test import RequestFactory, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient, APITransactionTestCase
@@ -537,9 +537,9 @@ class PaymentAPITests(APITransactionTestCase):
 
         with patch(
             "apps.payments.services.InventoryMovement.objects.create",
-            side_effect=RuntimeError("simulated database write failure"),
+            side_effect=OperationalError(1213, "controlled deadlock"),
         ):
-            with self.assertRaises(RuntimeError):
+            with self.assertRaises(OperationalError):
                 receive_payment_event(payload=payload, signature=signature)
 
         event = PaymentEvent.objects.get(event_id="payment-commit-retry")
@@ -561,7 +561,11 @@ class PaymentAPITests(APITransactionTestCase):
             ).exists()
         )
 
-        retried = receive_payment_event(payload=payload, signature=signature)
+        deferred = receive_payment_event(payload=payload, signature=signature)
+        self.assertEqual(deferred.processing_status, PaymentEvent.ProcessingStatus.ERROR)
+        self.assertEqual(deferred.processing_attempt_count, 1)
+        with patch("apps.payments.services.timezone.now", return_value=event.next_retry_at):
+            retried = receive_payment_event(payload=payload, signature=signature)
 
         self.assertEqual(
             retried.processing_status,

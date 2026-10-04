@@ -4,10 +4,11 @@ import hashlib
 import json
 import uuid
 from dataclasses import dataclass
+from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
-from django.db import transaction
+from django.db import DatabaseError, OperationalError, connection, transaction
 from django.utils import timezone
 
 from apps.inventory.models import Inventory, InventoryMovement, InventoryReservation
@@ -27,6 +28,8 @@ RETRYABLE_ATTEMPT_STATUSES = {
     PaymentAttempt.Status.EXPIRED,
     PaymentAttempt.Status.CANCELED,
 }
+MAX_EVENT_PROCESSING_ATTEMPTS = 3
+EVENT_RETRY_BASE_SECONDS = 5
 
 
 @dataclass(frozen=True)
@@ -370,14 +373,143 @@ def process_payment_event(*, event_id):
     return event
 
 
+@transaction.atomic
+def _claim_event_processing(*, event_id, as_of):
+    """锁内复查资格，独立提交次数和 PROCESSING；并发入口只能有一个取得资格。"""
+
+    event = PaymentEvent.objects.select_for_update().get(pk=event_id)
+    if event.processing_status == PaymentEvent.ProcessingStatus.RECEIVED:
+        eligible = event.failure_kind == PaymentEvent.FailureKind.NONE
+    elif event.processing_status == PaymentEvent.ProcessingStatus.ERROR:
+        eligible = (
+            event.failure_kind == PaymentEvent.FailureKind.TRANSIENT
+            and event.next_retry_at is not None
+            and event.next_retry_at <= as_of
+        )
+    else:
+        eligible = False
+    if not eligible:
+        return event, None
+    if event.processing_attempt_count >= MAX_EVENT_PROCESSING_ATTEMPTS:
+        event.processing_status = PaymentEvent.ProcessingStatus.ERROR
+        event.failure_kind = PaymentEvent.FailureKind.EXHAUSTED
+        event.next_retry_at = None
+        event.save(update_fields=("processing_status", "failure_kind", "next_retry_at"))
+        return event, None
+
+    event.processing_attempt_count += 1
+    event.processing_status = PaymentEvent.ProcessingStatus.PROCESSING
+    event.next_retry_at = None
+    event.processed_at = None
+    event.save(
+        update_fields=(
+            "processing_attempt_count", "processing_status", "next_retry_at", "processed_at"
+        )
+    )
+    return event, event.processing_attempt_count
+
+
+@transaction.atomic
+def _process_claimed_payment_event(*, event_id, processing_attempt):
+    event = PaymentEvent.objects.select_for_update().get(pk=event_id)
+    if (
+        event.processing_status != PaymentEvent.ProcessingStatus.PROCESSING
+        or event.processing_attempt_count != processing_attempt
+    ):
+        return event
+    # 原支付处理器是业务事务内部的原语；所有外部入口先经过同一资格检查。
+    event = process_payment_event(event_id=event_id)
+    event.failure_kind = PaymentEvent.FailureKind.NONE
+    event.next_retry_at = None
+    event.save(update_fields=("failure_kind", "next_retry_at"))
+    return event
+
+
+def _classify_processing_failure(error):
+    if isinstance(error, PaymentInvariantError):
+        return PaymentEvent.FailureKind.BLOCKED, "payment_invariant_error"
+    if (
+        isinstance(error, OperationalError)
+        and connection.vendor == "mysql"
+        and error.args
+        and error.args[0] in {1205, 1213}
+    ):
+        return PaymentEvent.FailureKind.TRANSIENT, "database_transient_error"
+    if isinstance(error, DatabaseError):
+        return PaymentEvent.FailureKind.BLOCKED, "database_nonretryable_error"
+    return PaymentEvent.FailureKind.BLOCKED, "unexpected_processing_error"
+
+
+@transaction.atomic
+def _record_event_processing_failure(*, event_id, processing_attempt, error, as_of):
+    event = PaymentEvent.objects.select_for_update().get(pk=event_id)
+    # 失败留存不能覆盖已提交终态，也不能污染后来取得资格的处理者。
+    if (
+        event.processing_status != PaymentEvent.ProcessingStatus.PROCESSING
+        or event.processing_attempt_count != processing_attempt
+    ):
+        return event
+    kind, code = _classify_processing_failure(error)
+    event.processing_status = PaymentEvent.ProcessingStatus.ERROR
+    event.failure_kind = kind
+    event.error_code = code
+    event.processed_at = as_of
+    if kind == PaymentEvent.FailureKind.TRANSIENT:
+        if event.processing_attempt_count >= MAX_EVENT_PROCESSING_ATTEMPTS:
+            event.failure_kind = PaymentEvent.FailureKind.EXHAUSTED
+            event.next_retry_at = None
+        else:
+            event.next_retry_at = as_of + timedelta(
+                seconds=EVENT_RETRY_BASE_SECONDS * 2 ** (event.processing_attempt_count - 1)
+            )
+    else:
+        event.next_retry_at = None
+    event.save(
+        update_fields=(
+            "processing_status", "failure_kind", "error_code", "processed_at", "next_retry_at"
+        )
+    )
+    return event
+
+
+def process_stored_payment_event(*, event_id, as_of=None):
+    """持久化处理预算，再执行业务；失败另事务留存，所有入口共用同一门槛。
+
+    as_of 用于受控时钟测试；命令不提供跳过等待或强制重置选项。
+    硬中断或错误留存失败会留下 PROCESSING，本期不自动接管这类未知故障。
+    """
+
+    if connection.in_atomic_block:
+        raise ValueError("事件处理入口必须在外层事务之外运行。")
+    event, processing_attempt = _claim_event_processing(
+        event_id=event_id, as_of=as_of if as_of is not None else timezone.now()
+    )
+    if processing_attempt is None:
+        return event
+    try:
+        return _process_claimed_payment_event(
+            event_id=event_id, processing_attempt=processing_attempt
+        )
+    except Exception as error:
+        _record_event_processing_failure(
+            event_id=event_id,
+            processing_attempt=processing_attempt,
+            error=error,
+            as_of=as_of if as_of is not None else timezone.now(),
+        )
+        raise
+
+
 def receive_payment_event(*, payload, signature):
     """先独立持久化原始事件，再在另一事务中调用处理器。
 
     这里预先验签只为决定 Inbox 去重键：无效签名不能占用合法 event_id。
     完整验签、金额/币种/状态判断仍在原文入箱后的 process_payment_event 中。
-    处理抛异常时业务事务回滚，Inbox 单独标 ERROR，之后可凭同一事件重试。
+    处理抛异常时业务事务回滚，Inbox 单独标 ERROR；同一事件仍须通过重试门槛。
     """
 
+    if connection.in_atomic_block:
+        raise ValueError("事件接收必须在外层事务之外运行。")
     provider = payload.get("provider") if isinstance(payload, dict) else None
     external_id = payload.get("event_id") if isinstance(payload, dict) else None
     if not isinstance(provider, str) or not provider or len(provider) > 32:
@@ -418,24 +550,13 @@ def receive_payment_event(*, payload, signature):
         PaymentEvent.ProcessingStatus.RECEIVED,
         PaymentEvent.ProcessingStatus.ERROR,
     }:
-        try:
-            return process_payment_event(event_id=event.pk)
-        except Exception:
-            with transaction.atomic():
-                failed_event = PaymentEvent.objects.select_for_update().get(pk=event.pk)
-                if failed_event.processing_status not in {
-                    PaymentEvent.ProcessingStatus.PROCESSED,
-                    PaymentEvent.ProcessingStatus.REJECTED,
-                }:
-                    failed_event.processing_status = PaymentEvent.ProcessingStatus.ERROR
-                    failed_event.error_code = "processing_error"
-                    failed_event.processed_at = timezone.now()
-                    failed_event.save(
-                        update_fields=(
-                            "processing_status", "error_code", "processed_at"
-                        )
-                    )
-            raise
+        if settings.PAYMENT_EVENTS_ASYNC:
+            from apps.payments.dispatch import publish_payment_event
+
+            publish_payment_event(event_id=event.pk)
+            # 返回持久收件事实。Worker 可能已经更快提交，不在这里推断已付款。
+            return event
+        return process_stored_payment_event(event_id=event.pk)
     return event
 
 

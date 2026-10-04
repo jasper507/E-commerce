@@ -1,0 +1,6 @@
+# Only the isolated retry experiment uses a short connection-local lock timeout.
+services:
+  payment-worker-test:
+    command: [python, -m, apps.payments.tests.mq_retry_worker]
+    environment:
+      PROJECT_ONE_MQ_RETRY_TEST_WORKER: "true"

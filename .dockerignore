@@ -1,0 +1,7 @@
+# The payment worker image needs dependencies only; code is mounted at runtime.
+**
+!requirements/
+!requirements/base.txt
+!docker/
+!docker/payments/
+!docker/payments/Dockerfile

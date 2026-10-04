@@ -1,0 +1,81 @@
+{
+  "environment": {
+    "database": "test_project_one",
+    "broker_port": 5673,
+    "vhost": "project_one_test",
+    "queue": "payment-events-test",
+    "eager": false
+  },
+  "scenarios": [
+    {
+      "scenario": "initial_publish_outage_then_duplicate_manual_republication",
+      "http_status": 202,
+      "before_republication": {
+        "status": "RECEIVED",
+        "failure_kind": "NONE",
+        "count": 0,
+        "next_retry_at": null,
+        "processed_at": null
+      },
+      "preview": "dry_run=true selected=1 inbox_ids=1",
+      "publication_outputs": [
+        "selected=1 published=1 errors=0 skipped=0 unattempted=0",
+        "selected=1 published=1 errors=0 skipped=0 unattempted=0"
+      ],
+      "broker_down_publication_failed": true,
+      "processing_attempts": 1,
+      "inventory": [
+        19,
+        0
+      ],
+      "commit_movements": 1,
+      "event_count": 1,
+      "payment_attempt_count": 1,
+      "queue": {
+        "ack_delta": 2,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "retry_publish_outage_then_manual_republication",
+      "before_republication": {
+        "status": "ERROR",
+        "failure_kind": "TRANSIENT",
+        "count": 1,
+        "next_retry_at": "2026-10-04T17:05:29.783981+00:00",
+        "processed_at": "2026-10-04T17:05:24.783981+00:00"
+      },
+      "early_preview": "dry_run=true selected=0 inbox_ids=-",
+      "due_preview": "dry_run=true selected=1 inbox_ids=2",
+      "publication_output": "selected=1 published=1 errors=0 skipped=0 unattempted=0",
+      "broker_down_retry_publication_failed": true,
+      "final_republication_used_new_cli_process": true,
+      "deliberately_removed_old_ready_messages": 1,
+      "processing_attempts": 2,
+      "mysql_1205_observations": 1,
+      "claims": [
+        {
+          "count": 1,
+          "as_of": "2026-10-04T17:05:23.757881+00:00"
+        },
+        {
+          "count": 2,
+          "as_of": "2026-10-04T17:05:43.951902+00:00"
+        }
+      ],
+      "event_count": 1,
+      "payment_attempt_count": 1,
+      "inventory": [
+        19,
+        0
+      ],
+      "commit_movements": 1,
+      "queue": {
+        "ack_delta": 1,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    }
+  ]
+}
