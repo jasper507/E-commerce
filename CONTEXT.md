@@ -1,13 +1,18 @@
-# Project One — Domain Context v1.9
+# Project One — Domain Context v1.26
 
 ## 0. 文档状态
 
-- 当前阶段：Track B / Phase 4A 商品详情 Cache-Aside 第一段已实现，专项验证通过；已复现旧值回填竞态，尚未解决；本地 main 未 commit/push
-- 文档版本：v1.9
-- 范围来源：`PROJECT_CHARTER.md` v1.1
+- 当前阶段：Phase 5C-3 人工发布补漏及真实 Broker 停机恢复已实现并观察通过；继续 Worker 中断恢复，Redis 前序修改保留
+- 文档版本：v1.26
+- 更新日期：2026-10-05
+- 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
+
+第 13 节起的各阶段记录保留当时的范围、实现与证据；其中较早的 MQ 条件性采用和 Sandbox 可选计划，已由第 33 节的新范围决定更新，不代表当前采用边界。
+
+第 34 节的未分类 ERROR 人工恢复为 Phase 5A 历史基线；当前处理门槛按第 35 节执行。第 36/37 节加入真实 MQ 与有界后台重试，第 38 节新增人工发布补漏；周期自动补漏与中断接管尚未实现。
 
 本文件使用以下状态：
 
@@ -116,7 +121,7 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 | Money Formula | 金额公式 | `subtotal = Σ(unit_price_snapshot × quantity)`；`discount` 为一张有效 Coupon 的固定满减或 0；`shipping_fee = 0.00`；`total = max(subtotal - discount, 0.00) + shipping_fee`。全程使用 `DecimalField(max_digits=12, decimal_places=2)` / Python Decimal、CNY 和 `ROUND_HALF_UP`。`Confirmed` |
 | Order Idempotency | 创建订单幂等 | 创建接口必须带 Idempotency-Key。同一 Customer、端点和 Key 配合相同规范化请求时返回原 Order；配合不同请求时返回 `409 Conflict`。`Confirmed` |
 | Order State Machine | 订单状态机 | 合法转换为 `PENDING_PAYMENT → PAID/CANCELED/EXPIRED`、`PAID → SHIPPED/CANCELED`（取消仅限未发货）、`SHIPPED → COMPLETED`；`COMPLETED/CANCELED/EXPIRED` 都是不得回退或复活的终态。PaymentAttempt 失败不新增 Order 的付款失败状态。`Confirmed` |
-| Order Expiration | 未支付过期 | `PENDING_PAYMENT` 默认 15 分钟后转为 `EXPIRED` 并幂等释放预占库存；先使用简单可验证触发机制，不因此强制引入消息队列。`Confirmed` |
+| Order Expiration | 未支付过期 | `PENDING_PAYMENT` 默认 15 分钟后由到期扫描尝试关闭并幂等释放预占库存；支付结果未确认时保留预占等待查单。时间字段不会自动释放库存，支付主线必做 MQ 不改变此业务规则。`Confirmed` |
 | Cancellation | 简单取消 | `PENDING_PAYMENT` 可取消并释放预占、不退款；`PAID` 仅在未发货时可取消，并恢复库存和创建一次 Refund Simulation；`SHIPPED/COMPLETED` 拒绝取消。`Confirmed` |
 | Invariant | 不变量 | 无论请求顺序、并发或依赖故障怎样变化，都必须一直成立的业务事实，例如 `stock >= 0`。 |
 | Idempotency | 幂等 | 同一个业务请求或事件重复执行，最终不会产生重复业务副作用。例如重复取消不能重复释放库存。 |
@@ -134,9 +139,9 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 | Payment Network Boundary | 支付网络边界 | PaymentAttempt 的幂等记录先在短事务中提交，再调用 Gateway；不能持有订单或库存数据库锁等待网络。`Confirmed` |
 | Payment Event | 支付事件 | Provider 通知系统发生了某件事的数据。以 `(provider, event_id)` 唯一识别，并保存接收时间、原始 payload、验证/处理状态和错误信息。`Confirmed` |
 | Webhook | 服务端回调 | 支付 Provider 主动向 Django Payment API 发送的 HTTP 请求。前端“支付成功”页面不能替代 Webhook 或服务端支付事实。`Confirmed` |
-| Webhook Inbox / Event Inbox | 回调收件箱 | 先可靠保存原始事件，再在明确事务边界内校验并处理；重复、乱序、验证失败和处理失败都不能丢失原文。同步 baseline 先行，不默认依赖 Celery。`Required Later` |
+| Webhook Inbox / Event Inbox | 回调收件箱 | 先可靠保存原始事件，再在明确事务边界内校验并处理；重复、乱序、验证失败和处理失败都不能丢失原文。保留同步 Mock baseline；Phase 5C-1/2/3 已验证真实 MQ、有界重试与人工发布补漏，中断接管和周期自动补漏待完成。`Confirmed` |
 | Mock Payment Gateway | 模拟支付网关 | 项目后端自己控制的测试替身，必须制造成功、失败、处理中、超时/UNKNOWN、重复、乱序以及错误金额/币种/签名。场景选择器只在测试或受保护演示环境开放。`Confirmed` |
-| Sandbox Provider | 第三方支付测试环境 | 只在 Mock Evidence Pack 完成、100 小时审计允许且账号可快速使用时考虑；支付宝优先做最多 2 小时可用性检查，受阻可换 Stripe 或延期。它是 Optional Bonus，不阻塞核心完成。`Conditional` |
+| Sandbox Provider | 第三方支付测试环境 | 本期 No-Go，不接支付宝、Stripe 等第三方 Sandbox，也不以它作为支付主线完成要求；以后只有项目拥有者重新明确决定才评估。`Out of Scope` |
 | Provider Adapter | 支付供应商适配层 | 统一创建支付、查单、验签、事件解析和发起模拟退款；Mock 必须实现同一合同，Provider 字段不得渗入 Order 领域。`Required Later` |
 | Refund Simulation | 模拟退款 | 独立于成功 PaymentAttempt 保存退款模拟生命周期，不转移真钱。用于已支付未发货取消和终态后的迟到支付；相同业务动作最多创建一次。`Confirmed` |
 | Reconciliation | 对账 | 比较本地订单/支付记录和 Provider 事件，发现漏单、重复或状态不一致。第一版只学习和验证必要思路，不建设商业级对账平台。 |
@@ -152,13 +157,13 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 | MySQL | 关系型数据库 | 保存核心业务事实，并提供事务、约束、索引和行锁等能力。库存和订单关键语义不能用 SQLite 测试结果代替。`Confirmed` |
 | Redis | 内存数据系统 | Phase 4A 已实现可选的本地商品详情缓存并通过真实集成测试；热点保护、原子准入仍待后续实验。不能成为订单、支付和核心库存的唯一事实来源。 |
 | Cache | 缓存 | 保存可重新获得的数据副本，以减少数据库压力和响应时间。缓存更快不代表缓存一定正确。 |
-| Cache-Aside | 旁路缓存模式 | Phase 4A 商品详情公开 JSON 未命中读 MySQL 并回填；正常模型 save 在 `transaction.on_commit` 触发失效。每次读取仍检查 MySQL 上架状态；列表/分类不缓存。 |
-| Cache Consistency | 缓存一致性 | Phase 4A 已验证提交后失效、TTL 抖动及连接故障回源；也已复现失效失败和并发旧值回填窗口，尚不保证强一致。见第 21 节。 |
+| Cache-Aside | 旁路缓存模式 | 商品详情公开 JSON 未命中读 MySQL 并回填；Phase 4B 正常模型 save 在 `transaction.on_commit` 切换全目录随机代号，Key 含代号。每次读取仍检查 MySQL 上架状态；列表/分类不缓存。 |
+| Cache Consistency | 缓存一致性 | Phase 4A 复现旧回填；Phase 4B 已验证成功换代后新请求不选旧代，代号在首条详情 SQL 前捕获。换代失败、提交后崩溃等仍不保证，非强一致。见第 22 节。 |
 | Cache Experiment Parameters | 缓存实验参数 | 具体 Key 结构、基础 TTL 与抖动范围、空值缓存及热点保护参数必须由 baseline 和实验决定。`Experiment Candidate` |
 | Resilience | 故障韧性 | Redis 或其他辅助系统故障时，核心系统按明确规则降级、恢复或对账，不能丢失核心事实；下单仍重新读取 MySQL 权威价格与库存。`Confirmed` |
 | Redis Lua | Redis Lua 脚本 | 作为秒杀流量准入或原子前置判断的实验候选，必须通过并发测试、崩溃窗口和 MySQL 对账决定最终路径。`Experiment Candidate` |
 | Modular Monolith | 模块化单体 | 整个 Django/DRF 后端是一个部署单元，但内部按 Accounts、Catalog、Inventory、Ordering、Payments 等业务职责划分。第一版不拆微服务。`Confirmed` |
-| Django App | Django 应用模块 | 第一批固定为 `accounts`、`catalog`、`inventory`、`ordering`、`payments`；闭环后按需增加 `promotions`、`engagement`，Search/Async 只有通过 Gate 才建立。`Confirmed` |
+| Django App | Django 应用模块 | 第一批固定为 `accounts`、`catalog`、`inventory`、`ordering`、`payments`；闭环后按需增加 `promotions`、`engagement`。支付异步处理使用必做 RabbitMQ + Celery，不要求拆微服务或建立通用异步平台；Search 继续受 Gate 控制。`Confirmed` |
 | Vue Application Boundary | Vue 工程边界 | 使用一个 Vue 3 + TypeScript/Vite 工程，内部提供 Customer 与 Admin 两套路由和 Layout，并共享认证、API Client、类型和基础组件。`Confirmed` |
 | Primary Key / Public ID | 内部主键与公开编号 | Model 内部统一使用大整数主键；Order 对外使用不可猜测且稳定的公开订单号，不能把连续自增 PK 当业务编号暴露。`Confirmed` |
 | No Hard Delete for Facts | 业务事实不硬删除 | Order、PaymentAttempt、Payment Event、RefundSimulation、InventoryMovement 等审计事实通过状态或归档保留，不作为普通记录物理删除。`Confirmed` |
@@ -187,14 +192,16 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 
 ---
 
-## 9. 条件性技术
+## 9. 必做异步能力与条件性技术
 
-以下技术在路线图中存在，但不是 Interview Core 的完成阻塞项。只有出现真实问题、比较过简单方案并通过范围与证据审计后才引入；No-Go（暂不采用）也是有效工程结论。一旦引入，必须进行真实集成与故障验证。
+RabbitMQ + Celery 已由项目拥有者列为支付主线必做，Phase 5C-1 正常/重复消费、C2 有界后台重试、C3 人工发布补漏与 Broker 停机恢复已用真实隔离服务观察验证。用途限定支付 Inbox；PROCESSING 接管与真实 Worker 中断待完成，没有周期自动补漏。保留同步 Mock baseline，不建立通用异步平台。
 
-| English Term | 通俗中文 | 引入门槛 |
+Elasticsearch、Distributed Lock 和 Transactional Outbox 仍属条件性技术，只有出现真实问题、比较过简单方案并通过范围与证据审计后才引入；No-Go（暂不采用）也是有效工程结论。MQ 必做不自动使 Outbox 必做；数据库提交后未成功投递的事件必须有可验证的恢复路径，具体方案仍待比较。一旦引入相关技术，必须进行真实集成与故障验证。
+
+| English Term | 通俗中文 | 当前采用边界 |
 |---|---|---|
-| Celery | Python 异步任务框架 | 出现不能合理同步完成的任务、重试或可靠消费需求。`Conditional` |
-| RabbitMQ | 消息代理 | Celery 等消费者确实需要任务投递、确认、重试和故障实验。`Conditional` |
+| Celery | Python 异步任务框架 | 支付主线必做，真实 Linux Worker 已消费 Inbox并按数据库计划安排短ETA重试；发布补漏和中断恢复待完成，业务副作用由MySQL保护。`Partially Verified` |
+| RabbitMQ | 消息代理 | 支付主线必做，已验证正常、重复、伪造事件及短ETA后台重试消息；消费者崩溃及Broker中断恢复待验证，消息成功不等于支付成功。`Partially Verified` |
 | Elasticsearch | 搜索引擎 | MySQL 搜索基线在中文分词、相关性或测量结果上出现明确不足。`Conditional` |
 | Distributed Lock | 分布式锁 | 默认不用；只有数据库约束、条件更新、行锁或 Redis Lua 等简单方案经证据证明不足时才评估。`Conditional` |
 | Transactional Outbox | 事务发件箱 | 默认不用；只有已采用可靠消息，且数据库提交与消息发布的一致性窗口成为真实问题时才评估。`Conditional` |
@@ -212,7 +219,7 @@ Docker Compose、Linux、Nginx、Gunicorn、CI、日志、健康检查和性能�
 3. 状态机：Order 与 PaymentAttempt 使用第 5、6 节已经列明的状态、合法转换和终态；不建立重复维护状态的独立 Payment 表，Refund Simulation 使用独立记录保存生命周期。
 4. 库存时机：创建 Order 的 MySQL 事务内预占，事务外调用 Gateway，支付成功核销，取消或超时幂等释放。
 5. 支付尝试：每单最多一个活跃 Attempt，默认最多 3 次主动尝试且可配置；Idempotency-Key 区分重放与新尝试；UNKNOWN 先查单；成功后禁止新建。幂等记录先在短事务中提交，再调用 Gateway，不能持有订单或库存数据库锁等待网络。
-6. 支付集成：Mock Gateway 必做；Alipay/Stripe Sandbox 是 Optional Bonus；Production Payment 不做。
+6. 支付集成：Mock Gateway 与 RabbitMQ + Celery 支付异步处理必做；Phase 5C-1/2/3 已验证基础链路、有界重试及人工发布补漏，周期自动补漏/Worker 中断接管未完成。第三方Sandbox本期No-Go，以后须由项目拥有者重新决定；Production Payment不做。
 7. Vue：一个 Vue 3 + TypeScript/Vite 工程，两套路由树与 Layout，共享认证、API Client 和类型。
 8. Django/Schema：首批 App 为 accounts、catalog、inventory、ordering、payments；使用 Custom User、大整数内部主键、公开 Order 编号、业务事实不硬删除，字段和索引随纵向切片审查。
 9. 手机号：输入先去除空格、连字符和 `+86`，再规范化为匹配 `^1[3-9]\d{9}$` 的 11 位字符串；后端为最终校验边界，不发短信、不验真。
@@ -237,7 +244,7 @@ Docker Compose、Linux、Nginx、Gunicorn、CI、日志、健康检查和性能�
 13. Redis 可做缓存和流量准入，但 MySQL 始终保存最终订单和核心库存事实。
 14. 目录缓存采用 Cache-Aside、事务提交后失效、TTL 抖动和 Redis 故障回退 MySQL；具体参数由实验决定。
 15. Provider Adapter 统一创建支付、查单、验签、事件解析和发起模拟退款，Mock 实现同一合同。
-16. Event Inbox 使用 `(provider, event_id)` 唯一并保留原始事件，先建立同步 baseline，再按 Gate 判断是否异步。
+16. Event Inbox 使用 `(provider, event_id)` 唯一并保留原始事件；已有同步 Mock baseline，后续必做 RabbitMQ + Celery 异步处理、有界重试与恢复。支付、订单和库存副作用仍由 MySQL 事务、状态机与幂等约束共同保护。
 17. 三条旗舰实验统一记录代码/Git 与依赖/服务版本、数据集和 seed、并发模型与数量、预热、持续时间、运行次数、硬件/OS/容器资源、p50/p95/p99、吞吐、错误率、实验前后不变量、所有有效运行和原始输出。
 
 以上都是已确认的规则或方向，不再作为 `Pending`。其中技术优胜方案和具体实验参数仍必须经过真实证据，不能因为 Charter 已 Final 就宣称已经验证。
@@ -254,6 +261,7 @@ Docker Compose、Linux、Nginx、Gunicorn、CI、日志、健康检查和性能�
 - 推荐系统、社交 Feed 和原生移动 App；
 - 微服务、Kubernetes、Service Mesh 和 Kafka 核心链路；
 - 第三方 Production Payment、真实资金与真实退款；
+- 本期第三方支付 Sandbox；以后须由项目拥有者重新明确决定，不能自动恢复为可选任务；
 - 动态运费、税务引擎、多层 Category、复杂优惠规则和通用 EAV 商品属性系统；
 - 商业产品级 UI 动画与视觉精修。
 
@@ -261,14 +269,14 @@ Docker Compose、Linux、Nginx、Gunicorn、CI、日志、健康检查和性能�
 
 ## 12. 按纵向切片确定的实现细节
 
-Charter v1.1 是当前设计基线，但下列机械性或证据驱动细节不需要在 Day 0 假装全部冻结：
+Charter v1.2 及第 33 节支付范围更新是当前设计基线，但下列机械性或证据驱动细节不需要在 Day 0 假装全部冻结：
 
 - 每个 Model 的非业务字段名、精确长度、外键删除动作和查询驱动索引；
 - API URL、分页、过滤和错误详情等局部契约；Order 与 PaymentAttempt 的幂等规则不得因此改变；
 - Redis Key、TTL 秒数、抖动范围、热点阈值和最终 Lua 路径；
 - MySQL 隔离级别、条件更新与行锁在目标环境中的实测结果；
 - 性能目标值；必须先得到 baseline，再根据证据设定；
-- 四个条件技术 Gate 和 Optional Sandbox 的未来 Go/No-Go 记录。
+- 搜索、分布式锁和 Outbox 的条件技术 Gate；支付 MQ 的具体重试、恢复与故障实验设计；若项目拥有者以后重新决定，再记录 Sandbox 的范围变化。
 
 这些细节在对应 Vertical Slice、ADR 或实验计划中确认。它们可以细化实现，但不得绕过第 10 节已确认的不变量和边界。
 
@@ -571,3 +579,470 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
   `docs/learning/phase-4-product-detail-cache-study-guide.md`。
 - 下一步沿用延迟旧回填实验，先比较最小修正与取舍，再推进热点回源和 Redis
   故障集中回源验证。尚未得到生产性能、容量或强一致性结论。
+
+---
+
+## 22. Track B / Phase 4B 缓存分代（2026-09-26）
+
+### 22.1 已验证决定及取舍
+
+- 先运行 Phase 4A 旧回填反例，再将判定改为“后来请求读新值”，原实现实际
+  失败。修正使用全局随机 UUID generation + 包含 generation 的 v2 详情 Key。
+- 请求必须在首条 Product/Category 数据库读取前捕获代号，并一直用该代号
+  回填。正常 Product/Category/SKU save 在 on_commit 成功后切换全目录代号。
+- 旧请求仍可以返回旧值和 SET 旧代；成功换代后开始的新请求不读取旧代。
+  旧详情保留原 TTL 自动清理，代号 Key 不过期；丢失后 SET NX 随机重建并读赢家。
+- 与 WATCH 条件回填、延迟双删、数据库/每商品版本比较后，本段选择不改
+  schema 的最小方案。代价是任意目录保存都会使全部详情逻辑失效、多一次
+  Redis GET、旧代短期占内存；没有性能优胜结论。
+- 去掉分类关联商品失效查询和 SKU 原归属查询。不改变业务 API、权限、
+  价格/库存权威来源或商品/分类的实时下架检查。
+
+### 22.2 实际证据与限制
+
+- 原反例 1 passed（确认失败现象）；新判定在旧实现 1 failed；修正后原
+  缓存专项 20 passed in 11.82s，额外代号专项 8 passed in 8.74s。
+- 额外证据包含首条 SQL 后暂停、代号丢失、真实并发 SET NX 同赢家、全局
+  失效影响无关商品、旧详情自然过期、SKU 改价和非法代号回源。
+- 相关目录/购物车/下单/支付 API 回归：65 passed、28 deselected、
+  14 subtests passed in 47.66s。28 个 Redis 用例已在专项运行，回归未重复。
+- 命中 1 SQL + 2 Redis GET，未命中 2 SQL；不是性能提升倍数或生产容量结论。
+- MySQL 提交与回调之间的窗口、提交后崩溃、Redis 换代失败、批量 update、
+  绕过 Admin 硬删除与库存提示 TTL 陈旧仍未解决；不是强一致方案。
+- 没有新增依赖、模型、迁移或服务，没有修改订单/库存/支付、前端或开发库。
+  本轮没有执行暂存、commit、push 或部署。
+- 详细证据见 `docs/verification/phase-4b-cache-generations.md`，学习与面试追问
+  见 `docs/learning/phase-4b-cache-generation-study-guide.md`。
+- 下一步测量热点冷启动及 Redis 故障时的集中回源，再决定请求合并或局部
+  版本。保留本段的故障边界，不宣称全链路缓存一致性已完成。
+
+---
+
+## 23. Track B / Phase 4C 并发回源基线（2026-09-26）
+
+- Depth / Learning Mode，业务代码不变。真实隔离 MySQL + Redis，DRF
+  APIClient 10 并发 × 3 轮 × 3 场景，共 90 请求，全部 200 且 JSON 正确。
+- 热缓存每轮 10 SQL、0 详情加载；新代冷缓存三轮 16/14/16 SQL、
+  6/4/6 详情加载；Redis 连接失败每轮 20 SQL、10 详情加载。
+- 总 SQL 包含每请求一次 Product/Category 可见性检查；请求合并即使有效，
+  也不意味着所有数据库查询归零。自然调度下重复加载数不要求固定。
+- 实验 `1 passed in 7.83s`；相关最小回归 `3 passed in 8.31s`。计量排除
+  建 DB 连接和开始屏障，没有经过 HTTP 服务器，不能推断生产容量。
+- 当前没有唯一加载者和等待机制，未测试加载者失败/等待超时；连接失败
+  降级也不证明能承受大流量或处理静默超时。
+- 证据及复现：`docs/verification/phase-4c-cache-bursts.md`；90 个请求的
+  原始记录：`docs/verification/phase-4c-cache-burst-data.json`。
+- 下一步比较进程内请求合并与 Redis 租约锁，先定 generation 隔离、异常
+  清理和等待时限；缓存整体故障的数据库保护单独评估，不预写优化结论。
+
+---
+
+## 24. Track B / Phase 4D 进程内请求合并（2026-09-27）
+
+- Depth / Learning Mode。共享 Key 为完整详情 Key（prefix + generation +
+  Product ID）；每请求仍在首条 SQL 前捕获代号，各自执行 MySQL 上架检查。
+- SingleFlight 使用短 Lock + Future，共享进行中公开 payload。加载者二次
+  查同代缓存，必要时加载/回填；等待者等待最多 200ms。失败通知后或超时
+  时独立复查/回源，超时不移除或取消仍运行的加载者；结束清理登记。
+- 初次缓存不可用、禁用或事务内绕过；只共享普通 dict，不共享 ORM 实例、
+  Request/Response。进程内有效，不协调多个服务器进程。
+- 真实隔离 MySQL + Redis 两方案对照，共 180 请求全部成功：冷缓存三轮
+  详情加载从 9/10/7 到 1/1/1，SQL 从 19/20/17 到 11/11/11；热缓存仍
+  每轮 10 SQL，Redis 连接失败仍每轮 20 SQL。未得到生产性能或容量结论。
+- 对照 `2 passed in 9.79s`；最终商品目录整体回归 `57 passed`、
+  `6 subtests passed in 20.39s`，包括共享、不同键、失败清理、0/200ms
+  超时后仍加入原加载者、二次命中、换代隔离与绕过规则。Django check 和
+  diff whitespace 检查通过；实际 API 受控4请求观察4 guard + 1 SKU SQL。
+- 学习指南：`docs/learning/phase-4d-detail-singleflight-study-guide.md`；
+  证据及两份逐请求 JSON：`docs/verification/phase-4d-detail-singleflight.md`。
+- 不取消卡住的加载者；超时和失败降级仍可重复回源；Redis 整体故障、多个
+  进程与原分代一致性窗口没有解决。没有改模型、接口、依赖、交易或开发库。
+- 下一步先由项目拥有者复述协议，再比较 Redis 故障时的本地限并发与快速
+  拒绝，先确认可用性规则后实现，不把本段宣传为数据库整体保护。
+
+---
+
+## 25. Track B / Phase 4E 故障回源名额（2026-09-27）
+
+- Depth / Learning Mode。用户明确选择故障回源满员立即503，不排队。
+  进程内 BoundedSemaphore 设2名额，是本地实验参数，不是生产安全容量。
+- 初次代号读取异常/非法进入降级，在 Product SQL 前申请名额；payload
+  GET 晚失败只限制后续SKU加载。缓存禁用和事务内主动绕过不进入故障保护。
+- 同请求嵌套作用域只取得一次名额，正常/404/异常均 finally 归还；SET
+  失败保留已有正常结果。503响应detail为“商品详情暂时繁忙，请稍后重试。”。
+- 真实 MySQL + Redis 连接拒绝受控实验：保持2个加载者，另外8请求在其
+  释放前返回503且零业务SQL；2个成功各2 SQL，总4 SQL，峰值加载者2。
+  释放后新请求正常。人工保持重叠，不是性能或自然流量拒绝比例结论。
+- 首次保护目标 `10 passed in 11.06s`；补充第二次GET故障及失败Future
+  清理后，最终目录整体回归 `68 passed`、`6 subtests passed in 23.70s`。
+  Django check、diff whitespace及原始JSON重算通过。
+- 现有突发测试已按新策略记录成功/503与SQL；没有扩大名额隐藏拒绝，
+  Phase4C/4D历史结果保留。未修改开发数据、依赖、模型、交易或前端。
+- 学习：`docs/learning/phase-4e-fallback-admission-study-guide.md`；证据与
+  10请求数据：`docs/verification/phase-4e-fallback-admission.md`。
+- 仅指定降级入口、本进程有效；正常上架SQL、晚故障之前SQL、其他接口和
+  进程不受全局约束；不是限速/熔断，不控制DB连接总数，无生产容量结论。
+- 下一步先复述缓存证据链与可用性代价，整理演示，再根据真实超时或多进程
+  问题决定是否引入熔断/跨进程协调，不自动扩大技术范围。
+
+---
+
+## 26. Track B / Phase 4F 慢故障与恢复边界（2026-09-27）
+
+- Depth / Learning Mode，第一段仅增加实验和证据，业务实现不变。真实
+  隔离MySQL与测试Redis，APIClient直接走后端，不是HTTP压测或生产容量实验。
+- 测试Redis实际CLIENT PAUSE 2500 ALL，4轮各6请求：正常/首轮慢故障/
+  继续慢故障/恢复分别为6/2/2/6成功，0/4/4/0拒绝，SQL6/4/4/6；
+  应用GET12/6/6/12，超时0/6/6/0。故障轮回源名额峰值2，每个拒绝
+  请求零业务SQL，但均已等待约100ms。两故障轮均在暂停窗口内完成。
+- 健康Redis慢加载：Event保持原加载者，4个等待者实际等满200ms后独立
+  加载，5请求全成功、5详情加载、10SQL、加载段峰值5，故障名额申请0次。
+  峰值包含人为等待，不是同时执行SQL数；计时不是MySQL慢查询性能成绩。
+- 独立真实连接拒绝实验：缓存129，正常SKU.save提交169但换代连接失败，
+  故障期回源169，恢复后同代命中129（旧TTL还剩32秒）。再正常save成功
+  换代后新读169；仅复现边界，未实现自动恢复一致性。读熔断也不自动修复。
+- 首次慢加载1 passed in 7.43s；慢Redis与恢复2 passed in 11.50s；
+  目录整体回归71 passed、6 subtests passed in 26.90s。
+  Django check为0 issues，diff及新文档空白检查通过，原始计数独立重算一致。
+- 学习：docs/learning/phase-4f-slow-faults-study-guide.md；证据、方法边界
+  及三份逐请求JSON：docs/verification/phase-4f-slow-faults-and-recovery.md。
+- 未新增依赖、接口、模型、配置或迁移，未修改交易、前端与开发数据，
+  未commit/push。此前阶段未提交工作保留。
+- 下一段先讨论本地读熔断状态与恢复探测，对照持续失败的GET/等待成本；
+  健康慢加载的503规则与恢复一致性补偿分别确认，不把三类问题混为一体。
+
+---
+
+## 27. Track B / Phase 4G 最小读取熔断：状态机第一步（2026-09-27）
+
+- 用户接受首轮实验候选：一次指定网络失败打开，冷却 1 秒；不是生产最佳参数。
+  本段仍为 Depth / Learning Mode。用户要求控制首个项目的深度：完成最小
+  读取熔断、缓存穿透及多 Key 雪崩证据后进入支付，不继续扩展治理框架。
+- 新增独立 RedisReadCircuitBreaker，仅提供本进程 Closed/Open/Half-open
+  状态规则，尚未实例化或接入 cache.py/views.py；HTTP 业务行为没有改变。
+- 短锁仅管理状态；逻辑操作在锁外执行。半开唯一探测，网络失败重新 Open；
+  非网络异常原样抛出，半开异常退出保守地重新冷却，不假称通信恢复。
+  状态轮次隔离晚到旧结果；正常返回 None 也表示操作成功。
+- 首个无熔断简化基线测试实际 1 failed in 0.23s：第二次仍调用超时读取。
+  最小状态机实现后，纯逻辑专项 12 passed in 0.06s；可控时钟与线程 Event，
+  没有数据库 fixture、Redis 网络连接或真实等待冷却。不能据此声称依赖故障
+  集成、API 降级、延迟改善或目录回归已通过。
+- 学习、判定和本次运行记录：docs/learning/phase-4g-minimal-read-breaker.md。
+  现有 2 个回源名额与满员立即 503 已确定，下一步接入时沿用。
+- 下一步仅接入代号读取逻辑操作与每次 payload GET；回填与提交后换代独立。
+  再对照真实隔离慢 Redis 的尝试/等待、SQL、503、名额峰值及响应内容。
+  恢复通信不能修复旧价；不增加跨进程协调、后台探测或恢复补偿。
+- 没有修改依赖、配置、模型、迁移、交易、前端或开发数据，未 commit/push；
+  此前阶段的未提交修改保留。
+
+---
+
+## 28. Track B / Phase 4G 读取接入与真实对照（2026-09-27）
+
+- cache.py 的初次代号读取与每次 payload GET 接入进程共享 detail_reads。
+  代号 GET→可选 SET NX→GET 是一组逻辑操作；跳过视为降级，沿用既有
+  2 个回源名额/满员立即 503。视图、接口及提交后换代没有改写。
+- 指定连接/超时异常触发，排除已知鉴权、权限、连接池耗尽、外部鉴权、
+  服务器加载期的 ConnectionError 子类；普通 miss/404/SQL 错误/坏 JSON
+  不触发。回填及失效写独立，读恢复不表示缓存最新。
+- 真实 MySQL/测试 Redis 两方案各 4 轮×6 请求，持续故障短超时为 6 GET/
+  6 超时、p50 111.665ms；熔断为 0 GET/0 超时、p50 2.147ms。
+  两方案首轮各 6 GET/6 超时，名额峰值均 2，成功响应内容全正确。
+  正常/探测后恢复各 6 成功、6 SQL；不要求固定 200/503 比例。
+- 冷却后真实失败探测重新 Open，新的冷却期再次零读取；恢复请求转 Closed。
+  Windows 本次未监听端口实际抛 TimeoutError，测试已允许指定连接/超时
+  两类，不把平台异常名称当业务判定。半开唯一探测用真实 API+Event 验证。
+- 纯状态专项 17 passed in 0.14s；API 边界/失败探测目标 10 passed in
+  8.70s；目录整体 99 passed、6 subtests passed in 37.63s。原始数据独立
+  重算一致；只使用 test_project_one 和 UUID 前缀，没有 FLUSHDB。
+- 历史 Phase 4F 基线使用测试专用直通策略保留；旧恢复测试推进可控冷却
+  后再确认缓存行为，测试之间隔离熔断状态，不通过重置生产状态隐藏问题。
+- 证据与两份逐请求 JSON：docs/verification/phase-4g-minimal-read-breaker.md；
+  学习：docs/learning/phase-4g-minimal-read-breaker.md。数字只说明本机受控
+  故障行为，不是生产性能/容量，持续故障仍会在冷却后重新探测。
+- 最小熔断收束，下一步缓存穿透，再多 Key 雪崩、整理缓存故事、进入支付。
+  不继续增加框架、后台探测或恢复补偿；未改变依赖、配置、迁移、交易、
+  前端或开发数据，未 commit/push，先前修改保留。
+
+---
+
+## 29. Track B / Phase 4H 文档核对与穿透基线（2026-09-27）
+
+- 用户再次要求以面试为主，先核对文档再推进。已核对 Charter、项目协作
+  规则、当前上下文及 Phase 4G 证据；保持一条业务闭环与库存、缓存、支付
+  三个可独立解释的技术故事，证据足够后前进，控制首个项目的复杂度。
+- Charter 与 README 部分活跃进度仍旧；它们的范围原则有效，当前实现
+  与最新阶段事实以 CONTEXT 和较新验证记录为依据，不退回旧 MVP 待办。
+  本轮只核对这些旧段落，没有改写其历史记录或整体路线图。
+- 本段为 Depth / Learning Mode，先记录简单基线：真实隔离 MySQL/Redis，
+  顺序6次同一缺失slug、6次不同缺失slug均全部404、各6次商品SQL和
+  6次Redis GET；6次已有商品暖详情全部200、6 SQL、12 GET。
+  Redis健康、读熔断Closed，没有SKU加载，正常请求仍有上架检查。
+- 目标实验实际 1 passed in 9.54s，18请求完整记录保存。未重跑历史
+  Phase 4G 的99个目录测试；没有延迟/容量结论，没有实施负缓存。
+- 候选：只记录数据库确实不存在的slug，按已捕获generation隔离，短TTL
+  5秒；已有隐藏商品不写负标记，200仍每次执行MySQL可见性检查。
+  同一缺失slug期望首读1SQL、后读0SQL但仍404；成功save换代后新请求
+  不选旧标记。绕过save的创建可能受负标记影响，TTL从实际回填起算。
+  该规则与测试判定尚待用户确认；不将它作为已实现/已验证决定。
+- 收益只针对重复缺失地址；不同随机slug仍可能各查一次并产生短期Key。
+  健康商品会新增一个负标记GET，不能宣称防住所有穿透或全站数据库保护。
+- 记录：docs/verification/phase-4h-cache-penetration.md；学习：
+  docs/learning/phase-4h-cache-penetration-study-guide.md；原始JSON：
+  docs/verification/phase-4h-penetration-baseline-data.json。
+- 本轮仅新增实验/学习证据并更新上下文，没有修改业务实现、依赖、模型、
+  配置、迁移、交易、前端、开发数据，未commit/push，既有修改保留。
+  最小穿透验证完成后继续多Key雪崩、整理缓存故事，再进入支付。
+
+---
+
+## 30. Track B / Phase 4H 最小负缓存（2026-09-30）
+
+- 用户已解释两次 HTTP 请求独立、重复缺失地址会重复查 MySQL，并提出同一
+  地址在短时间内只查一次的预期。首个目标测试在原实现下实际失败：预期
+  商品 SQL `[1, 0, 0, 0, 0, 0]`，观察为 `[1, 1, 1, 1, 1, 1]`。
+- 复用当前 Redis 与请求已捕获的 generation，按 slug 保存 `missing` 标记，
+  TTL 5 秒为首轮实验值，不视作最佳参数。标记 GET 在商品 SQL 前且经过
+  现有读取熔断；GET 故障沿用回源名额，SET 故障不改变应有的 404。
+- 详情 `get_object()` 改为按 slug 查询 Product 并连带 Category 一次获取；
+  找到后仍检查两者上架状态。仅真正不存在才写标记；已下架商品、分类
+  继续返回 404，不写标记。正常商品仍每请求查 MySQL 确认可见性。
+- 新测试实际通过：同一缺失地址 6 次依次只有首请求查商品 SQL，全部
+  返回 404；标记过期重新查；正常 Product.save 新建并切代后返回 200；
+  商品/分类下架不误标记；标记读故障仍受 2 名额限制，写故障保留 404。
+  Phase 4H 目标测试 `8 passed`；完整目录回归 `107 passed, 6 subtests passed`。
+- 2026-09-27 的原始 JSON 保留为优化前证据；现有基线测试显式关闭负标记
+  来重放旧路径。健康详情多一次 Redis GET。不同随机 slug、同一 slug
+  首轮同时到达的并发请求仍可能各查 SQL；绕过 save 或失效 SET 失败时
+  可能暂时返回旧 404，TTL 从标记实际写入时起算。
+- 本段修改仅在目录缓存、详情入口、相关测试及学习/验证记录；没有新增
+  依赖、配置、迁移、交易、前端或开发数据操作，未 commit/push。下一步
+  多 Key 雪崩的最小证据，然后收束缓存故事并进入支付。
+
+---
+
+## 31. Track B / Phase 4I 多 Key 逻辑失效最小实验（2026-09-30）
+
+- 本段为 Depth / Learning Mode，服务于 Redis 缓存一致性与韧性的面试故事。
+  只新增测试与证据，不实现新的缓存防护。六个不同商品详情先预热；一次
+  正常 Product.save 在提交后切换全局 generation。旧六个 Key 仍有正 TTL，
+  新代六个 Key 均不存在，说明它们逻辑上一起变冷而非物理同时到期。
+- 每轮六线程各读一个不同商品；三轮均为换代前热 `6 商品检查 SQL + 0 SKU
+  SQL`、换代后冷 `6 + 6`、回填后热 `6 + 0`。九组共 54 个响应均 200 且
+  内容正确。现有 SingleFlight 只合并同 Key，不合并六个不同商品加载；
+  TTL 抖动只能分散自然过期，不能阻止全局换代造成集中回源。
+- 真实隔离 MySQL `test_project_one`、测试 Redis 6381，UUID 前缀，未清空
+  Redis。目标测试 `1 passed in 6.97s`；放宽非核心 TTL 下界后，最终目录
+  回归 `108 passed, 6 subtests passed in 38.68s`。
+  原始逐请求 JSON、环境、方法、时延/吞吐及局限记录在
+  docs/verification/phase-4i-multikey-avalanche.md。
+- 这只证明每轮冷波比热波额外增加六次 SKU SQL，不证明数据库过载、真实
+  HTTP 吞吐或物理 TTL 同时过期。全局代号换得简单的旧写隔离，代价是无关
+  商品也变冷；按商品精确失效须额外处理分类、SKU 跨商品依赖，当前不引入。
+- 未修改生产缓存逻辑、依赖、配置、迁移、订单、支付、前端或开发数据，
+  前序未提交改动保留；未 commit/push。下一步先让项目拥有者口述缓存
+  故事与取舍，然后进入支付状态、Webhook 与幂等的最小基线。
+
+---
+
+## 32. Track B / Phase 4J 多 Key 回源并发名额（2026-10-01）
+
+- 用户指出实验复现尚未补齐保护，随后明确推进“多 Key 回源并发上限”。
+  本段 Depth / Learning Mode，复用两个进程共享名额，正常健康缓存 miss 的
+  load_and_fill 使用 for_load=True；Redis 故障已获准请求沿用自身标志，
+  避免内层重复申请。满员立即 503，加载/回填完成或异常都释放名额。
+- 首个目标测试在旧实现下实际失败 `1 failed in 7.98s`，加载峰值 6 而预期
+  为 2。真实隔离 MySQL/Redis，两个策略各三轮、每轮六个不同商品冷请求；
+  Event 暂停前两个加载，旧策略峰值 6、六个 200，新策略峰值 2、两个正确
+  200、四个在释放前完成的 503。商品检查 SQL 都为 6，冷波 SKU SQL 由 6
+  到 2；恢复后四个商品各加载一次，全体热读 SKU SQL 为 0。
+- 收益是加载并发受控，最终六个不同商品仍各需一次 SKU 查询。上架检查
+  已发生在健康 miss 申请前；名额不是全站数据库保护或查询总量优化。
+  显式禁用缓存/事务内旁路不新增限制，多进程各有容量，全局代号失效范围
+  没有缩小；短时拒绝是方案代价，不宣称固定拒绝比例、时延或生产容量。
+- 当前目标还验证同 Key 超时独立加载不能绕过满员预算、异常释放名额、
+  失败 Future 不残留、热命中不耗名额与已有故障保护。历史 Phase 4D/4F/4I
+  测试显式重放仅故障限流基线，保留历史 JSON，不用基线替代当前保护测试。
+- 完整目录回归实际 `112 passed, 6 subtests passed in 43.10s`；随后只增强
+  当前目标断言并复测 `15 passed in 11.22s`。记录与两份逐请求 JSON 位于
+  docs/verification/phase-4j-refill-admission.md。
+- 生产修改只在 catalog/cache.py；其余为相关测试和证据。没有新增依赖、
+  配置、模型、迁移、视图文件、订单、支付、前端或开发数据操作，前序修改
+  保留，未 commit/push。下一步让项目拥有者解释限制峰值与减少总量的区别、
+  503 代价和进程边界，然后整理缓存故事并进入支付深度主线。
+
+---
+
+## 33. 支付主线范围决定（2026-10-01）
+
+- 项目拥有者确认：Redis 本期暂时收束，继续支付状态、Webhook 和幂等主线；
+  RabbitMQ + Celery 从条件性能力升级为该主线必做。本期不接任何第三方支付
+  Sandbox，Mock Gateway 继续承担可控成功、失败、超时和异常事件的测试替身；
+  Sandbox 以后仅在项目拥有者重新明确决定时评估。
+- MQ 的业务贡献是让已经持久化的 Payment Inbox 事件能够异步处理、进行有界
+  重试并在故障后恢复。它不决定付款是否成功，不成为订单、支付或库存的事实
+  来源；MySQL 事务、状态机、唯一约束和业务幂等仍负责保证重复任务不重复核销、
+  释放库存或创建退款模拟。
+- 保留现有同步 Mock baseline，先理解业务规则与事务边界，再实现最小异步
+  切片。必须使用真实隔离 RabbitMQ/Celery 验证重复投递、消费者崩溃、Broker
+  不可用、重试耗尽及数据库已提交但尚未投递等恢复窗口；具体任务、重试次数、
+  恢复机制和测试 Oracle 仍需逐步讨论，不能预先声称可靠消息已完成。
+- Transactional Outbox、Elasticsearch 和 Distributed Lock 的条件性采用边界
+  不变；引入 MQ 不自动升级这些能力，也不扩大为通用任务平台、微服务、真实
+  支付、真实退款或复杂售后。
+- 本轮只修改项目范围与协作文档，没有接入 MQ、增加依赖、修改服务配置、
+  模型、迁移或业务代码；没有运行业务测试或操作开发数据，没有 commit/push。
+  前序 Redis 代码、测试和证据的未提交修改全部保留。下一步共同确认支付
+  状态、事件处理、库存副作用和异步任务之间的边界，再推进一个可验证切片。
+
+## 34. Phase 5A：支付 Inbox 人工恢复基线（2026-10-01）
+
+- 项目拥有者要求开始代码修改，并提供类似 Redis 阶段的操作/学习指南、
+  核心代码与面试问题，之后自行学习；本轮只交付一个支付恢复切片。
+- 基线先验证入箱后、处理前受控中断：Event 留 RECEIVED，订单待付、
+  库存仍预占；这不是实际 Worker 或操作系统进程终止证据。
+- 新增 `recover_payment_events` 一次性管理命令及恢复服务，从已提交
+  RECEIVED/ERROR 固定选出最多 limit 条内部 ID，每条本轮最多处理一次。
+  支持 dry-run 和指定内部 event-id；PROCESSED/REJECTED 不再选中。
+- 同步接收与恢复复用 `process_stored_payment_event`，原业务处理事务不变。
+  回滚后另开短事务记录 ERROR，锁内重读避免覆盖另一处理者已提交的终态；
+  单条异常不影响本批其他事件，部分异常时命令报告 ID 并非零退出。
+- 此次仅人工单轮：ERROR 尚未按可重试性分类，limit 不是累计重试上限，
+  没有调度、退避或耗尽状态；库存不变量异常需调查，不能盲目定时循环。
+  Inbox 恢复不代替 UNKNOWN 原 Attempt 查单，不重新付款。
+- 隔离真实 MySQL 目标 `12 passed, 5 subtests passed in 10.75s`；支付与订单
+  回归 `94 passed, 26 subtests passed in 76.21s`。真实两线程同选一事件最终
+  只有一次库存核销；没有生产吞吐或 MQ 故障结论。详见
+  `docs/verification/phase-5a-payment-inbox-recovery.md` 和对应学习指南。
+- 没有修改模型、迁移、依赖、配置、API契约、前端或 Redis 代码；未执行
+  开发库恢复，未 commit/push。下一步明确异步受理与有限自动重试规则，
+  再接入必做 RabbitMQ + Celery，继续真实 Broker/Worker 及补漏恢复验证。
+
+## 35. Phase 5B：支付事件分类与持久有界重试（2026-10-01）
+
+- 本段属于 Track C / Depth，项目拥有者授权先实现并交付操作指南、核心
+  代码及面试问答，之后学习；不等待答题才推进这个最小切片。
+- 新增 PaymentEvent 的 PROCESSING、processing_attempt_count、failure_kind
+  和 next_retry_at。每事件总共最多 3 次处理，包含首次；它与一个订单最多
+  发起几次 PaymentAttempt 的付款规则不同，不新建订单或重新付款。
+- 资格事务先锁内复查、计数并独立提交 PROCESSING；业务事务复查次数版本
+  后复用原状态机，支付、订单、库存与事件终态一同提交。业务回滚不撤销
+  已用次数；失败另事务留存，不能覆盖终态或新版本的处理资格。
+- 只对白名单 MySQL OperationalError 1205/1213 允许重试，失败后分别等待
+  5 秒、10 秒，第 3 次暂态失败为 EXHAUSTED。库存不变量、未知程序异常和
+  其他数据库异常为 BLOCKED；原签名/金额等无效事件继续 REJECTED。
+- 恢复扫描只选择首次 RECEIVED 或到期 TRANSIENT ERROR 且次数小于 3；
+  --event-id 和重复接收不能绕过门槛，dry-run 不增加次数，选中后仍锁内复查。
+  PROCESSING 不自动接管；硬中断或错误留存失败须调查，留待 MQ 切片补齐
+  接管设计与真实 Worker 中断证据。当前没有调度器或真实 Worker。
+- 新迁移 0003 将旧未分类 ERROR 保留为 BLOCKED，次数为 0，不猜测旧失败
+  原因或伪造历史次数。仅在隔离测试库验证迁移，未应用到开发库。
+- 隔离 MySQL 目标实际 26 passed、12 subtests passed；支付与订单回归
+  108 passed、33 subtests passed。包含历史候选查询对照、预算/等待/耗尽、
+  真实反向行锁死锁 1213、并发扫描及旧数据迁移。实测死锁不是生产自然
+  负载；核销中途回滚另用受控错误注入验证。完整结果见
+  docs/verification/phase-5b-payment-event-retry.md，对应学习指南保留核心代码。
+- 只涉及支付模型、迁移、事件入口/恢复与目标测试、进度/证据文档；没有
+  增加依赖、改配置、HTTP接口定义、网关、库存算法、前端或 Redis 代码，
+  保留前序修改，未 commit/push。下一步 Phase 5C 接入必做 RabbitMQ + Celery，
+  复用持久门槛，补发布遗漏、真实重复消费及 Worker/Broker 中断恢复证据。
+
+## 36. Phase 5C-1：真实 RabbitMQ 与 Celery 基础链路（2026-10-01）
+
+- 项目拥有者授权依赖与 Docker 镜像安装，交付仍按最小支付 Depth 切片推进。
+  Windows `.venv` 安装 Celery 5.6.3，实际拉取 RabbitMQ 4.3.6 管理镜像，
+  构建非 root Linux Python 3.11.16 prefork Worker；不使用 Windows 直接 prefork。
+- `PAYMENT_EVENTS_ASYNC` 默认 false，保留同步 MySQL/Mock 基线；本地/测试
+  异步模式先独立提交 Inbox，事务外发布内部整数 ID。Worker 调用已有 5B
+  资格与支付处理器，状态机、预算与库存算法没有第二套实现。
+- 异步 Webhook 的 202 只说明已入箱，不能证明验签、付款或 Broker 投递成功。
+  已知发布错误保留 RECEIVED/count=0，日志只含内部 ID，不伪造业务 ERROR。
+  创建 Attempt 的 201 不代表订单 PAID；发起付款与查原结果也复用事件入口。
+- 首次真实 MQ 3 项因 Celery 内部非持久、非独占控制队列被 RabbitMQ4.3
+  拒绝而失败，Worker 反复重连，没有正常消费。设置内部 control/event
+  durable=True、保留默认过期后，真实3项通过54.40秒。加强测试脚本在建库前
+  与 finally 停专用 Worker 并检查结果后，再次3项通过44.27秒。
+- 真实隔离 test_project_one、project_one_test vhost、payment-events-test
+  队列与 Linux Worker，验证先受理后确认、三条不同任务只一次核销、伪造
+  通知不占合法事件 ID。每场景等待 ACK 增量与队列 ready/unack=0，再检查
+  数据库终态；重复场景处理次数1、COMMIT1、ACK3，没有用 eager 代替 MQ。
+- 隔离 MySQL 的异步/5A/5B 目标40 passed、24 subtests；支付与订单回归
+  122 passed、3 skipped、45 subtests。3个skip为普通回归未开启的MQ用例，
+  它们已在独立真实流程通过。pip check、compileall、Compose配置检查、
+  git diff --check 实际通过，完整条件与结果见本期验证文件。
+- 自动后台重试、提交后漏投补偿、PROCESSING 接管及真实 Worker/Broker
+  故障恢复尚未完成。C2先沿用数据库总共3次预算与5/10秒门槛补后台重试，
+  不自动引入 Outbox、Beat、结果库或通用任务平台。
+- 文档：`docs/learning/phase-5c1-payment-mq-study-guide.md`，
+  `docs/verification/phase-5c1-payment-mq.md` 与对应三场景原始JSON。
+  修改支付异步入口/任务、依赖、Celery/Docker配置、目标测试与进度/证据文档；
+  保留前序Redis与支付修改，没有改前端、金额或库存算法，未应用开发库迁移，
+  未 commit/push。测试RabbitMQ保留运行，专用Worker已停止，未启动开发Worker。
+
+## 37. Phase 5C-2：有界后台重试（2026-10-04）
+
+- 项目拥有者要求在C1后继续实现，仍按支付Depth最小切片交付代码、指南与
+  真实证据。本期不加依赖/模型/迁移，不改前端、Redis或开发库。
+- C1在暂态失败后仅留下ERROR和next_retry_at，没有下一次自动执行。当前
+  Worker在处理结束或异常留存之后重新读取Event，只对ERROR/TRANSIENT、
+  count1或2、有next时显式发布原内部ID的短ETA任务。原数据库资格与业务
+  处理器不变，总共3次包含首次，门槛5/10秒，不创建新订单或付款尝试。
+- ETA为max(next_retry_at, now+1秒)：正常门槛不变，近边界早醒再次排程
+  至少等1秒，避免立即循环投递。Task仍max_retries=0，不使用self.retry；
+  这与显式发布下次任务不同。消息总数可以超过3，但真正业务处理不能超过3。
+- 提前重复不扣预算，仍安排未来机会；终态、BLOCKED、EXHAUSTED、PROCESSING
+  不安排。发布失败保留原ERROR/TRANSIENT与时间，报稳定任务错误，不改成
+  支付失败，不自动补漏。成功完成排程的Task返回ERROR也不等于付款成功。
+- 真实隔离实验只给测试Worker的连接设置SESSION锁等待1秒，独立连接锁
+  Inventory造成真实MySQL1205；原资格函数只加观察包装，记录as_of/次数
+  而不改规则。每场景过滤日志，errno观察器不重复安装，不输出SQL或凭据。
+- 已验证一次真实锁超时后原事件自动count2成功、早到重复不扣预算、唯一
+  库存COMMIT；持续锁故障真实3次1205后EXHAUSTED，再投递不重开；测试中
+  故意破坏预占的库存不变量为BLOCKED/count1，不自动排程。实际领取as_of
+  均不早于前次到期时间，不拿处理完成时间冒充资格证据。
+- 目标规则/事务49 passed、33 subtests passed，最终受控MQ3项70.58秒通过，
+  C1真实基线3项42.16秒通过；确认统计按每场景重新创建专用队列从零开始。完整
+  环境、实验修正、基线与回归结果在 `docs/verification/phase-5c2-payment-mq-retry.md`。
+  支付/订单回归131 passed、6 skipped、54 subtests；6个MQ用例已分别在
+  独立C1/C2真实流程通过。pip check、compileall、Compose配置及静态检查通过。
+  操作/核心代码/面试问答在对应learning指南，原始JSON保留本次三场景。
+- 下一步C3补首次/重试发布遗漏与Broker不可用后的Inbox恢复；PROCESSING
+  接管、业务提交与消息确认间的真实Worker中断留后续。Outbox仍条件性，
+  当前不加入Beat、结果库或通用任务平台。前序修改保留，未commit/push，
+  开发库未迁移，测试Broker保留运行、专用Worker结束停止。
+
+## 38. Phase 5C-3：人工发布补漏与 Broker 停机恢复（2026-10-05）
+
+- 延续支付Depth，补上MySQL已保存原通知但初次/重试任务发布失败后的
+  独立发送入口。新增republish_payment_events与显式`--publish`；原同步
+  恢复保留，CLI只允许development/test且async=true，dry-run也遵守环境门槛。
+- 严格选择RECEIVED/NONE/count0或到期ERROR/TRANSIENT/count1/2，固定最旧
+  批次、每条fresh资格复查后事务外发布原ID，不改业务状态/次数。首次
+  BrokerFalse停止，报告failed/unattempted；published不代表已付款。
+  重复扫描可多发，原MySQL领取门槛和支付/订单/库存事务继续保护唯一效果。
+- 不选PROCESSING、BLOCKED、EXHAUSTED、终态或未到期事件，不重置预算。
+  不完整RECEIVED/count>0或TRANSIENT/count0也排除；不带--publish的历史
+  同步候选和行为未改。没有新增已发布标记、Outbox、Beat、结果库或周期调度。
+- 真实专用Broker停机：Webhook仍202/RECEIVED/count0，真实补投失败原数据
+  不变；恢复后Worker仍停，补投两次仍待付，Worker最终count1、ACK2、COMMIT1。
+- 真实Worker会话锁等待1秒，受控Inventory锁造成1205，提交ERROR/TRANSIENT
+  count1/+5秒；C3仅测试launcher暂停ETA发布至观察Broker关闭，再调用原
+  publisher实际失败。停止Worker，恢复Broker，AMQP被动声明确认旧ready任务
+  1条并清专用队列，排除原消息自行重投；新CLI只补发原ID，count2、ACK1、
+  COMMIT1。两场景均一个Event/Attempt，库存19/0，最终ready/unack=0。
+- 初次真实运行1过1失败63.58秒：恢复后同进程第一次发布仍失败，原状态
+  保留；与旧Broker连接复用一致但原因仅推断，不认定恒定顺序。改用实际
+  新CLI进程并核对完整test目标，第二轮2过72.54秒；后续加强AMQP计数后
+  最终2过71.69秒。生产发布器未改行为、未清连接池或增隐藏重试。
+- 本轮规则/5A/5B36 passed、20 subtests；C1/C2/C3真实分别3/3/2通过，
+  支付/订单141 passed、8 skipped、62 subtests（97.96秒）。8项skip仅普通
+  回归未配MQ，已在独立流程实测通过。pip check、compileall、AST、指南
+  源码/链接、Compose及diff检查通过。源码指纹/条件/修正见本期verification。
+- 本期仅改恢复服务/CLI与dispatch注释、测试/专用override/验证脚本和文档。
+  业务services/tasks、模型/迁移、依赖、主Compose、前端、Redis与开发库未动；
+  前序修改保留、未commit/push。测试Worker已停，测试Broker与原db健康。
+- 指南`docs/learning/phase-5c3-payment-publication-recovery-study-guide.md`，
+  证据`docs/verification/phase-5c3-payment-publication-recovery.md`及两场景JSON。
+  人工单轮补投不保证自动恢复时限；下一步C4处理中断遗留PROCESSING与真实
+  Worker故障，业务提交/消息确认间窗口尚未验证。Docker不可达/stop失败的
+  清理仍不能承诺绝对顺序，本期仅观察正常清理路径。

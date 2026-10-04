@@ -1,19 +1,19 @@
-# Project One — Project Charter v1.1
+# Project One — Project Charter v1.2
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Interview Core MVP-4 / Mock Payment + Completion 已实现最小闭环，MySQL 验证待恢复
-- 文档版本：v1.1
-- 路线图进度更新：2026-09-23
+- 当前阶段：Phase 5C-3 已实现人工发布补漏与真实 Broker 停机恢复；继续支付 Worker 中断恢复
+- 文档版本：v1.2
+- 路线图进度更新：2026-10-05
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：Phase 0 至 MVP-3 已进入本地 `main` 且 MVP-3 已提交；MVP-4 最小 Mock Payment、库存核销、模拟发货与确认收货代码已写入本地 `main` 工作区，尚未提交。MVP-4 SQLite 功能烟测已通过，真实 MySQL 目标测试、开发库迁移及浏览器验收尚未完成；完整 Vue Admin 仍不属于 Interview Core。
+- 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线及有界后台重试。Phase 5C-3 增加显式 `--publish` 人工单轮补投：按严格资格复查后发送原 Inbox ID，不改次数；真实隔离 Broker 停机后的首次/重试漏投恢复已观察通过，证据见 `docs/verification/phase-5c3-payment-publication-recovery.md`。默认同步；没有周期自动补漏，PROCESSING 接管与真实 Worker 中断仍待后续，不能声称 MQ 全部完成。Redis 当前进度见 `CONTEXT.md` 第 32 节与 Phase 4J 证据。既有未提交修改保留，没有执行开发库恢复、迁移或浏览器验收。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
-本 Charter 的 `Final` 表示当前项目范围和创建项目骨架前必须确定的设计方向已经冻结，可以进入实现；它不表示所有实现都已经完成或通过测试。v1.1 将执行策略收窄为 Interview Core MVP + 三条深度主线，并加入 CRUD Fast Track；标为“实验候选”的技术方案仍必须经过真实基线、失败复现和比较后，才能在 ADR 中成为最终实现结论。后续重大变化按照第 19 节记录。
+本 Charter 的 `Final` 表示当前项目范围和设计方向已经确认，可以分切片进入实现；它不表示所有实现都已经完成或通过测试。v1.1 将执行策略收窄为 Interview Core MVP + 三条深度主线，并加入 CRUD Fast Track；v1.2 按项目拥有者决定将 RabbitMQ + Celery 支付异步链路升级为必做，第三方 Sandbox 本期 No-Go。标为“实验候选”的技术方案仍必须经过真实基线、失败复现和比较后，才能在 ADR 中成为最终实现结论。后续重大变化按照第 19 节记录。
 
 ---
 
@@ -37,7 +37,7 @@ Project One 是一个以单商家电商为业务载体的后端系统工程实�
 
 - 使用合成商品与测试用户；
 - 使用模拟物流；
-- 在核心版完成且引入门槛满足时，可选使用支付 Sandbox/Test Mode；
+- 使用后端 Mock 支付完成核心版；第三方 Sandbox/Test Mode 本期 No-Go，只有项目拥有者以后重新决定才进入；
 - 使用合成并发流量；
 - 用单机或少量容器模拟分布式场景。
 
@@ -65,7 +65,7 @@ Project One 是一个以单商家电商为业务载体的后端系统工程实�
 
 出现冲突时，优先保护前五项。
 
-最终价值优先级与实现顺序不同。实现时先完成最小可运行闭环，形成 MySQL + Mock Payment 基线；再稳定复现问题并展开三条旗舰主线；辅助技术最后根据真实问题、证据需求和工时审计结果引入。不得先堆叠 Redis、MQ 或 Elasticsearch，再回头补业务闭环。
+最终价值优先级与实现顺序不同。实现时先完成最小可运行闭环，形成 MySQL + Mock Payment 基线；再稳定复现问题并展开三条旗舰主线。RabbitMQ + Celery 在 Phase 5 为支付事件异步处理与故障恢复必做，先保留同步/恢复扫描基线，再接入队列并验证失败路径；其他条件技术根据真实问题、证据需求和工时审计结果引入。不得先堆叠 Redis、MQ 或 Elasticsearch，再回头补业务闭环。
 
 ### Interview Core 学习分层
 
@@ -91,7 +91,7 @@ CRUD Fast Track 不等于无测试或黑盒：至少保留权限/数据归属、
 - 地区：中国大陆场景
 - 币种与金额：仅 CNY；Django/MySQL 使用 `DecimalField(max_digits=12, decimal_places=2)`，Python 使用 `Decimal`，API 使用两位小数字符串
 - 物流：模拟发货与物流状态，不连接真实物流公司
-- 支付：Mock Payment Gateway 是核心必做；第三方 Sandbox 仅为通过 Gate 后的 Optional Bonus；不接 Production，不处理真钱
+- 支付：Mock Payment Gateway 与 RabbitMQ + Celery 支付事件异步链路为核心必做；第三方 Sandbox 本期 No-Go；不接 Production，不处理真钱
 - 前端：一个 Vue 3 + TypeScript/Vite 工程中的顾客端路由与 Layout
 - 管理端：Interview Core 使用 Django Admin 承担普通商品、SKU、库存和订单运营 CRUD；只在能够直接展示库存、缓存或支付主线时增加极简 Vue 管理/实验页面
 - 开发早期及 Interview Core：允许持续使用 Django Admin 验证和维护后端数据
@@ -114,7 +114,7 @@ CRUD Fast Track 不等于无测试或黑盒：至少保留权限/数据归属、
 - 浏览商品并选择 SKU；
 - 管理购物车；
 - 创建和查询自己的订单；
-- 发起 Mock 测试支付；若未来 Optional Sandbox Gate 通过，可额外体验第三方测试支付；
+- 发起 Mock 测试支付，查看后端确认的结果；本期不提供第三方 Sandbox 支付；
 - 查看订单状态；
 - Coupon、Review 与 Favorite 属于闭环完成后的可选业务扩展，不属于 Interview Core。
 
@@ -183,7 +183,7 @@ SHIPPED / COMPLETED
 → 核心版拒绝取消，避免进入复杂售后
 ```
 
-对 `CANCELED` 或 `EXPIRED` 的重复请求必须幂等返回，不能再次释放库存或退款。若订单终态后收到迟到的支付成功事件，保留终态、记录异常支付并创建幂等的 Refund Simulation，不能重新打开订单。Coupon、Review、Favorite、可选 Sandbox 和秒杀等能力在最小闭环稳定后增量加入，不是首次闭环的完成门槛。
+对 `CANCELED` 或 `EXPIRED` 的重复请求必须幂等返回，不能再次释放库存或退款。若订单终态后收到迟到的支付成功事件，保留终态、记录异常支付并创建幂等的 Refund Simulation，不能重新打开订单。Coupon、Review、Favorite 和秒杀等能力在最小闭环稳定后增量加入，不是首次闭环的完成门槛。RabbitMQ + Celery 支付异步链路在 Phase 5 必做，不阻塞首次同步 MVP 闭环；第三方 Sandbox 本期不进入。
 
 ---
 
@@ -211,7 +211,7 @@ SHIPPED / COMPLETED
 - Service Mesh；
 - Kafka 核心链路；
 - 自研真实支付平台；Mock Payment Gateway 仅作为可控的测试替身；
-- 第三方支付 Production 接入和真实资金；Sandbox 只是可选加分项，不是核心完成标准；
+- 第三方支付 Production 接入和真实资金；第三方 Sandbox 本期 No-Go，未来只有项目拥有者重新决定才考虑，不属于当前完成标准；
 - 动态运费、税务引擎、多层 Category、复杂可配置优惠引擎和通用 EAV 商品属性系统；
 - 商业产品级 UI 动画与视觉精修。
 
@@ -221,9 +221,9 @@ Kafka 仅作为以后出现真实 Event Streaming 需求时的可选研究扩展
 
 ## 5. Core Domains（核心领域）
 
-以下是业务领域。第一批 Django App 已确认为 `accounts`、`catalog`、`inventory`、`ordering`、`payments`；Cart 与模拟物流先归入 `ordering`。`promotions` 与 `engagement` 在最小闭环后按需建立，Search 与 Async Processing 仍受 Gate 约束。
+以下是业务领域。第一批 Django App 已确认为 `accounts`、`catalog`、`inventory`、`ordering`、`payments`；Cart 与模拟物流先归入 `ordering`。`promotions` 与 `engagement` 在最小闭环后按需建立；Search 仍受 Gate 约束，Async Processing 中的支付事件链路在 Phase 5 必做。
 
-以下领域也不等于都要阻塞最小可运行闭环。Promotions、Engagement、Search 和 Async Processing 按路线图逐步加入，其中 Search 与 Async Processing 是达到引入门槛且工时审计允许后才实现的条件性扩展。
+以下领域也不等于都要阻塞最小可运行闭环。Promotions、Engagement、Search 和 Async Processing 按路线图逐步加入；Search 和支付范围外的异步任务仍为条件性扩展。支付异步链路先以现有 MySQL + Mock 同步流程和 Inbox 恢复为基线，不自动新增独立 Django App 或拆分微服务。
 
 ### Accounts
 
@@ -285,6 +285,7 @@ Kafka 仅作为以后出现真实 Event Streaming 需求时的可选研究扩展
 - Provider Adapter：统一创建支付、查单、验签、事件解析和发起模拟退款边界
 - Idempotency（幂等）
 - Mock Payment Gateway（必做、后端可控；测试场景选择器只在开发/演示环境开放）
+- RabbitMQ + Celery（必做，限支付事件异步处理、有界重试、Inbox 补漏恢复与故障证据）
 - Refund Simulation（独立生命周期，服务于简单取消和迟到支付，不处理真钱）
 - Reconciliation 思路
 
@@ -303,12 +304,13 @@ Kafka 仅作为以后出现真实 Event Streaming 需求时的可选研究扩展
 
 ### Async Processing
 
-条件性扩展领域：只有出现真实异步任务、重试或可靠消息问题，且最近一次工时审计允许时才进入实现。
+支付主线必做支撑：Phase 5 使用 RabbitMQ + Celery 处理已持久化的支付事件。范围外的邮件、物流任务或通用任务平台不因本次决定自动加入；Transactional Outbox 仍须由真实投递一致性问题决定。
 
 - Celery Task
 - RabbitMQ
-- Retry / Backoff
+- 有界 Retry / Backoff；明确拒绝的事件不反复重试，暂时性失败重试耗尽后保留可恢复记录
 - Idempotent Consumer
+- Inbox 恢复扫描：补处理已入箱但未完成的 `RECEIVED/ERROR`，覆盖投递前崩溃或投递失败
 - Transactional Outbox 候选方案
 
 ---
@@ -368,7 +370,7 @@ Kafka 仅作为以后出现真实 Event Streaming 需求时的可选研究扩展
 12. Order 使用不可猜测的公开订单号；内部主键使用项目统一的大整数主键。
 13. Order 状态为 `PENDING_PAYMENT → PAID → SHIPPED → COMPLETED`，另有 `CANCELED` 和 `EXPIRED`；终态不得回退。
 14. 支付失败属于 PaymentAttempt，不新增 `PAYMENT_FAILED` Order 状态；Order 在可支付期限内仍可再次支付。
-15. 未支付 Order 默认 15 分钟后过期；具体触发机制先用简单可验证方案，只有达到异步技术 Gate 后才使用 Celery/RabbitMQ。
+15. 未支付 Order 默认 15 分钟后进入到期处理；当前一次性扫描基线保留，活跃支付未确认时暂缓关闭。Celery/RabbitMQ 的支付事件必做决定不自动改变过期判定或强制引入延时消息，主动查单、关闭竞态与触发机制按独立切片讨论并验证。
 
 Order v1.0 合法转换：
 
@@ -414,8 +416,11 @@ Order v1.0 合法转换：
 14. Webhook Inbox 以 `(provider, event_id)` 唯一，保存原始事件；先可靠入箱，再在明确事务边界内进行校验和状态转换。
 15. Provider Adapter 统一创建支付、查单、验签、事件解析和发起模拟退款；业务层不得直接依赖某家第三方字段。
 16. Mock Gateway 是必做后端测试替身，必须制造成功、失败、处理中、超时/未知、重复、乱序、错误金额/币种/签名等场景；前端测试选择器只在开发或演示环境开放。
-17. 第三方 Sandbox 不是核心完成条件；只有 Mock Evidence Pack 完成、最近一次工时审计允许且账号可快速使用时才考虑，优先短时检查支付宝 Sandbox，受阻则可选 Stripe 测试环境或直接延期。
+17. 第三方 Sandbox 本期 No-Go，不进行账号可用性检查、SDK 接入或外部回调配置；未来只有项目拥有者重新决定才评估。核心版以 Mock 支付和真实 MySQL/RabbitMQ 故障验证完成。
 18. 创建 PaymentAttempt 的幂等记录必须先在短事务中提交，再调用 Gateway；不得在持有订单或库存数据库锁时等待网络响应。
+19. RabbitMQ + Celery 支付事件异步处理为核心必做：Inbox 提交后再投递事件记录编号，Worker 读取持久事件并复用校验/状态机/库存事务；入箱或入队成功不代表订单已支付。
+20. 消息可能重复投递；消费者必须幂等。明确设计消息确认、有界重试和失败留存，不能依赖队列实现业务恰好一次。
+21. 数据库提交与消息投递之间的崩溃窗口必须复现并恢复；`on_commit` 仅保证提交后调用，不保证消息必达。先以 Inbox 扫描补漏，Outbox 保留为证据支持后的条件方案。
 
 PaymentAttempt v1.0 合法转换：
 
@@ -496,19 +501,22 @@ PaymentAttempt v1.0 合法转换：
   Core Source of Truth        Required Flagship Addition
                                        Cache/Atomic Ops
 
+    Required Payment Processing（Phase 5 待接入）
+             └── RabbitMQ → Celery Worker → 同一 MySQL 支付处理事务
+
     Conditional Supporting Services（达到引入门槛后）
-             ├── RabbitMQ/Celery — Async Processing
              └── Elasticsearch — Derived Search Index
 
                 Provider Adapter
-             ┌────────────┴────────────┐
-             ▼                         ▼
- Mock Gateway（核心必做）   External Sandbox（Optional Gate）
-             └────────────┬────────────┘
-                    │
-                 Webhook
-                    ▼
-             Django Payment API
+                       │
+                       ▼
+             Mock Gateway（核心必做）
+                       │
+                    Webhook
+                       ▼
+             Django Payment API → MySQL Inbox → RabbitMQ
+
+    External Sandbox 本期 No-Go，不属于当前运行链路
 ```
 
 ### 架构约束
@@ -518,8 +526,8 @@ PaymentAttempt v1.0 合法转换：
 - MySQL 保存订单、支付和核心库存的最终持久事实。
 - Redis 在 MySQL baseline 后按必做旗舰主线引入，但不是核心事实来源；相关辅助状态必须能够重建、降级或对账。
 - Elasticsearch 是可重建、可延期的条件性派生索引。
-- RabbitMQ/Celery 只有出现真实异步可靠性问题且工时审计允许时才引入，不替代订单事务的核心正确性。
-- Mock Gateway 通过 Provider Adapter 接入；第三方 Sandbox 不是核心依赖，Production Payment 明确不接入。
+- RabbitMQ + Celery 是 Phase 5 支付事件处理必做支撑；Worker 复用同一代码库与 MySQL，不拆微服务，不替代订单事务的核心正确性。支付事件、原支付尝试和业务处理结果以 MySQL 持久记录为准。
+- Mock Gateway 通过 Provider Adapter 接入；第三方 Sandbox 本期 No-Go，Production Payment 明确不接入。
 - 不因“看起来高级”提前拆微服务。
 
 ---
@@ -593,8 +601,9 @@ UNIQUE (customer_id, flash_sale_item_id) for successful flash-sale order
 | 防穿透/击穿/雪崩 | 能够复现对应失败模式 | 并发回源、TTL、空值/保护策略实验 |
 | Redis Lua | Redis 中存在需要原子完成的多步操作 | 并发正确性测试与 MySQL 对账 |
 | 支付状态与幂等 | Mock Payment 与 Order/PaymentAttempt 状态机基线 | 重复/乱序回调、校验、故障恢复与 ADR |
+| RabbitMQ + Celery 支付异步链路 | 同步 Inbox 处理与一次性恢复扫描基线 | 真实投递、消息确认、有界重试、重复消费、Worker/Broker 故障与补漏恢复 |
 
-Mock Payment Gateway、PaymentAttempt、Webhook Inbox 和幂等证据属于支付旗舰主线必做范围。任何第三方 Sandbox 都不属于本 Level，也不影响核心版完成。
+Mock Payment Gateway、PaymentAttempt、Webhook Inbox、RabbitMQ + Celery 支付链路及幂等/恢复证据属于支付旗舰主线必做范围。第三方 Sandbox 本期 No-Go，不属于本 Level，也不影响核心版完成。
 
 ### Level 3 — 计划内交付支撑
 
@@ -611,12 +620,10 @@ Mock Payment Gateway、PaymentAttempt、Webhook Inbox 和幂等证据属于支�
 | 技术 | 引入前必须出现的问题 | 若引入必须留下的证据 |
 |---|---|---|
 | Distributed Lock | 默认不使用；数据库约束、条件更新、行锁或 Lua 经证据证明不足 | 锁超时、错误释放和故障边界分析 |
-| Celery/RabbitMQ | 出现真实异步任务、重试或可靠消息需求 | 重试、重复消费、Worker/Broker 故障实验 |
 | Transactional Outbox | 已经存在数据库事实与消息可靠投递之间的一致性问题 | 崩溃窗口、重复投递、幂等消费和恢复证据 |
 | Elasticsearch | MySQL 搜索在功能或测量上不足 | 相关性、中文分词、延迟、同步和重建结果 |
-| Alipay/Stripe Sandbox | Mock 支付 Evidence Pack 已完成、工时审计允许且测试账号可快速使用 | 一次真实测试协议、签名/验签、Webhook 和查单证据 |
 
-并非所有候选技术都必须在 Interview Core 落地。四个 Gate 的默认态度已经确认：Distributed Lock 默认不用；Celery/RabbitMQ 只解决真实异步需求；Transactional Outbox 只解决真实可靠消息问题；Elasticsearch 只在 MySQL 搜索基线不足时引入。Sandbox 只是 Optional Bonus：优先对支付宝 Sandbox 做最多 2 小时的账号可用性检查，受阻可切换 Stripe 测试环境或直接延期。任何条件技术一旦引入，都必须完成真实集成、故障或一致性验证，不能只添加依赖。
+RabbitMQ + Celery 已移入 Level 2 必做，限支付链路，不再以条件技术 Gate 决定是否采用。其他候选仍不必全部落地：Distributed Lock 默认不用；Transactional Outbox 只解决已复现的可靠投递一致性问题；Elasticsearch 只在 MySQL 搜索基线不足时引入。Alipay/Stripe Sandbox 本期 No-Go，未来只有项目拥有者重新决定才评估，不自动开展账号可用性检查。任何技术一旦实际引入，都必须完成真实集成、故障或一致性验证，不能只添加依赖。
 
 ---
 
@@ -690,13 +697,18 @@ Order / PaymentAttempt 状态机
 → Webhook Inbox 与 (provider, event_id) 唯一性
 → 金额 / 币种 / 模拟签名校验
 → 重复和乱序事件
+→ 已入箱 RECEIVED/ERROR 的一次性恢复基线
+→ RabbitMQ + Celery 支付事件异步处理（必做）
+→ 消息确认、有界重试、重复消费与投递/Worker/Broker 故障恢复
 → UNKNOWN、查单、重试和崩溃窗口
 → 取消竞态与 Refund Simulation
 → Reconciliation
-→ Optional Sandbox Gate
+→ 支付与消息可靠性 Evidence Pack
 ```
 
 Mock Gateway 是运行在后端、由项目控制的支付供应商测试替身，不是单纯的前端成功按钮。正常顾客界面只能发起支付；成功、失败、处理中、超时、重复、乱序或错误数据等场景只能通过测试、受保护的开发工具或演示环境注入。
+
+RabbitMQ + Celery 的最小链路为：可靠入箱并提交 → 发布事件记录编号 → Worker 读取原事件并调用统一处理器 → MySQL 原子更新支付、订单、库存及事件结果。已有同步基线与扫描恢复保留为对照及补漏路径。消息重投、发布失败及提交后崩溃都要验证，不能声称安装队列即可避免丢消息；Outbox 仍是条件方案。第三方 Sandbox 本期不进入。
 
 核心证据：
 
@@ -705,6 +717,9 @@ Mock Gateway 是运行在后端、由项目控制的支付供应商测试替身�
 - 错误金额、币种或签名被拒绝；
 - `UNKNOWN` 不被误判为失败，并能通过查单或对账收敛；
 - 数据库事务失败不会留下半完成状态；
+- 真实 RabbitMQ 消息重复投递、Worker 处理前/事务提交后中断，均不重复核销或模拟退款；
+- Broker 不可用、Inbox 提交后尚未投递就中断，持久事件仍可补漏恢复；暂时性失败有界重试，明确拒绝不反复重试；
+- 顾客不再次点击查询、网关不重发时，已入箱事件仍有明确恢复入口；未知支付另由原 Attempt 查单收敛；
 - 状态机图、回归测试、故障注入与 ADR。
 
 ---
@@ -740,9 +755,9 @@ Mock Gateway 是运行在后端、由项目控制的支付供应商测试替身�
 ### Infrastructure Integration Tests
 
 - 隔离真实 Redis：Cache、Lua、锁语义；
-- 若引入 RabbitMQ/Celery，使用隔离真实服务测试投递、重试和重复消费；
+- RabbitMQ + Celery 支付链路必须使用隔离真实服务测试投递、消息确认、重试和重复消费；Worker 与 Broker 的故障恢复不能仅用 Mock 替代；
 - 若引入 Elasticsearch，使用隔离真实服务测试写入、查询、重建与同步；
-- Mock Payment：真实执行 Webhook/Event Inbox 路径；Sandbox 只在实际通过 Optional Gate 后增加集成测试。
+- Mock Payment：真实执行 Webhook/Event Inbox 路径与支付异步处理事务；Sandbox 本期 No-Go，不增加第三方集成测试。
 
 ### Concurrency / Performance / Failure Tests
 
@@ -793,7 +808,7 @@ Evidence Pack 必须明确区分 `Confirmed Rule`、`Experiment Candidate` 和�
 
 ### Phase 0 — Day 0 & Foundation（已完成）
 
-- [x] Project Charter v1.1 — Current Design Baseline
+- [x] Project Charter v1.2 — Current Design Baseline（2026-10-01 支付 MQ 范围更新）
 - [x] Business Requirements
 - [x] Domain Context v1.0
 - [x] Core User Journey
@@ -889,8 +904,17 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [ ] Mock Gateway 故障场景
 - [ ] Webhook Inbox 的重复、乱序、验证失败和处理失败路径
 - [ ] 幂等、乱序、重试
+- [x] 已入箱 `RECEIVED/ERROR` 的人工一次性恢复扫描与独立事务基线（Phase 5A 历史基线）
+- [x] 事件失败分类、持久累计预算、到期门槛和耗尽状态（Phase 5B；人工触发，无自动调度/处理中接管）
+- [x] RabbitMQ + Celery 支付事件异步处理基础链路（Phase 5C-1，真实正常/重复/伪造事件验证，默认同步）
+- [x] Worker 按持久预算安排短 ETA 后台重试（Phase 5C-2，真实受控锁超时验证；消息数量不等于业务次数）
+- [x] 原 Inbox ID 人工单轮补投与 Broker 停机后的首次/重试漏投恢复（Phase 5C-3；无周期调度）
+- [ ] 消息确认、有界重试、重复消费、Worker/Broker 故障与发布失败补漏证据
+- [ ] 原活跃 Attempt 查单恢复；与 Inbox 重处理区分，避免重新付款
 - [ ] Refund/Reconciliation 思路
-- [ ] Optional Sandbox Gate（不阻塞本阶段完成）
+- [ ] 支付与 MQ Evidence Pack；保留同步基线、失败复现、方案取舍与限制
+
+第三方 Sandbox 本期 No-Go；支付异步处理先基于已有状态机与事务分切片接入，不一次重写整个 payments 模块。
 
 ### Phase 6 — Flash Sale & Concurrency Track
 
@@ -901,15 +925,13 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [ ] Distributed Lock Gate（默认 No-Go）
 - [ ] 压测和补偿
 
-### Phase 7 — Conditional: Async Reliability
+### Phase 7 — Conditional: Further Async Reliability
 
-- [ ] Celery/RabbitMQ
-- [ ] Retry/Backoff
-- [ ] Idempotent Consumer
 - [ ] Transactional Outbox 候选
-- [ ] Worker/Broker 故障实验
+- [ ] 支付范围外确有业务需求的异步任务
+- [ ] 新需求对应的投递一致性、恢复与故障证据
 
-只有真实异步可靠性问题与最近一次工时审计共同支持时才进入本阶段，否则延期；只有确认使用可靠消息且出现数据库提交与消息发布一致性窗口时，才进一步评估 Transactional Outbox。
+RabbitMQ + Celery 的支付事件处理、重试、消费者幂等与 Worker/Broker 故障证据已移入 Phase 5 必做，本阶段不重复实施。只有额外异步可靠性问题与最近一次工时审计共同支持时才扩展；数据库提交与消息发布一致性窗口经复现且现有补漏方案不足时，进一步评估 Transactional Outbox。
 
 ### Phase 8 — Conditional: Search
 
@@ -952,13 +974,14 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - Session/CSRF、Decimal 金额、订单幂等、状态机与库存预占/核销/释放合同均有端到端和自动化证据；
 - 模拟支付和物流状态可完整演示。
 - 未支付取消/过期与库存最多释放一次在支付深度主线中验证；Paid 取消、迟到支付和 Refund Simulation 根据 Track C 证据需要进入，不阻塞首次 MVP 闭环。
-- 第三方 Sandbox 和 Production Payment 不属于 Business Done；Mock 支付闭环和支付证据包必须完成。
+- 第三方 Sandbox 本期 No-Go，Production Payment 不接入；Mock 支付闭环和支付证据包必须完成。
 
 ### Engineering Done
 
 - 库存并发、缓存正确性、支付幂等三条旗舰主线均有 Evidence Pack；
 - 三条主线均包含失败复现、至少两种方案比较和证据支持的结论；实验最终可以合理选择“不采用”某个候选；
-- Distributed Lock、Celery/RabbitMQ、Transactional Outbox、Elasticsearch 和第三方 Sandbox 不属于 Interview Core 的完成阻塞项；若实际引入，必须提供真实集成以及可靠性、故障或一致性证据；
+- RabbitMQ + Celery 支付链路必须完成真实集成、有界重试、重复消费、Worker/Broker 故障及持久事件补漏恢复证据；仅安装依赖或使用即时执行模式不算完成；
+- Distributed Lock、Transactional Outbox 和 Elasticsearch 仍为条件性，不属于 Interview Core 完成阻塞项；若实际引入，必须提供真实集成以及可靠性、故障或一致性证据；第三方 Sandbox 本期不进入；
 - Docker Compose 可以复现完整环境；
 - 自动化测试和 CI 通过；
 - 浏览、下单、秒杀至少三种负载有基线和优化对比；
@@ -975,6 +998,7 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - 比较 MySQL 锁、条件更新、Redis Lua 与分布式锁；
 - 解释缓存一致性和故障降级；
 - 解释支付与消息幂等；
+- 解释 RabbitMQ、Celery Worker 与 MySQL Inbox 各自职责，提交后投递的崩溃窗口、消息确认与有界重试规则；
 - 解释 UNKNOWN、重复/乱序事件、终态后的迟到支付和 Refund Simulation；
 - 独立修改一个业务约束；
 - 独立定位一个变体 bug；
@@ -1004,7 +1028,7 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - 三条旗舰主线的 Evidence Pack 进度；
 - 缺陷、返工和学习风险；
 - 下一 100 小时的调整；
-- Distributed Lock、Celery/RabbitMQ、Transactional Outbox、Elasticsearch 与第三方 Sandbox 继续延期还是满足引入门槛。
+- RabbitMQ + Celery 支付必做范围的进度与复杂度是否受控；Distributed Lock、Transactional Outbox、Elasticsearch 是否继续延期或满足引入门槛；第三方 Sandbox 本期 No-Go 不自动重启评估。
 
 前 100 小时完成后，根据真实速度重新估算。发生调整时，优先保护最小业务闭环、三条旗舰主线和证据真实性，并将重要变化写入本 Charter 或对应记录。
 
@@ -1102,7 +1126,7 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 下列变化必须先讨论并记录：
 
-- 改变本版 Charter v1.1 的宏观业务边界或已确认设计基线；
+- 改变本版 Charter v1.2 的宏观业务边界或已确认设计基线；
 - 从单商家改为多商家；
 - 增加多仓库或多币种；
 - 拆分微服务；
@@ -1115,11 +1139,22 @@ LEARNING_LOG.md          个人理解、错误与复盘
 - 更换核心事实来源；
 - 将 Kafka/Kubernetes 加入完成标准；
 - 删除三条旗舰主线中的任何一条；
-- 将 Celery/RabbitMQ 或 Elasticsearch 从条件性技术升级为核心必做项；
+- 取消 RabbitMQ + Celery 支付必做要求、扩大其业务用途，或将 Elasticsearch 从条件性技术升级为核心必做项；
 - 将 Distributed Lock、Transactional Outbox 或第三方 Sandbox 升级为核心必做项；
 - 改变 1200 小时四类 v1.1 分配时，应在最近一次范围与证据审计中记录原因、影响和取舍。
 
 普通字段、页面样式和局部实现不需要 ADR。
+
+### v1.2 支付与 MQ 范围调整记录（2026-10-01）
+
+- 决策来源：项目拥有者明确要求将 MQ 写入支付模块范围与总项目文档，并升级为必做；同时明确本期不准备接入支付沙盒。
+- 业务问题：现有支付事件处理依赖同步请求、用户查单或网关重投；已入箱事件处理失败、进程中断或发布失败后，需要明确的后台执行与恢复路径。
+- 不变量：订单金额取原快照、UNKNOWN 不重新付款、成功与库存核销同事务、消费者重复执行不产生第二次副作用、持久事件可恢复；MQ 不替代 MySQL。
+- 最小设计：先补 Inbox 一次性恢复基线，再使用 RabbitMQ + Celery 投递事件编号并复用现有处理器；每事件独立事务、提交后投递、有界重试和失败留存，扫描补漏继续存在。
+- 替代与取舍：只使用扫描的依赖较少，但恢复由扫描触发；MQ 提供及时后台执行，代价是新增 Broker/Worker、消息确认、重复投递和发布窗口。必做决定不免除基线、方案对比与真实故障证据。
+- 必需证据：隔离真实 RabbitMQ/Worker 的投递、重试、重复消费、中断及恢复；核对订单、Attempt、Event、库存与退款模拟，不能用同步 Mock 或即时任务模式声称完成集成。
+- 范围限制：本期保留 Mock Gateway + CNY + 简单取消/退款模拟；不接第三方 Sandbox/Production，不新增复杂售后、通用异步平台或微服务；Outbox、搜索、分布式锁仍条件性。
+- 状态：已确认范围，尚未实施 MQ；本次只编辑文档，未新增依赖、修改运行配置、迁移数据库或运行业务测试，既有未提交改动保留，未 commit/push。
 
 ### v1.1 范围调整记录（2026-09-18）
 
@@ -1133,9 +1168,10 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Phase 0 至 MVP-3 已在本地 `main` 完成，MVP-3 已提交。MVP-4 最小可靠支付闭环已写入本地 `main` 工作区，下一步：
+Redis Phase 4J 当前阶段暂时收束，支付模块已有同步 Mock、Inbox、查单及取消/退款模拟基线。MVP-4 文档中的环境限制是旧阶段记录；当前实现与较新 MySQL 证据结合 `CONTEXT.md`、`phase-2b-*.md` 与相关代码读取，不能将旧待办当作当前全部进度。下一步：
 
-1. 按 `docs/learning/mvp-4-mock-payment-study-guide.md` 先学业务 Oracle，再学状态机、双层幂等、Gateway 网络边界、Event Inbox、库存核销和薄 Vue；
-2. 使用 `docs/verification/mvp-4-mock-payment.md` 区分已运行的 SQLite 烟测与尚未执行的 MySQL 约束、并发、全量回归和浏览器验收；
-3. MySQL 测试环境恢复后，先运行隔离测试库中的目标与全项目回归；开发数据库迁移须由项目拥有者确认后另行执行；
-4. 学习与验证完成后，由项目拥有者复核本地 `main` 的 diff 和提交时机；本次不自动提交或推送。
+1. 讨论支付异步处理中的 HTTP 已受理/订单已支付边界、可重试失败、UNKNOWN 的查单恢复，以及取消/过期的保守规则；使用具体场景确认预期，不重复已经理解的基础题。
+2. Phase 5A 建立人工恢复基线，Phase 5B 已补分类、总共 3 次持久预算（包含首次）、5/10 秒到期门槛及耗尽状态，并验证真实受控 MySQL 死锁后的次数保留；当前无自动调度，PROCESSING 中断不自动接管。操作指南与证据在 `docs/learning/phase-5b-payment-event-retry-study-guide.md` 和对应验证文件，项目拥有者随后学习。
+3. Phase 5C-1/2 基础链路与有界重试、C3 初次/重试任务人工发布补漏及真实 Broker 停机恢复已形成证据，继续沿用 MySQL 总共3次预算与5/10秒门槛。下一步 C4 处理 PROCESSING 接管及真实 Worker 中断，验证业务提交/消息确认间的故障。MQ 消息次数不能替代 MySQL 预算，人工补投不是周期自动补偿。
+4. 补原 Attempt 查单恢复及必要的支付/关闭竞态证据，整理支付与 MQ Evidence Pack；不进入第三方 Sandbox，不操作开发数据库或外部账号。
+5. 保留当前 Redis 与前序支付未提交改动；不自动提交或推送，开发库迁移与数据操作另行确认。

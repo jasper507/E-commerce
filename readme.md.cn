@@ -8,6 +8,12 @@ Django REST Framework（DRF，用于构建 HTTP API 的框架）和 Vue，重点
 MySQL 保存订单、支付和库存事实；Redis 只保存可以重新生成的公开商品详情副本。
 支付、退款和物流均为模拟，不涉及真钱或真实物流服务。
 
+2026-10-01 已确认 RabbitMQ（消息代理：保存和投递任务）+ Celery（异步任务
+框架：由后台工作进程执行任务）是支付主线必做，当前已完成基础接入、有界后台重试与人工发布补漏。用途限定为
+支付 Inbox 异步处理、有界重试、故障恢复和真实隔离故障验证；MySQL 事务、
+状态机与幂等仍保护支付、订单和库存正确性。本期第三方支付 Sandbox 为 No-Go，
+以后仅由项目拥有者重新明确决定；Outbox、搜索、分布式锁仍为条件性能力。
+
 这是项目的中文说明入口。项目范围以 [PROJECT_CHARTER.md](PROJECT_CHARTER.md)
 为准，术语和当前进度见 [CONTEXT.md](CONTEXT.md)，协作规则见
 [PROJECT_INSTRUCTIONS.md](PROJECT_INSTRUCTIONS.md)。
@@ -31,9 +37,27 @@ MySQL 保存订单、支付和库存事实；Redis 只保存可以重新生成�
 后端还实现了待支付取消/过期、已支付未发货取消，以及迟到成功事件的幂等退款模拟。
 取消 API 已实现，当前顾客页面尚未提供取消按钮。
 
-当前处于 **Track B / Phase 4A：商品详情 Cache-Aside 缓存第一段**。
-已经完成真实隔离 MySQL + Redis 专项验证，并复现了旧请求在失效后回填旧值的竞态。
-本段尚不保证强一致，也没有生产性能或高并发容量结论。
+Redis 本期暂时收束至 **Track B / Phase 4J：多 Key 回源并发名额**，
+前序未提交修改保留。支付已推进至 **Phase 5C-3：人工发布补漏**：
+新增显式 `--publish` 命令，复查首次未处理或到期可重试的原 Inbox ID 后补投，
+不直接执行业务或增加次数。真实隔离 Broker 停机验证首次/重试发布失败，
+恢复后人工补投原事件、重复消息只一次核销。前序有界后台重试继续保留，
+总共 3 次含首次、5/10 秒门槛；传输消息数不代表实际业务处理次数。
+默认仍走同步基线；异步模式的 HTTP 202 只表示已入箱，不能认定付款成功。
+补投需人工运行；周期自动补漏及 PROCESSING 中断接管仍待实现，开发库未应用新增迁移。
+[操作与学习指南](docs/learning/phase-5c3-payment-publication-recovery-study-guide.md)含核心代码、
+业务问题与面试问答；[验证记录](docs/verification/phase-5c3-payment-publication-recovery.md)记录
+实际隔离 MySQL、RabbitMQ 与 Worker 结果；[C1 基线](docs/verification/phase-5c1-payment-mq.md)保留。
+以下保留缓存阶段的实现与实验记录，后续增量见 `CONTEXT.md` 和对应验证文件。
+在分代 Key 隔离旧回填的基础上，先实测冷缓存重复回源，再合并同进程、同代、
+同商品的进行中加载。真实 10 并发对照中，冷缓存三轮详情加载从 9/10/7 次变为
+1/1/1 次。随后加入本进程故障回源名额，满员立即503；受控2名额实验为
+2个200、8个503、共4 SQL。仍不保证强一致、全站保护，也没有生产容量结论。
+
+本轮保留业务实现，实测持续Redis超时仍产生等待、健康Redis慢加载触发
+重复回源，以及提交后失效失败导致恢复旧价。未接入熔断或自动修复；
+详见[学习指南](docs/learning/phase-4f-slow-faults-study-guide.md)和
+[实验与原始记录](docs/verification/phase-4f-slow-faults-and-recovery.md)。
 
 ## 目录结构
 
@@ -49,7 +73,7 @@ MySQL 保存订单、支付和库存事实；Redis 只保存可以重新生成�
 | `tests` | 基础测试和测试数据；业务测试位于各 Django App 的 `tests` 目录 |
 | `docs/learning` | 各阶段代码阅读顺序、学习指南和练习 |
 | `docs/verification` | 实际测试结果、实验条件、复现步骤和限制 |
-| `compose.yaml` | 本地 MySQL，以及按需启动的开发/测试 Redis |
+| `compose.yaml` | 本地 MySQL、Redis，以及独立开发/测试 RabbitMQ + Linux Worker profile |
 
 SKU（商品规格）是真正定价和购买的单位。例如一个鼠标 Product 可以有黑色、
 白色两个 SKU，每个 SKU 各有一条 Inventory 库存记录。
@@ -185,14 +209,29 @@ $env:CATALOG_CACHE_ENABLED = 'true'
 
 - 只缓存公开商品详情 JSON；每次仍从 MySQL 检查商品及分类是否上架。
 - 未命中读 MySQL；Redis 读失败回源，写入失败仍返回本次数据库结果。
-- 目录普通 `save()` 在数据库提交成功后删除相关缓存；回滚不失效。
+- 请求在任何详情数据库读取前捕获全局随机代号，缓存 Key 包含代号。
+- 目录普通 `save()` 在提交成功后切换全局代号；回滚不换代。旧详情保留到 TTL 过期。
 - TTL（自动过期时间）初始为 30 秒，随机抖动正负 5 秒；命中不延长 TTL。
 - 价格、SKU 和有货提示可能陈旧；下单不信任缓存，不从 Redis 扣核心库存。
 - 库存变化不主动失效详情；批量 `update()` 不触发保存信号。
-- 并发旧值回填、故障期间失效丢失已复现，尚未解决；TTL 从实际回填时计算。
+- 旧请求可以写入旧代，但成功换代后开始的新请求不读取旧代。目录任意写入使全部
+  详情逻辑失效；版本读取也增加一次 Redis GET。
+- 换代失败、数据库提交到回调的间隔仍有陈旧窗口；TTL 从实际回填时计算。
 
-详见[缓存学习指南](docs/learning/phase-4-product-detail-cache-study-guide.md)和
-[缓存验证记录](docs/verification/phase-4-product-detail-cache.md)。
+详见[缓存分代学习指南](docs/learning/phase-4b-cache-generation-study-guide.md)和
+[缓存分代验证记录](docs/verification/phase-4b-cache-generations.md)。
+
+同进程、同代、同商品的进行中加载现在共享公开结果；每个请求仍独立查询上架
+状态。等待超过 200ms 或加载者失败后独立复查/回源，不能取消仍工作的加载者。
+初次缓存不可用、禁用或事务内不合并；请求合并本身不限制集中回源。
+详见[请求合并学习指南](docs/learning/phase-4d-detail-singleflight-study-guide.md)及
+[真实对照实验](docs/verification/phase-4d-detail-singleflight.md)。
+
+故障降级现有本进程2个回源名额（本地实验值）：满员立即503。初次代号失败
+在商品SQL前拒绝；详情GET晚失败只能限制后续SKU加载。正常缓存、配置关闭
+及事务内主动绕过不申请故障名额，正常/404/异常都归还名额。只保护指定降级
+入口，不保护全站MySQL，也不限制其他进程。详见[故障保护学习指南](docs/learning/phase-4e-fallback-admission-study-guide.md)
+与[验证记录](docs/verification/phase-4e-fallback-admission.md)。
 
 ## 测试与已有证据
 
@@ -211,7 +250,7 @@ $env:CATALOG_CACHE_ENABLED = 'true'
 ```powershell
 docker compose --profile cache-test up -d --wait redis-test
 $env:PROJECT_ONE_TEST_REDIS_URL = 'redis://127.0.0.1:6381/0'
-.\.venv\Scripts\python.exe -m pytest backend\apps\catalog\tests\test_detail_cache.py -q -s --tb=short
+.\.venv\Scripts\python.exe -m pytest backend\apps\catalog\tests\test_detail_cache.py backend\apps\catalog\tests\test_cache_generation.py -q -s --tb=short
 ```
 
 测试 Redis 使用独立端口 `6381`。每个用例使用随机 Key 前缀，只删除自己创建的 Key，
@@ -225,7 +264,7 @@ npm run type-check
 npm run build
 ```
 
-截至 2026-09-26，缓存切片验证记录包含：
+截至 2026-09-26，Phase 4A 缓存基线验证记录包含（Phase 4B 增量结果见对应记录）：
 
 | 检查范围 | 已记录结果 |
 | --- | --- |
@@ -252,12 +291,14 @@ SQL 数量减少不能直接换算为响应速度或吞吐量提升；本机合�
 
 ## 下一步与学习方式
 
-下一步先围绕已复现的旧值回填竞态比较最小修正方案，再推进热点回源和
-Redis 故障集中回源实验；继续保留库存并发和支付幂等的证据链。
+下一步先共同明确支付业务规则、状态、事件处理及事务边界，再从现有同步
+Mock baseline 推进 RabbitMQ + Celery 的最小异步切片，验证重复投递、有界
+重试与故障恢复；保留库存并发、缓存和支付幂等的证据链。
 
 普通 CRUD（增删改查）、重复表单和 Admin 注册采用快速实现与关键行为审查；
 订单、库存、缓存、状态机和幂等采用深入学习。每个技术亮点都应能按
 “业务问题 → 简单基线 → 失败复现 → 方案取舍 → 实际验证 → 剩余限制”独立讲解。
 
 目前不追求完整自定义 Vue Admin、多商家、真实支付、真实物流或微服务。
-MQ、搜索、分布式锁等能力只在真实问题和实验依据支持时引入。
+支付 MQ 为必做且尚未实现；Outbox、搜索、分布式锁仍只在真实问题和实验依据
+支持时引入。本期不接第三方 Sandbox；以后须由项目拥有者重新决定。

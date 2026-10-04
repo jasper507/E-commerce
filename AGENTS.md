@@ -15,7 +15,16 @@ Read `PROJECT_CHARTER.md` before planning or changing this project. Use `PROJECT
 2. Redis cache consistency and resilience.
 3. Payment state, webhook handling, and idempotency.
 
-MQ, search, deployment, CI/CD, and performance work must support a real integration or experiment, not merely add dependencies.
+RabbitMQ + Celery payment-event processing is required for Interview Core, as part of the payment depth track. This is confirmed planned scope, not a claim that MQ is implemented or verified. Search, deployment, CI/CD, and performance work must support a real integration or experiment, not merely add dependencies.
+
+## Payment Async Scope — Confirmed 2026-10-01
+
+- Implement RabbitMQ + Celery for payment-event background processing, bounded retries, idempotent consumption, and recovery of unfinished Inbox events. Keep this scope within the payment track; other async scenarios are not automatically required.
+- MySQL remains the source of truth for payments, orders, and inventory. Persist and commit the Inbox event in a short transaction before publishing its identifier; never hold database locks while waiting for the broker or gateway.
+- Commit payment confirmation, order transition, inventory effects, and event-processing state together. Duplicate delivery or worker interruption must not duplicate payment, inventory, or refund effects.
+- Post-commit publication still has a commit-to-publish failure window. Inbox recovery must cover missed publication and unfinished processing; MQ alone is not a recovery guarantee. Retry only eligible transient failures with bounded attempts/backoff; invalid events and exhausted retries must remain visible for investigation.
+- Preserve the MySQL/Mock baseline and observe its limitation before integration. Verify the chosen MQ configuration with real isolated RabbitMQ and workers, including duplicate delivery, worker interruption, broker outage, and recovery. Report planned, implemented, and actually verified behavior separately.
+- Transactional Outbox remains conditional on demonstrated reliable-publication needs. Search and distributed locks retain their existing gates. Third-party payment Sandbox is No-Go for the current project scope; use the backend Mock Gateway and no real money. Revisit only if the user explicitly changes this decision; do not automatically inspect accounts or start provider integration.
 
 ## Interview-First Decision Gate
 
@@ -27,7 +36,7 @@ MQ, search, deployment, CI/CD, and performance work must support a real integrat
 
 ## Default Learning Contract
 
-- Use Learning Mode for order, inventory, Redis, payment, concurrency, state machines, idempotency, architecture trade-offs, and interpretation of evidence.
+- Use Learning Mode for order, inventory, Redis, payment and MQ reliability, concurrency, state machines, idempotency, architecture trade-offs, and interpretation of evidence.
 - Use CRUD Fast Track for routine create/read/update/delete flows, Admin registration, serializers, ordinary forms/tables, fixtures, and other familiar boilerplate. After the behavior is confirmed, AI may implement these directly in Pair or Delivery Mode.
 - A CRUD fast pass still requires the user to understand the request flow, ownership/permission boundary, important database constraints, one normal example, and one important failure example. It does not require line-by-line study of repetitive framework code.
 - The user owns core business rules, invariants, expected behavior, architecture decisions, test oracles, and interpretation of evidence.
@@ -61,6 +70,7 @@ MQ, search, deployment, CI/CD, and performance work must support a real integrat
 - Introduce pytest/pytest-django from the project skeleton.
 - Use unit tests for pure rules; isolated MySQL tests for ORM, transactions, constraints, orders, and inventory.
 - Use real isolated Redis/RabbitMQ/Elasticsearch services for critical integration semantics.
+- Required payment MQ verification must exercise real RabbitMQ and worker behavior; eager-mode tasks, mocks, and static checks alone cannot establish delivery or crash-recovery claims.
 - Test duplicate, reordered, invalid, concurrent, timeout, and dependency-failure paths where relevant.
 - Do not let AI-generated tests and implementation share an unconfirmed definition of correctness.
 

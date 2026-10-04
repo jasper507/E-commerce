@@ -12,7 +12,7 @@
 
 Project One 是面向中国 Backend / Software Engineering Internship 的主力项目。项目以单商家 Django 电商为载体，第一优先级是可验证的后端技术深度，而不是商业范围或 UI 数量。
 
-商业真实性可以简化：允许合成数据、模拟物流、Mock 支付、可选 Sandbox 和合成负载。技术真实性不能简化：不得虚构测试、流量、性能或故障结果；未经运行不得声称已经验证。
+商业真实性可以简化：允许合成数据、模拟物流、Mock 支付和合成负载。第三方 Sandbox 本期明确不接入。技术真实性不能简化：不得虚构测试、流量、性能或故障结果；未经运行不得声称已经验证。
 
 ## 面试优先的设计门槛
 
@@ -29,7 +29,7 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 - 角色为 Guest、Customer、Admin 三类顶层角色；Admin 包含 Operator 的运营职责，第一版不拆分更多内部岗位，也不做多商家和商家结算。
 - 一个 Vue 3 + TypeScript/Vite 工程承担顾客端最小闭环和必要的后端演示入口；普通商品、SKU、库存和订单运营 CRUD 优先使用 Django Admin。完整自定义 Vue Admin 不再阻塞 Interview Core，只有能够直接展示三条旗舰主线时才局部增加管理页面。
 - Django + DRF Modular Monolith，MySQL 是核心事实来源。
-- 模拟物流；Mock Payment Gateway 是必做核心，第三方 Sandbox 只是 Optional Bonus，Production Payment 和真钱明确不做。
+- 模拟物流；Mock Payment Gateway 是必做核心，RabbitMQ + Celery 支付事件异步处理属于 Interview Core 必做范围。第三方 Sandbox 本期为 No-Go，Production Payment 和真钱明确不做。
 - 不做微服务、Kubernetes、真实物流和复杂售后；Kafka 只作为未来可选扩展。
 
 ## 已确认设计基线
@@ -42,6 +42,7 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 - Order 主链为 `PENDING_PAYMENT → PAID → SHIPPED → COMPLETED`，另有终态 `CANCELED/EXPIRED`。
 - PaymentAttempt 使用 `CREATED/PENDING/UNKNOWN/SUCCEEDED/FAILED/EXPIRED/CANCELED`；每单最多一个活跃 Attempt，UNKNOWN 必须查单，任一成功后禁止新建。
 - Event Inbox 以 `(provider, event_id)` 唯一；Provider Adapter 统一创建支付、查单、验签、事件解析和发起模拟退款；简单取消、库存释放、迟到支付和 Refund Simulation 都必须幂等。
+- 2026-10-01 已确认范围：Phase 5 必须以 RabbitMQ + Celery 完成支付事件后台处理、有界重试、消费者幂等与 Inbox 恢复；这是待实现要求，不代表 MQ 已接入或故障行为已经验证。其他异步业务场景不因 MQ 必做而自动扩展。
 - 第一批 Django App 为 `accounts/catalog/inventory/ordering/payments`；`promotions/engagement` 在闭环后按需增加。
 - 业务事实不硬删除；字段、约束和索引按已确认不变量及真实查询在纵向切片中细化。
 
@@ -51,9 +52,19 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 
 1. 库存并发与秒杀：超卖复现、事务、原子条件更新/行锁对比、预占/核销/释放、Redis Lua 候选、一人一单、补偿、分布式锁 Gate、压测。
 2. Redis 缓存正确性：Cache-Aside、一致性、失效、穿透、击穿、雪崩、热点、故障降级、性能对比。
-3. 支付状态与幂等：后端 Mock Gateway、状态机、Webhook/Event Inbox、唯一事件、重复/乱序回调、UNKNOWN、校验、重试、故障恢复和退款模拟。
+3. 支付状态与幂等：后端 Mock Gateway、状态机、Webhook/Event Inbox、唯一事件、重复/乱序回调、UNKNOWN、校验、RabbitMQ + Celery 支付事件异步处理、有界重试、消费者幂等、Inbox 恢复、Worker/Broker 故障验证和退款模拟。
 
-Docker、Nginx、Gunicorn、Linux、CI、日志和 Performance Testing 属于必要工程能力，必须形成真实运行或实验。Distributed Lock 默认不用；Celery/RabbitMQ 只在真实异步或可靠投递需求出现时引入；Transactional Outbox 只在可靠消息一致性问题出现时评估；Elasticsearch 只在 MySQL 搜索基线不足时引入；第三方 Sandbox 只在 Mock Evidence Pack 完成且工时允许时选做。条件能力可以 No-Go 或延期；一旦引入，必须完成真实集成、故障或一致性验证。
+Docker、Nginx、Gunicorn、Linux、CI、日志和 Performance Testing 属于必要工程能力，必须形成真实运行或实验。RabbitMQ + Celery 支付事件链路已由项目拥有者升级为必做，但仍须从同步 MySQL/Mock 基线与失败场景出发，比较方案并完成真实隔离服务验证，不能仅添加依赖。Distributed Lock 默认不用；Transactional Outbox 只在可靠消息一致性问题出现时评估；Elasticsearch 只在 MySQL 搜索基线不足时引入。这些条件能力可以 No-Go 或延期；一旦引入，必须完成真实集成、故障或一致性验证。
+
+### 支付 MQ 与本期支付范围
+
+- MySQL 保存支付、订单和库存的最终事实；RabbitMQ 负责传递任务，Celery Worker 执行已有业务服务，不另建一套状态转换规则。
+- 原始支付事件先可靠入箱并提交短事务，再向 RabbitMQ 投递事件编号。Gateway/Broker 网络等待不得占用订单或库存数据库锁。
+- 单条事件的支付确认、订单状态、库存副作用与处理状态在同一业务事务中提交；重复投递、重试和 Worker 中断都不能造成重复核销或重复退款。
+- `transaction.on_commit` 能保证提交后才发任务，但不能消除“数据库已提交、消息尚未发布时崩溃”的窗口。Inbox 扫描必须补齐漏投和未完成处理；是否进一步采用 Transactional Outbox 仍需真实问题与方案比较支持，不因 MQ 必做自动采用。
+- 明确区分暂时故障、业务拒绝和重试耗尽：可恢复故障按有限次数与退避策略重试；金额、币种、签名或状态不合法的事件不应无限重试；持续失败保留原文、处理状态和错误记录供调查。
+- 必须用真实隔离 RabbitMQ 与 Worker 验证重复消息、处理中断、Broker 不可用和恢复，确认最终订单、支付和库存状态正确。Mock/eager 单测只能补充规则验证，不能替代消息投递与崩溃恢复证据。
+- 第三方 Sandbox 本期 No-Go：不做账号可用性调查、不配置第三方测试接入。以后只有用户明确重新决定范围时才评估；当前以可控 Mock Gateway 完成支付证据，不处理真钱。
 
 每项高级技术遵循：
 
@@ -73,7 +84,7 @@ Docker、Nginx、Gunicorn、Linux、CI、日志和 Performance Testing 属于必
 
 所有工作先按学习价值分成三层，不再要求每个文件使用同样的学习深度：
 
-1. `Depth`：Order、库存事务与并发、Redis 缓存一致性、支付状态与幂等、架构取舍和实验结论。必须使用 Learning Mode，由用户掌握不变量、测试 Oracle、失败模式、方案比较和证据解释。
+1. `Depth`：Order、库存事务与并发、Redis 缓存一致性、支付状态与幂等、MQ 投递与故障恢复、架构取舍和实验结论。必须使用 Learning Mode，由用户掌握不变量、测试 Oracle、失败模式、方案比较和证据解释。
 2. `Supporting`：Accounts、Catalog、Cart、Address、权限、API 契约和前后端联调。用户需要掌握请求链、关键约束和业务边界；可使用 Pair Mode。
 3. `Boilerplate`：普通 CRUD、Admin 注册、重复 Serializer/View/Form/Table、fixture、HTML/CSS 和构建样板。行为确认后可使用 Delivery Mode，由 AI 直接实现并验证。
 
@@ -132,9 +143,10 @@ Project One 当前是个人学习型后端项目。默认目标是高效完成�
 - 纯业务规则使用单元测试。
 - ORM、事务、订单、库存和约束使用隔离 MySQL 测试数据库。
 - DRF 使用 API、认证和权限测试。
-- Redis/Lua 使用真实隔离服务集成测试；RabbitMQ/Celery、Elasticsearch 在实际引入后使用少量真实隔离服务集成测试。
+- Redis/Lua 使用真实隔离服务集成测试；必做的 RabbitMQ/Celery 支付链路必须使用真实隔离 Broker 与 Worker 验证，Elasticsearch 在条件满足并实际引入后进行真实集成测试。
 - 库存和秒杀使用真实并发实验；优化前必须先建立 baseline。
 - 支付测试必须覆盖重复、乱序、错误金额/币种/签名和非法状态转换。
+- 支付 MQ 测试必须覆盖重复投递、业务提交与消息确认间的 Worker 中断、Broker 不可用、提交后漏投补偿、Inbox 处理失败恢复和重试耗尽；检查支付、订单、库存与事件终值，不以任务执行次数代替业务正确性。
 - 认证测试覆盖 Username 规范化与唯一性、密码哈希、Session/CSRF 和 Customer/Admin 后端权限。
 - 订单与库存测试覆盖 Idempotency-Key 同参复用/异参 409、事务内预占、失败不清购物车、重复核销/释放和迟到支付。
 - AI 不得在用户尚未确认正确行为时，同时决定测试 Oracle 和完整实现。
