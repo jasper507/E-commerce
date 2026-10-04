@@ -1,0 +1,106 @@
+{
+  "captured_at_utc": "2026-09-26T17:50:39.938637+00:00",
+  "capacity_per_process": 2,
+  "environment": {
+    "database": "test_project_one",
+    "mysql": "8.4.10",
+    "redis": "8.10.1"
+  },
+  "method": {
+    "client": "DRF APIClient; isolated real MySQL and Redis",
+    "failure": "real connection refused at a bound non-listening TCP socket",
+    "schedule": "hold two admitted loaders with Event; run eight more before release",
+    "scope": "ordered correctness experiment; artificial holding is not a benchmark",
+    "sql": "ORM statements only; excludes pre-established DB connections and setup"
+  },
+  "summary": {
+    "requests": 10,
+    "successes": 2,
+    "rejected_503": 8,
+    "sql": 4,
+    "rejected_sql": 0,
+    "peak_protected_loaders": 2
+  },
+  "requests": [
+    {
+      "worker": 0,
+      "payload_matches": true,
+      "status": 200,
+      "sql": 2,
+      "guard_sql": 1,
+      "reload_sql": 1
+    },
+    {
+      "worker": 1,
+      "payload_matches": true,
+      "status": 200,
+      "sql": 2,
+      "guard_sql": 1,
+      "reload_sql": 1
+    },
+    {
+      "worker": 2,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    },
+    {
+      "worker": 3,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    },
+    {
+      "worker": 4,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    },
+    {
+      "worker": 5,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    },
+    {
+      "worker": 6,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    },
+    {
+      "worker": 7,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    },
+    {
+      "worker": 8,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    },
+    {
+      "worker": 9,
+      "payload_matches": null,
+      "status": 503,
+      "sql": 0,
+      "guard_sql": 0,
+      "reload_sql": 0
+    }
+  ]
+}

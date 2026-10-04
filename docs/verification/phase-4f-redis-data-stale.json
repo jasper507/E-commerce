@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-09-26T18:26:58.133480+00:00",
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "os": "Windows",
+    "database": "test_project_one",
+    "mysql": "8.4.10",
+    "redis": "8.10.1"
+  },
+  "method": {
+    "failure": "application connection refused at a reserved non-listening socket; real Redis remains running",
+    "write": "normal isolated MySQL SKU.save, committed; on_commit generation SET cannot connect",
+    "recovery": "restore original application Redis URL while old detail has remaining TTL",
+    "separation": "independent of slow pause experiment; timeout never proves a Redis write was not executed",
+    "scope": "existing stale recovery boundary reproduced, not fixed",
+    "sql": "detail request SQL only; setup and direct authoritative price check excluded"
+  },
+  "scenarios": [
+    {
+      "name": "warm",
+      "status": 200,
+      "price": "129.00",
+      "sql": 2
+    },
+    {
+      "name": "failure_after_committed_write",
+      "status": 200,
+      "price": "169.00",
+      "sql": 2
+    },
+    {
+      "name": "redis_recovered_same_generation",
+      "status": 200,
+      "price": "129.00",
+      "sql": 1
+    },
+    {
+      "name": "successful_rotation",
+      "status": 200,
+      "price": "169.00",
+      "sql": 2
+    },
+    {
+      "name": "repaired_warm_hit",
+      "status": 200,
+      "price": "169.00",
+      "sql": 1
+    }
+  ],
+  "summary": {
+    "database_price_after_failure": "169.00",
+    "display_price_after_recovery": "129.00",
+    "generation_unchanged_after_failure": true,
+    "generation_changed_after_successful_save": true,
+    "ttl_before_failure_seconds": 32,
+    "ttl_on_stale_recovery_seconds": 32,
+    "display_price_after_successful_rotation": "169.00"
+  }
+}

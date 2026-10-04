@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-09-27T15:37:08.775613+00:00",
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "os": "Windows",
+    "database": "test_project_one",
+    "mysql": "8.4.10",
+    "redis": "8.10.1"
+  },
+  "method": {
+    "scope": "pre-negative-cache baseline; real isolated MySQL/Redis; sequential requests",
+    "requests_per_scenario": 6,
+    "client": "DRF APIClient through response JSON, no HTTP server",
+    "sql": "request statements only; setup and warmup excluded",
+    "commands": "application execute_command attempts, excludes control and handshake commands",
+    "missing": "same missing slug versus six distinct missing slugs; no hidden product cached",
+    "timing": "no latency or throughput claim; count SQL, Redis attempts, status and correctness",
+    "captured_at_utc": "2026-09-27T15:37:08.795651+00:00"
+  },
+  "scenarios": [
+    {
+      "name": "same_missing_slug",
+      "summary": {
+        "requests": 6,
+        "status": 404,
+        "sql": 6,
+        "sku_sql": 0,
+        "application_get_attempts": 6,
+        "breaker_state": "closed"
+      },
+      "requests": [
+        {
+          "request": 0,
+          "slug": "missing-1bfe04458cde4486903bfd5bad7b85df",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.638
+            }
+          ]
+        },
+        {
+          "request": 1,
+          "slug": "missing-1bfe04458cde4486903bfd5bad7b85df",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.622
+            }
+          ]
+        },
+        {
+          "request": 2,
+          "slug": "missing-1bfe04458cde4486903bfd5bad7b85df",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.609
+            }
+          ]
+        },
+        {
+          "request": 3,
+          "slug": "missing-1bfe04458cde4486903bfd5bad7b85df",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.57
+            }
+          ]
+        },
+        {
+          "request": 4,
+          "slug": "missing-1bfe04458cde4486903bfd5bad7b85df",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.574
+            }
+          ]
+        },
+        {
+          "request": 5,
+          "slug": "missing-1bfe04458cde4486903bfd5bad7b85df",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.606
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "different_missing_slugs",
+      "summary": {
+        "requests": 6,
+        "status": 404,
+        "sql": 6,
+        "sku_sql": 0,
+        "application_get_attempts": 6,
+        "breaker_state": "closed"
+      },
+      "requests": [
+        {
+          "request": 0,
+          "slug": "missing-d70241cfaeb946dd954067e241c38629",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.603
+            }
+          ]
+        },
+        {
+          "request": 1,
+          "slug": "missing-3bc263b19f464cadaeb53e5f0640e541",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.556
+            }
+          ]
+        },
+        {
+          "request": 2,
+          "slug": "missing-a385b089553d41c393c5f443d1bb085d",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.544
+            }
+          ]
+        },
+        {
+          "request": 3,
+          "slug": "missing-f80a54d270344b6cb10f6eb9184df97a",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.543
+            }
+          ]
+        },
+        {
+          "request": 4,
+          "slug": "missing-c1d1f371fc954920bdebe6c2a609c0b2",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.548
+            }
+          ]
+        },
+        {
+          "request": 5,
+          "slug": "missing-90ef9c273df9400c8abc74f5abf98091",
+          "status": 404,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.572
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "warm_existing_product",
+      "summary": {
+        "requests": 6,
+        "status": 200,
+        "sql": 6,
+        "sku_sql": 0,
+        "application_get_attempts": 12,
+        "breaker_state": "closed"
+      },
+      "requests": [
+        {
+          "request": 0,
+          "slug": "mouse-m1",
+          "status": 200,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": true,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.568
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.58
+            }
+          ]
+        },
+        {
+          "request": 1,
+          "slug": "mouse-m1",
+          "status": 200,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": true,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.534
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.523
+            }
+          ]
+        },
+        {
+          "request": 2,
+          "slug": "mouse-m1",
+          "status": 200,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": true,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.578
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.512
+            }
+          ]
+        },
+        {
+          "request": 3,
+          "slug": "mouse-m1",
+          "status": 200,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": true,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.519
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.697
+            }
+          ]
+        },
+        {
+          "request": 4,
+          "slug": "mouse-m1",
+          "status": 200,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": true,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.653
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.515
+            }
+          ]
+        },
+        {
+          "request": 5,
+          "slug": "mouse-m1",
+          "status": 200,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "payload_matches": true,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.547
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.602
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

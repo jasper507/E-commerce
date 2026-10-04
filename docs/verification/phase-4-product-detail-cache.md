@@ -1,5 +1,9 @@
 # Track B / Phase 4A：商品详情 Cache-Aside 基线
 
+> 本文件保留 Phase 4A 删除式失效基线及当时证据。当前代码已在 Phase 4B
+> 改为分代 Key，后续请求不再读取成功换代前的旧代；当前方案及复现见
+> [Phase 4B 验证记录](phase-4b-cache-generations.md)。
+
 ## 问题、规则与选择
 
 服务于“浏览 → 下单”闭环和 Redis 一致性/韧性面试故事。重复商品详情请求

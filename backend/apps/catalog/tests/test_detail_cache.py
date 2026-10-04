@@ -1,7 +1,7 @@
 """Real Redis evidence; a unique key prefix confines cleanup to this test.
 
-The stale-refill test deliberately records the first slice's consistency limit.
-It is not a claim that commit-time deletion makes cache reads strongly consistent.
+The stale-refill test protects later reads after successful generation rotation.
+It is not a claim of strong consistency across MySQL and Redis.
 """
 
 import os
@@ -24,9 +24,13 @@ from rest_framework.test import APIClient
 from apps.accounts.models import Address
 from apps.catalog.cache import (
     ProductDetailCache,
+    catalog_generation_key,
+    get_catalog_generation,
     get_redis_client,
     product_detail_key,
 )
+from apps.catalog import cache
+from apps.catalog.circuit_breaker import RedisReadCircuitBreaker
 from apps.catalog.models import Category, Product, SKU
 from apps.inventory.models import Inventory
 from apps.ordering.models import Cart, CartItem, Order
@@ -37,7 +41,7 @@ pytestmark = [pytest.mark.redis_integration, pytest.mark.django_db(transaction=T
 
 
 @pytest.fixture
-def catalog_cache(settings):
+def catalog_cache(settings, monkeypatch):
     url = os.getenv("PROJECT_ONE_TEST_REDIS_URL")
     if not url:
         pytest.skip("Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.")
@@ -52,6 +56,8 @@ def catalog_cache(settings):
     settings.CATALOG_CACHE_KEY_PREFIX = prefix
     settings.CATALOG_CACHE_TTL = 30
     settings.CATALOG_CACHE_TTL_JITTER = 5
+    breaker_clock = SimpleNamespace(now=0.0)
+    monkeypatch.setattr(cache, "detail_reads", RedisReadCircuitBreaker(clock=lambda: breaker_clock.now))
     get_redis_client.cache_clear()
     client = get_redis_client()
     try:
@@ -79,8 +85,10 @@ def catalog_cache(settings):
             control=control,
             client=APIClient(),
             url=reverse("catalog:product-detail", kwargs={"slug": product.slug}),
-            key=product_detail_key(product.pk),
+            generation=get_catalog_generation(),
+            key=product_detail_key(product.pk, get_catalog_generation()),
             redis_url=url,
+            breaker_clock=breaker_clock,
         )
     finally:
         # Never use FLUSHDB; scan/delete only the unguessable prefix owned above.
@@ -98,6 +106,10 @@ def get_detail_with_queries(data):
         response = data.client.get(data.url)
     assert response.status_code == 200
     return response.json(), len(queries)
+
+
+def current_key(product):
+    return product_detail_key(product.pk, get_catalog_generation())
 
 
 def checkout_fixture(data):
@@ -192,7 +204,10 @@ def test_save_invalidates_only_after_commit(catalog_cache):
         data.product.name = "Changed in transaction"
         data.product.save(update_fields=("name",))
         assert data.control.exists(data.key)
-    assert not data.control.exists(data.key)
+        assert get_catalog_generation() == data.generation
+    assert get_catalog_generation() != data.generation
+    assert not data.control.exists(current_key(data.product))
+    assert data.control.exists(data.key)
     payload, queries = get_detail_with_queries(data)
     assert payload["name"] == "Changed in transaction"
     assert queries == 2
@@ -219,12 +234,17 @@ def test_category_rename_refreshes_all_related_products(catalog_cache):
     other_url = reverse("catalog:product-detail", kwargs={"slug": other.slug})
     get_detail_with_queries(data)
     assert data.client.get(other_url).status_code == 200
-    other_key = product_detail_key(other.pk)
+    old_generation = get_catalog_generation()
+    old_product_key = product_detail_key(data.product.pk, old_generation)
+    other_key = product_detail_key(other.pk, old_generation)
     assert data.control.exists(other_key)
     data.category.name = "Wireless mice"
     data.category.save(update_fields=("name",))
-    assert not data.control.exists(data.key)
-    assert not data.control.exists(other_key)
+    assert get_catalog_generation() != old_generation
+    assert not data.control.exists(current_key(data.product))
+    assert not data.control.exists(current_key(other))
+    assert data.control.exists(old_product_key)
+    assert data.control.exists(other_key)
     assert data.client.get(data.url).json()["category"]["name"] == "Wireless mice"
     assert data.client.get(other_url).json()["category"]["name"] == "Wireless mice"
 
@@ -237,11 +257,14 @@ def test_sku_move_invalidates_old_and_new_product(catalog_cache):
     other_url = reverse("catalog:product-detail", kwargs={"slug": other.slug})
     get_detail_with_queries(data)
     assert data.client.get(other_url).json()["skus"] == []
-    other_key = product_detail_key(other.pk)
+    old_generation = get_catalog_generation()
+    other_key = product_detail_key(other.pk, old_generation)
     data.sku.product = other
     data.sku.save(update_fields=("product",))
-    assert not data.control.exists(data.key)
-    assert not data.control.exists(other_key)
+    assert get_catalog_generation() != old_generation
+    assert not data.control.exists(current_key(data.product))
+    assert not data.control.exists(current_key(other))
+    assert data.control.exists(other_key)
     assert data.client.get(data.url).json()["skus"] == []
     assert data.client.get(other_url).json()["skus"][0]["code"] == data.sku.code
 
@@ -295,33 +318,38 @@ def test_real_connection_failure_falls_back_and_commit_still_succeeds(
         settings.CATALOG_CACHE_REDIS_URL = data.redis_url
         get_redis_client.cache_clear()
     # Failed invalidation leaves a stale key after recovery until TTL/another write.
+    data.breaker_clock.now += 1
     recovered_payload, queries = get_detail_with_queries(data)
     assert recovered_payload == old_payload
     assert queries == 1
 
 
-@pytest.mark.parametrize("operation", ["set", "delete"])
+@pytest.mark.parametrize("operation", ["payload_set", "generation_set"])
 def test_injected_write_failures_do_not_break_mysql(catalog_cache, monkeypatch, operation):
     """Supplementary injection, distinct from the real connection-failure evidence."""
     data = catalog_cache
     redis_client = get_redis_client()
-    if operation == "delete":
-        get_detail_with_queries(data)
+    get_detail_with_queries(data)
+    original_set = redis_client.set
 
-    def timeout(*args, **kwargs):
-        raise redis.TimeoutError("Injected cache write timeout")
+    def timeout(key, *args, **kwargs):
+        is_generation = key == catalog_generation_key()
+        if is_generation == (operation == "generation_set"):
+            raise redis.TimeoutError("Injected cache write timeout")
+        return original_set(key, *args, **kwargs)
 
-    monkeypatch.setattr(redis_client, operation, timeout)
-    if operation == "set":
+    monkeypatch.setattr(redis_client, "set", timeout)
+    if operation == "payload_set":
+        data.control.delete(data.key)
         payload, queries = get_detail_with_queries(data)
         assert payload["name"] == data.product.name
         assert queries == 2
         assert not data.control.exists(data.key)
     else:
-        data.product.name = "Committed despite DEL timeout"
+        data.product.name = "Committed despite generation timeout"
         data.product.save(update_fields=("name",))
         data.product.refresh_from_db()
-        assert data.product.name == "Committed despite DEL timeout"
+        assert data.product.name == "Committed despite generation timeout"
 
 
 def test_stale_stock_hint_cannot_authorize_checkout(catalog_cache):
@@ -357,7 +385,7 @@ def test_stale_cached_price_cannot_set_order_amount(catalog_cache):
     assert order.items.get().unit_price == Decimal("159.00")
 
 
-def test_delayed_old_refill_exposes_documented_consistency_window(
+def test_delayed_old_refill_does_not_pollute_later_requests(
     catalog_cache, monkeypatch
 ):
     data = catalog_cache
@@ -389,7 +417,8 @@ def test_delayed_old_refill_exposes_documented_consistency_window(
         assert serialized.wait(timeout=10)
         data.product.name = "New committed name"
         data.product.save(update_fields=("name",))
-        assert not data.control.exists(data.key)
+        assert get_catalog_generation() != data.generation
+        assert not data.control.exists(current_key(data.product))
     finally:
         release_reader.set()
         reader.join(timeout=10)
@@ -400,8 +429,13 @@ def test_delayed_old_refill_exposes_documented_consistency_window(
     assert status_code == 200
     assert old_payload["name"] == "Mouse M1"
     warm_payload, queries = get_detail_with_queries(data)
-    assert warm_payload["name"] == "Mouse M1"
-    assert queries == 1
+    assert warm_payload["name"] == "New committed name"
+    assert queries == 2
     data.product.refresh_from_db()
     assert data.product.name == "New committed name"
     assert data.control.ttl(data.key) > 0
+    assert data.control.exists(current_key(data.product))
+    next_payload, next_queries = get_detail_with_queries(data)
+    assert next_payload["name"] == "New committed name"
+    assert next_queries == 1
+    print("CACHE_GENERATION late_old_set=true later_read=new miss_sql=2 next_hit_sql=1")

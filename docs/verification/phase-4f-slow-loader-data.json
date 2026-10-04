@@ -1,0 +1,120 @@
+{
+  "captured_at_utc": "2026-09-26T18:25:34.766484+00:00",
+  "scenario": "healthy_redis_slow_business_loader",
+  "method": {
+    "workers": 5,
+    "follower_wait_budget_s": 0.2,
+    "configured_failure_slots": 2,
+    "delay": "Python load_detail Event before SKU SQL; release after all 5 enter",
+    "redis": "Real isolated Redis; no injected network failure",
+    "mysql": "Real isolated MySQL test database",
+    "timing": "DRF APIClient, includes artificial Event delay; excludes DB connect",
+    "scope": "Controlled branch evidence; not DB timeout or capacity benchmark"
+  },
+  "summary": {
+    "requests": 5,
+    "successes": 5,
+    "sql": 10,
+    "detail_loads": 5,
+    "peak_active_loaders": 5,
+    "fallback_slot_calls": 0,
+    "follower_wait_expirations": 4,
+    "redis_get_attempts": 15,
+    "redis_set_attempts": 5
+  },
+  "requests": [
+    {
+      "worker": "follower-1",
+      "redis_commands": [
+        "GET",
+        "GET",
+        "GET",
+        "SET"
+      ],
+      "future_wait_timeouts_s": [
+        0.2
+      ],
+      "future_wait_expirations": 1,
+      "status": 200,
+      "payload_matches": true,
+      "sql": 2,
+      "guard_sql": 1,
+      "reload_sql": 1,
+      "elapsed_ms": 242.589
+    },
+    {
+      "worker": "follower-2",
+      "redis_commands": [
+        "GET",
+        "GET",
+        "GET",
+        "SET"
+      ],
+      "future_wait_timeouts_s": [
+        0.2
+      ],
+      "future_wait_expirations": 1,
+      "status": 200,
+      "payload_matches": true,
+      "sql": 2,
+      "guard_sql": 1,
+      "reload_sql": 1,
+      "elapsed_ms": 243.788
+    },
+    {
+      "worker": "follower-3",
+      "redis_commands": [
+        "GET",
+        "GET",
+        "GET",
+        "SET"
+      ],
+      "future_wait_timeouts_s": [
+        0.2
+      ],
+      "future_wait_expirations": 1,
+      "status": 200,
+      "payload_matches": true,
+      "sql": 2,
+      "guard_sql": 1,
+      "reload_sql": 1,
+      "elapsed_ms": 247.868
+    },
+    {
+      "worker": "follower-4",
+      "redis_commands": [
+        "GET",
+        "GET",
+        "GET",
+        "SET"
+      ],
+      "future_wait_timeouts_s": [
+        0.2
+      ],
+      "future_wait_expirations": 1,
+      "status": 200,
+      "payload_matches": true,
+      "sql": 2,
+      "guard_sql": 1,
+      "reload_sql": 1,
+      "elapsed_ms": 243.133
+    },
+    {
+      "worker": "owner",
+      "redis_commands": [
+        "GET",
+        "GET",
+        "GET",
+        "SET"
+      ],
+      "future_wait_timeouts_s": [],
+      "future_wait_expirations": 0,
+      "status": 200,
+      "payload_matches": true,
+      "sql": 2,
+      "guard_sql": 1,
+      "reload_sql": 1,
+      "elapsed_ms": 254.458
+    }
+  ]
+}

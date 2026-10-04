@@ -1,0 +1,226 @@
+{
+  "captured_at_utc": "2026-09-30T17:14:34.296746+00:00",
+  "strategy": "shared_refill_limit",
+  "capacity_per_process": 2,
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "os": "Windows",
+    "database": "test_project_one",
+    "mysql": "8.4.10",
+    "redis": "8.10.1"
+  },
+  "method": {
+    "planned_rounds": 3,
+    "products": 6,
+    "client": "six DRF APIClient threads; real isolated MySQL and Redis",
+    "trigger": "normal Product.save rotates global generation after warmup",
+    "schedule": "hold first two loaders with Event; four more load or reject before release",
+    "delay": "Python loader Event before SKU SQL; not a slow database or benchmark",
+    "baseline": "test-only historical policy ignores healthy cache misses",
+    "sql": "request statements only; setup, save and prewarm excluded"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "summary": {
+        "requests": 6,
+        "successes": 2,
+        "rejected_503": 4,
+        "peak_active_loaders": 2,
+        "rejected_before_release": 4,
+        "guard_sql": 6,
+        "sku_sql": 2,
+        "total_sql": 8,
+        "recovery_sku_sql": 4,
+        "warm_sku_sql": 0
+      },
+      "peak_active_loaders": 2,
+      "rejected_before_release": 4,
+      "requests": [
+        {
+          "slug": "mouse-m1",
+          "status": 200,
+          "payload_matches": true,
+          "guard_sql": 1,
+          "sku_sql": 1,
+          "total_sql": 2
+        },
+        {
+          "slug": "mouse-m2",
+          "status": 200,
+          "payload_matches": true,
+          "guard_sql": 1,
+          "sku_sql": 1,
+          "total_sql": 2
+        },
+        {
+          "slug": "mouse-m3",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m4",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m5",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m6",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "summary": {
+        "requests": 6,
+        "successes": 2,
+        "rejected_503": 4,
+        "peak_active_loaders": 2,
+        "rejected_before_release": 4,
+        "guard_sql": 6,
+        "sku_sql": 2,
+        "total_sql": 8,
+        "recovery_sku_sql": 4,
+        "warm_sku_sql": 0
+      },
+      "peak_active_loaders": 2,
+      "rejected_before_release": 4,
+      "requests": [
+        {
+          "slug": "mouse-m1",
+          "status": 200,
+          "payload_matches": true,
+          "guard_sql": 1,
+          "sku_sql": 1,
+          "total_sql": 2
+        },
+        {
+          "slug": "mouse-m2",
+          "status": 200,
+          "payload_matches": true,
+          "guard_sql": 1,
+          "sku_sql": 1,
+          "total_sql": 2
+        },
+        {
+          "slug": "mouse-m3",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m4",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m5",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m6",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "summary": {
+        "requests": 6,
+        "successes": 2,
+        "rejected_503": 4,
+        "peak_active_loaders": 2,
+        "rejected_before_release": 4,
+        "guard_sql": 6,
+        "sku_sql": 2,
+        "total_sql": 8,
+        "recovery_sku_sql": 4,
+        "warm_sku_sql": 0
+      },
+      "peak_active_loaders": 2,
+      "rejected_before_release": 4,
+      "requests": [
+        {
+          "slug": "mouse-m1",
+          "status": 200,
+          "payload_matches": true,
+          "guard_sql": 1,
+          "sku_sql": 1,
+          "total_sql": 2
+        },
+        {
+          "slug": "mouse-m2",
+          "status": 200,
+          "payload_matches": true,
+          "guard_sql": 1,
+          "sku_sql": 1,
+          "total_sql": 2
+        },
+        {
+          "slug": "mouse-m3",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m4",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m5",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        },
+        {
+          "slug": "mouse-m6",
+          "status": 503,
+          "payload_matches": null,
+          "guard_sql": 1,
+          "sku_sql": 0,
+          "total_sql": 1
+        }
+      ]
+    }
+  ]
+}

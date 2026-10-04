@@ -1,5 +1,9 @@
 # Track B 第一段：商品详情 Cache-Aside
 
+> 这是 Phase 4A 的基线学习材料。当前代码已进入 Phase 4B，请接着阅读
+> [缓存分代学习指南](phase-4b-cache-generation-study-guide.md)，区分物理删除
+> 与分代 Key 的逻辑失效；下面保留旧方案用于理解失败与取舍。
+
 本段属于 Depth / Learning Mode。业务闭环已经能从浏览走到收货，现在用
 商品详情建立“缓存一致性与故障降级”这条面试故事的基线。
 

@@ -1,0 +1,698 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-09-26T18:26:55.009137+00:00",
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "os": "Windows",
+    "database": "test_project_one",
+    "mysql": "8.4.10",
+    "redis": "8.10.1"
+  },
+  "method": {
+    "workers_per_wave": 6,
+    "failure": "isolated real Redis CLIENT PAUSE 2500 ALL; automatically resumes",
+    "application_timeout_ms": 100,
+    "application_retries": 0,
+    "timing": "DRF APIClient through response JSON; excludes DB connect and start rendezvous",
+    "command_count": "application execute_command calls, not server execution or handshake wire commands",
+    "concurrency": "observe admitted fallback scopes; no artificial holding of database queries",
+    "percentiles": "nearest rank; six samples per wave, p95 equals maximum",
+    "scope": "one process; controlled slow dependency experiment, not a capacity benchmark"
+  },
+  "waves": [
+    {
+      "name": "healthy",
+      "summary": {
+        "requests": 6,
+        "successes": 6,
+        "rejected_503": 0,
+        "sql": 6,
+        "reload_requests": 0,
+        "application_command_attempts": 12,
+        "application_command_types": {
+          "GET": 12
+        },
+        "get_attempts": 12,
+        "redis_errors": {},
+        "peak_admitted_requests": 0,
+        "p50_ms": 12.041,
+        "p95_ms": 13.897,
+        "max_ms": 13.897
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 11.837,
+          "started_after_pause_ms": null,
+          "finished_after_pause_ms": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 8.435
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 1.28
+            }
+          ]
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 12.041,
+          "started_after_pause_ms": null,
+          "finished_after_pause_ms": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 8.471
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 1.703
+            }
+          ]
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 11.412,
+          "started_after_pause_ms": null,
+          "finished_after_pause_ms": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 8.37
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.928
+            }
+          ]
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 13.897,
+          "started_after_pause_ms": null,
+          "finished_after_pause_ms": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 11.859
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.544
+            }
+          ]
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 13.105,
+          "started_after_pause_ms": null,
+          "finished_after_pause_ms": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 10.818
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.709
+            }
+          ]
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 12.343,
+          "started_after_pause_ms": null,
+          "finished_after_pause_ms": null,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 9.226
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 1.417
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "slow_first",
+      "summary": {
+        "requests": 6,
+        "successes": 2,
+        "rejected_503": 4,
+        "sql": 4,
+        "reload_requests": 2,
+        "application_command_attempts": 6,
+        "application_command_types": {
+          "GET": 6
+        },
+        "get_attempts": 6,
+        "redis_errors": {
+          "TimeoutError": 6
+        },
+        "peak_admitted_requests": 2,
+        "p50_ms": 109.918,
+        "p95_ms": 111.025,
+        "max_ms": 111.025
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 109.187,
+          "started_after_pause_ms": 0.484,
+          "finished_after_pause_ms": 109.671,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 103.626
+            }
+          ]
+        },
+        {
+          "worker": 1,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 111.025,
+          "started_after_pause_ms": 0.869,
+          "finished_after_pause_ms": 111.894,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 104.997
+            }
+          ]
+        },
+        {
+          "worker": 2,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 108.617,
+          "started_after_pause_ms": 2.495,
+          "finished_after_pause_ms": 111.112,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 102.588
+            }
+          ]
+        },
+        {
+          "worker": 3,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 109.918,
+          "started_after_pause_ms": 1.829,
+          "finished_after_pause_ms": 111.747,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 104.005
+            }
+          ]
+        },
+        {
+          "worker": 4,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 110.068,
+          "started_after_pause_ms": 1.188,
+          "finished_after_pause_ms": 111.256,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 104.027
+            }
+          ]
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 110.381,
+          "started_after_pause_ms": 0.046,
+          "finished_after_pause_ms": 110.427,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 104.234
+            }
+          ]
+        }
+      ],
+      "completed_within_nominal_pause_window": true
+    },
+    {
+      "name": "slow_continued",
+      "summary": {
+        "requests": 6,
+        "successes": 2,
+        "rejected_503": 4,
+        "sql": 4,
+        "reload_requests": 2,
+        "application_command_attempts": 6,
+        "application_command_types": {
+          "GET": 6
+        },
+        "get_attempts": 6,
+        "redis_errors": {
+          "TimeoutError": 6
+        },
+        "peak_admitted_requests": 2,
+        "p50_ms": 112.713,
+        "p95_ms": 115.121,
+        "max_ms": 115.121
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 111.874,
+          "started_after_pause_ms": 122.41,
+          "finished_after_pause_ms": 234.284,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 110.468
+            }
+          ]
+        },
+        {
+          "worker": 1,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 113.318,
+          "started_after_pause_ms": 120.164,
+          "finished_after_pause_ms": 233.481,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 110.157
+            }
+          ]
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 113.823,
+          "started_after_pause_ms": 122.743,
+          "finished_after_pause_ms": 236.565,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 108.743
+            }
+          ]
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 115.121,
+          "started_after_pause_ms": 122.109,
+          "finished_after_pause_ms": 237.23,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 109.23
+            }
+          ]
+        },
+        {
+          "worker": 4,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 112.275,
+          "started_after_pause_ms": 121.77,
+          "finished_after_pause_ms": 234.044,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 109.829
+            }
+          ]
+        },
+        {
+          "worker": 5,
+          "status": 503,
+          "payload_matches": null,
+          "sql": 0,
+          "guard_sql": 0,
+          "reload_sql": 0,
+          "elapsed_ms": 112.713,
+          "started_after_pause_ms": 123.066,
+          "finished_after_pause_ms": 235.779,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "error",
+              "error_type": "TimeoutError",
+              "elapsed_ms": 110.795
+            }
+          ]
+        }
+      ],
+      "completed_within_nominal_pause_window": true
+    },
+    {
+      "name": "recovered",
+      "summary": {
+        "requests": 6,
+        "successes": 6,
+        "rejected_503": 0,
+        "sql": 6,
+        "reload_requests": 0,
+        "application_command_attempts": 12,
+        "application_command_types": {
+          "GET": 12
+        },
+        "get_attempts": 12,
+        "redis_errors": {},
+        "peak_admitted_requests": 0,
+        "p50_ms": 9.828,
+        "p95_ms": 10.65,
+        "max_ms": 10.65
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 10.634,
+          "started_after_pause_ms": 2569.573,
+          "finished_after_pause_ms": 2580.207,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 8.152
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.886
+            }
+          ]
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 7.398,
+          "started_after_pause_ms": 2569.847,
+          "finished_after_pause_ms": 2577.246,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 4.406
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 1.28
+            }
+          ]
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 10.65,
+          "started_after_pause_ms": 2568.791,
+          "finished_after_pause_ms": 2579.44,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 8.193
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 0.53
+            }
+          ]
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 10.374,
+          "started_after_pause_ms": 2568.257,
+          "finished_after_pause_ms": 2578.631,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 6.282
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 2.143
+            }
+          ]
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 9.828,
+          "started_after_pause_ms": 2569.275,
+          "finished_after_pause_ms": 2579.103,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 6.923
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 1.111
+            }
+          ]
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.278,
+          "started_after_pause_ms": 2570.141,
+          "finished_after_pause_ms": 2578.419,
+          "redis_commands": [
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 5.424
+            },
+            {
+              "command": "GET",
+              "outcome": "success",
+              "elapsed_ms": 1.323
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "slow_waves_completed_after_pause_ms": 237.659,
+  "summary": {
+    "healthy": {
+      "requests": 6,
+      "successes": 6,
+      "rejected_503": 0,
+      "sql": 6,
+      "reload_requests": 0,
+      "application_command_attempts": 12,
+      "application_command_types": {
+        "GET": 12
+      },
+      "get_attempts": 12,
+      "redis_errors": {},
+      "peak_admitted_requests": 0,
+      "p50_ms": 12.041,
+      "p95_ms": 13.897,
+      "max_ms": 13.897
+    },
+    "slow_first": {
+      "requests": 6,
+      "successes": 2,
+      "rejected_503": 4,
+      "sql": 4,
+      "reload_requests": 2,
+      "application_command_attempts": 6,
+      "application_command_types": {
+        "GET": 6
+      },
+      "get_attempts": 6,
+      "redis_errors": {
+        "TimeoutError": 6
+      },
+      "peak_admitted_requests": 2,
+      "p50_ms": 109.918,
+      "p95_ms": 111.025,
+      "max_ms": 111.025
+    },
+    "slow_continued": {
+      "requests": 6,
+      "successes": 2,
+      "rejected_503": 4,
+      "sql": 4,
+      "reload_requests": 2,
+      "application_command_attempts": 6,
+      "application_command_types": {
+        "GET": 6
+      },
+      "get_attempts": 6,
+      "redis_errors": {
+        "TimeoutError": 6
+      },
+      "peak_admitted_requests": 2,
+      "p50_ms": 112.713,
+      "p95_ms": 115.121,
+      "max_ms": 115.121
+    },
+    "recovered": {
+      "requests": 6,
+      "successes": 6,
+      "rejected_503": 0,
+      "sql": 6,
+      "reload_requests": 0,
+      "application_command_attempts": 12,
+      "application_command_types": {
+        "GET": 12
+      },
+      "get_attempts": 12,
+      "redis_errors": {},
+      "peak_admitted_requests": 0,
+      "p50_ms": 9.828,
+      "p95_ms": 10.65,
+      "max_ms": 10.65
+    }
+  }
+}

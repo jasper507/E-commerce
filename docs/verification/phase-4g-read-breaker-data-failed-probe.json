@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "method": "real non-listening local port; Windows may report connection timeout; controlled clock",
+  "requests": [
+    {
+      "name": "initial_connection_failure",
+      "state_after": "open",
+      "sql": 2,
+      "payload_matches": true,
+      "redis_commands": [
+        {
+          "command": "GET",
+          "outcome": "error",
+          "error_type": "TimeoutError",
+          "elapsed_ms": 114.373
+        }
+      ],
+      "get_attempts": 1,
+      "command_elapsed_ms": 114.373,
+      "get_elapsed_ms": 114.373
+    },
+    {
+      "name": "open_skips",
+      "state_after": "open",
+      "sql": 2,
+      "payload_matches": true,
+      "redis_commands": [],
+      "get_attempts": 0,
+      "command_elapsed_ms": 0,
+      "get_elapsed_ms": 0
+    },
+    {
+      "name": "half_open_connection_failure",
+      "state_after": "open",
+      "sql": 2,
+      "payload_matches": true,
+      "redis_commands": [
+        {
+          "command": "GET",
+          "outcome": "error",
+          "error_type": "TimeoutError",
+          "elapsed_ms": 102.817
+        }
+      ],
+      "get_attempts": 1,
+      "command_elapsed_ms": 102.817,
+      "get_elapsed_ms": 102.817
+    },
+    {
+      "name": "new_cooldown_skips",
+      "state_after": "open",
+      "sql": 2,
+      "payload_matches": true,
+      "redis_commands": [],
+      "get_attempts": 0,
+      "command_elapsed_ms": 0,
+      "get_elapsed_ms": 0
+    },
+    {
+      "name": "successful_probe_and_cached_detail",
+      "state_after": "closed",
+      "sql": 1,
+      "payload_matches": true,
+      "redis_commands": [
+        {
+          "command": "GET",
+          "outcome": "success",
+          "elapsed_ms": 27.618
+        },
+        {
+          "command": "GET",
+          "outcome": "success",
+          "elapsed_ms": 0.581
+        }
+      ],
+      "get_attempts": 2,
+      "command_elapsed_ms": 28.199,
+      "get_elapsed_ms": 28.199
+    }
+  ]
+}

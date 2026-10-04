@@ -1,0 +1,1084 @@
+{
+  "captured_at_utc": "2026-09-26T10:01:48.847762+00:00",
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "os": "Windows",
+    "mysql": "8.4.10",
+    "redis": "8.10.1",
+    "database": "test_project_one"
+  },
+  "method": {
+    "workers": 10,
+    "rounds_per_scenario": 3,
+    "client": "DRF APIClient; no HTTP server/network",
+    "timing": "request through response JSON; excludes DB connect and start barrier",
+    "cold": "real generation rotation, natural scheduling; no forced miss barrier",
+    "failure": "connection refused at bound non-listening local TCP socket",
+    "percentiles": "nearest rank; each round p95 of 10 samples equals maximum"
+  },
+  "runs": [
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 10,
+        "misses": 0,
+        "unavailable": 0,
+        "sql": 10,
+        "reload_requests": 0,
+        "p50_ms": 19.678,
+        "p95_ms": 24.341,
+        "max_ms": 24.341
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 19.315
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 19.185
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 20.26
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 19.678
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 19.831
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 19.138
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 20.239
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 24.341
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 19.124
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 20.56
+        }
+      ],
+      "scenario": "warm",
+      "round": 1
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 10,
+        "misses": 0,
+        "unavailable": 0,
+        "sql": 10,
+        "reload_requests": 0,
+        "p50_ms": 8.485,
+        "p95_ms": 11.411,
+        "max_ms": 11.411
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 10.869
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 6.96
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.805
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.485
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.76
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 9.126
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 6.663
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 7.934
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.268
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 11.411
+        }
+      ],
+      "scenario": "warm",
+      "round": 2
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 10,
+        "misses": 0,
+        "unavailable": 0,
+        "sql": 10,
+        "reload_requests": 0,
+        "p50_ms": 8.411,
+        "p95_ms": 9.923,
+        "max_ms": 9.923
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.777
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 9.308
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 7.543
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 6.985
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.411
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.474
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 8.258
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 7.753
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 9.923
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 9.605
+        }
+      ],
+      "scenario": "warm",
+      "round": 3
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 4,
+        "misses": 6,
+        "unavailable": 0,
+        "sql": 16,
+        "reload_requests": 6,
+        "p50_ms": 12.868,
+        "p95_ms": 18.439,
+        "max_ms": 18.439
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 12.868
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 10.88
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 12.567
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 15.274
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 17.279
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 16.908
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 16.1
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 11.959
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 18.439
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 6.441
+        }
+      ],
+      "scenario": "cold",
+      "round": 1
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 6,
+        "misses": 4,
+        "unavailable": 0,
+        "sql": 14,
+        "reload_requests": 4,
+        "p50_ms": 13.555,
+        "p95_ms": 16.237,
+        "max_ms": 16.237
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 13.611
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 11.531
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 16.237
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 11.186
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 13.555
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 11.587
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 14.536
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 14.14
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 11.766
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 15.727
+        }
+      ],
+      "scenario": "cold",
+      "round": 2
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 4,
+        "misses": 6,
+        "unavailable": 0,
+        "sql": 16,
+        "reload_requests": 6,
+        "p50_ms": 12.434,
+        "p95_ms": 18.059,
+        "max_ms": 18.059
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 11.628
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 14.255
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 10.207
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 14.935
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 12.036
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 12.434
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "hit",
+          "sql": 1,
+          "guard_sql": 1,
+          "reload_sql": 0,
+          "elapsed_ms": 10.882
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 16.607
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 14.362
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "miss",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 18.059
+        }
+      ],
+      "scenario": "cold",
+      "round": 3
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 0,
+        "misses": 0,
+        "unavailable": 10,
+        "sql": 20,
+        "reload_requests": 10,
+        "p50_ms": 131.693,
+        "p95_ms": 160.448,
+        "max_ms": 160.448
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 141.386
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 160.448
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 140.736
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 130.802
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 126.289
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 154.679
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 131.693
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 125.047
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 129.854
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 142.126
+        }
+      ],
+      "scenario": "connection_refused",
+      "round": 1
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 0,
+        "misses": 0,
+        "unavailable": 10,
+        "sql": 20,
+        "reload_requests": 10,
+        "p50_ms": 127.626,
+        "p95_ms": 132.732,
+        "max_ms": 132.732
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 121.401
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 127.626
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 132.404
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 132.069
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 132.732
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 119.165
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 126.821
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 130.692
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 125.318
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 129.773
+        }
+      ],
+      "scenario": "connection_refused",
+      "round": 2
+    },
+    {
+      "summary": {
+        "requests": 10,
+        "successes": 10,
+        "hits": 0,
+        "misses": 0,
+        "unavailable": 10,
+        "sql": 20,
+        "reload_requests": 10,
+        "p50_ms": 121.681,
+        "p95_ms": 127.279,
+        "max_ms": 127.279
+      },
+      "requests": [
+        {
+          "worker": 0,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 125.011
+        },
+        {
+          "worker": 1,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 124.074
+        },
+        {
+          "worker": 2,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 126.778
+        },
+        {
+          "worker": 3,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 127.081
+        },
+        {
+          "worker": 4,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 119.348
+        },
+        {
+          "worker": 5,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 120.546
+        },
+        {
+          "worker": 6,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 117.985
+        },
+        {
+          "worker": 7,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 127.279
+        },
+        {
+          "worker": 8,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 121.627
+        },
+        {
+          "worker": 9,
+          "status": 200,
+          "payload_matches": true,
+          "cache_state": "unavailable",
+          "sql": 2,
+          "guard_sql": 1,
+          "reload_sql": 1,
+          "elapsed_ms": 121.681
+        }
+      ],
+      "scenario": "connection_refused",
+      "round": 3
+    }
+  ]
+}

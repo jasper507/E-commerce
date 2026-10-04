@@ -1,0 +1,796 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-09-30T15:59:58.706713+00:00",
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "os": "Windows",
+    "machine": "AMD64",
+    "logical_cpus": 24,
+    "database": "test_project_one",
+    "mysql": "8.4.10",
+    "redis": "8.10.1"
+  },
+  "method": {
+    "products": 6,
+    "concurrent_requests_per_wave": 6,
+    "rounds": 3,
+    "client": "DRF APIClient in six threads; no HTTP server",
+    "trigger": "normal Product.save changes one product and rotates global generation",
+    "timing": "request to parsed JSON; excludes thread DB connection and start barrier",
+    "percentiles": "nearest rank; with six samples p95 and p99 equal maximum",
+    "database": "real isolated MySQL; fixture/setup/warmup SQL excluded",
+    "redis": "real isolated Redis; UUID-prefixed keys only; no FLUSHDB",
+    "dataset": "six active mice, one active SKU and inventory per product"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "generation_changed": true,
+      "old_key_ttls_after_rotation": [
+        30,
+        35,
+        28,
+        30,
+        27,
+        35
+      ],
+      "new_key_ttls_after_refill": [
+        30,
+        33,
+        35,
+        28,
+        26,
+        25
+      ],
+      "waves": [
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 0,
+            "total_sql": 6,
+            "duration_ms": 33.922,
+            "throughput_rps": 176.876,
+            "p50_ms": 12.516,
+            "p95_ms": 32.066,
+            "p99_ms": 32.066,
+            "max_ms": 32.066
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 14.48
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 12.516
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 32.066
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 11.867
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 12.711
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 12.247
+            }
+          ],
+          "scenario": "warm_before_rotation"
+        },
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 6,
+            "total_sql": 12,
+            "duration_ms": 16.611,
+            "throughput_rps": 361.209,
+            "p50_ms": 12.599,
+            "p95_ms": 15.728,
+            "p99_ms": 15.728,
+            "max_ms": 15.728
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 1",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 15.728
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 11.558
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 12.217
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 13.912
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 12.599
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 12.975
+            }
+          ],
+          "scenario": "cold_after_rotation"
+        },
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 0,
+            "total_sql": 6,
+            "duration_ms": 9.724,
+            "throughput_rps": 617.043,
+            "p50_ms": 6.73,
+            "p95_ms": 7.81,
+            "p99_ms": 7.81,
+            "max_ms": 7.81
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 1",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 7.313
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.73
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 7.81
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.381
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.239
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.861
+            }
+          ],
+          "scenario": "warm_after_refill"
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "generation_changed": true,
+      "old_key_ttls_after_rotation": [
+        30,
+        33,
+        35,
+        28,
+        26,
+        25
+      ],
+      "new_key_ttls_after_refill": [
+        31,
+        27,
+        33,
+        34,
+        29,
+        30
+      ],
+      "waves": [
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 0,
+            "total_sql": 6,
+            "duration_ms": 8.687,
+            "throughput_rps": 690.663,
+            "p50_ms": 5.768,
+            "p95_ms": 7.303,
+            "p99_ms": 7.303,
+            "max_ms": 7.303
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 1",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 5.672
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 7.155
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 5.768
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 4.874
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.058
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 7.303
+            }
+          ],
+          "scenario": "warm_before_rotation"
+        },
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 6,
+            "total_sql": 12,
+            "duration_ms": 16.958,
+            "throughput_rps": 353.824,
+            "p50_ms": 12.003,
+            "p95_ms": 15.102,
+            "p99_ms": 15.102,
+            "max_ms": 15.102
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 2",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 11.654
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 12.827
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 13.456
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 15.102
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 10.749
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 12.003
+            }
+          ],
+          "scenario": "cold_after_rotation"
+        },
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 0,
+            "total_sql": 6,
+            "duration_ms": 8.559,
+            "throughput_rps": 701.008,
+            "p50_ms": 5.8,
+            "p95_ms": 8.17,
+            "p99_ms": 8.17,
+            "max_ms": 8.17
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 7.61
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 5.8
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.267
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 5.345
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 8.17
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 5.23
+            }
+          ],
+          "scenario": "warm_after_refill"
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "generation_changed": true,
+      "old_key_ttls_after_rotation": [
+        31,
+        27,
+        33,
+        34,
+        29,
+        30
+      ],
+      "new_key_ttls_after_refill": [
+        31,
+        32,
+        26,
+        34,
+        25,
+        27
+      ],
+      "waves": [
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 0,
+            "total_sql": 6,
+            "duration_ms": 8.265,
+            "throughput_rps": 725.944,
+            "p50_ms": 6.041,
+            "p95_ms": 7.786,
+            "p99_ms": 7.786,
+            "max_ms": 7.786
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.433
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.041
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.525
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.028
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 7.786
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 5.265
+            }
+          ],
+          "scenario": "warm_before_rotation"
+        },
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 6,
+            "total_sql": 12,
+            "duration_ms": 17.731,
+            "throughput_rps": 338.4,
+            "p50_ms": 13.636,
+            "p95_ms": 15.675,
+            "p99_ms": 15.675,
+            "max_ms": 15.675
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 3",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 15.675
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 15.372
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 11.929
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 12.883
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 13.636
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 1,
+              "total_sql": 2,
+              "elapsed_ms": 14.205
+            }
+          ],
+          "scenario": "cold_after_rotation"
+        },
+        {
+          "summary": {
+            "requests": 6,
+            "successes": 6,
+            "guard_sql": 6,
+            "sku_sql": 0,
+            "total_sql": 6,
+            "duration_ms": 40.547,
+            "throughput_rps": 147.977,
+            "p50_ms": 11.457,
+            "p95_ms": 39.436,
+            "p99_ms": 39.436,
+            "max_ms": 39.436
+          },
+          "requests": [
+            {
+              "slug": "mouse-m1",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M1 round 3",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 11.457
+            },
+            {
+              "slug": "mouse-m2",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M2",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 39.425
+            },
+            {
+              "slug": "mouse-m3",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M3",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 6.418
+            },
+            {
+              "slug": "mouse-m4",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M4",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 11.471
+            },
+            {
+              "slug": "mouse-m5",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M5",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 5.21
+            },
+            {
+              "slug": "mouse-m6",
+              "status": 200,
+              "payload_matches": true,
+              "observed_name": "Mouse M6",
+              "guard_sql": 1,
+              "sku_sql": 0,
+              "total_sql": 1,
+              "elapsed_ms": 39.436
+            }
+          ],
+          "scenario": "warm_after_refill"
+        }
+      ]
+    }
+  ]
+}

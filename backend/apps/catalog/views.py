@@ -1,5 +1,5 @@
-from django.db import transaction
 from django.db.models import Exists, Min, OuterRef, Prefetch, Q, prefetch_related_objects
+from django.http import Http404
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
@@ -69,30 +69,32 @@ class PublicProductListView(generics.ListAPIView):
 
 
 class PublicProductDetailView(generics.RetrieveAPIView):
-    """每次确认 MySQL 可见性，缓存仅保存可重建的公开浏览详情。"""
+    """已有商品每次确认 MySQL 可见性，短期记住真正不存在的地址。"""
 
     serializer_class = PublicProductDetailSerializer
     authentication_classes = ()
     permission_classes = (AllowAny,)
     lookup_field = "slug"
-    queryset = (
-        Product.objects.filter(
-            is_active=True,
-            category__is_active=True,
-        )
-        .select_related("category")
-    )
+    queryset = Product.objects.select_related("category")
 
     def retrieve(self, request, *args, **kwargs):
-        product = self.get_object()
-        detail_cache = ProductDetailCache(product.pk)
-        # 事务内可能读到未提交修改，不读/回填全局共享缓存。
-        if transaction.get_connection().in_atomic_block:
-            detail_cache.available = False
-        payload = detail_cache.get()
-        if payload is not None:
+        detail_cache = ProductDetailCache()
+        slug = self.kwargs[self.lookup_field]
+        if detail_cache.is_missing(slug):
+            raise Http404
+        # 初次代号读取失败时，在任何商品 SQL 前申请回源名额。
+        with detail_cache.fallback_scope():
+            try:
+                product = self.get_object()
+            except Http404:
+                detail_cache.remember_missing(slug)
+                raise
+            if not product.is_active or not product.category.is_active:
+                raise Http404
+            payload = detail_cache.get_or_load(product.pk, lambda: self.load_detail(product))
             return Response(payload)
 
+    def load_detail(self, product):
         prefetch_related_objects(
             [product],
             Prefetch(
@@ -103,6 +105,5 @@ class PublicProductDetailView(generics.RetrieveAPIView):
                 to_attr="public_skus",
             ),
         )
-        payload = self.get_serializer(product).data
-        detail_cache.set(payload)
-        return Response(payload)
+        # ReturnDict 带有 Serializer 引用；共享结果只保留公开数据。
+        return dict(self.get_serializer(product).data)
