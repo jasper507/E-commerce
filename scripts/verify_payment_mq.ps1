@@ -1,6 +1,6 @@
 param(
     [switch]$WriteEvidence,
-    [ValidateSet('baseline', 'retry', 'recovery')][string]$Stage = 'baseline'
+    [ValidateSet('baseline', 'retry', 'recovery', 'crash')][string]$Stage = 'baseline'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -23,6 +23,10 @@ try {
         $paymentComposeArguments += @('-f', 'compose.yaml', '-f', 'compose.payment-mq-recovery-test.yaml')
         $paymentTestFile = 'backend/apps/payments/tests/test_event_mq_recovery.py'
     }
+    if ($Stage -eq 'crash') {
+        $paymentComposeArguments += @('-f', 'compose.yaml', '-f', 'compose.payment-mq-crash-test.yaml')
+        $paymentTestFile = 'backend/apps/payments/tests/test_event_mq_crash.py'
+    }
     # Compose 已解析本机配置；只在内存传递密码/签名密钥，不打印完整配置。
     $paymentComposeText = & docker @paymentComposeArguments --profile payment-mq-test config --format json
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read the test profile.' }
@@ -43,6 +47,11 @@ try {
     if ($Stage -eq 'recovery' -and $paymentWorkerEnvironment.PROJECT_ONE_MQ_RECOVERY_PUBLICATION_WINDOW -ne 'true') {
         throw 'The recovery experiment requires its isolated publication window.'
     }
+    if ($Stage -eq 'crash' -and (
+        $paymentWorkerEnvironment.PROJECT_ONE_MQ_CRASH_TEST_WORKER -ne 'true' -or
+        $paymentWorkerEnvironment.PAYMENT_EVENT_PROCESSING_LEASE_SECONDS -ne '8')) {
+        throw 'The crash experiment requires its isolated Worker and eight-second lease.'
+    }
     $paymentProfileValidated = $true
     # Stop old consumers before pytest creates or migrates a fresh database.
     & docker @paymentComposeArguments --profile payment-mq-test stop payment-worker-test
@@ -61,6 +70,7 @@ try {
         MYSQL_PASSWORD = $paymentWorkerEnvironment.MYSQL_PASSWORD
         CATALOG_CACHE_ENABLED = 'false'
         PAYMENT_EVENTS_ASYNC = 'true'
+        PAYMENT_EVENT_PROCESSING_LEASE_SECONDS = $(if ($Stage -eq 'crash') { '8' } else { '60' })
         CELERY_BROKER_URL = $paymentBrokerUrl
         CELERY_TASK_DEFAULT_QUEUE = 'payment-events-test'
         PROJECT_ONE_TEST_MQ_BROKER_URL = $paymentBrokerUrl

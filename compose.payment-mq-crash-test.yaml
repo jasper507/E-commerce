@@ -1,0 +1,7 @@
+# Short lease and synchronization windows apply only to the isolated crash Worker.
+services:
+  payment-worker-test:
+    command: [python, -m, apps.payments.tests.mq_crash_worker]
+    environment:
+      PROJECT_ONE_MQ_CRASH_TEST_WORKER: "true"
+      PAYMENT_EVENT_PROCESSING_LEASE_SECONDS: "8"

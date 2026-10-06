@@ -4,12 +4,12 @@ import logging
 from dataclasses import dataclass, field
 
 from django.db import connection
-from django.db.models import Q
+from django.db.models import F, Q
 from django.utils import timezone
 
 from apps.payments.dispatch import publish_payment_event
 from apps.payments.models import PaymentEvent
-from apps.payments.services import MAX_EVENT_PROCESSING_ATTEMPTS, process_stored_payment_event
+from apps.payments.services import MAX_EVENT_PROCESSING_ATTEMPTS, process_stored_payment_event, release_stale_payment_event
 
 
 logger = logging.getLogger(__name__)
@@ -31,6 +31,54 @@ class EventPublicationResult:
     failed_ids: list[int] = field(default_factory=list)
     skipped_ids: list[int] = field(default_factory=list)
     unattempted_ids: list[int] = field(default_factory=list)
+
+
+@dataclass
+class StaleEventRecoveryResult:
+    selected_ids: tuple[int, ...]
+    retryable_ids: list[int] = field(default_factory=list)
+    exhausted_ids: list[int] = field(default_factory=list)
+    skipped_ids: list[int] = field(default_factory=list)
+
+
+def recover_stale_payment_events(*, limit=100, event_id=None, dry_run=False, as_of=None):
+    """固定快照逐条修复过期领取；锁、次数版本与租约共同保护当前执行者。"""
+    if not isinstance(limit, int) or isinstance(limit, bool) or limit < 1:
+        raise ValueError("limit 必须为正整数。")
+    if event_id is not None and (
+        not isinstance(event_id, int) or isinstance(event_id, bool) or event_id < 1
+    ):
+        raise ValueError("event_id 必须为正整数的 Inbox 数据库 ID。")
+    if connection.in_atomic_block:
+        raise ValueError("租约恢复必须在外层事务之外运行。")
+    cutoff = as_of if as_of is not None else timezone.now()
+    candidates = PaymentEvent.objects.filter(
+        processing_status=PaymentEvent.ProcessingStatus.PROCESSING,
+        processing_attempt_count__gt=0,
+        processing_attempt_count__lte=MAX_EVENT_PROCESSING_ATTEMPTS,
+        processing_started_at__lte=F("processing_lease_until"),
+        processing_lease_until__lte=cutoff,
+    )
+    if event_id is not None:
+        candidates = candidates.filter(pk=event_id)
+    snapshot = tuple(candidates.order_by("received_at", "pk").values_list(
+        "pk", "processing_attempt_count", "processing_lease_until"
+    )[:limit])
+    result = StaleEventRecoveryResult(selected_ids=tuple(row[0] for row in snapshot))
+    if dry_run:
+        return result
+    for pending_id, version, deadline in snapshot:
+        event = release_stale_payment_event(
+            event_id=pending_id, processing_attempt=version, lease_until=deadline,
+            as_of=as_of if as_of is not None else timezone.now(),
+        )
+        if event is None:
+            result.skipped_ids.append(pending_id)
+        elif event.failure_kind == PaymentEvent.FailureKind.EXHAUSTED:
+            result.exhausted_ids.append(pending_id)
+        else:
+            result.retryable_ids.append(pending_id)
+    return result
 
 
 def _publication_candidates(*, cutoff):

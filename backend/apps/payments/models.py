@@ -128,6 +128,9 @@ class PaymentEvent(models.Model):
         max_length=16, choices=FailureKind.choices, default=FailureKind.NONE, editable=False
     )
     next_retry_at = models.DateTimeField(null=True, blank=True, editable=False)
+    # 历史 PROCESSING 没有领取时刻证据；空租约不能根据收件时间猜测接管。
+    processing_started_at = models.DateTimeField(null=True, blank=True, editable=False)
+    processing_lease_until = models.DateTimeField(null=True, blank=True, editable=False)
     received_at = models.DateTimeField(auto_now_add=True)
     processed_at = models.DateTimeField(null=True, blank=True)
 

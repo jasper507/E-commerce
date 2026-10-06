@@ -132,6 +132,9 @@ PAYMENT_MAX_ATTEMPTS = env_int("PAYMENT_MAX_ATTEMPTS", 3)
 
 # 默认保留同步基线；本期异步运行仅允许本地/隔离测试，不自动迁移开发库。
 PAYMENT_EVENTS_ASYNC = env_bool("PAYMENT_EVENTS_ASYNC", False)
+PAYMENT_EVENT_PROCESSING_LEASE_SECONDS = env_int("PAYMENT_EVENT_PROCESSING_LEASE_SECONDS", 60)
+if PAYMENT_EVENT_PROCESSING_LEASE_SECONDS < 1:
+    raise ImproperlyConfigured("PAYMENT_EVENT_PROCESSING_LEASE_SECONDS must be positive.")
 if PAYMENT_EVENTS_ASYNC and not IS_LOCAL_ENVIRONMENT:
     raise ImproperlyConfigured("Payment MQ is currently a local development/test slice.")
 

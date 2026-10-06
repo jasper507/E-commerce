@@ -394,16 +394,23 @@ def _claim_event_processing(*, event_id, as_of):
         event.processing_status = PaymentEvent.ProcessingStatus.ERROR
         event.failure_kind = PaymentEvent.FailureKind.EXHAUSTED
         event.next_retry_at = None
-        event.save(update_fields=("processing_status", "failure_kind", "next_retry_at"))
+        event.processing_lease_until = None
+        event.save(update_fields=("processing_status", "failure_kind", "next_retry_at", "processing_lease_until"))
         return event, None
 
     event.processing_attempt_count += 1
     event.processing_status = PaymentEvent.ProcessingStatus.PROCESSING
     event.next_retry_at = None
     event.processed_at = None
+    # 租约从拿到 Event 锁后的实际领取时刻开始，不能把锁等待计入新租约。
+    event.processing_started_at = timezone.now()
+    event.processing_lease_until = event.processing_started_at + timedelta(
+        seconds=settings.PAYMENT_EVENT_PROCESSING_LEASE_SECONDS
+    )
     event.save(
         update_fields=(
-            "processing_attempt_count", "processing_status", "next_retry_at", "processed_at"
+            "processing_attempt_count", "processing_status", "next_retry_at", "processed_at",
+            "processing_started_at", "processing_lease_until",
         )
     )
     return event, event.processing_attempt_count
@@ -421,7 +428,8 @@ def _process_claimed_payment_event(*, event_id, processing_attempt):
     event = process_payment_event(event_id=event_id)
     event.failure_kind = PaymentEvent.FailureKind.NONE
     event.next_retry_at = None
-    event.save(update_fields=("failure_kind", "next_retry_at"))
+    event.processing_lease_until = None
+    event.save(update_fields=("failure_kind", "next_retry_at", "processing_lease_until"))
     return event
 
 
@@ -454,6 +462,7 @@ def _record_event_processing_failure(*, event_id, processing_attempt, error, as_
     event.failure_kind = kind
     event.error_code = code
     event.processed_at = as_of
+    event.processing_lease_until = None
     if kind == PaymentEvent.FailureKind.TRANSIENT:
         if event.processing_attempt_count >= MAX_EVENT_PROCESSING_ATTEMPTS:
             event.failure_kind = PaymentEvent.FailureKind.EXHAUSTED
@@ -466,9 +475,38 @@ def _record_event_processing_failure(*, event_id, processing_attempt, error, as_
         event.next_retry_at = None
     event.save(
         update_fields=(
-            "processing_status", "failure_kind", "error_code", "processed_at", "next_retry_at"
+            "processing_status", "failure_kind", "error_code", "processed_at", "next_retry_at",
+            "processing_lease_until",
         )
     )
+    return event
+
+
+@transaction.atomic
+def release_stale_payment_event(*, event_id, processing_attempt, lease_until, as_of):
+    """只修复已过期且本次拿得到锁的原领取记录，不执行支付或重置预算。"""
+    event = PaymentEvent.objects.select_for_update(skip_locked=True).filter(pk=event_id).first()
+    if event is None or (
+        event.processing_status != PaymentEvent.ProcessingStatus.PROCESSING
+        or event.processing_attempt_count != processing_attempt
+        or not 0 < processing_attempt <= MAX_EVENT_PROCESSING_ATTEMPTS
+        or event.processing_lease_until is None
+        or event.processing_lease_until != lease_until
+        or event.processing_lease_until > as_of
+        or event.processing_started_at is None
+        or event.processing_started_at > event.processing_lease_until
+    ):
+        return None
+    # 慢 Worker 持有业务事务的 Event 锁时已被跳过；旧版本之后会被状态/次数挡住。
+    event.processing_status = PaymentEvent.ProcessingStatus.ERROR
+    exhausted = event.processing_attempt_count == MAX_EVENT_PROCESSING_ATTEMPTS
+    event.failure_kind = PaymentEvent.FailureKind.EXHAUSTED if exhausted else PaymentEvent.FailureKind.TRANSIENT
+    event.error_code = "processing_lease_expired"
+    event.processed_at = as_of
+    event.next_retry_at = None if exhausted else as_of
+    event.processing_lease_until = None
+    event.save(update_fields=("processing_status", "failure_kind", "error_code", "processed_at",
+                              "next_retry_at", "processing_lease_until"))
     return event
 
 
@@ -476,7 +514,7 @@ def process_stored_payment_event(*, event_id, as_of=None):
     """持久化处理预算，再执行业务；失败另事务留存，所有入口共用同一门槛。
 
     as_of 用于受控时钟测试；命令不提供跳过等待或强制重置选项。
-    硬中断或错误留存失败会留下 PROCESSING，本期不自动接管这类未知故障。
+    硬中断或错误留存失败会留下 PROCESSING；有领取租约的记录可人工到期修复。
     """
 
     if connection.in_atomic_block:

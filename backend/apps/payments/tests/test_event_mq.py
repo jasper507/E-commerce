@@ -68,6 +68,8 @@ class PaymentMQIntegrationFixture(PaymentEventRecoveryFixture):
             compose_args.extend(["-f", "compose.yaml", "-f", "compose.payment-mq-retry-test.yaml"])
         elif os.getenv("PROJECT_ONE_TEST_MQ_STAGE") == "recovery":
             compose_args.extend(["-f", "compose.yaml", "-f", "compose.payment-mq-recovery-test.yaml"])
+        elif os.getenv("PROJECT_ONE_TEST_MQ_STAGE") == "crash":
+            compose_args.extend(["-f", "compose.yaml", "-f", "compose.payment-mq-crash-test.yaml"])
         result = subprocess.run(
             [*compose_args, "--profile", "payment-mq-test", *action, "payment-worker-test"],
             cwd=ROOT, capture_output=True, text=True, timeout=45,

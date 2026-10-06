@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from apps.payments.recovery import recover_payment_events, republish_payment_events
+from apps.payments.recovery import recover_payment_events, recover_stale_payment_events, republish_payment_events
 
 
 class Command(BaseCommand):
@@ -13,14 +13,21 @@ class Command(BaseCommand):
         parser.add_argument("--limit", type=int, default=100, help="本轮最多选取条数。")
         parser.add_argument("--event-id", type=int, help="指定 Inbox 内部数据库 ID。")
         parser.add_argument("--dry-run", action="store_true", help="只列出候选，不处理。")
-        parser.add_argument("--publish", action="store_true", help="只向 MQ 补投原事件 ID，不在命令中处理业务。")
+        mode = parser.add_mutually_exclusive_group()
+        mode.add_argument("--publish", action="store_true", help="只向 MQ 补投原事件 ID，不在命令中处理业务。")
+        mode.add_argument("--recover-stale", action="store_true", help="只修复过期且未被锁住的 PROCESSING，不发布或付款。")
 
     def handle(self, *args, **options):
+        if options["publish"] and options["recover_stale"]:
+            raise CommandError("--publish 与 --recover-stale 不能同时使用；先修复，再补投。")
         if not settings.IS_LOCAL_ENVIRONMENT:
             raise CommandError("本期 Mock 支付恢复命令仅允许 development/test 环境。")
         if options["publish"] and not settings.PAYMENT_EVENTS_ASYNC:
             raise CommandError("MQ 补投要求 PAYMENT_EVENTS_ASYNC=true；请显式选择异步环境。")
-        recover = republish_payment_events if options["publish"] else recover_payment_events
+        if options["recover_stale"]:
+            recover = recover_stale_payment_events
+        else:
+            recover = republish_payment_events if options["publish"] else recover_payment_events
         try:
             result = recover(
                 limit=options["limit"],
@@ -33,6 +40,12 @@ class Command(BaseCommand):
             self.stdout.write(
                 f"dry_run=true selected={len(result.selected_ids)} "
                 f"inbox_ids={','.join(map(str, result.selected_ids)) or '-'}"
+            )
+            return
+        if options["recover_stale"]:
+            self.stdout.write(
+                f"selected={len(result.selected_ids)} retryable={len(result.retryable_ids)} "
+                f"exhausted={len(result.exhausted_ids)} skipped={len(result.skipped_ids)}"
             )
             return
         if options["publish"]:

@@ -1,0 +1,177 @@
+{
+  "environment": {
+    "database": "test_project_one",
+    "broker_port": 5673,
+    "vhost": "project_one_test",
+    "queue": "payment-events-test",
+    "eager": false
+  },
+  "scenarios": [
+    {
+      "scenario": "alive_expired_T2_skipped_then_kill_rolls_back",
+      "window": "transaction",
+      "atomic": true,
+      "before_kill": {
+        "status": "PROCESSING",
+        "failure_kind": "NONE",
+        "count": 1,
+        "started_at": "2026-10-04T17:58:44.068298+00:00",
+        "lease_until": "2026-10-04T17:58:52.068298+00:00"
+      },
+      "skip_seconds": 0.0,
+      "ready_after_kill": 1,
+      "consumers_after_kill": 0,
+      "repair_at": "2026-10-04T17:58:52.518033+00:00",
+      "publication_output": "selected=1 published=1 errors=0 skipped=0 unattempted=0",
+      "processing_attempts": 2,
+      "inventory": [
+        19,
+        0
+      ],
+      "commit_movements": 1,
+      "deliveries": [
+        {
+          "task_id": "1a8c83c2-e1bc-4392-b611-6c723e219e97",
+          "redelivered": false
+        },
+        {
+          "task_id": "1a8c83c2-e1bc-4392-b611-6c723e219e97",
+          "redelivered": true
+        },
+        {
+          "task_id": "9496f43c-f6c3-49bb-b6ce-2d8cbf5019d7",
+          "redelivered": false
+        }
+      ],
+      "queue": {
+        "ack_delta": 2,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "kill_after_paid_commit_before_ack",
+      "window": "commit",
+      "atomic": false,
+      "before_kill": {
+        "status": "PROCESSED",
+        "failure_kind": "NONE",
+        "count": 1,
+        "started_at": "2026-10-04T17:59:05.697862+00:00",
+        "lease_until": null
+      },
+      "ready_after_kill": 1,
+      "consumers_after_kill": 0,
+      "processing_attempts": 1,
+      "inventory": [
+        19,
+        0
+      ],
+      "commit_movements": 1,
+      "deliveries": [
+        {
+          "task_id": "204708d3-fa71-4a03-acd6-5323c66e6103",
+          "redelivered": false
+        },
+        {
+          "task_id": "204708d3-fa71-4a03-acd6-5323c66e6103",
+          "redelivered": true
+        },
+        {
+          "task_id": "887ead6f-8eb5-45f6-998f-60b8cd91e859",
+          "redelivered": false
+        }
+      ],
+      "queue": {
+        "ack_delta": 2,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "kill_after_claim_commit_then_manual_repair",
+      "window": "claim",
+      "atomic": false,
+      "before_kill": {
+        "status": "PROCESSING",
+        "failure_kind": "NONE",
+        "count": 1,
+        "started_at": "2026-10-04T17:59:20.621235+00:00",
+        "lease_until": "2026-10-04T17:59:28.621235+00:00"
+      },
+      "ready_after_kill": 1,
+      "consumers_after_kill": 0,
+      "repair_at": "2026-10-04T17:59:28.672206+00:00",
+      "publication_output": "selected=1 published=1 errors=0 skipped=0 unattempted=0",
+      "processing_attempts": 2,
+      "inventory": [
+        19,
+        0
+      ],
+      "commit_movements": 1,
+      "deliveries": [
+        {
+          "task_id": "782b290d-b61e-4c50-a845-7a5a6d4434e1",
+          "redelivered": false
+        },
+        {
+          "task_id": "782b290d-b61e-4c50-a845-7a5a6d4434e1",
+          "redelivered": true
+        },
+        {
+          "task_id": "7d3128f8-384b-4ba8-8a1d-0b801bdaf7df",
+          "redelivered": false
+        }
+      ],
+      "queue": {
+        "ack_delta": 2,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    },
+    {
+      "scenario": "kill_after_late_refund_commit_before_ack",
+      "window": "commit",
+      "atomic": false,
+      "before_kill": {
+        "status": "PROCESSED",
+        "failure_kind": "NONE",
+        "count": 1,
+        "started_at": "2026-10-04T17:59:45.022223+00:00",
+        "lease_until": null
+      },
+      "ready_after_kill": 1,
+      "consumers_after_kill": 0,
+      "processing_attempts": 1,
+      "inventory": [
+        20,
+        0
+      ],
+      "refund_simulations": 1,
+      "release_movements": 1,
+      "commit_movements": 0,
+      "event_count": 2,
+      "payment_attempt_count": 1,
+      "setup_failure_processed_synchronously": true,
+      "deliveries": [
+        {
+          "task_id": "7a80f18b-bd28-4800-92d2-aa6aca9fe398",
+          "redelivered": false
+        },
+        {
+          "task_id": "7a80f18b-bd28-4800-92d2-aa6aca9fe398",
+          "redelivered": true
+        },
+        {
+          "task_id": "d0238c20-095f-4ab5-a387-30583d44095e",
+          "redelivered": false
+        }
+      ],
+      "queue": {
+        "ack_delta": 2,
+        "ready": 0,
+        "unacknowledged": 0
+      }
+    }
+  ]
+}

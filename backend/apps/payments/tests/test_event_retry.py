@@ -313,7 +313,7 @@ class PaymentEventRetryMigrationTests(TransactionTestCase):
     def test_existing_errors_are_blocked_without_inventing_history_or_changing_terminal_events(self):
         self.assertTrue(connection.settings_dict["NAME"].startswith("test_"))
         old_target = [("payments", "0002_refundsimulation")]
-        new_target = [("payments", "0003_paymentevent_retry_policy")]
+        new_target = [("payments", "0004_paymentevent_processing_lease")]
         executor = MigrationExecutor(connection)
         try:
             executor.migrate(old_target)
