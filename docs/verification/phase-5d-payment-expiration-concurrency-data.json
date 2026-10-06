@@ -1,0 +1,277 @@
+{
+  "recorded_at": "2026-10-04T19:34:04.162505+00:00",
+  "environment": {
+    "database": "test_project_one",
+    "host": "127.0.0.1",
+    "port": 3307,
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "payment_events_async": false,
+    "real_mq": false
+  },
+  "source_sha256": {
+    "backend/apps/ordering/tests/test_payment_expiration_concurrency.py": "bc96335089005ae30966a75dfe190f4d64a12d844b060fb94260fdc9f54b4a48",
+    "backend/apps/ordering/lifecycle_services.py": "6dcc93d905278bee2196eb6c562a935f1544b3682866bcaa8f7683c3dacac3b5",
+    "backend/apps/payments/services.py": "1a06542d957fc4114f604419542004279ebd18bf72f502b6a09b91a59879939a"
+  },
+  "scenarios": [
+    {
+      "first_lock_owner": "payment",
+      "initial_attempt_status": "CREATED",
+      "lock_wait": {
+        "requesting_connection_id": 4776,
+        "blocking_connection_id": 4775,
+        "database": "test_project_one",
+        "table": "ordering_order",
+        "index": "PRIMARY",
+        "lock_type": "RECORD",
+        "request_status": "WAITING",
+        "record_id": 1,
+        "request_mode": "X,REC_NOT_GAP",
+        "blocking_status": "GRANTED",
+        "blocking_mode": "X,REC_NOT_GAP",
+        "mysql_version": "8.4.10",
+        "same_server_verified": true
+      },
+      "expiration_result": {
+        "changed": false,
+        "code": null
+      },
+      "final": {
+        "order": "PAID",
+        "payment": "SUCCEEDED",
+        "event": "PROCESSED",
+        "event_attempt_count": 1,
+        "reservation": "COMMITTED",
+        "inventory": [
+          19,
+          0
+        ],
+        "reserve_count": 1,
+        "commit_count": 1,
+        "release_count": 0,
+        "restore_count": 0,
+        "refund_count": 0,
+        "attempt_count": 1,
+        "amount": "189.00",
+        "currency": "CNY"
+      },
+      "duplicate_event_and_expiration_unchanged": true
+    },
+    {
+      "first_lock_owner": "payment",
+      "initial_attempt_status": "PENDING",
+      "lock_wait": {
+        "requesting_connection_id": 4780,
+        "blocking_connection_id": 4779,
+        "database": "test_project_one",
+        "table": "ordering_order",
+        "index": "PRIMARY",
+        "lock_type": "RECORD",
+        "request_status": "WAITING",
+        "record_id": 2,
+        "request_mode": "X,REC_NOT_GAP",
+        "blocking_status": "GRANTED",
+        "blocking_mode": "X,REC_NOT_GAP",
+        "mysql_version": "8.4.10",
+        "same_server_verified": true
+      },
+      "expiration_result": {
+        "changed": false,
+        "code": null
+      },
+      "final": {
+        "order": "PAID",
+        "payment": "SUCCEEDED",
+        "event": "PROCESSED",
+        "event_attempt_count": 1,
+        "reservation": "COMMITTED",
+        "inventory": [
+          19,
+          0
+        ],
+        "reserve_count": 1,
+        "commit_count": 1,
+        "release_count": 0,
+        "restore_count": 0,
+        "refund_count": 0,
+        "attempt_count": 1,
+        "amount": "189.00",
+        "currency": "CNY"
+      },
+      "duplicate_event_and_expiration_unchanged": true
+    },
+    {
+      "first_lock_owner": "payment",
+      "initial_attempt_status": "UNKNOWN",
+      "lock_wait": {
+        "requesting_connection_id": 4784,
+        "blocking_connection_id": 4783,
+        "database": "test_project_one",
+        "table": "ordering_order",
+        "index": "PRIMARY",
+        "lock_type": "RECORD",
+        "request_status": "WAITING",
+        "record_id": 3,
+        "request_mode": "X,REC_NOT_GAP",
+        "blocking_status": "GRANTED",
+        "blocking_mode": "X,REC_NOT_GAP",
+        "mysql_version": "8.4.10",
+        "same_server_verified": true
+      },
+      "expiration_result": {
+        "changed": false,
+        "code": null
+      },
+      "final": {
+        "order": "PAID",
+        "payment": "SUCCEEDED",
+        "event": "PROCESSED",
+        "event_attempt_count": 1,
+        "reservation": "COMMITTED",
+        "inventory": [
+          19,
+          0
+        ],
+        "reserve_count": 1,
+        "commit_count": 1,
+        "release_count": 0,
+        "restore_count": 0,
+        "refund_count": 0,
+        "attempt_count": 1,
+        "amount": "189.00",
+        "currency": "CNY"
+      },
+      "duplicate_event_and_expiration_unchanged": true
+    },
+    {
+      "first_lock_owner": "expiration",
+      "initial_attempt_status": "CREATED",
+      "lock_wait": {
+        "requesting_connection_id": 4789,
+        "blocking_connection_id": 4788,
+        "database": "test_project_one",
+        "table": "ordering_order",
+        "index": "PRIMARY",
+        "lock_type": "RECORD",
+        "request_status": "WAITING",
+        "record_id": 4,
+        "request_mode": "X,REC_NOT_GAP",
+        "blocking_status": "GRANTED",
+        "blocking_mode": "X,REC_NOT_GAP",
+        "mysql_version": "8.4.10",
+        "same_server_verified": true
+      },
+      "expiration_result": {
+        "changed": false,
+        "code": "payment_unresolved"
+      },
+      "final": {
+        "order": "PAID",
+        "payment": "SUCCEEDED",
+        "event": "PROCESSED",
+        "event_attempt_count": 1,
+        "reservation": "COMMITTED",
+        "inventory": [
+          19,
+          0
+        ],
+        "reserve_count": 1,
+        "commit_count": 1,
+        "release_count": 0,
+        "restore_count": 0,
+        "refund_count": 0,
+        "attempt_count": 1,
+        "amount": "189.00",
+        "currency": "CNY"
+      },
+      "duplicate_event_and_expiration_unchanged": true
+    },
+    {
+      "first_lock_owner": "expiration",
+      "initial_attempt_status": "PENDING",
+      "lock_wait": {
+        "requesting_connection_id": 4793,
+        "blocking_connection_id": 4792,
+        "database": "test_project_one",
+        "table": "ordering_order",
+        "index": "PRIMARY",
+        "lock_type": "RECORD",
+        "request_status": "WAITING",
+        "record_id": 5,
+        "request_mode": "X,REC_NOT_GAP",
+        "blocking_status": "GRANTED",
+        "blocking_mode": "X,REC_NOT_GAP",
+        "mysql_version": "8.4.10",
+        "same_server_verified": true
+      },
+      "expiration_result": {
+        "changed": false,
+        "code": "payment_unresolved"
+      },
+      "final": {
+        "order": "PAID",
+        "payment": "SUCCEEDED",
+        "event": "PROCESSED",
+        "event_attempt_count": 1,
+        "reservation": "COMMITTED",
+        "inventory": [
+          19,
+          0
+        ],
+        "reserve_count": 1,
+        "commit_count": 1,
+        "release_count": 0,
+        "restore_count": 0,
+        "refund_count": 0,
+        "attempt_count": 1,
+        "amount": "189.00",
+        "currency": "CNY"
+      },
+      "duplicate_event_and_expiration_unchanged": true
+    },
+    {
+      "first_lock_owner": "expiration",
+      "initial_attempt_status": "UNKNOWN",
+      "lock_wait": {
+        "requesting_connection_id": 4797,
+        "blocking_connection_id": 4796,
+        "database": "test_project_one",
+        "table": "ordering_order",
+        "index": "PRIMARY",
+        "lock_type": "RECORD",
+        "request_status": "WAITING",
+        "record_id": 6,
+        "request_mode": "X,REC_NOT_GAP",
+        "blocking_status": "GRANTED",
+        "blocking_mode": "X,REC_NOT_GAP",
+        "mysql_version": "8.4.10",
+        "same_server_verified": true
+      },
+      "expiration_result": {
+        "changed": false,
+        "code": "payment_unresolved"
+      },
+      "final": {
+        "order": "PAID",
+        "payment": "SUCCEEDED",
+        "event": "PROCESSED",
+        "event_attempt_count": 1,
+        "reservation": "COMMITTED",
+        "inventory": [
+          19,
+          0
+        ],
+        "reserve_count": 1,
+        "commit_count": 1,
+        "release_count": 0,
+        "restore_count": 0,
+        "refund_count": 0,
+        "attempt_count": 1,
+        "amount": "189.00",
+        "currency": "CNY"
+      },
+      "duplicate_event_and_expiration_unchanged": true
+    }
+  ]
+}
