@@ -60,6 +60,10 @@ class CartItem(models.Model):
 class Order(models.Model):
     """下单时形成的交易事实；金额和状态不能由客户端直接决定。"""
 
+    class CreationScope(models.TextChoices):
+        CART = "cart_checkout", "Cart checkout"
+        FLASH_SALE = "flash_sale_checkout", "Flash sale checkout"
+
     class Status(models.TextChoices):
         PENDING_PAYMENT = "PENDING_PAYMENT", "Pending payment"
         PAID = "PAID", "Paid"
@@ -92,6 +96,12 @@ class Order(models.Model):
         default=Decimal("0.00"),
     )
     total = models.DecimalField(max_digits=12, decimal_places=2)
+    creation_scope = models.CharField(
+        max_length=32,
+        choices=CreationScope.choices,
+        default=CreationScope.CART,
+        editable=False,
+    )
     idempotency_key = models.CharField(max_length=128)
     request_fingerprint = models.CharField(max_length=64, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -99,11 +109,11 @@ class Order(models.Model):
 
     class Meta:
         ordering = ("-created_at", "-id")
-        # 约束是最后一道防线：同一用户的幂等键唯一，金额非负且必须满足总价公式。
+        # 不同下单入口独立识别同一次请求；旧订单默认属于购物车入口。
         constraints = (
             models.UniqueConstraint(
-                fields=("user", "idempotency_key"),
-                name="ordering_order_unique_user_idempotency_key",
+                fields=("user", "creation_scope", "idempotency_key"),
+                name="ordering_order_unique_user_scope_key",
             ),
             models.CheckConstraint(
                 condition=models.Q(subtotal__gte=Decimal("0.00")),

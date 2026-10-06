@@ -135,6 +135,7 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
     fingerprint = _request_fingerprint(address_id)
     existing = Order.objects.filter(
         user=locked_user,
+        creation_scope=Order.CreationScope.CART,
         idempotency_key=idempotency_key,
     ).first()
     if existing is not None:
@@ -241,6 +242,7 @@ def create_order_from_cart(*, user, address_id, idempotency_key):
 
     order = Order.objects.create(
         user=locked_user,
+        creation_scope=Order.CreationScope.CART,
         subtotal=subtotal,
         discount_total=discount_total,
         shipping_fee=shipping_fee,

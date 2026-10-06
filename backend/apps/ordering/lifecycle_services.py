@@ -158,6 +158,12 @@ def cancel_order(*, public_id, user):
     ).first()
     if order is None:
         raise OrderLifecycleError("order_not_found", "订单不存在，或你无权取消。", 404)
+    if order.creation_scope == Order.CreationScope.FLASH_SALE:
+        raise OrderLifecycleError(
+            "flash_sale_lifecycle_unavailable",
+            "秒杀订单的取消功能尚未开放。",
+            409,
+        )
     if order.status == Order.Status.CANCELED:
         return order, False
     if order.status == Order.Status.PENDING_PAYMENT:
@@ -176,6 +182,8 @@ def expire_pending_order(*, order_id, as_of=None):
 
     as_of = as_of or timezone.now()
     order = Order.objects.select_for_update().get(pk=order_id)
+    if order.creation_scope == Order.CreationScope.FLASH_SALE:
+        return order, False
     if order.status != Order.Status.PENDING_PAYMENT:
         return order, False
     if not InventoryReservation.objects.filter(
@@ -193,6 +201,7 @@ def expire_due_orders(*, as_of=None):
         InventoryReservation.objects.filter(
             expires_at__lte=as_of,
             order_item__order__status=Order.Status.PENDING_PAYMENT,
+            order_item__order__creation_scope=Order.CreationScope.CART,
         )
         .order_by("order_item__order_id")
         .values_list("order_item__order_id", flat=True)

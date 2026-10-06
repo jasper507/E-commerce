@@ -110,6 +110,12 @@ def create_payment_attempt(*, user, order_public_id, idempotency_key):
     ).first()
     if order is None:
         raise PaymentRuleError("order_not_found", "订单不存在，或你无权查看这张订单。", 404)
+    if order.creation_scope == Order.CreationScope.FLASH_SALE:
+        raise PaymentRuleError(
+            "flash_sale_lifecycle_unavailable",
+            "秒杀订单的支付功能尚未开放。",
+            409,
+        )
     if order.status != Order.Status.PENDING_PAYMENT:
         raise PaymentRuleError(
             "order_not_payable", "订单当前不是待支付状态，不能发起支付。", 409
@@ -301,6 +307,8 @@ def process_payment_event(*, event_id):
     order = Order.objects.select_for_update().get(pk=attempt_hint.order_id)
     attempt = PaymentAttempt.objects.select_for_update().get(pk=attempt_hint.pk)
     event.attempt = attempt
+    if order.creation_scope == Order.CreationScope.FLASH_SALE:
+        return _reject(event, "flash_sale_lifecycle_unavailable")
 
     try:
         amount = Decimal(parsed["amount"])
