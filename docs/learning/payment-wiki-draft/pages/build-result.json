@@ -1,0 +1,79 @@
+{
+  "pages": [
+    {
+      "index": 0,
+      "title": "\u652f\u4ed8\u4e0e MQ\uff5c\u603b\u89c8\u4e0e\u4e1a\u52a1\u8fb9\u754c",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_f0b8d6ed_folder\\draft.xml",
+      "char_count": 2147,
+      "cjk_count": 1368,
+      "board_count": 1,
+      "code_count": 0
+    },
+    {
+      "index": 1,
+      "title": "01 \u6570\u636e\u6a21\u578b\u4e0e\u4e24\u4e2a\u72b6\u6001\u673a",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_038dcb24_folder\\draft.xml",
+      "char_count": 2755,
+      "cjk_count": 1277,
+      "board_count": 1,
+      "code_count": 0
+    },
+    {
+      "index": 2,
+      "title": "02 \u6b63\u5e38\u4ed8\u6b3e\u4e0e\u4e8b\u52a1\u63d0\u4ea4",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_d29fbe72_folder\\draft.xml",
+      "char_count": 3167,
+      "cjk_count": 1106,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 3,
+      "title": "03 \u8d85\u65f6\u3001UNKNOWN\u4e0e\u539f\u4ed8\u6b3e\u67e5\u5355",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_b0cb9e70_folder\\draft.xml",
+      "char_count": 2934,
+      "cjk_count": 1080,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 4,
+      "title": "04 \u91cd\u590d\u3001\u4e71\u5e8f\u4e0e\u4e1a\u52a1\u62d2\u7edd",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_3a4985fa_folder\\draft.xml",
+      "char_count": 2313,
+      "cjk_count": 1078,
+      "board_count": 0,
+      "code_count": 1
+    },
+    {
+      "index": 5,
+      "title": "05 MQ\u3001\u6709\u754c\u91cd\u8bd5\u4e0e\u4eba\u5de5\u6062\u590d",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_58f625d0_folder\\draft.xml",
+      "char_count": 3389,
+      "cjk_count": 1362,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 6,
+      "title": "06 \u652f\u4ed8\u4e0e\u5230\u671f\u5173\u95ed\u3001\u8fdf\u5230\u6a21\u62df\u9000\u6b3e",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_d4a21f43_folder\\draft.xml",
+      "char_count": 2811,
+      "cjk_count": 1112,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 7,
+      "title": "07 \u5b9e\u9a8c\u5165\u53e3\u4e0e\u9762\u8bd5\u8bc1\u636e",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_8479e5d8_folder\\draft.xml",
+      "char_count": 2882,
+      "cjk_count": 1475,
+      "board_count": 0,
+      "code_count": 0
+    }
+  ],
+  "total_cjk": 9858,
+  "total_chars": 22398,
+  "code_excerpt_count": 5
+}

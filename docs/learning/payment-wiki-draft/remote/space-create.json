@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "description": "单商家 Django 电商项目学习资料：围绕业务边界、真实代码、可复现实验与面试问答组织；当前先建立支付与 MQ 模块。",
+    "name": "Project One 电商项目",
+    "open_sharing": "",
+    "space_id": "7693476782908935142",
+    "space_type": "team",
+    "visibility": "private"
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

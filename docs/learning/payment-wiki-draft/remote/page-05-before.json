@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title id=\"PHvqdJ10bob22mxCHpccJHKgn4b\">05 MQ、有界重试与人工恢复</title>",
+      "document_id": "PHvqdJ10bob22mxCHpccJHKgn4b",
+      "revision_id": 1
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

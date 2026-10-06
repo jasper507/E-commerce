@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "node": {
+      "creator": "",
+      "has_child": false,
+      "node_create_time": "1791277225",
+      "node_token": "I0a5wc7LUibRArkMkUHct0swnvc",
+      "node_type": "origin",
+      "obj_create_time": "1791277225",
+      "obj_edit_time": "1791277225",
+      "obj_token": "DTCsdol7JoPH8hxKznfcHTAInUc",
+      "obj_type": "docx",
+      "origin_node_token": "I0a5wc7LUibRArkMkUHct0swnvc",
+      "origin_space_id": "7693476782908935142",
+      "owner": "ou_ec431efc09979788500cb74a6286cfe2",
+      "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+      "space_id": "7693476782908935142",
+      "title": "04 重复、乱序与业务拒绝",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/I0a5wc7LUibRArkMkUHct0swnvc"
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    participant P as 支付成功处理
+    participant D as MySQL订单锁
+    participant E as 到期扫描
+    Note over P,E: 原尝试CREATED/PENDING/UNKNOWN；付款尚未确认
+    alt 到期先拿锁
+        E->>D: 锁原订单和原付款尝试
+        P->>D: 等待同一订单锁
+        D-->>E: 原付款未确认，不能关闭
+        E->>D: 结束事务，不释放库存
+        D-->>P: 支付拿到锁
+        P->>D: 校验成功，一起提交PAID与核销
+    else 支付先拿锁
+        P->>D: 锁原订单并处理成功事件
+        E->>D: 等待同一订单锁
+        P->>D: 提交PAID与一次核销
+        D-->>E: 拿到锁后读到PAID
+        E->>D: 跳过关闭，不释放库存
+    end
+    Note over P,E: 两种順序均只核销一次；锁内重新检查状态
+    Note over P,E: 已合法关闭后迟到成功另走模拟退款，订单终态保持

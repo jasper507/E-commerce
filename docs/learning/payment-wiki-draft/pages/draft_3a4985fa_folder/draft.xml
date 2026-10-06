@@ -1,0 +1,25 @@
+<title>04 重复、乱序与业务拒绝</title>
+<callout emoji="💡" background-color="light-blue"><p>“重复”可以安全短路；“同编号异内容”“伪造金额”“终态矛盾”必须拒绝。幂等不是把任何输入都当成功。</p></callout>
+<p>目标：用真实例子区分重放、乱序与业务拒绝，能说明库存最多一次如何由多层保护共同完成。前置：已读正常付款与两个状态机。</p>
+<h1 seq="auto">为什么消息可能重复</h1>
+<p>HTTP响应丢失会让供应商重发；RabbitMQ未收到ACK会重投；恢复人员可能补投原ID。因此消息不是恰好出现一次。Idempotency（幂等）在这里指同一合法业务再次到来，最终事实和库存/退款副作用不增加。</p>
+<table><thead><tr><th background-color="light-gray"><p>具体输入</p></th><th background-color="light-gray"><p>正确处理</p></th><th background-color="light-gray"><p>189元订单后果</p></th></tr></thead><tbody><tr><td><p>同顾客同付款Key、同订单</p></td><td><p>返回原Attempt</p></td><td><p>不会新建第二次付款</p></td></tr><tr><td><p>同Key换另一订单</p></td><td><p>409 idempotency_conflict</p></td><td><p>不把旧请求身份用于新交易</p></td></tr><tr><td><p>同(provider,event_id)同原文重发</p></td><td><p>复用Inbox；终态短路</p></td><td><p>库存核销仍1，处理预算不重复花</p></td></tr><tr><td><p>同事件号但原文改变</p></td><td><p>409 event_id_conflict</p></td><td><p>不覆盖保存的原文</p></td></tr><tr><td><p>不同事件号、相同成功事实</p></td><td><p>检查原Attempt/Order终态</p></td><td><p>不会第二次COMMIT</p></td></tr><tr><td><p>成功后迟到FAILED/PENDING</p></td><td><p>REJECTED terminal_attempt_conflict</p></td><td><p>SUCCEEDED不倒退，PAID保留</p></td></tr><tr><td><p>FAILED后订单仍待付却收到矛盾成功</p></td><td><p>当前规则REJECTED terminal_attempt_conflict</p></td><td><p>不擅自重新打开付款；已关闭迟到成功另见06</p></td></tr></tbody></table>
+<h1 seq="auto">验签、匹配、锁与约束共同保护</h1>
+<ol><li>入口预验签只决定去重身份。无效签名产生内部invalid摘要号，保留审计输入，不抢占合法事件号。</li><li>业务处理重新验签与解析，找到原provider_reference对应Attempt；未知引用不能改订单。</li><li>锁住Order和原Attempt，核对供应商、原订单public_id、金额有限值与189.00、币种CNY。</li><li>根据原终态和新结果判断合法分支，再核销或记录模拟退款；更新事件处理结果同事务提交。</li><li>Inbox唯一键、Attempt活跃唯一键、Movement同类唯一关系、Refund一对一兜底；跨表判断仍由Service维护。</li></ol>
+<h1 seq="auto">真实源码：可信签名之后仍要匹配交易</h1>
+<p>真实源码摘录：backend/apps/payments/services.py，第309至318行。对应当前工作区，含尚未提交的C4增量。</p><pre lang="python" caption="关键实现"><code>    if (
+        not amount.is_finite()
+        or parsed[&quot;provider&quot;] != attempt.provider
+        or parsed[&quot;order_public_id&quot;] != str(order.public_id)
+        or parsed[&quot;currency&quot;] != order.currency
+        or amount != order.total
+        or amount != attempt.amount
+        or parsed[&quot;currency&quot;] != attempt.currency
+    ):
+        return _reject(event, &quot;payment_mismatch&quot;)</code></pre><p>amount此前由Decimal解析。签名正确也不能跳过供应商、订单、金额和币种匹配；有限值检查拒绝NaN/Infinity。既核对order.total又核对attempt.amount，避免确认另一笔交易。</p>
+<p>替代方案只靠Event唯一ID，能防同编号重复入箱，却挡不住不同编号重复成功、成功后迟到失败和错误交易关联。现有方案保留多层校验；代价是规则较多，须用明确场景逐项测试，而不是靠一个万能“幂等锁”。</p>
+<h1 seq="auto">业务拒绝和系统错误不要混在一起</h1>
+<table><thead><tr><th background-color="light-gray"><p>类别</p></th><th background-color="light-gray"><p>例子</p></th><th background-color="light-gray"><p>恢复策略</p></th></tr></thead><tbody><tr><td><p>REJECTED</p></td><td><p>签名不合法、payment_mismatch、终态矛盾</p></td><td><p>保留原文和稳定错误码；不自动重新尝试非法事件</p></td></tr><tr><td><p>ERROR/TRANSIENT</p></td><td><p>MySQL1205锁等待超时、1213死锁</p></td><td><p>事务回滚后保留次数；到期且预算允许时恢复</p></td></tr><tr><td><p>ERROR/BLOCKED</p></td><td><p>库存不变量被破坏、未知异常</p></td><td><p>调查根因，不自动强改库存或重置预算</p></td></tr><tr><td><p>ERROR/EXHAUSTED</p></td><td><p>已用完3次合法处理资格</p></td><td><p>人工调查；没有第四次自动领取</p></td></tr></tbody></table>
+<h1 seq="auto">证据与限制</h1><p>证据状态：历史真实实验，本次读取核对；本次知识库创作没有重跑应用测试。</p><p>C1真实MQ实验覆盖重复任务与伪造事件；5B覆盖业务拒绝与处理失败分流、并发资格与预算。精确场景与断言在测试源码和阶段记录。</p><p>仓库证据入口：docs/verification/phase-5c1-payment-mq.md；docs/verification/phase-5b-payment-event-retry.md；backend/apps/payments/tests/test_payment_flow.py</p><p>拒绝码是程序/审计标识。不要把所有REJECTED叫作“钱没付”；也不要凭更换事件号、Key或人工强制状态绕过终态与预算。</p>
+<h1 seq="auto">面试与自检</h1><table><thead><tr><th background-color="light-gray"><p>追问</p></th><th background-color="light-gray"><p>需要能自己解释的答案</p></th></tr></thead><tbody><tr><td><p>消息至少一次，业务能否只一次？</p></td><td><p>靠持久原文、锁内资格、事务和副作用约束，让重复不改变终值；消息仍可重复。</p></td></tr><tr><td><p>签名正确为何还核对金额？</p></td><td><p>签名证明来源与内容完整，不证明这份结果属于当前189元交易。</p></td></tr></tbody></table>
+<p>维护信息：2026-10-06；适用Project One当前工作区，Git基点2dacc9a，C4/5D仍含本地增量。业务集成使用后端Mock Gateway，无真钱；远端Wiki与画板发布结果由归档记录单独确认。</p>

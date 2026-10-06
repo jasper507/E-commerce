@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "created_node_ids": "z1:1,z1:2,z1:3,z1:4,z1:5,z1:6,z1:7,z1:8,z1:9,z1:10,z1:11,z1:12,z1:13,z1:14,z1:15,z1:16,z1:17,z1:18,z1:19,z1:20,z1:21,z1:22,z1:23,z1:24,z1:25,z1:26,z1:27,z1:28,z1:29,z1:30,z1:31,z1:32,z1:33"
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

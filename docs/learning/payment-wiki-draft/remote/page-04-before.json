@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title id=\"DTCsdol7JoPH8hxKznfcHTAInUc\">04 重复、乱序与业务拒绝</title>",
+      "document_id": "DTCsdol7JoPH8hxKznfcHTAInUc",
+      "revision_id": 1
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

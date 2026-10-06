@@ -1,0 +1,35 @@
+<title>05 MQ、有界重试与人工恢复</title>
+<callout emoji="💡" background-color="light-blue"><p>RabbitMQ传任务，Celery执行任务，MySQL保存事实与预算。先入箱不代表已经投递；已投递不代表已经完成。</p></callout>
+<p>目标：区分提交后漏投、可重试数据库错误、Worker硬中断与提交后未ACK四个窗口，能按原Inbox ID说明恢复。前置：已认识正常付款T1/T2与Event状态。当前选择人工兜底，未实现周期自动接管。</p>
+<h1 seq="auto">为什么接MQ之后仍需要Inbox</h1>
+<p>189元成功通知已经保存到MySQL，进程可能在发RabbitMQ前崩溃，或者Broker正停机。数据库提交和消息发布在两个系统，不能默认原子完成。Inbox让恢复人员知道“还有哪份原文未处理”，MQ自身不能发现漏投数据库记录。</p>
+<p>图5：MQ故障与人工恢复。分开展示漏投、暂态失败、租约到期与提交后未ACK；修复元数据后再补投原ID。</p><whiteboard type="blank"/>
+<table><thead><tr><th background-color="light-gray"><p>窗口</p></th><th background-color="light-gray"><p>MySQL持久事实</p></th><th background-color="light-gray"><p>恢复动作</p></th><th background-color="light-gray"><p>不能做什么</p></th></tr></thead><tbody><tr><td><p>入箱后发布失败/进程消失</p></td><td><p>RECEIVED或到期TRANSIENT，原文还在</p></td><td><p>Broker恢复后人工--publish原ID</p></td><td><p>不能新建付款或声称自动秒级恢复</p></td></tr><tr><td><p>T2锁超时/死锁回滚</p></td><td><p>T1次数保留；T3记录ERROR/TRANSIENT</p></td><td><p>Worker按ETA重发合格原ID，或人工补投</p></td><td><p>不能因事务回滚把次数退回0</p></td></tr><tr><td><p>T1后硬中断、T2未提交</p></td><td><p>PROCESSING与租约；业务仍原状态</p></td><td><p>到期后人工--recover-stale，再--publish</p></td><td><p>不能见PROCESSING就强改，不能抢持锁T2</p></td></tr><tr><td><p>T2已提交、ACK前中断</p></td><td><p>PROCESSED、PAID、核销已存在</p></td><td><p>原消息重投，终态短路后ACK</p></td><td><p>不能第二次核销、退款或增加count</p></td></tr><tr><td><p>BLOCKED或预算耗尽</p></td><td><p>原文与稳定失败信息保留</p></td><td><p>人工调查</p></td><td><p>没有无限重试/默认清预算</p></td></tr></tbody></table>
+<h1 seq="auto">T1/T2/T3与持久预算</h1>
+<p>T1是短领取事务：锁Event、检查资格、count+1、写PROCESSING与租约并提交。T2是业务事务：再次锁Event，核对本次count版本，再统一处理。可捕获异常时，T2回滚后T3独立记录失败。硬中断不会跑except/T3，因此需要租约提供恢复候选。</p>
+<p>预算最多3次，包括首次；暂态故障后下一次资格门槛分别5秒、10秒。ETA是可以执行的时间门槛，不保证准时恢复。重复/提前消息不一定有领取资格，因此消息数和处理次数不相等。T1已提交后，即使T2没开始，也已经消耗一次。</p>
+<p>真实源码摘录：backend/apps/payments/services.py，第419至433行。对应当前工作区，含尚未提交的C4增量。</p><pre lang="python" caption="关键实现"><code>@transaction.atomic
+def _process_claimed_payment_event(*, event_id, processing_attempt):
+    event = PaymentEvent.objects.select_for_update().get(pk=event_id)
+    if (
+        event.processing_status != PaymentEvent.ProcessingStatus.PROCESSING
+        or event.processing_attempt_count != processing_attempt
+    ):
+        return event
+    # 原支付处理器是业务事务内部的原语；所有外部入口先经过同一资格检查。
+    event = process_payment_event(event_id=event_id)
+    event.failure_kind = PaymentEvent.FailureKind.NONE
+    event.next_retry_at = None
+    event.processing_lease_until = None
+    event.save(update_fields=(&quot;failure_kind&quot;, &quot;next_retry_at&quot;, &quot;processing_lease_until&quot;))
+    return event</code></pre><p>旧Worker持有第1次资格，新一轮已变count=2或状态已修复时，锁内复查挡住旧执行者。业务处理调用原process_payment_event，没有恢复专用的绕过校验路径。成功/拒绝清租约截止，最后开始时间留作调查。</p>
+<h1 seq="auto">租约到期为什么仍不能直接接管</h1>
+<p>Lease（处理租约）记录本轮何时开始、何时可考虑检查。默认60秒，C4实验8秒；它不是进程死亡证明、Celery超时设置或订单15分钟库存期限。人工恢复用skip_locked跳过正持Event锁的T2，再核对原status/count/deadline快照，避免覆盖新版本。</p>
+<table><thead><tr><th background-color="light-gray"><p>锁内结果</p></th><th background-color="light-gray"><p>动作</p></th></tr></thead><tbody><tr><td><p>持锁、未到期、状态/版本变化、空租约或时间异常</p></td><td><p>跳过并保留调查信息</p></td></tr><tr><td><p>同一过期PROCESSING，count1或2</p></td><td><p>改ERROR/TRANSIENT，next_retry_at=修复时刻；原次数保留</p></td></tr><tr><td><p>同一过期PROCESSING，count3</p></td><td><p>改ERROR/EXHAUSTED，不安排第四次</p></td></tr></tbody></table>
+<h1 seq="auto">人工操作SOP：预览、修复、补投、核对</h1>
+<ol><li>先确定专用test环境、test_project_one、真实测试Broker/队列，读取阶段指南；不要直接对开发或真实数据运行。</li><li>运行原命令--recover-stale --dry-run查看候选；空租约、BLOCKED、EXHAUSTED先调查。</li><li>租约到期后显式--recover-stale，只修复Event元数据，不付款、不发布。该动作会修改测试数据库。</li><li>然后--publish --dry-run检查合格原ID，再--publish把原ID交给Worker。--recover-stale与--publish互斥，需要分两步。</li><li>检查Order/Attempt/Event/Reservation/Movement/Refund终值；published表示发布成功，不能代替业务正确。保留原未ACK任务用于重投证据，不擅自清队列。</li></ol>
+<p>确切环境变量、执行命令和清理边界以docs/learning/phase-5c3-payment-publication-recovery-study-guide.md与phase-5c4-payment-worker-recovery-study-guide.md为准。本页SOP解释动作，不冒充本次已经执行。</p>
+<p>替代方案：增加Beat周期扫描或Transactional Outbox可提高自动恢复/可靠发布能力，但引入调度、发布记录与运行边界。本期选择已有持久Inbox加人工恢复，仍接受人工发现和操作延迟；MQ必选不等于自动化必选。</p>
+<h1 seq="auto">证据与限制</h1><p>证据状态：历史真实实验，本次读取核对；本次知识库创作没有重跑应用测试。</p><p>C2最终原始真实MQ三例3 passed、70.58秒；C3两例2 passed、71.69秒；C4四个真实SIGKILL场景4 passed、81.71秒。C4观察原任务UUID重投，最终核销/模拟退款保持一次。</p><p>仓库证据入口：docs/verification/phase-5c2-payment-mq-retry.md；docs/verification/phase-5c3-payment-publication-recovery.md；docs/verification/phase-5c4-payment-worker-recovery.md</p><p>实验是专用容器、单Worker与合成事件；本次没有重跑。无无人值守恢复时限、心跳、多机容灾、生产性能或全部进程排列保证。</p>
+<h1 seq="auto">面试与自检</h1><table><thead><tr><th background-color="light-gray"><p>追问</p></th><th background-color="light-gray"><p>需要能自己解释的答案</p></th></tr></thead><tbody><tr><td><p>有late ACK为什么还加租约？</p></td><td><p>MQ能重投，但MySQL PROCESSING仍挡住领取；租约加锁内版本检查让合格旧领取可人工修复。</p></td></tr><tr><td><p>租约60秒到了说明什么？</p></td><td><p>仅进入候选，仍需跳过持锁事务并核对原版本；不证明进程死亡。</p></td></tr></tbody></table>
+<p>维护信息：2026-10-06；适用Project One当前工作区，Git基点2dacc9a，C4/5D仍含本地增量。业务集成使用后端Mock Gateway，无真钱；远端Wiki与画板发布结果由归档记录单独确认。</p>

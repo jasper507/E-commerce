@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\hierarchy",
+    "workspace": "draft_5e956753_folder",
+    "draft_path": "draft_5e956753_folder\\draft.xml",
+    "tip": "Workspace created; draft XML does not exist yet. Write it directly to \u003ccwd\u003e/\u003cdraft_path\u003e. Prefer workspace for new assets and reuse existing files. Prefer @relative paths within cwd and @absolute paths elsewhere, subject to file access rules. Relative resource paths try cwd first, then the source XML directory only if missing. Keep CLI calls in cwd."
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

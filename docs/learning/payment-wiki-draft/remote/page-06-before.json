@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title id=\"AU7EdZEQ7oZRHexUSYicaQU5nHe\">06 支付与到期关闭、迟到模拟退款</title>",
+      "document_id": "AU7EdZEQ7oZRHexUSYicaQU5nHe",
+      "revision_id": 1
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

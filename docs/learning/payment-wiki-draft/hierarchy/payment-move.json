@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": true,
+    "mode": "node",
+    "node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+    "node_type": "origin",
+    "obj_token": "T6O0deWUnowaBsxM6LgcJfuynjb",
+    "obj_type": "docx",
+    "origin_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+    "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "source_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "target_space_id": "7693476782908935142",
+    "title": "支付"
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

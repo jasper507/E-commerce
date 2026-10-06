@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-06",
+  "space_id": "7693476782908935142",
+  "overview_url": "https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh",
+  "pages": [
+    {
+      "index": 0,
+      "title": "支付与 MQ｜总览与业务边界",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 3,
+      "code_excerpts_verified": 0,
+      "navigation_verified": true,
+      "board_verified": true,
+      "native_node_count": 33,
+      "node_types": {
+        "mind_map": 33
+      }
+    },
+    {
+      "index": 1,
+      "title": "01 数据模型与两个状态机",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/N37xwtJ27iZ4XmkYa1uchxswnbc",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 4,
+      "code_excerpts_verified": 0,
+      "navigation_verified": true,
+      "board_verified": true,
+      "native_node_count": 106,
+      "node_types": {
+        "text_shape": 67,
+        "connector": 13,
+        "composite_shape": 17,
+        "svg": 9
+      }
+    },
+    {
+      "index": 2,
+      "title": "02 正常付款与事务提交",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/Dn70wUIlKixYzMk0X4kcCvGsnR3",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 3,
+      "code_excerpts_verified": 1,
+      "navigation_verified": true,
+      "board_verified": true,
+      "native_node_count": 27,
+      "node_types": {
+        "life_line": 6,
+        "connector": 18,
+        "composite_shape": 3
+      }
+    },
+    {
+      "index": 3,
+      "title": "03 超时、UNKNOWN与原付款查单",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/JyJGwzL2CiiFKhkzrLUcx3pgnUb",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 2,
+      "code_excerpts_verified": 1,
+      "navigation_verified": true,
+      "board_verified": true,
+      "native_node_count": 24,
+      "node_types": {
+        "connector": 16,
+        "life_line": 5,
+        "combined_fragment": 1,
+        "composite_shape": 2
+      }
+    },
+    {
+      "index": 4,
+      "title": "04 重复、乱序与业务拒绝",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/I0a5wc7LUibRArkMkUHct0swnvc",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 3,
+      "code_excerpts_verified": 1,
+      "navigation_verified": true
+    },
+    {
+      "index": 5,
+      "title": "05 MQ、有界重试与人工恢复",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/CDXkw84eWiDj5ZkzitPcs1PhnIh",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 3,
+      "code_excerpts_verified": 1,
+      "navigation_verified": true,
+      "board_verified": true,
+      "native_node_count": 32,
+      "node_types": {
+        "combined_fragment": 4,
+        "connector": 18,
+        "life_line": 5,
+        "composite_shape": 5
+      }
+    },
+    {
+      "index": 6,
+      "title": "06 支付与到期关闭、迟到模拟退款",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/Kc9EwXMzni8ttTkYgk6cxSFknSd",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 3,
+      "code_excerpts_verified": 1,
+      "navigation_verified": true,
+      "board_verified": true,
+      "native_node_count": 18,
+      "node_types": {
+        "combined_fragment": 1,
+        "connector": 11,
+        "composite_shape": 3,
+        "life_line": 3
+      }
+    },
+    {
+      "index": 7,
+      "title": "07 实验入口与面试证据",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/KsqfwyvRZiYtsnkB09HcBsQWnpe",
+      "revision": 2,
+      "body_verified": true,
+      "tables_verified": 3,
+      "code_excerpts_verified": 0,
+      "navigation_verified": true
+    }
+  ],
+  "board_count": 6,
+  "native_nodes": 240,
+  "code_excerpts": 5,
+  "app_tests_rerun": false,
+  "visual_previews_checked_by_agent": true,
+  "hierarchy_verified": true,
+  "status": "passed"
+}

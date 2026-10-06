@@ -1,0 +1,43 @@
+sequenceDiagram
+    autonumber
+    participant A as 接收接口
+    participant D as MySQL 账本
+    participant Q as RabbitMQ 队列
+    participant W as 后台 Worker
+    participant O as 人工恢复
+
+    Note over A,O: 同一笔189元付款：始终处理原 Inbox 事件ID
+    A->>D: 保存通知并提交（RECEIVED）
+    A->>Q: 提交后，发布原事件ID
+    opt 发布失败或中途漏投
+        Q--xA: 发布未成功；账本仍在
+        O->>D: 人工检查可补投记录
+        O->>Q: 队列恢复后补投原ID
+    end
+    Q->>W: 交付原事件ID
+    W->>D: T1：领取次数加1并提交
+    Note over D,W: 记录处理中 PROCESSING，租约默认60秒<br/>预算最多领取3次（含首次），不是消息投递次数
+
+    alt 正常完成
+        W->>D: T2：付款、订单、库存、事件一起提交
+        W->>Q: ACK：确认任务完成
+    else T2 遇到可恢复数据库故障
+        W->>D: T2回滚；另事务保存 ERROR
+        Note over D,W: 第1/2次：TRANSIENT，等待门槛5/10秒<br/>第3次：EXHAUSTED，不再投递，留待调查
+        opt 第1/2次，仍有预算
+            W->>Q: 原ID按 ETA 定时再投
+        end
+    else T1已提交，Worker消失
+        Note over D,W: 账本遗留PROCESSING；没有自动扫描接管
+        O->>D: 人工等租约过期，锁内核对领取版本
+        D-->>O: 跳过活T2；次数1/2可恢复，3已耗尽
+        opt 次数1/2修复为到期 TRANSIENT
+            O->>Q: 另一步人工补投原ID
+        end
+    else T2已提交，ACK前Worker消失
+        W->>D: T2已提交：核销或模拟退款已完成
+        Q->>W: 原未确认消息重投
+        W->>D: 读到PROCESSED，直接跳过业务
+        W->>Q: ACK；不重复核销或退款
+    end
+    Note over A,O: 本期：人工补漏与租约修复；无 Beat、自动扫描、Outbox

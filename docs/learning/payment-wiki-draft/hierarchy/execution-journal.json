@@ -1,0 +1,55 @@
+[
+  {
+    "operation": "create project root",
+    "result": "success",
+    "node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb"
+  },
+  {
+    "operation": "rename payment",
+    "result": "success",
+    "title": "支付"
+  },
+  {
+    "operation": "rename Redis",
+    "result": "success",
+    "title": "Redis 学习与面试总结"
+  },
+  {
+    "operation": "move preflight",
+    "result": "missing OAuth scopes",
+    "scopes": [
+      "wiki:node:move",
+      "wiki:space:read"
+    ],
+    "moves_executed": 0
+  },
+  {
+    "target_parent": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "operation": "move payment",
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "ready": true,
+    "exit_code": 0,
+    "task_id": "7693485222679022552-0384eb7963295c8a43f95ad34927c8ae04e59720",
+    "ok": true,
+    "operation": "archive original Redis Docx",
+    "target_parent": "WN1jwXDj0iPXm7kwLyHcmneenlb"
+  },
+  {
+    "operation": "write project index",
+    "result": "success",
+    "evidence": "project-index-write.json"
+  },
+  {
+    "operation": "update payment navigation",
+    "result": "success",
+    "evidence": "payment-reference-write.json"
+  },
+  {
+    "operation": "verify hierarchy and preserved content",
+    "result": "success",
+    "evidence": "verification-summary.json"
+  }
+]

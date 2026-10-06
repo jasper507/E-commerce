@@ -1,0 +1,42 @@
+<title>02 正常付款与事务提交</title>
+<callout emoji="💡" background-color="light-blue"><p>正常付款有两个关键提交点：先保存Attempt，再调用Gateway；先保存原通知，再交给Worker处理。网络调用不放在这些数据库锁里。</p></callout>
+<p>目标：沿前端→HTTP→权限→业务服务→MySQL→Gateway→Inbox→MQ→Worker说明一次付款。示例固定为189.00元、CNY、购买1件；本项目Gateway是后端Mock，不接真钱。默认可以同步，下面用已实现的异步模式展示完整链路。</p>
+<h1 seq="auto">从顾客点击付款到订单PAID</h1>
+<p>图3：正常付款时序。重点找Attempt提交、Gateway事务外调用、Inbox提交、消息发布、T1领取、T2业务提交与ACK。</p><whiteboard type="blank"/>
+<ol><li>顾客登录后POST /api/payments/attempts/，提交order_public_id和Idempotency-Key；Session/CSRF与归属由后端检查。前端不决定付款金额。</li><li>start_payment调用create_payment_attempt：短事务锁用户和原订单，先检查旧Key，再核对待付款状态及活跃Attempt，从Order复制189.00/CNY，提交本次CREATED。</li><li>提交后调用Mock Gateway，使用原provider_reference。网络成功、失败或超时都是原Attempt的结果，不新建订单。</li><li>供应商结果或模拟Webhook进入receive_payment_event。预验签只决定安全去重身份；原文独立持久入Inbox。完整验证仍在后续业务处理。</li><li>Inbox提交后发布内部整数ID；异步HTTP202只表示通知已保存并待处理。发布失败保留原Inbox，不伪装成付款失败。</li><li>Worker收到ID，T1独立事务提交PROCESSING、count+1和租约。T2再次锁Event并复查领取版本，再验签、核对金额/币种/原订单。</li><li>可信SUCCEEDED在T2一起提交Attempt.SUCCEEDED、Order.PAID、Reservation.COMMITTED、库存核销、COMMIT流水与Event.PROCESSED；之后Worker ACK。</li><li>顾客读取后端已提交的订单/付款状态，再显示结果。Admin发货与顾客收货属于后续履约。</li></ol>
+<h1 seq="auto">各个确认到底确认了什么</h1>
+<table><thead><tr><th background-color="light-gray"><p>信号</p></th><th background-color="light-gray"><p>已经确定</p></th><th background-color="light-gray"><p>尚不能据此确定</p></th></tr></thead><tbody><tr><td><p>HTTP201/200创建结果</p></td><td><p>原付款尝试已创建或幂等复用</p></td><td><p>异步业务是否已经PAID</p></td></tr><tr><td><p>Webhook HTTP202</p></td><td><p>原通知已保存，可能待处理/调查</p></td><td><p>Broker一定收到、付款一定成功</p></td></tr><tr><td><p>Broker发布确认</p></td><td><p>消息层接受了任务</p></td><td><p>库存已经核销</p></td></tr><tr><td><p>Event.PROCESSED</p></td><td><p>这份通知已经处理完成</p></td><td><p>通知一定是SUCCEEDED</p></td></tr><tr><td><p>Worker ACK</p></td><td><p>Worker向Broker确认任务完成</p></td><td><p>以后永远不会有重复任务</p></td></tr><tr><td><p>后端Order.PAID与Attempt.SUCCEEDED</p></td><td><p>本地可信支付确认已提交</p></td><td><p>真实供应商/真实资金结算，因为这里使用Mock</p></td></tr></tbody></table>
+<h1 seq="auto">关键实现：先入箱，再离开事务发布</h1>
+<p>真实源码摘录：backend/apps/payments/services.py，第572至598行。对应当前工作区，含尚未提交的C4增量。</p><pre lang="python" caption="关键实现"><code>    with transaction.atomic():
+        event, _ = PaymentEvent.objects.get_or_create(
+            provider=provider,
+            event_id=external_id,
+            defaults={
+                &quot;raw_payload&quot;: payload,
+                &quot;signature&quot;: signature[:128],
+            },
+        )
+    if event.raw_payload != payload:
+        raise PaymentRuleError(
+            &quot;event_id_conflict&quot;,
+            &quot;同一个支付事件编号对应了不同内容，已拒绝处理。&quot;,
+            409,
+        )
+    if event.processing_status in {
+        PaymentEvent.ProcessingStatus.RECEIVED,
+        PaymentEvent.ProcessingStatus.ERROR,
+    }:
+        if settings.PAYMENT_EVENTS_ASYNC:
+            from apps.payments.dispatch import publish_payment_event
+
+            publish_payment_event(event_id=event.pk)
+            # 返回持久收件事实。Worker 可能已经更快提交，不在这里推断已付款。
+            return event
+        return process_stored_payment_event(event_id=event.pk)
+    return event</code></pre><p>with transaction.atomic结束后，原Inbox已经独立提交。之后才调用发布器或同步处理器；Event原文变化则409。这个片段省略了前面的安全去重键构造，并没有省略完整业务校验。</p>
+<h1 seq="auto">189元订单的前后值</h1>
+<table><thead><tr><th background-color="light-gray"><p>时刻</p></th><th background-color="light-gray"><p>订单/付款</p></th><th background-color="light-gray"><p>可售/预占</p></th><th background-color="light-gray"><p>副作用</p></th></tr></thead><tbody><tr><td><p>下单后</p></td><td><p>PENDING_PAYMENT / 尚未付款</p></td><td><p>19 / 1</p></td><td><p>RESERVE 1</p></td></tr><tr><td><p>保存成功通知但未处理</p></td><td><p>PENDING_PAYMENT / 原Attempt仍活跃</p></td><td><p>19 / 1</p></td><td><p>Inbox已保存；不能提前COMMIT</p></td></tr><tr><td><p>可信成功业务提交</p></td><td><p>PAID / SUCCEEDED</p></td><td><p>19 / 0</p></td><td><p>COMMIT 1，Refund 0</p></td></tr><tr><td><p>重复任务处理后</p></td><td><p>PAID / SUCCEEDED</p></td><td><p>19 / 0</p></td><td><p>COMMIT仍1；Event次数不再增加</p></td></tr></tbody></table>
+<p>替代方案是在同一HTTP请求内同步处理全部事件。它更容易调试，项目保留这条MySQL/Mock基线；异步把业务处理交给Worker，必须额外考虑消息漏投、重复和进程中断。MQ并没有替代原状态机。</p>
+<h1 seq="auto">证据与限制</h1><p>证据状态：历史真实实验，本次读取核对；本次知识库创作没有重跑应用测试。</p><p>5C1历史真实隔离RabbitMQ/独立Worker：最终原始记录3 passed、44.27秒，覆盖业务执行、重复任务和伪造通知；C4期另有C1回归3 passed、41.98秒，属于不同执行。</p><p>仓库证据入口：docs/verification/phase-5c1-payment-mq.md；docs/verification/phase-5c1-payment-mq-data.json</p><p>本次没有启动Worker。网络失败可能留下已保存但未发布事件，需要05页人工补投；无生产吞吐、第三方对账或浏览器全路径重验结论。</p>
+<h1 seq="auto">面试与自检</h1><table><thead><tr><th background-color="light-gray"><p>追问</p></th><th background-color="light-gray"><p>需要能自己解释的答案</p></th></tr></thead><tbody><tr><td><p>为什么不能锁着订单等Gateway？</p></td><td><p>外部网络可能超时，长期占锁阻塞别的订单操作；先持久提交，再等待网络。</p></td></tr><tr><td><p>MySQL和MQ怎样做到一致？</p></td><td><p>先可靠入箱再发原ID，并接受提交到发布之间的窗口，用Inbox人工补漏。</p></td></tr></tbody></table>
+<p>维护信息：2026-10-06；适用Project One当前工作区，Git基点2dacc9a，C4/5D仍含本地增量。业务集成使用后端Mock Gateway，无真钱；远端Wiki与画板发布结果由归档记录单独确认。</p>

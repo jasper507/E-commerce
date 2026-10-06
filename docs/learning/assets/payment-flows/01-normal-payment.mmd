@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    participant U as 顾客 / Vue
+    participant A as Django API
+    participant D as MySQL
+    participant G as Mock Gateway
+    participant Q as RabbitMQ
+    participant W as Celery Worker
+    Note over U,W: 189元订单已创建，库存 available=19 / reserved=1；此图开启 async
+    U->>A: 发起付款（原订单 + Idempotency-Key）
+    A->>D: 首次请求短事务：检查归属 / 状态，保存原 Attempt
+    D-->>A: 提交后返回 Attempt（金额来自原订单）
+    Note over U,D: 同 Key 重放直接返回原 Attempt，不再调用 Gateway
+    A->>G: 事务外 create_payment（原供应商引用）
+    G-->>A: 返回签名结果事件（此例 SUCCEEDED）
+    Note over A,G: Mock 直接返回事件；独立 Webhook 也复用接收入口
+    A->>D: 短事务：按 provider + event_id 保存原文 Inbox
+    D-->>A: 提交 RECEIVED，内部 Inbox ID 已持久化
+    A->>Q: 事务外发布 Inbox ID
+    A-->>U: 返回当前 Attempt；已收件不等于已支付
+    Q->>W: 投递 Inbox ID（可能重复）
+    W->>D: T1：锁 Event，次数 +1 / PROCESSING / 租约
+    D-->>W: T1 独立提交
+    W->>D: T2：锁 Event → Order → Attempt → 预占 → 库存
+    Note over W,D: 完整验签 / 原订单金额 / 币种 / 状态校验
+    W->>D: 同事务：SUCCEEDED + PAID + 核销一次 + PROCESSED
+    D-->>W: T2 提交，库存 available=19 / reserved=0
+    W-->>Q: 任务结束后 ACK（确认消费）
+    U->>A: 查询自己的订单 / 原 Attempt
+    A->>D: 读取已经提交的业务状态
+    A-->>U: 显示已支付；前端提示不决定支付事实

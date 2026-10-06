@@ -1,0 +1,28 @@
+sequenceDiagram
+    autonumber
+    participant U as 顾客
+    participant A as Django后端
+    participant D as MySQL
+    participant G as Mock供应商
+    participant P as 统一事件处理
+    U->>A: 原189元订单付款
+    A->>D: 保存原付款尝试并提交
+    A->>G: 事务外请求付款
+    G--xA: 响应丢失；供应商可能已经成功
+    A->>D: 原尝试变UNKNOWN
+    A-->>U: 结果待确认，保留原订单
+    Note over U,D: UNKNOWN不是失败；库存继续预占；不换金额重付
+    U->>A: 查询自己的原付款
+    A->>G: 查询原引用，不发起新付款
+    alt 查单仍超时
+        G--xA: 无法确认
+        A->>D: 保持UNKNOWN
+        A-->>U: 稍后继续查原付款
+    else 查到可信结果：此例成功
+        G-->>A: 签名结果事件
+        A->>P: 保存原文，复用同一处理链
+        P->>D: 校验后原子提交付款、订单、库存
+        Note over P,D: 异步模式先收件再处理；接口返回可能仍待确认
+        U->>A: 后续读已提交状态
+        A-->>U: PAID；原库存只核销一次
+    end

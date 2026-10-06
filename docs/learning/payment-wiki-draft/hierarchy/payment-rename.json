@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "file_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+    "title": "支付",
+    "type": "wiki",
+    "updated": true,
+    "url": "https://www.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh"
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

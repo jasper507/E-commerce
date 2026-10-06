@@ -1,0 +1,84 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "assessment": {
+      "status": "passed"
+    },
+    "profile": {
+      "word_count": 1802,
+      "char_count": 3264,
+      "block_count": 92,
+      "blocks": [
+        {
+          "type": "p",
+          "count": 54,
+          "ratio": 0.586957
+        },
+        {
+          "type": "tr",
+          "count": 13,
+          "ratio": 0.141304
+        },
+        {
+          "type": "h1",
+          "count": 6,
+          "ratio": 0.065217
+        },
+        {
+          "type": "li",
+          "count": 5,
+          "ratio": 0.054348
+        },
+        {
+          "type": "table",
+          "count": 3,
+          "ratio": 0.032609
+        },
+        {
+          "type": "tbody",
+          "count": 3,
+          "ratio": 0.032609
+        },
+        {
+          "type": "thead",
+          "count": 3,
+          "ratio": 0.032609
+        },
+        {
+          "type": "callout",
+          "count": 1,
+          "ratio": 0.01087
+        },
+        {
+          "type": "ol",
+          "count": 1,
+          "ratio": 0.01087
+        },
+        {
+          "type": "pre",
+          "count": 1,
+          "ratio": 0.01087
+        },
+        {
+          "type": "title",
+          "count": 1,
+          "ratio": 0.01087
+        },
+        {
+          "type": "whiteboard",
+          "count": 1,
+          "ratio": 0.01087
+        }
+      ]
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

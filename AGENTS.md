@@ -46,6 +46,7 @@ RabbitMQ + Celery payment-event processing is required for Interview Core, as pa
 ## Work Protocol
 
 1. Read relevant code, tests, and project documents first.
+   Before generating or modifying the next batch of code, commit and push the previous reviewed changes under the standing authorization below.
 2. State the business problem and the current vertical slice.
 3. Classify the work as Depth, Supporting, or Boilerplate and choose Learning, Pair, or Delivery Mode accordingly.
 4. Establish a simple MVP/MySQL/Mock baseline before introducing advanced infrastructure.
@@ -59,11 +60,19 @@ RabbitMQ + Celery payment-event processing is required for Interview Core, as pa
 
 - This is currently a solo learning project. Default to developing ordinary, low-risk vertical slices directly on `main`.
 - Do not automatically create a feature branch, Git worktree, or pull request for every task.
-- At the end of a coherent small stage: inspect `git status`, run the relevant tests, stage only the scoped files, create a meaningful commit, and push `main`.
+- At the end of a coherent small stage: inspect `git status`, run the relevant tests, stage only the scoped files, create a meaningful commit, and push the reviewed current work branch. Ordinary daily development still defaults to `main`.
 - Keep commits focused. Never mix unrelated user changes into the same commit, and never weaken testing, review, self-checks, CI, or version-control discipline merely because the project is solo.
 - Recommend an isolated branch only for large refactors, high-risk database changes, inventory concurrency or flash-sale work, payment state machines or webhooks, uncertain experiments, or other large changes that need isolation and easy rollback.
 - Before creating an exceptional branch or worktree, explain why isolation is warranted. After completing it, verify the branch, integrate it safely into `main`, confirm `main` contains the intended commit or equivalent content, and only then consider deleting the branch or worktree.
 - Before every push, re-check the current branch, `git status`, the intended diff, and the latest observed test results.
+
+### Standing Commit/Push Authorization — 2026-10-06
+
+- The project owner authorizes commit and push without repeated confirmation. Before generating or modifying each new batch of code, save the previous reviewed, authorized changes in focused commits and push the current work branch.
+- Review scope, remote, tests and sensitive information first. Do not include unknown changes or another chat's unfinished work. If the worktree is clean and the relevant commits are already remote, continue without an empty commit; if only reviewed local commits are pending, push them.
+- Confirm the remote branch equals local HEAD before the next code generation. If saving cannot safely complete, preserve the work and report the concrete blocker before proceeding.
+- If required verification is unavailable solely because of the environment, record the limitation and push the candidate to an isolated `codex/*` branch. Do not claim it verified or merge unverified high-risk work into `main`.
+- Preserve review, testing, focused commits and safe integration requirements. This authorization does not allow force-push, rewriting remote history or destructive Git operations. Details are in `PROJECT_INSTRUCTIONS.md`.
 
 ## Testing
 

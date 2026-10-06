@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "failed": false,
+    "has_child": false,
+    "mode": "docs_to_wiki",
+    "node_token": "O4iUwSvl1i4Je7keOL0ci1iAnLf",
+    "node_type": "origin",
+    "obj_token": "KKBXdHFQqoZRCNxJv1YcFb29nkf",
+    "obj_type": "docx",
+    "origin_node_token": "",
+    "parent_node_token": "",
+    "ready": true,
+    "space_id": "7693476782908935142",
+    "status": 0,
+    "status_msg": "success",
+    "target_parent_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "target_space_id": "7693476782908935142",
+    "task_id": "7693485222679022552-0384eb7963295c8a43f95ad34927c8ae04e59720",
+    "title": "Redis 学习与面试总结",
+    "wiki_token": "O4iUwSvl1i4Je7keOL0ci1iAnLf"
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

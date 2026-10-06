@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="1570" viewBox="0 0 1840 1570">
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F7FAFF"/>
+      <stop offset="100%" stop-color="#EEF5F8"/>
+    </linearGradient>
+    <linearGradient id="order" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#183D76"/>
+      <stop offset="100%" stop-color="#245FA2"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1840" height="1570" fill="url(#canvas)"/>
+  <circle cx="1690" cy="110" r="65" fill="#DDEDFB"/>
+  <path d="M1657 109 L1685 109 L1685 137 L1713 137" fill="none" stroke="#82B6CA" stroke-width="7" stroke-linecap="round"/>
+  <path d="M68 86 L94 86 L94 112 L120 112" fill="none" stroke="#26738D" stroke-width="8" stroke-linecap="round"/>
+  <text x="148" y="105" font-size="40" font-family="Noto Sans SC" font-weight="700" fill="#163A60">189 元订单：每张表负责哪一件事？</text>
+  <text x="148" y="155" font-size="24" font-family="Noto Sans SC" fill="#496078">沿着关联查清原订单、原付款、收到的事件与每一笔库存变化</text>
+  <text x="100" y="224" font-size="24" font-family="Noto Sans SC" font-weight="700" fill="#214A78">01　交易事实</text>
+  <text x="670" y="224" font-size="24" font-family="Noto Sans SC" font-weight="700" fill="#146B68">02　付款过程</text>
+  <text x="1290" y="224" font-size="24" font-family="Noto Sans SC" font-weight="700" fill="#75489F">03　通知与处理</text>
+
+  <polyline points="490,350 670,350" fill="none" stroke="#4674A2" stroke-width="4"/>
+  <polygon points="670,350 654,342 654,358" fill="#4674A2"/>
+  <text x="523" y="321" font-size="23" font-family="Noto Sans SC" fill="#355979">1 : 0..N</text>
+  <text x="516" y="397" font-size="20" font-family="Noto Sans SC" fill="#355979">失败历史可保留</text>
+  <polyline points="1110,350 1290,350" fill="none" stroke="#8062A5" stroke-width="4"/>
+  <polygon points="1290,350 1274,342 1274,358" fill="#8062A5"/>
+  <text x="1143" y="321" font-size="23" font-family="Noto Sans SC" fill="#674D83">1 : 0..N</text>
+  <text x="1141" y="397" font-size="20" font-family="Noto Sans SC" fill="#674D83">多次结果通知</text>
+
+  <rect x="100" y="260" width="390" height="180" rx="28" fill="url(#order)"/>
+  <circle cx="446" cy="294" r="10" fill="#7FC5F0"/>
+  <text x="130" y="306" font-size="28" font-family="Noto Sans SC" font-weight="700" fill="#FFFFFF">Order　原订单</text>
+  <text x="130" y="354" font-size="26" font-family="Noto Sans SC" font-weight="700" fill="#FFFFFF">total = 189.00 CNY</text>
+  <text x="130" y="402" font-size="22" font-family="Noto Sans SC" fill="#DDEBFA">记录交易金额与订单状态</text>
+
+  <rect x="670" y="260" width="440" height="180" rx="28" fill="#E4F3EE" stroke="#4C9486" stroke-width="2"/>
+  <text x="700" y="306" font-size="28" font-family="Noto Sans SC" font-weight="700" fill="#185D52">PaymentAttempt</text>
+  <text x="700" y="351" font-size="25" font-family="Noto Sans SC" font-weight="700" fill="#185D52">原付款：189.00 CNY</text>
+  <text x="700" y="397" font-size="22" font-family="Noto Sans SC" fill="#356E62">金额从原订单生成，不随改价变化</text>
+
+  <rect x="1290" y="260" width="450" height="180" rx="28" fill="#F0EAF9" stroke="#A386BD" stroke-width="2"/>
+  <text x="1320" y="306" font-size="28" font-family="Noto Sans SC" font-weight="700" fill="#634184">PaymentEvent / Inbox</text>
+  <text x="1320" y="351" font-size="25" font-family="Noto Sans SC" font-weight="700" fill="#634184">保留通知原文与处理结果</text>
+  <text x="1320" y="397" font-size="22" font-family="Noto Sans SC" fill="#755C8C">非法事件也保留；attempt 可为空</text>
+
+  <polyline points="295,440 295,590" fill="none" stroke="#4674A2" stroke-width="4"/>
+  <polygon points="295,590 287,574 303,574" fill="#4674A2"/>
+  <text x="329" y="520" font-size="23" font-family="Noto Sans SC" fill="#355979">1 : N</text>
+  <rect x="100" y="590" width="390" height="160" rx="26" fill="#E6EDF8" stroke="#7393BF" stroke-width="2"/>
+  <text x="130" y="636" font-size="28" font-family="Noto Sans SC" font-weight="700" fill="#244A79">OrderItem　购买明细</text>
+  <text x="130" y="684" font-size="23" font-family="Noto Sans SC" fill="#355979">鼠标 × 1；成交单价 189 元</text>
+  <text x="130" y="723" font-size="22" font-family="Noto Sans SC" fill="#355979">商品名称与价格保留快照</text>
+
+  <polyline points="890,440 890,540" fill="none" stroke="#4C9486" stroke-width="4"/>
+  <polygon points="890,540 882,524 898,524" fill="#4C9486"/>
+  <text x="917" y="505" font-size="22" font-family="Noto Sans SC" fill="#356E62">1 : 0..1</text>
+  <rect x="670" y="540" width="440" height="150" rx="26" fill="#F0F8F4" stroke="#7AA595" stroke-width="2"/>
+  <text x="700" y="587" font-size="27" font-family="Noto Sans SC" font-weight="700" fill="#356E62">MockGatewayPayment</text>
+  <text x="700" y="634" font-size="23" font-family="Noto Sans SC" fill="#356E62">模拟供应商侧结果，供查单读取</text>
+  <text x="700" y="670" font-size="21" font-family="Noto Sans SC" fill="#527E71">与 Attempt 的本地认知分开记录</text>
+
+  <polyline points="1110,420 1190,420 1190,645 1290,645" fill="none" stroke="#B98B3E" stroke-width="4"/>
+  <polygon points="1290,645 1274,637 1274,653" fill="#B98B3E"/>
+  <text x="1215" y="567" font-size="20" font-family="Noto Sans SC" fill="#936D2D">1 :</text>
+  <text x="1215" y="596" font-size="20" font-family="Noto Sans SC" fill="#936D2D">0..1</text>
+  <rect x="1290" y="560" width="450" height="170" rx="26" fill="#FCF1DD" stroke="#C8A05D" stroke-width="2"/>
+  <text x="1320" y="607" font-size="28" font-family="Noto Sans SC" font-weight="700" fill="#815D24">RefundSimulation</text>
+  <text x="1320" y="652" font-size="23" font-family="Noto Sans SC" fill="#815D24">每个 Attempt 最多一条模拟退款</text>
+  <text x="1320" y="697" font-size="22" font-family="Noto Sans SC" fill="#936D2D">同时引用原订单；不代表真实退钱</text>
+
+  <path d="M100 808 L1740 808" fill="none" stroke="#BCD0DB" stroke-width="2" stroke-dasharray="7 8"/>
+  <text x="100" y="865" font-size="25" font-family="Noto Sans SC" font-weight="700" fill="#276272">04　库存数字、预占与流水</text>
+  <polyline points="490,670 566,670 566,964 670,964" fill="none" stroke="#568FA0" stroke-width="4"/>
+  <polygon points="670,964 654,956 654,972" fill="#568FA0"/>
+  <text x="600" y="756" font-size="21" font-family="Noto Sans SC" fill="#42717E">1 :</text>
+  <text x="600" y="786" font-size="21" font-family="Noto Sans SC" fill="#42717E">0..1</text>
+  <text x="600" y="921" font-size="19" font-family="Noto Sans SC" fill="#42717E">明细</text>
+
+  <rect x="100" y="900" width="390" height="190" rx="26" fill="#E5F2F7" stroke="#6C9AAE" stroke-width="2"/>
+  <text x="130" y="947" font-size="28" font-family="Noto Sans SC" font-weight="700" fill="#275C70">Inventory　当前库存</text>
+  <text x="130" y="995" font-size="24" font-family="Noto Sans SC" fill="#275C70">available_stock　可下单数</text>
+  <text x="130" y="1037" font-size="24" font-family="Noto Sans SC" fill="#275C70">reserved_stock　预占数</text>
+  <text x="130" y="1071" font-size="20" font-family="Noto Sans SC" fill="#4A7687">每个 SKU 一条，数字不得为负</text>
+
+  <polyline points="490,1020 670,1020" fill="none" stroke="#568FA0" stroke-width="4"/>
+  <polygon points="670,1020 654,1012 654,1028" fill="#568FA0"/>
+  <text x="530" y="1057" font-size="22" font-family="Noto Sans SC" fill="#42717E">1 : N</text>
+
+  <rect x="670" y="900" width="440" height="190" rx="26" fill="#E6F3F0" stroke="#70A295" stroke-width="2"/>
+  <text x="700" y="947" font-size="27" font-family="Noto Sans SC" font-weight="700" fill="#285F55">InventoryReservation</text>
+  <text x="700" y="992" font-size="24" font-family="Noto Sans SC" fill="#285F55">这条明细占住了多少库存？</text>
+  <text x="700" y="1034" font-size="22" font-family="Noto Sans SC" fill="#356E62">每条预占必须关联一条购买明细</text>
+  <text x="700" y="1070" font-size="21" font-family="Noto Sans SC" fill="#356E62">状态区分：预占 / 核销 / 释放 / 恢复</text>
+
+  <polyline points="1110,975 1290,975" fill="none" stroke="#568FA0" stroke-width="4"/>
+  <polygon points="1290,975 1274,967 1274,983" fill="#568FA0"/>
+  <text x="1165" y="945" font-size="22" font-family="Noto Sans SC" fill="#42717E">1 : N</text>
+  <text x="1151" y="1021" font-size="20" font-family="Noto Sans SC" fill="#42717E">必有原预占</text>
+
+  <rect x="1290" y="900" width="450" height="190" rx="26" fill="#EAF0F5" stroke="#8AA0B5" stroke-width="2"/>
+  <text x="1320" y="947" font-size="27" font-family="Noto Sans SC" font-weight="700" fill="#405D76">InventoryMovement</text>
+  <text x="1320" y="991" font-size="24" font-family="Noto Sans SC" fill="#405D76">为什么库存数字发生变化？</text>
+  <text x="1320" y="1033" font-size="21" font-family="Noto Sans SC" fill="#405D76">available_delta / reserved_delta</text>
+  <text x="1320" y="1069" font-size="21" font-family="Noto Sans SC" fill="#405D76">动作 + 两个增减量，保留审计证据</text>
+
+  <polyline points="295,1090 295,1158 1515,1158 1515,1090" fill="none" stroke="#7396A7" stroke-width="3"/>
+  <polygon points="1515,1090 1507,1106 1523,1106" fill="#7396A7"/>
+  <text x="625" y="1140" font-size="22" font-family="Noto Sans SC" fill="#42717E">Inventory 1 : N Movement；每条流水也必须引用具体库存</text>
+
+  <circle cx="122" cy="1240" r="23" fill="#1D6774"/>
+  <text x="115" y="1248" font-size="21" font-family="Noto Sans SC" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="165" y="1248" font-size="24" font-family="Noto Sans SC" font-weight="700" fill="#254B68">一张订单，最多一个活跃付款</text>
+  <text x="165" y="1290" font-size="21" font-family="Noto Sans SC" fill="#496078">UNIQUE(order, active_marker)</text>
+  <text x="165" y="1326" font-size="21" font-family="Noto Sans SC" fill="#496078">活跃填 1；终态填 NULL，保留历史</text>
+
+  <circle cx="717" cy="1240" r="23" fill="#745497"/>
+  <text x="710" y="1248" font-size="21" font-family="Noto Sans SC" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="760" y="1248" font-size="24" font-family="Noto Sans SC" font-weight="700" fill="#254B68">同一个通知，只入箱一次</text>
+  <text x="760" y="1290" font-size="21" font-family="Noto Sans SC" fill="#496078">UNIQUE(provider, event_id)</text>
+  <text x="760" y="1326" font-size="21" font-family="Noto Sans SC" fill="#496078">重复投递复用原事件，不新增事实</text>
+
+  <circle cx="1299" cy="1240" r="23" fill="#507A8C"/>
+  <text x="1292" y="1248" font-size="21" font-family="Noto Sans SC" font-weight="700" fill="#FFFFFF">3</text>
+  <text x="1342" y="1248" font-size="24" font-family="Noto Sans SC" font-weight="700" fill="#254B68">同类库存动作，最多一笔</text>
+  <text x="1342" y="1290" font-size="20" font-family="Noto Sans SC" fill="#496078">UNIQUE(reservation, movement_type)</text>
+  <text x="1342" y="1326" font-size="21" font-family="Noto Sans SC" fill="#496078">配合状态检查，避免重复核销或释放</text>
+
+  <path d="M100 1384 L1740 1384" fill="none" stroke="#BCD0DB" stroke-width="2"/>
+  <circle cx="123" cy="1436" r="14" fill="#2C8975"/>
+  <text x="154" y="1444" font-size="24" font-family="Noto Sans SC" fill="#285F55">Attempt.UNKNOWN：还不知道付款结果 → 查询这次原付款</text>
+  <circle cx="123" cy="1492" r="14" fill="#8B61A7"/>
+  <text x="154" y="1500" font-size="24" font-family="Noto Sans SC" fill="#634184">Event.ERROR：已经收到通知，但处理失败 → 按失败类别修复、重试或人工排查</text>
+  <text x="100" y="1544" font-size="18" font-family="Noto Sans SC" fill="#668095">连线表示表关联，不代表流程执行顺序</text>
+  <text x="1290" y="1544" font-size="18" font-family="Noto Sans SC" fill="#668095">读图：1 : N 为一对多；0..1 为最多一个</text>
+</svg>

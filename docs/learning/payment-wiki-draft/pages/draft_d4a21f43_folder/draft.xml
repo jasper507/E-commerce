@@ -1,0 +1,30 @@
+<title>06 支付与到期关闭、迟到模拟退款</title>
+<callout emoji="💡" background-color="light-blue"><p>先拿到Order锁，不代表一定有资格关单。CREATED/PENDING/UNKNOWN阻止到期关闭；已经合法关闭后的迟到成功，则保留终态并最多模拟退款一次。</p></callout>
+<p>目标：分清“两个流程竞争”与“关闭后迟到成功”两个分支，说明库存核销、释放与恢复如何避免重复。前置：认识Order、Attempt及Reservation状态。示例仍为189元、20件库存买1件。</p>
+<h1 seq="auto">分支一：付款成功与到期同时运行</h1>
+<p>支付处理和expire_pending_order都先锁同一Order行；锁让它们按先后读取与改变事实。拿到锁后必须重新判断订单和付款状态。时间到期字段只是业务时间点，不会自动释放；未确认付款可能使预占超过15分钟。</p>
+<p>图6：两种Order获锁顺序，外加已关闭后迟到成功。注意到期先拿锁仍可能payment_unresolved；</p><whiteboard type="blank"/>
+<table><thead><tr><th background-color="light-gray"><p>先获锁</p></th><th background-color="light-gray"><p>锁内看到什么</p></th><th background-color="light-gray"><p>该流程动作</p></th><th background-color="light-gray"><p>最终可信成功后</p></th></tr></thead><tbody><tr><td><p>支付</p></td><td><p>订单待付，原Attempt可确认</p></td><td><p>原子确认PAID并核销，释放锁</p></td><td><p>到期随后读PAID，无操作；库存19/0</p></td></tr><tr><td><p>到期</p></td><td><p>原Attempt为CREATED/PENDING/UNKNOWN</p></td><td><p>payment_unresolved，保持订单与预占</p></td><td><p>支付随后PAID，只一次COMMIT，库存19/0</p></td></tr></tbody></table>
+<h1 seq="auto">真实源码：拿锁后重新检查资格</h1>
+<p>真实源码摘录：backend/apps/ordering/lifecycle_services.py，第173至185行。对应当前工作区，含尚未提交的C4增量。</p><pre lang="python" caption="关键实现"><code>@transaction.atomic
+def expire_pending_order(*, order_id, as_of=None):
+    &quot;&quot;&quot;在指定时刻关闭确实已到期的订单；锁内重查避免与支付竞争。&quot;&quot;&quot;
+
+    as_of = as_of or timezone.now()
+    order = Order.objects.select_for_update().get(pk=order_id)
+    if order.status != Order.Status.PENDING_PAYMENT:
+        return order, False
+    if not InventoryReservation.objects.filter(
+        order_item__order=order, expires_at__lte=as_of
+    ).exists():
+        return order, False
+    return _close_pending_order_locked(order, target_status=Order.Status.EXPIRED), True</code></pre><p>select_for_update锁同一订单。非待付或没到期直接无操作；最后调用_close_pending_order_locked，它会锁原Attempt并拒绝未确认付款，随后才验证预占与释放库存。锁只提供串行检查，业务规则决定能不能关。</p>
+<p>只有Barrier同时起跑的替代测试更简单，但可能没有实际数据库竞争。本项目5D把先获锁线程暂停在真实SELECT FOR UPDATE返回后，另一线程执行原SQL，再从performance_schema观察同订单PRIMARY记录WAITING/GRANTED，随后放行验证终值。未替换业务返回或用sleep猜竞争。</p>
+<h1 seq="auto">分支二：已经合法关闭，再收到成功</h1>
+<p>例如原Attempt已有可信FAILED，订单随后合法EXPIRED并释放库存到20/0；后来供应商又送来可信SUCCEEDED。现有特殊分支将原Attempt确认成功，Order保持EXPIRED，Reservation保持RELEASED，创建一次LATE_SUCCESS RefundSimulation；不重新打开订单，不再核销或释放库存。</p>
+<table><thead><tr><th background-color="light-gray"><p>实际状态</p></th><th background-color="light-gray"><p>正确副作用</p></th><th background-color="light-gray"><p>库存/退款</p></th></tr></thead><tbody><tr><td><p>待付且未确认付款</p></td><td><p>拒绝关闭，继续查原付款</p></td><td><p>19/1；Refund0</p></td></tr><tr><td><p>无未确认付款且合法关闭</p></td><td><p>原预占最多释放一次</p></td><td><p>20/0；RELEASE1</p></td></tr><tr><td><p>关闭后可信迟到成功</p></td><td><p>订单终态保留；原Attempt成功；模拟退款一次</p></td><td><p>20/0；COMMIT0；Refund1</p></td></tr><tr><td><p>已支付未发货主动取消</p></td><td><p>恢复原核销库存；PAID_CANCEL模拟退款</p></td><td><p>available恢复；RESTORE1；Refund1</p></td></tr><tr><td><p>已发货或完成取消</p></td><td><p>拒绝简单取消</p></td><td><p>不进入复杂售后</p></td></tr></tbody></table>
+<p>别把“FAILED后迟到成功”概括成总能接受：FAILED且订单仍PENDING_PAYMENT时，当前实现拒绝terminal_attempt_conflict；合法CANCELED/EXPIRED后的SUCCEEDED才走迟到退款分支。六个5D锁竞争场景只涉及CREATED/PENDING/UNKNOWN，不覆盖所有终态冲突排列。</p>
+<p>RefundSimulation使用原Attempt一对一兜底，同业务事务提交；它只记录模拟退款事实，不表示真实钱已返回。替代方案强行恢复EXPIRED为PAID会重新占用可能已卖出的库存，并破坏订单终态，本项目不采用。</p>
+<h1 seq="auto">证据与限制</h1><p>证据状态：历史真实实验，本次读取核对；本次知识库创作没有重跑应用测试。</p><p>5D两种Order获锁顺序×三种未确认状态，共6 passed、11.47秒；每例捕获真实记录锁等待，最终PAID/SUCCEEDED/PROCESSED，COMMIT1、RELEASE0、Refund0。C4迟到成功退款提交后ACK前中断场景重投仍Refund1。</p><p>仓库证据入口：docs/verification/phase-5d-payment-expiration-concurrency.md；docs/verification/phase-5d-payment-expiration-concurrency-data.json；docs/verification/phase-2b-refund-simulation.md；docs/verification/phase-5c4-payment-worker-recovery.md</p><p>5D不是秒杀压测，也不证明所有死锁排列；不支持“到期先拿锁总是关单”。本期接受未确认付款延长预占，需要查清原付款。</p>
+<h1 seq="auto">面试与自检</h1><table><thead><tr><th background-color="light-gray"><p>追问</p></th><th background-color="light-gray"><p>需要能自己解释的答案</p></th></tr></thead><tbody><tr><td><p>到期先拿锁为什么没关单？</p></td><td><p>原付款未确认，不满足关闭资格；行锁不能替代业务判断。</p></td></tr><tr><td><p>关闭后支付成功为什么不恢复订单？</p></td><td><p>预占可能已释放给别人，保留终态并幂等模拟退款，避免重开交易影响库存。</p></td></tr></tbody></table>
+<p>维护信息：2026-10-06；适用Project One当前工作区，Git基点2dacc9a，C4/5D仍含本地增量。业务集成使用后端Mock Gateway，无真钱；远端Wiki与画板发布结果由归档记录单独确认。</p>

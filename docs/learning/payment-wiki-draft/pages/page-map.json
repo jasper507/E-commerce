@@ -1,0 +1,66 @@
+[
+  {
+    "page_index": 0,
+    "title": "支付与 MQ｜总览与业务边界",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_f0b8d6ed_folder",
+    "draft_path": "draft_f0b8d6ed_folder\\draft.xml",
+    "whiteboard": true
+  },
+  {
+    "page_index": 1,
+    "title": "01 数据模型与两个状态机",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_038dcb24_folder",
+    "draft_path": "draft_038dcb24_folder\\draft.xml",
+    "whiteboard": true
+  },
+  {
+    "page_index": 2,
+    "title": "02 正常付款与事务提交",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_d29fbe72_folder",
+    "draft_path": "draft_d29fbe72_folder\\draft.xml",
+    "whiteboard": true
+  },
+  {
+    "page_index": 3,
+    "title": "03 超时、UNKNOWN与原付款查单",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_b0cb9e70_folder",
+    "draft_path": "draft_b0cb9e70_folder\\draft.xml",
+    "whiteboard": true
+  },
+  {
+    "page_index": 4,
+    "title": "04 重复、乱序与业务拒绝",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_3a4985fa_folder",
+    "draft_path": "draft_3a4985fa_folder\\draft.xml",
+    "whiteboard": false
+  },
+  {
+    "page_index": 5,
+    "title": "05 MQ、有界重试与人工恢复",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_58f625d0_folder",
+    "draft_path": "draft_58f625d0_folder\\draft.xml",
+    "whiteboard": true
+  },
+  {
+    "page_index": 6,
+    "title": "06 支付与到期关闭、迟到模拟退款",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_d4a21f43_folder",
+    "draft_path": "draft_d4a21f43_folder\\draft.xml",
+    "whiteboard": true
+  },
+  {
+    "page_index": 7,
+    "title": "07 实验入口与面试证据",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages",
+    "workspace": "draft_8479e5d8_folder",
+    "draft_path": "draft_8479e5d8_folder\\draft.xml",
+    "whiteboard": false
+  }
+]

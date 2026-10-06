@@ -1,0 +1,20 @@
+<title>支付与 MQ｜总览与业务边界</title>
+<callout emoji="💡" background-color="light-blue"><p>先掌握一句话：支付负责查清原付款，可信结果统一入箱，再让付款、订单和库存一起改变；故障恢复继续处理原记录。</p></callout>
+<p>适合谁：第一次接触支付、已知道Django请求和MySQL基本概念的项目作者。读完本模块，你应该能用一笔189元鼠标订单解释正常付款、超时、重复通知、MQ故障和订单到期。先读本页，再按具体问题进入子页。</p>
+<h1 seq="auto">从一笔189元订单开始</h1>
+<p>顾客买1只189.00元鼠标，仓库初始可售20件。下单时，Order保存189.00/CNY金额快照，OrderItem保存商品与价格快照；Inventory从available=20、reserved=0变成19、1。此时商品被预占，订单仍是PENDING_PAYMENT，尚不能叫付款成功。</p>
+<p>可信成功通知处理完后，PaymentAttempt变SUCCEEDED，Order变PAID，Reservation变COMMITTED，库存变19、0。COMMIT流水只有1笔。之后Admin模拟发货、顾客确认收货，完成最小商业闭环。</p>
+<h1 seq="auto">支付在项目里守什么边界</h1>
+<p>图1：支付学习地图。围绕原订单连接数据、正常付款、UNKNOWN、幂等、MQ恢复和到期竞争；Redis与秒杀的衔接见下表。</p><whiteboard type="blank"/>
+<table><thead><tr><th background-color="light-gray"><p>模块</p></th><th background-color="light-gray"><p>主要职责</p></th><th background-color="light-gray"><p>与支付的衔接</p></th></tr></thead><tbody><tr><td><p>订单与库存</p></td><td><p>下单快照、预占、核销、释放和履约</p></td><td><p>支付确认后才核销原预占；关闭需要检查原付款</p></td></tr><tr><td><p>Redis</p></td><td><p>商品读取缓存、一致性和依赖故障降级</p></td><td><p>浏览读取可以降级；交易事实仍由MySQL保存</p></td></tr><tr><td><p>支付与MQ</p></td><td><p>原付款结果、事件处理、消息故障恢复</p></td><td><p>本知识库模块；MQ仅承担事件任务传递</p></td></tr><tr><td><p>秒杀与并发</p></td><td><p>集中抢购、库存保护和限购</p></td><td><p>产生订单后复用现有付款流程，不另造秒杀支付</p></td></tr></tbody></table>
+<ul><li>金额来自订单快照：商品后来涨到209元，原189元交易仍按189元校验。</li><li>UNKNOWN表示不知道付款结果，不能猜失败、直接回滚或重新付款。</li><li>重复通知、任务重投、重试不能造成第二次核销、释放或模拟退款。</li><li>MySQL是事实来源；HTTP202、Broker接收、Worker ACK各自只说明本层进度。</li><li>Gateway和Broker网络等待在数据库事务之外，不能占着订单锁等网络。</li></ul>
+<p>已有 Redis 学习与面试资料：<a href="https://ocnbkcx1ug58.feishu.cn/docx/KKBXdHFQqoZRCNxJv1YcFb29nkf">电商项目学习与面试总结</a>。本次保留原文档位置，支付与秒杀分别组织。</p>
+<h1 seq="auto">阅读路线与完成标准</h1>
+<table><thead><tr><th background-color="light-gray"><p>页面</p></th><th background-color="light-gray"><p>读完应能回答</p></th></tr></thead><tbody><tr><td><p>01 数据模型与两个状态机</p></td><td><p>Order、Attempt、Event为什么分开，UNKNOWN和ERROR有什么区别</p></td></tr><tr><td><p>02 正常付款与事务提交</p></td><td><p>前端请求怎样到MySQL、Gateway、MQ、Worker，哪些写入一起提交</p></td></tr><tr><td><p>03 UNKNOWN与查单</p></td><td><p>为什么查询原Attempt，而不是创建新订单或重新扣款</p></td></tr><tr><td><p>04 重复、乱序与拒绝</p></td><td><p>哪些消息可重复成功，哪些矛盾或伪造消息必须拒绝</p></td></tr><tr><td><p>05 MQ恢复</p></td><td><p>漏投、暂态故障、Worker中断各怎样恢复，为什么有界且保留原ID</p></td></tr><tr><td><p>06 到期与迟到退款</p></td><td><p>先拿锁是否必然能关单，已关闭后成功为什么模拟退款</p></td></tr><tr><td><p>07 实验与面试证据</p></td><td><p>一句面试主张对应哪份实际证据，还缺什么</p></td></tr></tbody></table>
+<p>推荐顺序：先正常成功，再学习UNKNOWN，然后重复/乱序，最后MQ故障与到期竞争。一次只解释一个分支：输入是什么、原状态是什么、变化在哪个事务中提交、失败后留下什么。自己能解释才算掌握，文档存在不代表已经学会。</p>
+<h1 seq="auto">文档规范与整理SOP</h1>
+<p>每页固定顺序：业务例子 → 必须守住的规则 → 流程图或对照表 → 方案与替代 → 真实源码 → 正常与失败前后值 → 历史证据 → 限制 → 面试自检。复杂图有等价文字解释，避免只能靠图片理解。</p>
+<ol><li>先读当前源码和已有证据，辨别旧待办与已经完成的实验。</li><li>用原189元订单写清状态、库存和副作用次数，先确认正确行为。</li><li>按源码画参与者、提交点、锁和网络边界，摘少量真实关键代码。</li><li>只有新规则或未验证风险才新跑实验；已有证据足够就注明历史日期后引用。</li><li>核对结果、失败过程、原始数据和限制，禁止把测试耗时当QPS或生产延迟。</li><li>归档到本项目Wiki问题节点，读回正文和画板；本地源码、证据继续保留。</li></ol>
+<h1 seq="auto">证据与限制</h1><p>证据状态：历史真实实验，本次读取核对；本次知识库创作没有重跑应用测试。</p><p>当前已有真实隔离RabbitMQ/Worker故障实验与MySQL锁等待证据；本模块统一解释和导航这些成果。</p><p>仓库证据入口：docs/verification/phase-5c4-payment-worker-recovery.md；docs/verification/phase-5d-payment-expiration-concurrency.md</p><p>范围是本地模拟业务、真实技术实验。本期人工恢复，没有定时自动接管、第三方Sandbox、真实资金、生产流量或多机容灾结论。</p>
+<h1 seq="auto">面试与自检</h1><table><thead><tr><th background-color="light-gray"><p>追问</p></th><th background-color="light-gray"><p>需要能自己解释的答案</p></th></tr></thead><tbody><tr><td><p>一句话怎样介绍这一块？</p></td><td><p>原付款结果与处理进度分开；原事件持久入箱，业务事务保持一致，MQ重复用幂等接住。</p></td></tr><tr><td><p>秒杀属于支付吗？</p></td><td><p>两条独立技术主线；秒杀保护创建订单和库存，支付保护已创建交易的付款确认。</p></td></tr></tbody></table>
+<p>维护信息：2026-10-06；适用Project One当前工作区，Git基点2dacc9a，C4/5D仍含本地增量。业务集成使用后端Mock Gateway，无真钱；远端Wiki与画板发布结果由归档记录单独确认。</p>

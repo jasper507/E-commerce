@@ -1,0 +1,110 @@
+{
+  "status": "passed",
+  "scope": "XML syntax, title/headings, board mapping and actual source extraction only; no app tests or remote writes",
+  "pages": [
+    {
+      "index": 0,
+      "title": "支付与 MQ｜总览与业务边界",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_f0b8d6ed_folder\\draft.xml",
+      "char_count": 2147,
+      "cjk_count": 1368,
+      "board_count": 1,
+      "code_count": 0
+    },
+    {
+      "index": 1,
+      "title": "01 数据模型与两个状态机",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_038dcb24_folder\\draft.xml",
+      "char_count": 2755,
+      "cjk_count": 1277,
+      "board_count": 1,
+      "code_count": 0
+    },
+    {
+      "index": 2,
+      "title": "02 正常付款与事务提交",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_d29fbe72_folder\\draft.xml",
+      "char_count": 3167,
+      "cjk_count": 1106,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 3,
+      "title": "03 超时、UNKNOWN与原付款查单",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_b0cb9e70_folder\\draft.xml",
+      "char_count": 2934,
+      "cjk_count": 1080,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 4,
+      "title": "04 重复、乱序与业务拒绝",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_3a4985fa_folder\\draft.xml",
+      "char_count": 2313,
+      "cjk_count": 1078,
+      "board_count": 0,
+      "code_count": 1
+    },
+    {
+      "index": 5,
+      "title": "05 MQ、有界重试与人工恢复",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_58f625d0_folder\\draft.xml",
+      "char_count": 3389,
+      "cjk_count": 1362,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 6,
+      "title": "06 支付与到期关闭、迟到模拟退款",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_d4a21f43_folder\\draft.xml",
+      "char_count": 2811,
+      "cjk_count": 1112,
+      "board_count": 1,
+      "code_count": 1
+    },
+    {
+      "index": 7,
+      "title": "07 实验入口与面试证据",
+      "path": "C:\\project-one-ecommerce\\docs\\learning\\payment-wiki-draft\\pages\\draft_8479e5d8_folder\\draft.xml",
+      "char_count": 2882,
+      "cjk_count": 1475,
+      "board_count": 0,
+      "code_count": 0
+    }
+  ],
+  "source_excerpts": [
+    {
+      "path": "backend/apps/payments/services.py",
+      "first": 572,
+      "last": 598,
+      "sha256": "a83b3b8049c4d8fcbbd948fe84436e7ea68b3d34dc7b8d574a857c136bcd89d8"
+    },
+    {
+      "path": "backend/apps/payments/services.py",
+      "first": 601,
+      "last": 625,
+      "sha256": "4213844ba34ef7c498dca0171dc1f82f2194e56a74502f123a3de001ff801332"
+    },
+    {
+      "path": "backend/apps/payments/services.py",
+      "first": 309,
+      "last": 318,
+      "sha256": "b47c573301a346aa67caaaebf3ebe5aa9cba0174fdcb94151c110c1894c4c46c"
+    },
+    {
+      "path": "backend/apps/payments/services.py",
+      "first": 419,
+      "last": 433,
+      "sha256": "c85b925bfa008726e0ed46bc32a67a779c6ae3183a092432f9b5191580b7dfd2"
+    },
+    {
+      "path": "backend/apps/ordering/lifecycle_services.py",
+      "first": 173,
+      "last": 185,
+      "sha256": "d5aba30b2183cc6990ffb777086100fedcabefac1835fa60664bc52f3f243ecd"
+    }
+  ]
+}

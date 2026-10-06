@@ -1,0 +1,32 @@
+[
+  {
+    "path": "backend/apps/payments/services.py",
+    "first": 572,
+    "last": 598,
+    "sha256": "a83b3b8049c4d8fcbbd948fe84436e7ea68b3d34dc7b8d574a857c136bcd89d8"
+  },
+  {
+    "path": "backend/apps/payments/services.py",
+    "first": 601,
+    "last": 625,
+    "sha256": "4213844ba34ef7c498dca0171dc1f82f2194e56a74502f123a3de001ff801332"
+  },
+  {
+    "path": "backend/apps/payments/services.py",
+    "first": 309,
+    "last": 318,
+    "sha256": "b47c573301a346aa67caaaebf3ebe5aa9cba0174fdcb94151c110c1894c4c46c"
+  },
+  {
+    "path": "backend/apps/payments/services.py",
+    "first": 419,
+    "last": 433,
+    "sha256": "c85b925bfa008726e0ed46bc32a67a779c6ae3183a092432f9b5191580b7dfd2"
+  },
+  {
+    "path": "backend/apps/ordering/lifecycle_services.py",
+    "first": 173,
+    "last": 185,
+    "sha256": "d5aba30b2183cc6990ffb777086100fedcabefac1835fa60664bc52f3f243ecd"
+  }
+]

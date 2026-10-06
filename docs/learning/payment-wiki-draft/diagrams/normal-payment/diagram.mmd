@@ -1,0 +1,29 @@
+sequenceDiagram
+    autonumber
+    participant U as 顾客
+    participant A as Django后端
+    participant D as MySQL
+    participant G as Mock供应商
+    participant Q as RabbitMQ
+    participant W as 后台Worker
+    Note over U,W: 原订单189元；下单后可售19、预占1；本图开启异步
+    U->>A: 首次付款：原订单、请求幂等键
+    A->>D: 短事务保存原付款尝试
+    D-->>A: 提交成功：原金额189元
+    Note over U,D: 同键重放直接返回原尝试，不重复调用供应商
+    A->>G: 事务外请求付款
+    G-->>A: 此例返回可信成功事件
+    A->>D: 短事务保存通知原文Inbox
+    D-->>A: 提交成功：事件已收件
+    A->>Q: 事务外发布原事件编号
+    A-->>U: 返回当前状态；收件不等于付款成功
+    Q->>W: 投递原事件编号
+    W->>D: T1领取：次数加1、处理中、租约
+    D-->>W: T1独立提交
+    W->>D: T2按顺序锁事件、订单、尝试、库存
+    Note over D,W: 校验签名、原金额、币种、订单和状态
+    W->>D: 一起提交：付款成功、订单PAID、核销一次、事件已处理
+    D-->>W: 可售仍19、预占变0
+    W-->>Q: 任务结束后确认消息ACK
+    U->>A: 读取自己的订单与原付款
+    A-->>U: 后端确认PAID后显示已支付

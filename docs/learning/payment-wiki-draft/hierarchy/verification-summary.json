@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-06",
+  "status": "organized_verified",
+  "project_root": {
+    "has_child": true,
+    "node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "node_type": "origin",
+    "obj_token": "P0LPd9AkmoAhq8xCgOdcqEL2nag",
+    "obj_type": "docx",
+    "parent_node_token": "",
+    "space_id": "7693476782908935142",
+    "title": "电商项目"
+  },
+  "project_root_url": "https://ocnbkcx1ug58.feishu.cn/wiki/WN1jwXDj0iPXm7kwLyHcmneenlb",
+  "project_children": [
+    {
+      "has_child": true,
+      "node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+      "node_type": "origin",
+      "obj_token": "T6O0deWUnowaBsxM6LgcJfuynjb",
+      "obj_type": "docx",
+      "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+      "space_id": "7693476782908935142",
+      "title": "支付"
+    },
+    {
+      "has_child": false,
+      "node_token": "O4iUwSvl1i4Je7keOL0ci1iAnLf",
+      "node_type": "origin",
+      "obj_token": "KKBXdHFQqoZRCNxJv1YcFb29nkf",
+      "obj_type": "docx",
+      "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+      "space_id": "7693476782908935142",
+      "title": "Redis 学习与面试总结"
+    }
+  ],
+  "payment_child_count": 7,
+  "payment_pages_checked": [
+    {
+      "index": 0,
+      "document_id": "T6O0deWUnowaBsxM6LgcJfuynjb",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    },
+    {
+      "index": 1,
+      "document_id": "Onm2dT0Two29z9xQwi5cdrrAncT",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    },
+    {
+      "index": 2,
+      "document_id": "Gpgdd1UeAo4fPIx9biBc9gn4nxd",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    },
+    {
+      "index": 3,
+      "document_id": "Qrgid0JhEo91HcxEjktcVk0fnbe",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    },
+    {
+      "index": 4,
+      "document_id": "DTCsdol7JoPH8hxKznfcHTAInUc",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    },
+    {
+      "index": 5,
+      "document_id": "PHvqdJ10bob22mxCHpccJHKgn4b",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    },
+    {
+      "index": 6,
+      "document_id": "AU7EdZEQ7oZRHexUSYicaQU5nHe",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    },
+    {
+      "index": 7,
+      "document_id": "RMlTdRE77oLPyBxAE9GcuUuTnwh",
+      "move_body_preserved": true,
+      "whiteboard_tokens_preserved": true
+    }
+  ],
+  "payment_whiteboard_count": 6,
+  "redis_original_document_preserved": true,
+  "redis_body_preserved": true,
+  "redis_whiteboard_count": 4,
+  "payment_navigation_only_change_verified": true,
+  "project_index_links_verified": true,
+  "revisions": {
+    "project_root": 2,
+    "payment_overview": 4,
+    "redis": 7
+  },
+  "method": "Fresh remote readbacks compared with pre-move snapshots; no application tests rerun"
+}

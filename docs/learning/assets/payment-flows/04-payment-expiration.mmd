@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    participant P as 支付成功处理
+    participant D as MySQL 订单行锁
+    participant E as 到期扫描
+    Note over P,E: 原 Attempt 是 CREATED / PENDING / UNKNOWN；189元订单待支付
+    alt 到期流程先拿到 Order 锁
+        E->>D: 锁 Order，再锁原 Attempt
+        P->>D: 请求相同 Order 锁，等待
+        D-->>E: 付款未确认：本次跳过关闭
+        E->>D: 结束事务，释放锁（不释放库存）
+        D-->>P: 支付取得 Order 锁
+        P->>D: 校验成功，原子提交 PAID / 核销一次 / PROCESSED
+    else 支付流程先拿到 Order 锁
+        P->>D: 锁 Order，并继续按顺序锁 Attempt / 库存
+        E->>D: 请求相同 Order 锁，等待
+        P->>D: 原子提交 PAID / 核销一次 / PROCESSED
+        D-->>E: 到期取得锁，重新读到 PAID
+        E->>D: 不关闭、不释放；结束事务
+    end
+    Note over P,E: 六个真实 MySQL 场景均观察到同主键 WAITING / GRANTED
+    Note over P,E: 已合法关闭后才收到成功是另一分支：保留终态，模拟退款一次

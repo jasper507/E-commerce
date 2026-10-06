@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    participant U as 顾客 / Vue
+    participant A as Django API
+    participant D as MySQL
+    participant G as Mock Gateway
+    participant P as 统一事件处理链路
+    U->>A: 对原189元订单发起付款
+    A->>D: 保存原 Attempt，再提交
+    A->>G: 事务外 create_payment
+    G->>G: 供应商结果可能已是 SUCCEEDED
+    G--xA: 响应丢失 / 网络超时
+    A->>D: 原 Attempt 标 UNKNOWN（结果尚不清楚）
+    A-->>U: 待确认；保留原订单 / 金额 / 引用
+    Note over U,D: CREATED / PENDING / UNKNOWN 阻止到期释放库存
+    U->>A: 查原 Attempt（校验当前用户归属）
+    A->>G: 事务外 query_payment（原引用，未发起新付款）
+    alt 查单再次超时
+        G--xA: 仍无法取得结果
+        A->>D: 继续保留 UNKNOWN
+        A-->>U: 尚未确认，稍后查原 Attempt
+    else 得到可信结果（此例 SUCCEEDED）
+        G-->>A: 签名结果事件
+        A->>P: 原 receive_payment_event 入箱
+        P->>D: 同步或异步统一处理；校验并原子提交
+        Note over P,D: async 时先收件后处理；不会因查单返回就跳过校验
+        A-->>U: 返回当前原 Attempt（可能仍待后台处理）
+        U->>A: 再读后端最终业务状态
+        A-->>U: 确认 PAID；库存只核销一次
+    end

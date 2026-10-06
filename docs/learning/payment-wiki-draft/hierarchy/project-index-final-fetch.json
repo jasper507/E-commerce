@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title id=\"P0LPd9AkmoAhq8xCgOdcqEL2nag\">电商项目</title><p id=\"doxcnYTPaA5x8qP1Ti6SBBRMjCe\">Project One 电商项目的学习资料按模块归档。通过下面的入口阅读业务流程、核心代码、操作指南、实验记录和面试问题。</p><ul><li id=\"doxcnaoijkKLZJZ9LkDy0LdsuZb\"><a href=\"https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh\">支付</a>：支付状态、超时查单、幂等、MQ故障恢复和订单到期；总览下保留七个问题子页。</li><li id=\"doxcnRnTzbuxAGVkQw4vWQX8H5d\"><a href=\"https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf\">Redis 学习与面试总结</a>：商品缓存一致性、并发保护、故障降级、真实实验与面试问答；沿用原文档。</li></ul><p id=\"doxcnxa0XjeSbs4rri32guaB85d\">支付与 Redis 分别维护各自的学习材料。原有文档链接和原生画板继续保留。</p>",
+      "document_id": "P0LPd9AkmoAhq8xCgOdcqEL2nag",
+      "revision_id": 2
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

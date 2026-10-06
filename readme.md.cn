@@ -9,7 +9,7 @@ MySQL 保存订单、支付和库存事实；Redis 只保存可以重新生成�
 支付、退款和物流均为模拟，不涉及真钱或真实物流服务。
 
 2026-10-01 已确认 RabbitMQ（消息代理：保存和投递任务）+ Celery（异步任务
-框架：由后台工作进程执行任务）是支付主线必做，当前已完成基础接入、有界后台重试与人工发布补漏。用途限定为
+框架：由后台工作进程执行任务）是支付主线必做，当前已完成基础接入、有界后台重试、人工发布补漏与人工过期领取恢复。用途限定为
 支付 Inbox 异步处理、有界重试、故障恢复和真实隔离故障验证；MySQL 事务、
 状态机与幂等仍保护支付、订单和库存正确性。本期第三方支付 Sandbox 为 No-Go，
 以后仅由项目拥有者重新明确决定；Outbox、搜索、分布式锁仍为条件性能力。
@@ -38,17 +38,23 @@ MySQL 保存订单、支付和库存事实；Redis 只保存可以重新生成�
 取消 API 已实现，当前顾客页面尚未提供取消按钮。
 
 Redis 本期暂时收束至 **Track B / Phase 4J：多 Key 回源并发名额**，
-前序未提交修改保留。支付已推进至 **Phase 5C-3：人工发布补漏**：
-新增显式 `--publish` 命令，复查首次未处理或到期可重试的原 Inbox ID 后补投，
-不直接执行业务或增加次数。真实隔离 Broker 停机验证首次/重试发布失败，
-恢复后人工补投原事件、重复消息只一次核销。前序有界后台重试继续保留，
-总共 3 次含首次、5/10 秒门槛；传输消息数不代表实际业务处理次数。
+前序Redis与支付成果已于2026-10-05按要求提交并推送main（`2dacc9a`）。
+支付新增 **Phase 5C-4：Worker中断与人工过期领取恢复**：
+领取时记录默认60秒租约，显式 `--recover-stale` 逐条短事务复查原领取版本，
+跳过仍被业务事务锁住的Event，只修复处理元数据；之后通过原同步恢复或
+`--publish` 补投原Inbox ID。真实Worker中断覆盖领取后、业务事务提交前、
+支付/迟到退款提交后但ACK前，重投只一次核销或退款。前序有界后台重试
+继续保留，总共3次含首次、5/10秒暂态失败门槛；消息数不代表业务处理次数。
 默认仍走同步基线；异步模式的 HTTP 202 只表示已入箱，不能认定付款成功。
-补投需人工运行；周期自动补漏及 PROCESSING 中断接管仍待实现，开发库未应用新增迁移。
-[操作与学习指南](docs/learning/phase-5c3-payment-publication-recovery-study-guide.md)含核心代码、
-业务问题与面试问答；[验证记录](docs/verification/phase-5c3-payment-publication-recovery.md)记录
-实际隔离 MySQL、RabbitMQ 与 Worker 结果；[C1 基线](docs/verification/phase-5c1-payment-mq.md)保留。
+修复/补投需人工运行，没有周期自动补漏或心跳续租，历史空租约与耗尽仍需调查。
+开发库未应用新增支付迁移。
+[操作与学习指南](docs/learning/phase-5c4-payment-worker-recovery-study-guide.md)含核心代码、
+业务问题与面试问答；[验证记录](docs/verification/phase-5c4-payment-worker-recovery.md)记录
+实际隔离MySQL、RabbitMQ与Worker结果；[C3发布补漏](docs/verification/phase-5c3-payment-publication-recovery.md)
+和[C1基线](docs/verification/phase-5c1-payment-mq.md)保留。
 以下保留缓存阶段的实现与实验记录，后续增量见 `CONTEXT.md` 和对应验证文件。
+C4/5D增量及尚未完成真实MySQL验证的Phase 6A秒杀下单候选由
+`codex/flash-sale-baseline`分支管理；Phase 6A尚未整合进`main`。
 在分代 Key 隔离旧回填的基础上，先实测冷缓存重复回源，再合并同进程、同代、
 同商品的进行中加载。真实 10 并发对照中，冷缓存三轮详情加载从 9/10/7 次变为
 1/1/1 次。随后加入本进程故障回源名额，满员立即503；受控2名额实验为

@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_more": false,
+    "nodes": [
+      {
+        "has_child": true,
+        "node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "node_type": "origin",
+        "obj_token": "P0LPd9AkmoAhq8xCgOdcqEL2nag",
+        "obj_type": "docx",
+        "parent_node_token": "",
+        "space_id": "7693476782908935142",
+        "title": "电商项目"
+      }
+    ],
+    "page_token": ""
+  },
+  "meta": {
+    "count": 1
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

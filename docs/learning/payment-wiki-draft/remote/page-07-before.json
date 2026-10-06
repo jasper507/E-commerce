@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title id=\"RMlTdRE77oLPyBxAE9GcuUuTnwh\">07 实验入口与面试证据</title>",
+      "document_id": "RMlTdRE77oLPyBxAE9GcuUuTnwh",
+      "revision_id": 1
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

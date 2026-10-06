@@ -1,10 +1,10 @@
-# Project One — Domain Context v1.26
+# Project One — Domain Context v1.28
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 5C-3 人工发布补漏及真实 Broker 停机恢复已实现并观察通过；继续 Worker 中断恢复，Redis 前序修改保留
-- 文档版本：v1.26
-- 更新日期：2026-10-05
+- 当前阶段：Phase 6A秒杀下单服务基线已实现；MySQL目标验证待环境恢复，支付C4/5D证据与本地增量保留
+- 文档版本：v1.28
+- 更新日期：2026-10-06
 - 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -12,7 +12,9 @@
 
 第 13 节起的各阶段记录保留当时的范围、实现与证据；其中较早的 MQ 条件性采用和 Sandbox 可选计划，已由第 33 节的新范围决定更新，不代表当前采用边界。
 
-第 34 节的未分类 ERROR 人工恢复为 Phase 5A 历史基线；当前处理门槛按第 35 节执行。第 36/37 节加入真实 MQ 与有界后台重试，第 38 节新增人工发布补漏；周期自动补漏与中断接管尚未实现。
+第34节的未分类ERROR人工恢复为Phase 5A历史基线；当前处理门槛按第35节执行。第36/37节加入真实MQ与有界后台重试，第38节新增人工发布补漏，第39节补人工过期领取修复与真实Worker中断证据；没有周期自动补漏或心跳续租。
+
+第40节补支付成功与到期关闭的真实Order记录锁等待证据，并记录未来学习资料使用项目分层飞书Wiki的明确偏好；本期未写入飞书。
 
 本文件使用以下状态：
 
@@ -139,7 +141,7 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 | Payment Network Boundary | 支付网络边界 | PaymentAttempt 的幂等记录先在短事务中提交，再调用 Gateway；不能持有订单或库存数据库锁等待网络。`Confirmed` |
 | Payment Event | 支付事件 | Provider 通知系统发生了某件事的数据。以 `(provider, event_id)` 唯一识别，并保存接收时间、原始 payload、验证/处理状态和错误信息。`Confirmed` |
 | Webhook | 服务端回调 | 支付 Provider 主动向 Django Payment API 发送的 HTTP 请求。前端“支付成功”页面不能替代 Webhook 或服务端支付事实。`Confirmed` |
-| Webhook Inbox / Event Inbox | 回调收件箱 | 先可靠保存原始事件，再在明确事务边界内校验并处理；重复、乱序、验证失败和处理失败都不能丢失原文。保留同步 Mock baseline；Phase 5C-1/2/3 已验证真实 MQ、有界重试与人工发布补漏，中断接管和周期自动补漏待完成。`Confirmed` |
+| Webhook Inbox / Event Inbox | 回调收件箱 | 先可靠保存原始事件，再在明确事务边界内校验并处理；重复、乱序、验证失败和处理失败都不能丢失原文。保留同步Mock baseline；Phase 5C-1至4已验证真实MQ、有界重试、人工发布补漏与人工过期领取恢复，没有周期自动补漏。`Confirmed` |
 | Mock Payment Gateway | 模拟支付网关 | 项目后端自己控制的测试替身，必须制造成功、失败、处理中、超时/UNKNOWN、重复、乱序以及错误金额/币种/签名。场景选择器只在测试或受保护演示环境开放。`Confirmed` |
 | Sandbox Provider | 第三方支付测试环境 | 本期 No-Go，不接支付宝、Stripe 等第三方 Sandbox，也不以它作为支付主线完成要求；以后只有项目拥有者重新明确决定才评估。`Out of Scope` |
 | Provider Adapter | 支付供应商适配层 | 统一创建支付、查单、验签、事件解析和发起模拟退款；Mock 必须实现同一合同，Provider 字段不得渗入 Order 领域。`Required Later` |
@@ -194,14 +196,14 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 
 ## 9. 必做异步能力与条件性技术
 
-RabbitMQ + Celery 已由项目拥有者列为支付主线必做，Phase 5C-1 正常/重复消费、C2 有界后台重试、C3 人工发布补漏与 Broker 停机恢复已用真实隔离服务观察验证。用途限定支付 Inbox；PROCESSING 接管与真实 Worker 中断待完成，没有周期自动补漏。保留同步 Mock baseline，不建立通用异步平台。
+RabbitMQ + Celery已由项目拥有者列为支付主线必做，Phase 5C-1正常/重复消费、C2有界后台重试、C3人工发布补漏与Broker停机恢复、C4人工过期领取修复与Worker中断已用真实隔离服务观察验证。用途限定支付Inbox，没有周期自动补漏或心跳续租。保留同步Mock baseline，不建立通用异步平台。
 
 Elasticsearch、Distributed Lock 和 Transactional Outbox 仍属条件性技术，只有出现真实问题、比较过简单方案并通过范围与证据审计后才引入；No-Go（暂不采用）也是有效工程结论。MQ 必做不自动使 Outbox 必做；数据库提交后未成功投递的事件必须有可验证的恢复路径，具体方案仍待比较。一旦引入相关技术，必须进行真实集成与故障验证。
 
 | English Term | 通俗中文 | 当前采用边界 |
 |---|---|---|
-| Celery | Python 异步任务框架 | 支付主线必做，真实 Linux Worker 已消费 Inbox并按数据库计划安排短ETA重试；发布补漏和中断恢复待完成，业务副作用由MySQL保护。`Partially Verified` |
-| RabbitMQ | 消息代理 | 支付主线必做，已验证正常、重复、伪造事件及短ETA后台重试消息；消费者崩溃及Broker中断恢复待验证，消息成功不等于支付成功。`Partially Verified` |
+| Celery | Python 异步任务框架 | 支付主线必做，真实Linux Worker消费Inbox并按数据库计划安排短ETA重试；发布/过期领取人工恢复与选定中断窗口已验证，业务副作用由MySQL保护。`Verified in isolated scenarios` |
+| RabbitMQ | 消息代理 | 支付主线必做，已验证正常/重复/非法事件、短ETA重试、Broker停机与Worker退出后的原未确认消息重投；消息成功不等于支付成功，没有生产运行证据。`Verified in isolated scenarios` |
 | Elasticsearch | 搜索引擎 | MySQL 搜索基线在中文分词、相关性或测量结果上出现明确不足。`Conditional` |
 | Distributed Lock | 分布式锁 | 默认不用；只有数据库约束、条件更新、行锁或 Redis Lua 等简单方案经证据证明不足时才评估。`Conditional` |
 | Transactional Outbox | 事务发件箱 | 默认不用；只有已采用可靠消息，且数据库提交与消息发布的一致性窗口成为真实问题时才评估。`Conditional` |
@@ -219,7 +221,7 @@ Docker Compose、Linux、Nginx、Gunicorn、CI、日志、健康检查和性能�
 3. 状态机：Order 与 PaymentAttempt 使用第 5、6 节已经列明的状态、合法转换和终态；不建立重复维护状态的独立 Payment 表，Refund Simulation 使用独立记录保存生命周期。
 4. 库存时机：创建 Order 的 MySQL 事务内预占，事务外调用 Gateway，支付成功核销，取消或超时幂等释放。
 5. 支付尝试：每单最多一个活跃 Attempt，默认最多 3 次主动尝试且可配置；Idempotency-Key 区分重放与新尝试；UNKNOWN 先查单；成功后禁止新建。幂等记录先在短事务中提交，再调用 Gateway，不能持有订单或库存数据库锁等待网络。
-6. 支付集成：Mock Gateway 与 RabbitMQ + Celery 支付异步处理必做；Phase 5C-1/2/3 已验证基础链路、有界重试及人工发布补漏，周期自动补漏/Worker 中断接管未完成。第三方Sandbox本期No-Go，以后须由项目拥有者重新决定；Production Payment不做。
+6. 支付集成：Mock Gateway与RabbitMQ + Celery支付异步处理必做；Phase 5C-1至4已验证基础链路、有界重试、人工发布补漏与人工过期领取/Worker中断恢复，没有周期自动补漏。第三方Sandbox本期No-Go，以后须由项目拥有者重新决定；Production Payment不做。
 7. Vue：一个 Vue 3 + TypeScript/Vite 工程，两套路由树与 Layout，共享认证、API Client 和类型。
 8. Django/Schema：首批 App 为 accounts、catalog、inventory、ordering、payments；使用 Custom User、大整数内部主键、公开 Order 编号、业务事实不硬删除，字段和索引随纵向切片审查。
 9. 手机号：输入先去除空格、连字符和 `+86`，再规范化为匹配 `^1[3-9]\d{9}$` 的 11 位字符串；后端为最终校验边界，不发短信、不验真。
@@ -1046,3 +1048,204 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
   人工单轮补投不保证自动恢复时限；下一步C4处理中断遗留PROCESSING与真实
   Worker故障，业务提交/消息确认间窗口尚未验证。Docker不可达/stop失败的
   清理仍不能承诺绝对顺序，本期仅观察正常清理路径。
+
+## 39. Phase 5C-4：人工过期领取修复与真实 Worker 中断（2026-10-05）
+
+- 项目拥有者要求先将全部前序成果推送，再继续下一步。先审查文件/敏感值，
+  普通后端231 passed、80 integration deselected、76 subtests；Redis、支付、
+  总文档分三个提交80caf34/281de6e/2dacc9a推送main，核对远端HEAD一致。
+  以下C4属于推送之后的新增量，留在本地；历史记录中的未提交状态保留其时点含义。
+- C4仍为支付Depth：T1已经提交PROCESSING但Worker消失，不能只依赖MQ
+  重投。增加可空processing_started_at/processing_lease_until和迁移0004。
+  租约从拿到Event锁后的实际领取时刻开始，默认60秒；不续租、不kill任务。
+  T2业务/事件仍共同提交，终态/异常留存清截止，最后开始时间留作调查。
+- recover_stale_payment_events固定最旧快照，每条短事务skip_locked，复查
+  原status/count/截止与开始时间。租约到期不是死亡证明：活T2持Event锁时
+  跳过；旧T2/T3与并发修复受原次数/状态门槛保护，不能覆盖后来版本。
+  只修复Event元数据，count1/2变到期TRANSIENT，count3变EXHAUSTED；
+  不增加/重置次数、不直接执行业务或发布。之后复用原同步恢复或C3补投。
+- CLI增加显式--recover-stale，与--publish互斥（包括call_command关键词）。
+  本地/测试环境限制与dry-run保留；修复不要求async=true，因为不发布。
+  历史PROCESSING空租约不猜时间、不自动接管；0004迁移只在测试库验证。
+- 专用测试launcher/Compose覆盖仅test环境和8秒租约；实际等待截止，
+  SIGKILL Linux Worker。T1后、T2写入未提交、T2支付/退款提交后ACK前分别
+  观察atomic=false/true/false。T2活进程即使租约到期仍被扫描跳过，kill后
+  数据库连接退出回滚业务事务；修复与重投之后只一次核销。
+- 四场景保留原未ACK任务，不purge；AMQP观察kill后ready1/消费者0，
+  原任务UUID在重启后redelivered=true，加一条不同UUID补投/重复消息，
+  等ACK增量2和ready/unack0再看MySQL。领取/T2回滚最终count2、PAID、
+  库存19/0、COMMIT1；提交后中断count1不变。迟到退款最终库存20/0、
+  Refund1、RELEASE1、COMMIT0，订单保持CANCELED。
+- 首次真实3过1失败71.39秒：CREATED尚未解决时不能取消，退款准备未进入
+  中断窗口。仅改fixture为同步有效FAILED→原订单取消→迟到SUCCEEDED，
+  最终2条Inbox/1条Attempt，未放宽业务规则；整轮4过81.71秒。
+  第三次过期耗尽只在规则/事务测试验证，未声称同一事件真实kill三次。
+- 本期六模块目标69 passed、62 subtests（28.13秒）；支付/订单151 passed、
+  12 skipped、83 subtests（96.51秒）。12skip为普通回归未配置的MQ场景，
+  C1/C2/C3本期真实回归分别3过41.98秒、3过65.37秒、2过73.87秒，C4四项
+  81.71秒，共12项独立通过；没有覆盖历史JSON。AST、JSON/指南链接、
+  PowerShell语法与专用Compose配置检查通过，源码指纹和失败修正在证据内。
+- 只修改支付领取/租约恢复、测试、专用覆盖/脚本及进度/指南/证据文件。
+  Task、基础Compose、HTTP/前端、金额/库存算法、Redis与依赖未改；未迁移
+  开发库。无Beat、Outbox、结果库、周期自动补漏或心跳；人工触发不能承诺
+  自动恢复时限，空租约/持续持锁/耗尽仍可见供调查。
+- 指南docs/learning/phase-5c4-payment-worker-recovery-study-guide.md，
+  证据docs/verification/phase-5c4-payment-worker-recovery.md与四场景JSON。
+  结束时测试Worker已停，测试Broker和原db健康，main仍为已推送的2dacc9a。
+  下一步整理支付/MQ证据包及项目拥有者的解释，再按路线图进入商品秒杀。
+
+## 40. Phase 5D：支付成功与订单到期的真实锁竞争（2026-10-05）
+
+- 项目拥有者确认本期支付故障恢复保留人工兜底，授权补并发测试并说明方案。
+  沿用已有Order行锁、锁内状态复查、业务原子提交与重复保护，没有重写状态机。
+- 新增test_payment_expiration_concurrency.py，两种先获Order锁流程×
+  CREATED/PENDING/UNKNOWN三种原Attempt，共六个受控交错。付款未确认时
+  到期先拿锁也只能payment_unresolved；付款先提交时到期读到PAID无操作。
+- 独立MySQL连接执行原process_stored_payment_event/expire_pending_order；
+  线程本地SQL包装器在原Order锁SQL真正返回后暂停holder，不替换结果。
+  容器现有管理连接只读performance_schema，关联本轮两连接、同server_uuid、
+  当前test_project_one.ordering_order主键的RECORD WAITING/GRANTED。
+  应用账号诊断权限未扩大，实验不开新数据库/账号或生产锁。
+- 合成189.00元鼠标初始20库存买1件，下单19/1；六例最终PAID、SUCCEEDED、
+  原成功Event PROCESSED/count1、预占COMMITTED、库存19/0、COMMIT1、
+  RELEASE0、RESTORE0、Refund0。重复原通知/到期不变，不新建付款尝试。
+- 原未确认阻止关闭/过期后迟到成功两项baseline实际2过9.00秒；六目标
+  6过11.47秒并保存原始JSON；支付/订单157 passed、12 skipped、83 subtests
+  （100.14秒），六例在回归仍显式开启。12skip仅未配置的MQ组，本期未重跑
+  真实MQ，不由此次MySQL结果冒称MQ新验证；前期证据保留。
+- 普通CI没有本机Compose db，新增实验显式开关默认关闭、六项明确skip；
+  开启后严格本机3307/test_project_one/环境与观察目标检查，诊断失败硬失败。
+  本轮业务源码、C4实现、前端、依赖、基础Compose、Redis与开发数据均未改。
+- 学习指南docs/learning/phase-5d-payment-expiration-concurrency-study-guide.md；
+  证据docs/verification/phase-5d-payment-expiration-concurrency.md与六场景JSON。
+  只证明活跃Attempt这六交错，FAILED矛盾成功和已关闭迟到退款仍按原规则；
+  没有自动关单、生产压测或第三方资金证据。增量仍本地，未commit/push。
+- 资料归档偏好已明确变更：以后直接使用飞书Wiki有层级项目知识库，按
+  项目总览、订单/库存、Redis、支付/MQ、秒杀/并发组织；复用已经完成的Redis
+  普通文档材料。具体Wiki目标尚未指定，本轮不创建/移动/发布飞书内容。
+  下一步先统一支付证据包与材料，再按确认目标归档，不扩大异步业务范围。
+
+## 41. 支付学习入口、图解和文档SOP（2026-10-06）
+
+- 项目拥有者要求参考已有Redis文档，解释支付数据库/学习知识库规划，绘制
+  时序图并给出文档规范与SOP，随后创建专门的秒杀学习聊天。
+- 只读获取现有飞书Redis文档revision6目录、业务边界与证据章节，参考其
+  业务问题→流程→方案→源码→证据→限制→面试结构，没有覆盖旧材料或发布Wiki。
+- 新入口docs/learning/payment-learning-and-interview-guide.md汇集实际表关系、
+  UNKNOWN与ERROR区别、正常付款/原Attempt查单/MQ人工恢复/支付到期竞争四张
+  时序图、已有阶段指南、历史证据与面试问答；另有payment-documentation-sop.md。
+- 图源/PNG/SVG位于docs/learning/assets/payment-flows，包含四时序图和一ER图。
+  源码复核修正了预占/流水非空关联、实际库存delta字段、旧Key直接返回与第3次
+  故障不发布等绘图细节。Mermaid CLI12.0.0实际渲染，已进行可读性检查。
+- 两份新文档本地链接/代码围栏检查、五组PNG/SVG和C1至5D五份原始JSON
+  指纹核对通过；应用测试未重跑。157/12skip等数字只引用5D历史记录。
+- 本轮只新增学习文档/图源/图片并追加本节，没有修改业务源码、模型/迁移、
+  前端、依赖、部署配置或开发数据；既有C4/5D本地修改保留，未commit/push。
+- MySQL继续单库按模块分表，未增加新表或索引；Wiki建议共享项目根节点，
+  支付总览+七个问题子页，Redis复用旧文档，秒杀/并发独立组织且复用本支付链路。
+  实际Wiki空间/父节点未指定，本期仍不远端写入。人工恢复边界不变。
+- 秒杀学习按Phase6衔接，但已有Phase3超卖及NOWAIT/条件更新对照先复用；
+  新聊天先只读定位基线、解释活动限购与成功订单约束，再讨论下一片核心逻辑。
+- 已按用户要求创建本项目local新聊天“秒杀与库存并发：Phase 6 学习”，
+  threadId=01a11051-7e61-7983-916b-91566a1bdde1；初始请求限定只读学习，
+  保留当前未提交修改，不自动实验、修改、迁移或提交。未新建工作树。
+
+## 42. 支付 Wiki 八页与六张原生画板材料（2026-10-06）
+
+- 项目拥有者明确要求创建支付知识库，并使用lark-operations、lark-whiteboard、
+  lark-wiki重画六图；随后确认新建“Project One 电商项目”Wiki空间。目标已确认，
+  支付总览加七个子页，原Redis普通文档保留原位置，不搬迁、不覆盖。
+- docs/learning/payment-wiki-draft保存八份Docx XML、六组新图源/PNG/OpenAPI
+  节点、本地完整review.md和publication-plan.json。六图是知识地图、数据关系、
+  正常付款、UNKNOWN查单、MQ人工恢复、支付与到期竞争；最终须原生可编辑。
+- 白板CLI0.2.13实际渲染并逐张看图；六图静态检查0错误，五图0警告。
+  思维导图原生自动布局坐标导致静态528条重叠警告，渲染图清晰；远端实际
+  画板布局仍须发布后导出查看。八份草稿Profile Check通过；五段源码摘录
+  逐字/指纹匹配，历史证据复核修正六场景与C4首次CREATED状态的措辞。
+- 本次Supporting/Delivery归档任务，没有改业务源码、模型/迁移、前端、依赖、
+  部署或开发数据，没有重跑应用测试，保留原C4/5D本地修改，未commit/push。
+- Wiki空间查询实际返回缺wiki:space:retrieve；创建还需wiki:space:write_only与
+  wiki:node:create。本地内容就绪，远端尚未创建；先走最小范围用户OAuth，
+  授权后创建已确认层级、填六图、补导航并读回验证，不将准备完称为发布完。
+- 随后项目拥有者完成授权：创建私有空间7693476782908935142，支付总览
+  PCQ7wP9kMikz0eklmNYcH1J1nwh及七个子页。快捷节点创建要求额外旧scope
+  wiki:space:read，已按schema改用现有wiki:node:create的原生创建接口；
+  身份仍为user，没有扩展授权、转移所有者或改变成员权限。
+- 八次正文写入success/warnings=[]，revision2读回与发布候选全文、标题、
+  表格和导航一致；五段代码恢复br换行后连缩进也一致。子页列表七项且
+  has_more=false。六个画板token核对通过，原生节点分别33/106/27/24/32/18，
+  共240节点；六张实际飞书预览均已导出并逐张查看，自动布局无可见重叠。
+- publication-plan.json状态published_verified，publication-record.md为实际链接
+  和结果入口，remote/保存创建、写入、正文/节点读回、原生图及实际预览。
+  发布候选为各草稿目录publish.xml，带真实Wiki导航；build_preview检测已创建
+  资源时停止，保护已存编号。README/review已刷新发布状态，原Redis文档未改。
+- 支付Wiki入口：https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh 。
+  本次应用测试未重跑，前述C4/5D代码与原始证据保留，未commit/push。
+
+## 43. 电商项目总目录与 Redis 原文归档（2026-10-06，已完成并验证）
+
+- 项目拥有者要求创建名为“电商项目”的总目录，下放支付目录和之前的Redis
+  文件。本次授权更新了此前保留Redis位置的决定，目标仍为现有私有Wiki空间。
+- 已创建总目录WN1jwXDj0iPXm7kwLyHcmneenlb；现有支付总览原位改名“支付”，
+  七个子页保留，旧链接/画板不变。原Redis Docx KKBXdHFQqoZRCNxJv1YcFb29nkf
+  改名“Redis 学习与面试总结”，改名前后正文与资源编号核对一致，没有复制重建。
+- 初次移动预检查时：支付仍在空间根，Redis仍为独立Docx。wiki +move明确
+  缺wiki:node:move和wiki:space:read；原创建授权不包含这两项。后续追加OAuth，
+  将原支付节点整体移入总目录，再用明确指定文档的docs_to_wiki原子操作迁入
+  Redis，保留原obj_token。没有--apply、成员变更或自动通知他人。
+- docs/learning/payment-wiki-draft/hierarchy保存当前计划、名称/正文读回、
+  原始Redis快照及操作日志；publication-plan增加organization状态，前期完整
+  发布记录保留。总目录：https://ocnbkcx1ug58.feishu.cn/wiki/WN1jwXDj0iPXm7kwLyHcmneenlb 。
+  本轮没有改业务代码、数据库、依赖、部署或运行应用测试，没有commit/push。
+- 随后用户完成追加OAuth，原支付节点连同七个子页整体移入总目录；指定原Redis
+  Docx通过独立的wiki原子迁入操作归档，未通过knowledge_organize工作流迁入。
+  Redis新增Wiki节点O4iUwSvl1i4Je7keOL0ci1iAnLf，原Docx编号不变。
+- 总目录已补支付/Redis入口（revision2）；支付仅局部更新相关模块导航段落
+  （revision4）。空间根仅有电商项目，总目录直接子节点为支付和Redis，支付
+  七个子页的节点、文档编号、标题和父节点未变；各列表has_more=false。
+- 八页支付移动前后正文除标题外逐字一致，六个画板编号保留；最终导航更新
+  仅影响指定段落。Redis正文除标题外逐字一致，四个画板编号保留，revision7。
+  hierarchy/verification-summary.json与record.md保存最终结果；plan.json及
+  publication-plan.json的organization均为organized_verified，没有待完成操作。
+
+## 44. Phase 6A：秒杀下单、活动限购与服务边界（2026-10-06）
+
+- 用户在秒杀学习聊天接受“待支付占名额，未付真正关闭后可再抢，正常成功后用掉资格”，
+  又明确要求写第一组最小测试与下单流程。本片为Depth/Learning的服务层候选，不开放HTTP。
+- 新promotions模块含FlashSale/FlashSaleItem/每单独立FlashSalePurchase。
+  联合唯一(customer,item,blocking_marker)限制HELD/CONSUMED合计最多一条；
+  CHECK显式要求阻挡状态非空且为1、RELEASED为NULL。本片仅创建HELD。
+- create_flash_sale_order以User锁串行创建，先scope内幂等重放，再验证活动/地址/服务端活动价，
+  新Order/快照/购买占位后取得Inventory NOWAIT锁，数量固定1，库存预占与流水共同提交。
+  秒杀直接购买活动SKU，不读取或清空普通购物车，不替换已有正式库存锁算法。
+- Order新增creation_scope，旧订单默认cart_checkout，唯一(user,scope,key)；
+  普通下单查询和创建显式限定原scope，秒杀摘要含活动item与地址，避免跨入口误重放。
+  两份迁移仅生成文件，未执行；跨scope同Key数据出现后不能直接逆向恢复旧唯一键。
+- 因本片未接支付消费/关闭释放资格，现有支付创建和事件、取消、到期入口明确保护秒杀scope；
+  批量到期仅扫描普通scope。后续需一起接正常支付与未付合法关闭，再测重购和迟到通知。
+  当前秒杀订单不可付款/取消/过期，仅供隔离服务实验，不往开发库投放这类订单。
+- 8项服务目标测试覆盖同用户不同Key并发（库存5）、幂等/跨scope/归属/库存不足、写后回滚
+  及包括事件处理在内的生命周期保护。2项模型测试绕过User锁，直接验证唯一/CHECK。
+- 实际完成manage.py check为0 issues，目标10 tests collected，迁移漂移No changes detected；
+  3307不可达、Docker引擎未运行，迁移历史读取warning保留，真实MySQL目标与回归均未运行。
+  3306虽可连接但未改用，未执行开发/测试库迁移、启动/停止服务、MQ或Redis实验。
+- 分支codex/flash-sale-baseline基点2dacc9a，同checkout保留原C4/5D/Wiki本地修改。
+  无commit/push，无新worktree；本轮不发布飞书、不改前端/依赖/部署配置/MQ任务或重试预算。
+- 指南docs/learning/phase-6a-flash-sale-checkout-study-guide.md；
+  记录docs/verification/phase-6a-flash-sale-checkout.md。下一步恢复隔离MySQL环境并实测本片，
+  不把静态收集成功冒称并发正确或秒杀闭环完成。
+
+
+## 45. 生成新代码前的 Git 保存授权（2026-10-06）
+
+- 项目拥有者明确要求现在commit/push，并持续授权今后每次生成新代码前先保存上一批改动。
+  规则写入PROJECT_INSTRUCTIONS.md并同步AGENTS.md；无需重复询问commit/push。
+- 先审核分支、范围、diff、远端、敏感信息和适用检查，聚焦提交后推送当前工作分支，
+  再核对远端与本地HEAD。工作区干净且提交已推送时不制造空提交。
+- 既有C4、5D、Phase 6A和学习归档按逻辑分组，当前分支codex/flash-sale-baseline。
+  Phase 6A仍缺真实MySQL验证，候选分支保存不表示通过验证或已整合main。
+- 本轮manage.py check为0 issues；迁移漂移No changes detected，数据库历史读取warning保留；
+  341项测试仅收集，27份Python AST、152份JSON及PowerShell脚本语法检查通过。
+  未启动/停止服务、运行数据库测试、迁移开发库、发布飞书或生成新业务代码。
+- 授权保留原Review/测试/敏感信息检查要求，不允许混入未知进行中修改、强推或覆盖远端历史。
+  每次实际保存是否成功以git log、git status及远端核对为准。

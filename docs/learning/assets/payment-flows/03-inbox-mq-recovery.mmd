@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    participant A as 事件接收 API
+    participant D as MySQL Inbox
+    participant Q as RabbitMQ
+    participant W as Celery Worker
+    participant O as 人工恢复命令
+    A->>D: 事务保存原事件并提交 RECEIVED / count=0
+    A->>Q: 事务外发布原 Inbox ID
+    alt Broker 不可用，首次发布失败
+        Q--xA: 发布失败
+        Note over A,D: Inbox 已保存；不是付款失败，也未丢弃原事件
+        O->>D: dry-run 检查候选，再人工 --publish
+        O->>Q: Broker 恢复后只补投原 Inbox ID
+    else Broker 收到任务
+        Note over Q,W: 原 Inbox ID 已进入队列
+    end
+    Note over Q,W: 补投仍进入同一 Worker；消息次数不等于业务尝试次数
+    Q->>W: 执行待处理 / 重投任务
+    W->>D: T1 领取并提交：PROCESSING / count+1 / 租约
+    alt 第1/2次暂态数据库故障，T2 回滚
+        W->>D: T3 记录 ERROR / TRANSIENT / next_retry_at
+        W->>Q: 事务外按 ETA 再投原 ID
+        Note over D,W: 总预算3次含首次；第1/2次失败门槛为5/10秒
+    else T1 提交后 Worker 消失，遗留 PROCESSING
+        Note over D,W: 租约到期不等于进程死亡；活事务持锁必须跳过
+        O->>D: 人工 --recover-stale：锁内核对次数与原租约版本
+        D-->>O: count1/2 转到期 TRANSIENT；count3 转 EXHAUSTED
+        O->>Q: 另一步 --publish 补投合格原 ID（不清零预算）
+    else T2 已提交，但 ACK 前 Worker 消失
+        Q->>W: 原未确认任务重投
+        W->>D: 读取 PROCESSED 终态，副作用不再执行
+    else 业务校验不通过、BLOCKED，或第3次暂态故障耗尽
+        W->>D: 保留 REJECTED / BLOCKED / EXHAUSTED 供调查
+        Note over D,W: 不无限重试；不自动强改订单 / 库存
+    end
+    Note over O,W: 本期没有周期扫描 / Beat / 自动接管；恢复依赖人工触发

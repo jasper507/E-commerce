@@ -1,0 +1,68 @@
+erDiagram
+    ORDER ||--o{ ORDER_ITEM : "保存购买快照"
+    ORDER ||--o{ PAYMENT_ATTEMPT : "允许失败历史"
+    PAYMENT_ATTEMPT o|--o{ PAYMENT_EVENT : "解析后可关联"
+    PAYMENT_ATTEMPT ||--o| MOCK_GATEWAY_PAYMENT : "模拟供应商结果"
+    PAYMENT_ATTEMPT ||--o| REFUND_SIMULATION : "最多一次模拟退款"
+    ORDER ||--o{ REFUND_SIMULATION : "退款归属"
+    ORDER_ITEM ||--o| INVENTORY_RESERVATION : "订单预占"
+    INVENTORY ||--o{ INVENTORY_RESERVATION : "SKU库存预占"
+    INVENTORY_RESERVATION ||--o{ INVENTORY_MOVEMENT : "预占变化流水"
+    INVENTORY ||--o{ INVENTORY_MOVEMENT : "库存变化流水"
+    ORDER {
+        uuid public_id UK
+        decimal total
+        string currency
+        string status
+    }
+    ORDER_ITEM {
+        int order_id FK
+        decimal unit_price
+        int quantity
+    }
+    PAYMENT_ATTEMPT {
+        int order_id FK
+        uuid provider_reference UK
+        decimal amount
+        string currency
+        string status
+        int active_marker "1 或 NULL"
+    }
+    PAYMENT_EVENT {
+        string provider "与 event_id 联合唯一"
+        string event_id
+        int attempt_id FK "可空"
+        json raw_payload
+        string processing_status
+        int processing_attempt_count
+        string failure_kind
+        datetime next_retry_at
+        datetime processing_lease_until
+    }
+    MOCK_GATEWAY_PAYMENT {
+        int attempt_id FK "唯一"
+        string outcome
+    }
+    REFUND_SIMULATION {
+        int attempt_id FK "唯一"
+        int order_id FK
+        decimal amount
+        string reason
+    }
+    INVENTORY_RESERVATION {
+        int order_item_id FK "非空且唯一"
+        int inventory_id FK
+        int quantity
+        string status
+    }
+    INVENTORY_MOVEMENT {
+        int reservation_id FK "非空"
+        string movement_type
+        int available_delta
+        int reserved_delta
+    }
+    INVENTORY {
+        int sku_id FK "唯一"
+        int available_stock
+        int reserved_stock
+    }

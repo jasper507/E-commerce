@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "node": {
+      "creator": "",
+      "has_child": false,
+      "node_create_time": "1791277228",
+      "node_token": "Kc9EwXMzni8ttTkYgk6cxSFknSd",
+      "node_type": "origin",
+      "obj_create_time": "1791277228",
+      "obj_edit_time": "1791277228",
+      "obj_token": "AU7EdZEQ7oZRHexUSYicaQU5nHe",
+      "obj_type": "docx",
+      "origin_node_token": "Kc9EwXMzni8ttTkYgk6cxSFknSd",
+      "origin_space_id": "7693476782908935142",
+      "owner": "ou_ec431efc09979788500cb74a6286cfe2",
+      "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+      "space_id": "7693476782908935142",
+      "title": "06 支付与到期关闭、迟到模拟退款",
+      "url": "https://ocnbkcx1ug58.feishu.cn/wiki/Kc9EwXMzni8ttTkYgk6cxSFknSd"
+    }
+  },
+  "_notice": {
+    "update": {
+      "command": "lark-cli update",
+      "current": "1.0.95",
+      "latest": "1.0.97",
+      "message": "lark-cli 1.0.97 available, current 1.0.95, run: lark-cli update"
+    }
+  }
+}

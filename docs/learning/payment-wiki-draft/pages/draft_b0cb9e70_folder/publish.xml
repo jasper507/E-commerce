@@ -1,0 +1,42 @@
+<title>03 超时、UNKNOWN与原付款查单</title>
+<p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh">返回支付与 MQ 总览</a> ｜ <a href="https://ocnbkcx1ug58.feishu.cn/wiki/Dn70wUIlKixYzMk0X4kcCvGsnR3">上一页</a> ｜ <a href="https://ocnbkcx1ug58.feishu.cn/wiki/I0a5wc7LUibRArkMkUHct0swnvc">下一页</a></p>
+<callout emoji="💡" background-color="light-blue"><p>付款请求超时，只能推断“本地不知道”。保留原Order、原Attempt、原189元金额，查询原供应商引用；不能直接重新付款。</p></callout>
+<p>目标：分清浏览器超时、网关超时与业务失败，能解释为什么查原付款。前置：认识01页Attempt.UNKNOWN；本页没有新建订单、修改商品价格或真实扣款操作。</p>
+<h1 seq="auto">具体场景：供应商成功了，响应没回来</h1>
+<p>顾客点189元付款。后端保存了Attempt A并调用Gateway；Gateway可能已经成功，但响应因网络中断丢失。若后端把A当失败并允许B，顾客可能付两次。若这时商品改价209元，创建新订单还会让原交易与新报价混在一起。</p>
+<p>现有方案把仍活跃的CREATED/PENDING标UNKNOWN，保持原Attempt活跃。更换Idempotency-Key也不能绕过活跃尝试；如果并发成功通知已提交，mark_attempt_unknown锁内检查避免把SUCCEEDED倒退。</p>
+<p>图4：UNKNOWN查原付款。沿原Attempt和provider_reference查Gateway；结果继续进同一Inbox。再次超时仍UNKNOWN，可信成功才PAID。</p><whiteboard type="blank"/>
+<h1 seq="auto">查单怎样运行</h1>
+<ol><li>顾客POST /api/payments/attempts/&lt;原public_id&gt;/reconcile/，后端Session/CSRF与用户归属检查继续生效。</li><li>reconcile_payment_attempt限定public_id和user，读取原Attempt；终态直接返回，活跃状态才查供应商。</li><li>Gateway.query_payment查询原provider_reference，事务外等网络；这不是发起新付款。</li><li>TimeoutError/ConnectionError继续标UNKNOWN。没有可信结果时，不猜失败，不释放库存。</li><li>有结果就receive_payment_event，继续原签名、金额、币种和状态校验；查询没有第二套状态转换。</li><li>同步时可读到本次提交结果；异步时Inbox刚入箱，Attempt仍可能UNKNOWN，需要随后再读取。</li></ol>
+<h1 seq="auto">真实源码：查单只接收原Attempt</h1>
+<p>真实源码摘录：backend/apps/payments/services.py，第601至625行。对应当前工作区，含尚未提交的C4增量。</p><pre lang="python" caption="关键实现"><code>def reconcile_payment_attempt(*, user, public_id, gateway=None):
+    &quot;&quot;&quot;只查询顾客自己的原 Attempt，不创建第二次支付尝试。
+
+    CREATED/PENDING/UNKNOWN 可查 Provider；查单结果仍走统一事件校验与状态机。
+    再次超时继续保持 UNKNOWN，已成功/失败的终态则直接返回。
+    &quot;&quot;&quot;
+
+    attempt = (
+        PaymentAttempt.objects.select_related(&quot;order&quot;)
+        .filter(public_id=public_id, user=user)
+        .first()
+    )
+    if attempt is None:
+        raise PaymentRuleError(&quot;attempt_not_found&quot;, &quot;支付尝试不存在，或你无权查看。&quot;, 404)
+    if attempt.status not in ACTIVE_ATTEMPT_STATUSES:
+        return attempt
+
+    provider = gateway or MockGateway()
+    try:
+        payload, signature = provider.query_payment(attempt)
+    except (TimeoutError, ConnectionError):
+        return mark_attempt_unknown(attempt_id=attempt.pk)
+    receive_payment_event(payload=payload, signature=signature)
+    attempt.refresh_from_db()
+    return attempt</code></pre><p>filter同时限定付款public_id和当前用户，UUID不是权限凭据。查询原付款获得的原文交给同一个receive_payment_event；refresh_from_db读取当时已提交事实，不保证异步Worker已经完成。</p>
+<table><thead><tr><th background-color="light-gray"><p>查单返回</p></th><th background-color="light-gray"><p>本地变化</p></th><th background-color="light-gray"><p>库存与顾客下一步</p></th></tr></thead><tbody><tr><td><p>再次网络超时</p></td><td><p>UNKNOWN保持</p></td><td><p>19/1；继续查原付款，不创建新订单</p></td></tr><tr><td><p>可信PENDING</p></td><td><p>原Attempt变PENDING，通知处理完成</p></td><td><p>19/1；等待或再查</p></td></tr><tr><td><p>可信SUCCEEDED且订单可确认</p></td><td><p>原Attempt成功、Order.PAID</p></td><td><p>19/0；只核销一次</p></td></tr><tr><td><p>可信FAILED</p></td><td><p>原Attempt失败，释放活跃marker</p></td><td><p>此通知本身不自动把Order判失败或直接释放；后续关闭/合法重试仍检查规则</p></td></tr><tr><td><p>错误金额/币种/签名</p></td><td><p>原事件REJECTED</p></td><td><p>保持原业务状态，供排查</p></td></tr></tbody></table>
+<p>替代方案是“超时就标失败并重付”，实现短但会把网络未知当业务失败，破坏资金和库存边界；本项目不采用。查询也可能持续失败，因此UNKNOWN会占用库存超过普通15分钟期限，需人工查清原付款。</p>
+<p>Mock特例：本地供应商记录缺失时可以为同一Attempt补建测试替身结果。它不代表真实供应商能安全再次扣款，不能把Mock实现直接换成生产支付请求。</p>
+<h1 seq="auto">证据与限制</h1><p>证据状态：历史真实实验，本次读取核对；本次知识库创作没有重跑应用测试。</p><p>UNKNOWN与原Attempt查单有项目规则测试；旧MVP验证明确记录SQLite烟测与当时MySQL待验证。5D后续真实MySQL六例包含UNKNOWN阻止到期错误释放，不能反推本次重新验证了第三方查询。</p><p>仓库证据入口：backend/apps/payments/tests/test_payment_flow.py；docs/verification/mvp-4-mock-payment.md；docs/verification/phase-5d-payment-expiration-concurrency.md</p><p>本次仅核对当前函数与历史材料；没有真实支付供应商、自动对账SLA、无限查单或真钱重付。</p>
+<h1 seq="auto">面试与自检</h1><table><thead><tr><th background-color="light-gray"><p>追问</p></th><th background-color="light-gray"><p>需要能自己解释的答案</p></th></tr></thead><tbody><tr><td><p>UNKNOWN是否需要回滚原订单？</p></td><td><p>不能靠网络超时判断资金结果；保持原订单与预占，查原Attempt。</p></td></tr><tr><td><p>查单成功但前端仍显示UNKNOWN呢？</p></td><td><p>异步Inbox处理可能尚未提交；再次读后端状态，不能先乐观显示PAID。</p></td></tr></tbody></table>
+<p>维护信息：2026-10-06；适用Project One当前工作区，Git基点2dacc9a，C4/5D仍含本地增量。业务集成使用后端Mock Gateway，无真钱；远端Wiki与画板发布结果由归档记录单独确认。</p>

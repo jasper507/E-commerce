@@ -1,0 +1,71 @@
+{
+  "identity": "user",
+  "workflow": "knowledge_organize",
+  "confirmed_operations": [
+    "create project root",
+    "rename payment to 支付",
+    "move payment with its existing children",
+    "archive specified original Redis document"
+  ],
+  "state": "organized_verified",
+  "authorized_target": "电商项目/支付 and 电商项目/Redis",
+  "payment": {
+    "origin_space_id": "7693476782908935142",
+    "node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+    "parent_node_token": "",
+    "origin_kind": "wiki_space_root",
+    "current_title": "支付",
+    "current_parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh"
+  },
+  "redis": {
+    "obj_token": "KKBXdHFQqoZRCNxJv1YcFb29nkf",
+    "origin_kind": "standalone_drive_docx",
+    "original_title": "电商项目学习与面试总结",
+    "current_title": "Redis 学习与面试总结",
+    "node_token": "O4iUwSvl1i4Je7keOL0ci1iAnLf",
+    "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf"
+  },
+  "project_root": {
+    "creator": "",
+    "has_child": true,
+    "node_create_time": "1791278731",
+    "node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "node_type": "origin",
+    "obj_create_time": "1791278731",
+    "obj_edit_time": "1791278731",
+    "obj_token": "P0LPd9AkmoAhq8xCgOdcqEL2nag",
+    "obj_type": "docx",
+    "origin_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "origin_space_id": "7693476782908935142",
+    "owner": "ou_ec431efc09979788500cb74a6286cfe2",
+    "parent_node_token": "",
+    "space_id": "7693476782908935142",
+    "title": "电商项目",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/WN1jwXDj0iPXm7kwLyHcmneenlb"
+  },
+  "missing_scopes": [],
+  "rename_verification": [
+    {
+      "resource": "payment",
+      "title": "支付",
+      "body_preserved": true,
+      "resources_preserved": true
+    },
+    {
+      "resource": "redis",
+      "title": "Redis 学习与面试总结",
+      "body_preserved": true,
+      "resources_preserved": true
+    }
+  ],
+  "existing_payment_children": 7,
+  "completed_moves": 2,
+  "remaining_operations": [],
+  "initial_missing_scopes": [
+    "wiki:node:move",
+    "wiki:space:read"
+  ],
+  "verification": "verification-summary.json"
+}

@@ -4,21 +4,25 @@ Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence. The narrow business loop has
 a Mock Payment baseline, inventory reservation/commit, cancellation/refund
 simulation, and simulated fulfilment. Redis work is temporarily closed at
-Phase 4J, with existing uncommitted changes preserved. The next track is payment
-state, Webhook handling, and idempotency. After the Phase 5C-1 RabbitMQ and Linux
-Worker baseline and Phase 5C-2 bounded background retries, Phase 5C-3 adds an
-explicit, single-run `--publish` recovery command for eligible Inbox IDs. Real
-isolated Broker outages exercise initial and retry publication failures, followed
-by manual republication and one inventory commit. MySQL retains the total
-three-attempt budget and 5/10-second gates. The
-[learning guide](docs/learning/phase-5c3-payment-publication-recovery-study-guide.md) and
-[verification record](docs/verification/phase-5c3-payment-publication-recovery.md)
+Phase 4J. Earlier Redis/payment work was committed and pushed to main on
+2026-10-05 (`2dacc9a`). The C4/5D increments and the unverified Phase 6A
+checkout candidate are managed on `codex/flash-sale-baseline`; Phase 6A has not
+been integrated into `main`.
+After the RabbitMQ/Linux Worker baseline, bounded retries and manual publication
+recovery, Phase 5C-4 adds a persisted processing lease and explicit single-run
+`--recover-stale` repair. It checks the original claim version in a short
+transaction and skips an Event locked by an active business transaction.
+Real isolated Worker kills exercise claim, rollback and commit-before-ACK
+windows, including one late-payment refund under original-message redelivery.
+MySQL retains the total three-attempt budget and 5/10-second transient-failure
+gates. The [learning guide](docs/learning/phase-5c4-payment-worker-recovery-study-guide.md)
+and [verification record](docs/verification/phase-5c4-payment-worker-recovery.md)
 describe the implementation and evidence. The synchronous baseline remains the
-default; periodic recovery and processing takeover remain unfinished. The earlier
-migration has not been applied to the development database.
+default; periodic recovery and lease heartbeats are absent. New payment migrations
+have only been exercised in isolated tests, not applied to the development database.
 
 As of 2026-10-05, RabbitMQ + Celery is required for the payment track, with its
-baseline, bounded retries and manual publication recovery slices verified. Its full scope is asynchronous processing of durable Payment Inbox
+baseline, bounded retries, manual publication and expired-claim recovery slices verified. Its full scope is asynchronous processing of durable Payment Inbox
 events, bounded retries, recovery, and real fault verification. MySQL transactions,
 state checks, and idempotency remain responsible for business correctness.
 Third-party payment Sandbox integration is a No-Go for this iteration; only a
@@ -201,9 +205,9 @@ immutable order fact during MVP-3. See
   state/idempotency in depth. These areas are not ordinary CRUD.
 - Use Django Admin for routine operations. A complete custom Vue Admin, coupon,
   favorite, review, and search are not Interview Core blockers.
-- Complete the payment track with RabbitMQ + Celery Inbox processing, bounded
-  retries, recovery, and real isolated integration/fault evidence. This is planned
-  work, not an implemented capability. Keep MySQL transactions and idempotency as
+- Consolidate the payment track's RabbitMQ + Celery Inbox processing, bounded
+  retries, manual recovery, and real isolated integration/fault evidence. Current
+  C1–C4 verification does not imply unattended recovery. Keep MySQL transactions and idempotency as
   the business correctness boundary; Outbox remains conditional.
 - Do not integrate third-party payment Sandbox this iteration. Revisit it only
   after a new explicit owner decision; production payments and real money remain
