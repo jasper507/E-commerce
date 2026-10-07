@@ -1,10 +1,10 @@
-# Project One — Domain Context v1.32
+# Project One — Domain Context v1.33
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6C-2同完整秒杀事务NOWAIT/条件UPDATE候选正确性与行为对照通过真实MySQL；默认仍NOWAIT，负载/资源成本与最终ADR待完成
-- 文档版本：v1.32
-- 更新日期：2026-10-07
+- 当前阶段：Phase 6C-3同条件有限批次、重试/时延/连接成本已实测；候选仍测试选用、正式默认NOWAIT，解释结果与最终选型ADR待完成
+- 文档版本：v1.33
+- 更新日期：2026-10-08
 - 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -1310,3 +1310,18 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - promotions模块回归29 passed/260 subtests，74.04秒，首次通过；check0 issues、迁移漂移No changes detected。临时test_project_one创建/迁移/夹具/清理，后检不存在、可见连接0、开发schema前后26；无开发migrate/业务写入、服务启停、权限/依赖/配置/模型/迁移/HTTP前端变更。未重跑完整ordering/payments或真实MQ/Redis/5D。
 - docs/learning/phase-6c2-flash-sale-inventory-comparison-study-guide.md与verification同名.md/.json、target/regression-output.txt记录6条实际ORM/SQL/行数/连接快照、源码/输出指纹和条件限制。测试耗时不是接口性能，受控等待不是普遍无死锁证明；等待期间B连接/事务及既有User/Address/Purchase锁仍保留，资源成本未测。
 - 正式策略继续默认NOWAIT；本片是实验候选正确性与行为对照，不是最终采用或性能胜出。下一片设计同条件负载、忙/不足/成功与重试成本、延迟分布/连接占用/死锁证据，再据结果形成ADR。按持续授权保存并验证后整合main，提交/远端以Git核对为准。
+
+## 50. Phase 6C-3：有限负载、重试与连接成本（2026-10-08）
+
+- 用户选中“下一片测同条件负载、重试成本、延迟和连接占用”要求开始；Depth/Learning。用户正确确认应看首次请求到最终结果总耗时，已说明旅程含调用/退避，执行器排队单列，不声称已掌握全部。开始前main/codex分支/两远端3f3afbc且干净，复用现有分支，前序已保存，无空提交。
+- 仅新增gated test_flash_sale_inventory_load.py和标准库 scripts/analyze_flash_sale_load.py，默认PROJECT_ONE_TEST_FLASH_SALE_LOAD=false跳过。正式代码、库存helper/候选本身、旧测试、模型、配置、依赖、迁移、HTTP/前端均未改。现有条件候选仅测试patch，默认仍NOWAIT。
+- 固定8worker/24不同顾客，共用完整下单事务，库存24/6，预算1或仅busy时总3次、同Key/退避5/10ms，3次重复、24测量批次，顺序轮换；另2次独立无竞争预热排除统计。每批新SKU/活动/库存/用户/地址/cart，活动89/普通129/qty1/cart2或3。
+- 每worker连接预开后APP PROCESSLIST确认8CID，共同t0放行；计时中无SQLwrapper/服务器采样/人工持锁。记录原始ns服务调用、旅程、执行器排队和批次E2E，连接开放区间裁剪[0,last_terminal]、service-active含Python/DB等待，峰8由配置决定。Thread wrapper顶层和OPTIONS复制后测试客户端超时5/10/10、session lock5秒，不修改默认配置；参数独立连接SELECT1已只读验证。
+- 真实MySQL8.4.10、READ-COMMITTED、max_connections151、既有3307容器健康；宿主Ryzen78840HX12核24逻辑/16,299,335,680bytes，Docker24CPU/7,889,154,048bytes、容器无额外资源限制。本片无启停服务、GRANT修改、开发migrate或业务数据写入。
+- 目标1 passed，23.58秒；完整24 measured+2warmup、576旅程、767调用、250订单、191额外retry，全部业务校验/连接清理有效，无1205/1213/意外错误/无效批次；383次真实3572属于正常busy。数据库六类事实、归属/价/地址/数量、HELD1/RESERVED/流水/库存守恒与失败无残留均核对，不把性能数字代替正确性。
+- 充足库存单次NOWAIT创建3/3/4、候选24/24/24；3次预算NOWAIT11/10/10且60/57/58调用、候选24/24/24且每批24调用。快速拒绝较短延迟不能说顾客购买完成更快。充足库存3次预算候选总连接开放1.709–2.002s，NOWAIT1.889–1.932s，不能声称每轮候选都更少总连接秒。
+- 紧张库存3次预算两算法都创建6单；NOWAIT52–55调用、旅程p95 106.42–121.91ms、连接开放1.703–1.834s；候选24调用、90.01–94.55ms、1.016–1.072s。相同产出下这组候选成本更低；所有范围是3轮实际值，不平均pct，n24的p99=max非稳定尾估计，连接开放/服务活跃非SQL CPU或锁等待秒。
+- 独立分析检查24完整唯一矩阵/2预热，终值=最后attempt、worker/CID映射、同worker服务区间无重叠、原始ns分位数/半开峰值/裁剪累计区间与两种吞吐；另agent不用parser函数自行重算逐字段匹配。逐批原值与异常保持，合计250创建/192busy/134不足仅完整性统计，不把不同库存/预算混成性能基准。
+- 模块回归29 passed/1 skipped/260 subtests，36.58s；skip本片负载开关关闭，check0 issues、迁移漂移No changes detected。后检临时test_project_one清理、可见连接0、开发schema前后26；未重跑全ordering/payments或真实MQ/Redis。
+- docs/learning/phase-6c3-flash-sale-inventory-load-study-guide.md与verification同名.md/data.json/analysis.json/target/regression-output.txt记录真实环境、24轮raw（2warmup另列）、每批时延/连接/结果、源码与输出指纹、纯标准库复算命令。raw不重复复制到summary。
+- 有限closed batch、8worker/24旅程、无网络HTTP/持续到达率/生产容量/锁等待图/普遍无死锁结论；未固定CPU或独占宿主资源。结果支持评估候选，等待占用连接/事务和快速拒绝需要重试的代价仍须项目拥有者独立解释。下一步结合数据确认故障/超时行为、完成选型ADR；本片不自动正式切换。按持续授权验证后保存/推送与整合main，提交/远端以Git核对为准。

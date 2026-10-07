@@ -1,0 +1,2514 @@
+{
+  "raw_output": "docs\\verification\\phase-6c3-flash-sale-inventory-load-target-output.txt",
+  "complete_matrix": true,
+  "warmups_verified": true,
+  "measured_run_count": 24,
+  "invalid_run_count": 0,
+  "measurement": "Finite closed batch; service-level clocks, not HTTP or production capacity",
+  "percentile_method": "nearest rank ceil(p*n); journey n=24, p99 is observed maximum",
+  "groups": [
+    {
+      "profile": "ample",
+      "max_attempts": 1,
+      "strategy": "conditional",
+      "runs": 3,
+      "run_numbers": [
+        2,
+        16,
+        22
+      ],
+      "created_each_run": [
+        24,
+        24,
+        24
+      ],
+      "busy_each_run": [
+        0,
+        0,
+        0
+      ],
+      "sold_out_each_run": [
+        0,
+        0,
+        0
+      ],
+      "attempts_each_run": [
+        24,
+        24,
+        24
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          243.7209,
+          253.2762
+        ],
+        "connection_holding_seconds_in_batch": [
+          1.7137356,
+          1.7849154
+        ],
+        "service_active_seconds": [
+          1.7107911,
+          1.7815967
+        ],
+        "connection_seconds_per_created_order": [
+          0.07140565,
+          0.074371475
+        ],
+        "created_orders_per_second": [
+          94.75821257583618,
+          98.47329465794685
+        ],
+        "journey_latency_per_run_p95_ms": [
+          92.9147,
+          99.7481
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          236.1426,
+          245.3392
+        ]
+      }
+    },
+    {
+      "profile": "ample",
+      "max_attempts": 1,
+      "strategy": "nowait",
+      "runs": 3,
+      "run_numbers": [
+        1,
+        15,
+        21
+      ],
+      "created_each_run": [
+        3,
+        3,
+        4
+      ],
+      "busy_each_run": [
+        21,
+        21,
+        20
+      ],
+      "sold_out_each_run": [
+        0,
+        0,
+        0
+      ],
+      "attempts_each_run": [
+        24,
+        24,
+        24
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          97.9425,
+          101.2038
+        ],
+        "connection_holding_seconds_in_batch": [
+          0.7538832,
+          0.7716575
+        ],
+        "service_active_seconds": [
+          0.7466235,
+          0.7679256
+        ],
+        "connection_seconds_per_created_order": [
+          0.1884708,
+          0.25721916666666667
+        ],
+        "created_orders_per_second": [
+          30.023418266247674,
+          39.5242075890431
+        ],
+        "journey_latency_per_run_p95_ms": [
+          38.5289,
+          42.3797
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          97.9015,
+          99.5527
+        ]
+      }
+    },
+    {
+      "profile": "ample",
+      "max_attempts": 3,
+      "strategy": "conditional",
+      "runs": 3,
+      "run_numbers": [
+        3,
+        9,
+        23
+      ],
+      "created_each_run": [
+        24,
+        24,
+        24
+      ],
+      "busy_each_run": [
+        0,
+        0,
+        0
+      ],
+      "sold_out_each_run": [
+        0,
+        0,
+        0
+      ],
+      "attempts_each_run": [
+        24,
+        24,
+        24
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          242.8656,
+          279.4734
+        ],
+        "connection_holding_seconds_in_batch": [
+          1.7087118,
+          2.0016914
+        ],
+        "service_active_seconds": [
+          1.7055113,
+          1.9986691
+        ],
+        "connection_seconds_per_created_order": [
+          0.07119632499999999,
+          0.08340380833333333
+        ],
+        "created_orders_per_second": [
+          85.87579354600473,
+          98.82008814751863
+        ],
+        "journey_latency_per_run_p95_ms": [
+          89.3082,
+          103.6156
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          234.6073,
+          271.7012
+        ]
+      }
+    },
+    {
+      "profile": "ample",
+      "max_attempts": 3,
+      "strategy": "nowait",
+      "runs": 3,
+      "run_numbers": [
+        4,
+        10,
+        24
+      ],
+      "created_each_run": [
+        11,
+        10,
+        10
+      ],
+      "busy_each_run": [
+        13,
+        14,
+        14
+      ],
+      "sold_out_each_run": [
+        0,
+        0,
+        0
+      ],
+      "attempts_each_run": [
+        60,
+        57,
+        58
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          277.3133,
+          281.3206
+        ],
+        "connection_holding_seconds_in_batch": [
+          1.8887516,
+          1.9316489
+        ],
+        "service_active_seconds": [
+          1.6141176,
+          1.6504582
+        ],
+        "connection_seconds_per_created_order": [
+          0.1734898,
+          0.19316488999999998
+        ],
+        "created_orders_per_second": [
+          35.54663256085761,
+          39.666326858466576
+        ],
+        "journey_latency_per_run_p95_ms": [
+          107.4559,
+          114.0905
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          254.0645,
+          259.6953
+        ]
+      }
+    },
+    {
+      "profile": "scarce",
+      "max_attempts": 1,
+      "strategy": "conditional",
+      "runs": 3,
+      "run_numbers": [
+        6,
+        12,
+        18
+      ],
+      "created_each_run": [
+        6,
+        6,
+        6
+      ],
+      "busy_each_run": [
+        0,
+        0,
+        0
+      ],
+      "sold_out_each_run": [
+        18,
+        18,
+        18
+      ],
+      "attempts_each_run": [
+        24,
+        24,
+        24
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          130.3093,
+          138.7289
+        ],
+        "connection_holding_seconds_in_batch": [
+          0.9907848,
+          1.0502609
+        ],
+        "service_active_seconds": [
+          0.9832917,
+          1.0453041
+        ],
+        "connection_seconds_per_created_order": [
+          0.1651308,
+          0.17504348333333333
+        ],
+        "created_orders_per_second": [
+          43.24982033303803,
+          46.04429614770396
+        ],
+        "journey_latency_per_run_p95_ms": [
+          83.8578,
+          94.414
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          128.5297,
+          138.654
+        ]
+      }
+    },
+    {
+      "profile": "scarce",
+      "max_attempts": 1,
+      "strategy": "nowait",
+      "runs": 3,
+      "run_numbers": [
+        5,
+        11,
+        17
+      ],
+      "created_each_run": [
+        3,
+        4,
+        4
+      ],
+      "busy_each_run": [
+        21,
+        20,
+        20
+      ],
+      "sold_out_each_run": [
+        0,
+        0,
+        0
+      ],
+      "attempts_each_run": [
+        24,
+        24,
+        24
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          101.9545,
+          106.2138
+        ],
+        "connection_holding_seconds_in_batch": [
+          0.7643414,
+          0.804192
+        ],
+        "service_active_seconds": [
+          0.7605604,
+          0.8003991
+        ],
+        "connection_seconds_per_created_order": [
+          0.19108535,
+          0.268064
+        ],
+        "created_orders_per_second": [
+          28.244917327126984,
+          39.23318735318205
+        ],
+        "journey_latency_per_run_p95_ms": [
+          39.8199,
+          45.5349
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          100.0556,
+          104.1507
+        ]
+      }
+    },
+    {
+      "profile": "scarce",
+      "max_attempts": 3,
+      "strategy": "conditional",
+      "runs": 3,
+      "run_numbers": [
+        7,
+        13,
+        19
+      ],
+      "created_each_run": [
+        6,
+        6,
+        6
+      ],
+      "busy_each_run": [
+        0,
+        0,
+        0
+      ],
+      "sold_out_each_run": [
+        18,
+        18,
+        18
+      ],
+      "attempts_each_run": [
+        24,
+        24,
+        24
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          134.7287,
+          140.3155
+        ],
+        "connection_holding_seconds_in_batch": [
+          1.0155841,
+          1.0718829
+        ],
+        "service_active_seconds": [
+          1.0092172,
+          1.06561
+        ],
+        "connection_seconds_per_created_order": [
+          0.16926401666666668,
+          0.17864715
+        ],
+        "created_orders_per_second": [
+          42.760778388702605,
+          44.533941172148175
+        ],
+        "journey_latency_per_run_p95_ms": [
+          90.0077,
+          94.5504
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          133.76,
+          139.8073
+        ]
+      }
+    },
+    {
+      "profile": "scarce",
+      "max_attempts": 3,
+      "strategy": "nowait",
+      "runs": 3,
+      "run_numbers": [
+        8,
+        14,
+        20
+      ],
+      "created_each_run": [
+        6,
+        6,
+        6
+      ],
+      "busy_each_run": [
+        8,
+        9,
+        11
+      ],
+      "sold_out_each_run": [
+        10,
+        9,
+        7
+      ],
+      "attempts_each_run": [
+        53,
+        52,
+        55
+      ],
+      "observed_ranges": {
+        "batch_wall_ms": [
+          232.9976,
+          250.2222
+        ],
+        "connection_holding_seconds_in_batch": [
+          1.7032529,
+          1.8342422
+        ],
+        "service_active_seconds": [
+          1.4623089,
+          1.5832623
+        ],
+        "connection_seconds_per_created_order": [
+          0.28387548333333334,
+          0.3057070333333333
+        ],
+        "created_orders_per_second": [
+          23.978687742334614,
+          25.751338211209042
+        ],
+        "journey_latency_per_run_p95_ms": [
+          106.422,
+          121.9052
+        ],
+        "batch_end_to_end_latency_per_run_p95_ms": [
+          229.604,
+          234.1034
+        ]
+      }
+    }
+  ],
+  "runs": [
+    {
+      "run_number": 1,
+      "strategy": "nowait",
+      "profile": "ample",
+      "repeat": 1,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 3,
+      "stock_busy": 21,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 0.125,
+      "terminal_busy_rate": 0.875,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "stock_busy": 21,
+        "created": 3
+      },
+      "batch_wall_ms": 99.922,
+      "completed_journeys_per_second": 240.1873461299814,
+      "created_orders_per_second": 30.023418266247674,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 32.0583,
+        "p95_ms": 38.5231,
+        "p99_ms": 39.7523
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 32.0728,
+        "p95_ms": 38.5289,
+        "p99_ms": 39.7624
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 32.6276,
+        "p95_ms": 70.2421,
+        "p99_ms": 77.5835
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 64.5095,
+        "p95_ms": 99.1687,
+        "p99_ms": 99.922
+      },
+      "successful_journey_latency": {
+        "n": 3,
+        "p50_ms": 38.5289,
+        "p95_ms": 39.7624,
+        "p99_ms": 39.7624
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 0.7716575,
+      "connection_holding_seconds_with_setup_and_cleanup": 0.7978613,
+      "service_active_seconds": 0.7679256,
+      "mean_open_connections_in_batch": 7.722598626929004,
+      "mean_active_service_calls": 7.685250495386401,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 8.6435,
+        "p95_ms": 8.8665,
+        "p99_ms": 8.8665
+      },
+      "connection_seconds_per_created_order": 0.25721916666666667,
+      "final_inventory": {
+        "available_stock": 21,
+        "reserved_stock": 3
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 3,
+        "FlashSalePurchase": 3,
+        "InventoryMovement": 3,
+        "InventoryReservation": 3,
+        "Order": 3,
+        "OrderItem": 3
+      }
+    },
+    {
+      "run_number": 2,
+      "strategy": "conditional",
+      "profile": "ample",
+      "repeat": 1,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 24,
+      "stock_busy": 0,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 1.0,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 24
+      },
+      "batch_wall_ms": 243.7209,
+      "completed_journeys_per_second": 98.47329465794685,
+      "created_orders_per_second": 98.47329465794685,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 71.1299,
+        "p95_ms": 93.6638,
+        "p99_ms": 102.6282
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 71.1358,
+        "p95_ms": 93.6702,
+        "p99_ms": 102.6352
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 65.8179,
+        "p95_ms": 165.0664,
+        "p99_ms": 174.3397
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 139.5584,
+        "p95_ms": 236.1426,
+        "p99_ms": 243.7209
+      },
+      "successful_journey_latency": {
+        "n": 24,
+        "p50_ms": 71.1358,
+        "p95_ms": 93.6702,
+        "p99_ms": 102.6352
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.7137356,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.7394229,
+      "service_active_seconds": 1.7107911,
+      "mean_open_connections_in_batch": 7.031549612692223,
+      "mean_active_service_calls": 7.019468170353876,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.9383,
+        "p95_ms": 8.3169,
+        "p99_ms": 8.3169
+      },
+      "connection_seconds_per_created_order": 0.07140565,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 24
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 24,
+        "FlashSalePurchase": 24,
+        "InventoryMovement": 24,
+        "InventoryReservation": 24,
+        "Order": 24,
+        "OrderItem": 24
+      }
+    },
+    {
+      "run_number": 3,
+      "strategy": "conditional",
+      "profile": "ample",
+      "repeat": 1,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 24,
+      "stock_busy": 0,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 1.0,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 24
+      },
+      "batch_wall_ms": 279.4734,
+      "completed_journeys_per_second": 85.87579354600473,
+      "created_orders_per_second": 85.87579354600473,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 86.8278,
+        "p95_ms": 103.6093,
+        "p99_ms": 104.5396
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 86.8386,
+        "p95_ms": 103.6156,
+        "p99_ms": 104.5476
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 65.5968,
+        "p95_ms": 181.0777,
+        "p99_ms": 189.7662
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 152.0652,
+        "p95_ms": 271.7012,
+        "p99_ms": 279.4734
+      },
+      "successful_journey_latency": {
+        "n": 24,
+        "p50_ms": 86.8386,
+        "p95_ms": 103.6156,
+        "p99_ms": 104.5476
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 2.0016914,
+      "connection_holding_seconds_with_setup_and_cleanup": 2.0308351,
+      "service_active_seconds": 1.9986691,
+      "mean_open_connections_in_batch": 7.162368225383883,
+      "mean_active_service_calls": 7.151553958265795,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.2185,
+        "p95_ms": 8.4454,
+        "p99_ms": 8.4454
+      },
+      "connection_seconds_per_created_order": 0.08340380833333333,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 24
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 24,
+        "FlashSalePurchase": 24,
+        "InventoryMovement": 24,
+        "InventoryReservation": 24,
+        "Order": 24,
+        "OrderItem": 24
+      }
+    },
+    {
+      "run_number": 4,
+      "strategy": "nowait",
+      "profile": "ample",
+      "repeat": 1,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 11,
+      "stock_busy": 13,
+      "insufficient_stock": 0,
+      "attempts": 60,
+      "success_rate": 0.4583333333333333,
+      "terminal_busy_rate": 0.5416666666666666,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 36,
+      "attempt_outcomes": {
+        "stock_busy": 49,
+        "created": 11
+      },
+      "batch_wall_ms": 277.3133,
+      "completed_journeys_per_second": 86.54471314574526,
+      "created_orders_per_second": 39.666326858466576,
+      "attempt_latency": {
+        "n": 60,
+        "p50_ms": 26.3801,
+        "p95_ms": 36.5974,
+        "p99_ms": 45.0041
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 82.7884,
+        "p95_ms": 114.0905,
+        "p99_ms": 119.6607
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 98.4386,
+        "p95_ms": 203.8388,
+        "p99_ms": 208.0889
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 167.3226,
+        "p95_ms": 255.7949,
+        "p99_ms": 277.3133
+      },
+      "successful_journey_latency": {
+        "n": 11,
+        "p50_ms": 60.353,
+        "p95_ms": 119.6607,
+        "p99_ms": 119.6607
+      },
+      "actual_backoff_ms_total": 288.806,
+      "connection_holding_seconds_in_batch": 1.9083878,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.9307261,
+      "service_active_seconds": 1.6141176,
+      "mean_open_connections_in_batch": 6.881703113409995,
+      "mean_active_service_calls": 5.820556028145783,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.0805,
+        "p95_ms": 7.3934,
+        "p99_ms": 7.3934
+      },
+      "connection_seconds_per_created_order": 0.1734898,
+      "final_inventory": {
+        "available_stock": 13,
+        "reserved_stock": 11
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 11,
+        "FlashSalePurchase": 11,
+        "InventoryMovement": 11,
+        "InventoryReservation": 11,
+        "Order": 11,
+        "OrderItem": 11
+      }
+    },
+    {
+      "run_number": 5,
+      "strategy": "nowait",
+      "profile": "scarce",
+      "repeat": 1,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 3,
+      "stock_busy": 21,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 0.125,
+      "terminal_busy_rate": 0.875,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "stock_busy": 21,
+        "created": 3
+      },
+      "batch_wall_ms": 106.2138,
+      "completed_journeys_per_second": 225.95933861701587,
+      "created_orders_per_second": 28.244917327126984,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 36.3569,
+        "p95_ms": 41.6229,
+        "p99_ms": 43.8697
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 36.368,
+        "p95_ms": 41.6288,
+        "p99_ms": 43.8843
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 37.3812,
+        "p95_ms": 81.4247,
+        "p99_ms": 81.4774
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 69.0117,
+        "p95_ms": 104.1507,
+        "p99_ms": 106.2138
+      },
+      "successful_journey_latency": {
+        "n": 3,
+        "p50_ms": 40.8833,
+        "p95_ms": 41.6288,
+        "p99_ms": 41.6288
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 0.804192,
+      "connection_holding_seconds_with_setup_and_cleanup": 0.8321445,
+      "service_active_seconds": 0.8003991,
+      "mean_open_connections_in_batch": 7.571445518378968,
+      "mean_active_service_calls": 7.535735469402281,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 9.1894,
+        "p95_ms": 9.3722,
+        "p99_ms": 9.3722
+      },
+      "connection_seconds_per_created_order": 0.268064,
+      "final_inventory": {
+        "available_stock": 3,
+        "reserved_stock": 3
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 3,
+        "FlashSalePurchase": 3,
+        "InventoryMovement": 3,
+        "InventoryReservation": 3,
+        "Order": 3,
+        "OrderItem": 3
+      }
+    },
+    {
+      "run_number": 6,
+      "strategy": "conditional",
+      "profile": "scarce",
+      "repeat": 1,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 0,
+      "insufficient_stock": 18,
+      "attempts": 24,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.75,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 6,
+        "insufficient_stock": 18
+      },
+      "batch_wall_ms": 134.0929,
+      "completed_journeys_per_second": 178.9803934436499,
+      "created_orders_per_second": 44.74509836091247,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 33.4457,
+        "p95_ms": 89.5872,
+        "p99_ms": 90.0701
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 33.458,
+        "p95_ms": 89.6193,
+        "p99_ms": 90.083
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 69.7848,
+        "p95_ms": 117.805,
+        "p99_ms": 118.4547
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 95.9571,
+        "p95_ms": 133.1906,
+        "p99_ms": 134.0929
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 59.2962,
+        "p95_ms": 86.4886,
+        "p99_ms": 86.4886
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.0302657,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.0536497,
+      "service_active_seconds": 1.022982,
+      "mean_open_connections_in_batch": 7.683223347395724,
+      "mean_active_service_calls": 7.628905035240494,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.4148,
+        "p95_ms": 8.294,
+        "p99_ms": 8.294
+      },
+      "connection_seconds_per_created_order": 0.17171095,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 7,
+      "strategy": "conditional",
+      "profile": "scarce",
+      "repeat": 1,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 0,
+      "insufficient_stock": 18,
+      "attempts": 24,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.75,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 6,
+        "insufficient_stock": 18
+      },
+      "batch_wall_ms": 140.3155,
+      "completed_journeys_per_second": 171.04311355481042,
+      "created_orders_per_second": 42.760778388702605,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 31.5906,
+        "p95_ms": 94.53,
+        "p99_ms": 94.7802
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 31.6063,
+        "p95_ms": 94.5504,
+        "p99_ms": 94.7975
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 73.3425,
+        "p95_ms": 122.0511,
+        "p99_ms": 123.4847
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 99.6675,
+        "p95_ms": 139.8073,
+        "p99_ms": 140.3155
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 63.9709,
+        "p95_ms": 91.5399,
+        "p99_ms": 91.5399
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.0718829,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.0968629,
+      "service_active_seconds": 1.06561,
+      "mean_open_connections_in_batch": 7.639091190923312,
+      "mean_active_service_calls": 7.594385509797563,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.9194,
+        "p95_ms": 8.3845,
+        "p99_ms": 8.3845
+      },
+      "connection_seconds_per_created_order": 0.17864715,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 8,
+      "strategy": "nowait",
+      "profile": "scarce",
+      "repeat": 1,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 8,
+      "insufficient_stock": 10,
+      "attempts": 53,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.3333333333333333,
+      "terminal_sold_out_rate": 0.4166666666666667,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 29,
+      "attempt_outcomes": {
+        "stock_busy": 37,
+        "created": 6,
+        "insufficient_stock": 10
+      },
+      "batch_wall_ms": 233.8815,
+      "completed_journeys_per_second": 102.61606839360958,
+      "created_orders_per_second": 25.654017098402395,
+      "attempt_latency": {
+        "n": 53,
+        "p50_ms": 27.0245,
+        "p95_ms": 39.0498,
+        "p99_ms": 42.9762
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 70.5592,
+        "p95_ms": 106.422,
+        "p99_ms": 112.5716
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 103.2577,
+        "p95_ms": 192.414,
+        "p99_ms": 193.3558
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 149.6418,
+        "p95_ms": 229.604,
+        "p99_ms": 233.8815
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 39.0578,
+        "p95_ms": 70.5592,
+        "p99_ms": 70.5592
+      },
+      "actual_backoff_ms_total": 236.578,
+      "connection_holding_seconds_in_batch": 1.7032529,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.7248735,
+      "service_active_seconds": 1.4623089,
+      "mean_open_connections_in_batch": 7.282546503250578,
+      "mean_active_service_calls": 6.2523495872909995,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.5099,
+        "p95_ms": 8.5395,
+        "p99_ms": 8.5395
+      },
+      "connection_seconds_per_created_order": 0.28387548333333334,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 9,
+      "strategy": "conditional",
+      "profile": "ample",
+      "repeat": 2,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 24,
+      "stock_busy": 0,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 1.0,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 24
+      },
+      "batch_wall_ms": 244.7057,
+      "completed_journeys_per_second": 98.07699616314618,
+      "created_orders_per_second": 98.07699616314618,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 72.7658,
+        "p95_ms": 89.3024,
+        "p99_ms": 98.898
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 72.7709,
+        "p95_ms": 89.3082,
+        "p99_ms": 98.9044
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 63.2669,
+        "p95_ms": 161.7384,
+        "p99_ms": 171.7994
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 134.3287,
+        "p95_ms": 236.6308,
+        "p99_ms": 244.7057
+      },
+      "successful_journey_latency": {
+        "n": 24,
+        "p50_ms": 72.7709,
+        "p95_ms": 89.3082,
+        "p99_ms": 98.9044
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.7126411,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.7371785,
+      "service_active_seconds": 1.7093612,
+      "mean_open_connections_in_batch": 6.998778941397769,
+      "mean_active_service_calls": 6.985375493909623,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.478,
+        "p95_ms": 8.0623,
+        "p99_ms": 8.0623
+      },
+      "connection_seconds_per_created_order": 0.07136004583333333,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 24
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 24,
+        "FlashSalePurchase": 24,
+        "InventoryMovement": 24,
+        "InventoryReservation": 24,
+        "Order": 24,
+        "OrderItem": 24
+      }
+    },
+    {
+      "run_number": 10,
+      "strategy": "nowait",
+      "profile": "ample",
+      "repeat": 2,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 10,
+      "stock_busy": 14,
+      "insufficient_stock": 0,
+      "attempts": 57,
+      "success_rate": 0.4166666666666667,
+      "terminal_busy_rate": 0.5833333333333334,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 33,
+      "attempt_outcomes": {
+        "stock_busy": 47,
+        "created": 10
+      },
+      "batch_wall_ms": 279.1149,
+      "completed_journeys_per_second": 85.98609389896419,
+      "created_orders_per_second": 35.82753912456841,
+      "attempt_latency": {
+        "n": 57,
+        "p50_ms": 28.4798,
+        "p95_ms": 36.9449,
+        "p99_ms": 48.6557
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 90.8486,
+        "p95_ms": 107.4559,
+        "p99_ms": 109.1391
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 105.2079,
+        "p95_ms": 207.1661,
+        "p99_ms": 207.2048
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 157.8694,
+        "p95_ms": 254.0645,
+        "p99_ms": 279.1149
+      },
+      "successful_journey_latency": {
+        "n": 10,
+        "p50_ms": 39.1675,
+        "p95_ms": 72.0003,
+        "p99_ms": 72.0003
+      },
+      "actual_backoff_ms_total": 264.4165,
+      "connection_holding_seconds_in_batch": 1.8887516,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.9094302,
+      "service_active_seconds": 1.6190042,
+      "mean_open_connections_in_batch": 6.766932184559119,
+      "mean_active_service_calls": 5.800493631834058,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 6.9963,
+        "p95_ms": 8.0911,
+        "p99_ms": 8.0911
+      },
+      "connection_seconds_per_created_order": 0.18887516,
+      "final_inventory": {
+        "available_stock": 14,
+        "reserved_stock": 10
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 10,
+        "FlashSalePurchase": 10,
+        "InventoryMovement": 10,
+        "InventoryReservation": 10,
+        "Order": 10,
+        "OrderItem": 10
+      }
+    },
+    {
+      "run_number": 11,
+      "strategy": "nowait",
+      "profile": "scarce",
+      "repeat": 2,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 4,
+      "stock_busy": 20,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 0.16666666666666666,
+      "terminal_busy_rate": 0.8333333333333334,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "stock_busy": 20,
+        "created": 4
+      },
+      "batch_wall_ms": 101.9545,
+      "completed_journeys_per_second": 235.39912411909233,
+      "created_orders_per_second": 39.23318735318205,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 32.6938,
+        "p95_ms": 45.5291,
+        "p99_ms": 46.5471
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 32.7024,
+        "p95_ms": 45.5349,
+        "p99_ms": 46.5549
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 34.2178,
+        "p95_ms": 68.3201,
+        "p99_ms": 86.7298
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 61.6129,
+        "p95_ms": 100.0556,
+        "p99_ms": 101.9545
+      },
+      "successful_journey_latency": {
+        "n": 4,
+        "p50_ms": 37.6405,
+        "p95_ms": 46.5549,
+        "p99_ms": 46.5549
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 0.7643414,
+      "connection_holding_seconds_with_setup_and_cleanup": 0.7852232,
+      "service_active_seconds": 0.7605604,
+      "mean_open_connections_in_batch": 7.496887336998367,
+      "mean_active_service_calls": 7.459802166652771,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.2614,
+        "p95_ms": 8.0976,
+        "p99_ms": 8.0976
+      },
+      "connection_seconds_per_created_order": 0.19108535,
+      "final_inventory": {
+        "available_stock": 2,
+        "reserved_stock": 4
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 4,
+        "FlashSalePurchase": 4,
+        "InventoryMovement": 4,
+        "InventoryReservation": 4,
+        "Order": 4,
+        "OrderItem": 4
+      }
+    },
+    {
+      "run_number": 12,
+      "strategy": "conditional",
+      "profile": "scarce",
+      "repeat": 2,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 0,
+      "insufficient_stock": 18,
+      "attempts": 24,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.75,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 6,
+        "insufficient_stock": 18
+      },
+      "batch_wall_ms": 138.7289,
+      "completed_journeys_per_second": 172.99928133215212,
+      "created_orders_per_second": 43.24982033303803,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 31.0741,
+        "p95_ms": 94.3987,
+        "p99_ms": 97.0679
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 31.0865,
+        "p95_ms": 94.414,
+        "p99_ms": 97.0789
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 68.6562,
+        "p95_ms": 125.3564,
+        "p99_ms": 125.5069
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 99.0902,
+        "p95_ms": 138.654,
+        "p99_ms": 138.7289
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 59.3141,
+        "p95_ms": 87.5449,
+        "p99_ms": 87.5449
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.0502609,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.0737732,
+      "service_active_seconds": 1.0453041,
+      "mean_open_connections_in_batch": 7.570599204635804,
+      "mean_active_service_calls": 7.534869086398004,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.4979,
+        "p95_ms": 8.1346,
+        "p99_ms": 8.1346
+      },
+      "connection_seconds_per_created_order": 0.17504348333333333,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 13,
+      "strategy": "conditional",
+      "profile": "scarce",
+      "repeat": 2,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 0,
+      "insufficient_stock": 18,
+      "attempts": 24,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.75,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "insufficient_stock": 18,
+        "created": 6
+      },
+      "batch_wall_ms": 139.8992,
+      "completed_journeys_per_second": 171.5520889326029,
+      "created_orders_per_second": 42.88802223315073,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 34.5989,
+        "p95_ms": 90.7385,
+        "p99_ms": 93.4071
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 34.6114,
+        "p95_ms": 90.757,
+        "p99_ms": 93.4233
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 67.9946,
+        "p95_ms": 122.7553,
+        "p99_ms": 127.3828
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 95.5508,
+        "p95_ms": 135.7914,
+        "p99_ms": 139.8992
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 54.4715,
+        "p95_ms": 85.9997,
+        "p99_ms": 85.9997
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.0501378,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.0757589,
+      "service_active_seconds": 1.0463753,
+      "mean_open_connections_in_batch": 7.506388885711998,
+      "mean_active_service_calls": 7.47949452176996,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 9.5479,
+        "p95_ms": 10.6727,
+        "p99_ms": 10.6727
+      },
+      "connection_seconds_per_created_order": 0.17502296666666664,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 14,
+      "strategy": "nowait",
+      "profile": "scarce",
+      "repeat": 2,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 9,
+      "insufficient_stock": 9,
+      "attempts": 52,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.375,
+      "terminal_sold_out_rate": 0.375,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 28,
+      "attempt_outcomes": {
+        "stock_busy": 37,
+        "created": 6,
+        "insufficient_stock": 9
+      },
+      "batch_wall_ms": 232.9976,
+      "completed_journeys_per_second": 103.00535284483617,
+      "created_orders_per_second": 25.751338211209042,
+      "attempt_latency": {
+        "n": 52,
+        "p50_ms": 29.0966,
+        "p95_ms": 40.4115,
+        "p99_ms": 47.8937
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 81.0116,
+        "p95_ms": 121.9052,
+        "p99_ms": 122.5426
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 115.8271,
+        "p95_ms": 207.3638,
+        "p99_ms": 216.9127
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 183.3152,
+        "p95_ms": 232.9588,
+        "p99_ms": 232.9976
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 44.0553,
+        "p95_ms": 118.2081,
+        "p99_ms": 118.2081
+      },
+      "actual_backoff_ms_total": 226.8856,
+      "connection_holding_seconds_in_batch": 1.7961073,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.8193771,
+      "service_active_seconds": 1.5621488,
+      "mean_open_connections_in_batch": 7.70869442432025,
+      "mean_active_service_calls": 6.704570347505725,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.0751,
+        "p95_ms": 7.409,
+        "p99_ms": 7.409
+      },
+      "connection_seconds_per_created_order": 0.2993512166666667,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 15,
+      "strategy": "nowait",
+      "profile": "ample",
+      "repeat": 2,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 3,
+      "stock_busy": 21,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 0.125,
+      "terminal_busy_rate": 0.875,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "stock_busy": 21,
+        "created": 3
+      },
+      "batch_wall_ms": 97.9425,
+      "completed_journeys_per_second": 245.04173367026573,
+      "created_orders_per_second": 30.630216708783216,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 30.909,
+        "p95_ms": 40.6028,
+        "p99_ms": 43.1312
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 30.9175,
+        "p95_ms": 40.6086,
+        "p99_ms": 43.1379
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 31.4748,
+        "p95_ms": 69.8388,
+        "p99_ms": 70.8249
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 62.342,
+        "p95_ms": 97.9015,
+        "p99_ms": 97.9425
+      },
+      "successful_journey_latency": {
+        "n": 3,
+        "p50_ms": 40.6086,
+        "p95_ms": 43.1379,
+        "p99_ms": 43.1379
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 0.764276,
+      "connection_holding_seconds_with_setup_and_cleanup": 0.7856158,
+      "service_active_seconds": 0.7612778,
+      "mean_open_connections_in_batch": 7.803313168440667,
+      "mean_active_service_calls": 7.772701329861909,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.3657,
+        "p95_ms": 8.2203,
+        "p99_ms": 8.2203
+      },
+      "connection_seconds_per_created_order": 0.25475866666666663,
+      "final_inventory": {
+        "available_stock": 21,
+        "reserved_stock": 3
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 3,
+        "FlashSalePurchase": 3,
+        "InventoryMovement": 3,
+        "InventoryReservation": 3,
+        "Order": 3,
+        "OrderItem": 3
+      }
+    },
+    {
+      "run_number": 16,
+      "strategy": "conditional",
+      "profile": "ample",
+      "repeat": 2,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 24,
+      "stock_busy": 0,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 1.0,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 24
+      },
+      "batch_wall_ms": 252.0695,
+      "completed_journeys_per_second": 95.21183641813072,
+      "created_orders_per_second": 95.21183641813072,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 75.7983,
+        "p95_ms": 92.9088,
+        "p99_ms": 101.7922
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 75.8063,
+        "p95_ms": 92.9147,
+        "p99_ms": 101.7986
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 63.4122,
+        "p95_ms": 175.1183,
+        "p99_ms": 185.0443
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 138.6255,
+        "p95_ms": 244.3671,
+        "p99_ms": 252.0695
+      },
+      "successful_journey_latency": {
+        "n": 24,
+        "p50_ms": 75.8063,
+        "p95_ms": 92.9147,
+        "p99_ms": 101.7986
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.7841509,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.8049695,
+      "service_active_seconds": 1.7804062,
+      "mean_open_connections_in_batch": 7.078011818169196,
+      "mean_active_service_calls": 7.063155994676071,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.3715,
+        "p95_ms": 8.3242,
+        "p99_ms": 8.3242
+      },
+      "connection_seconds_per_created_order": 0.07433962083333333,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 24
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 24,
+        "FlashSalePurchase": 24,
+        "InventoryMovement": 24,
+        "InventoryReservation": 24,
+        "Order": 24,
+        "OrderItem": 24
+      }
+    },
+    {
+      "run_number": 17,
+      "strategy": "nowait",
+      "profile": "scarce",
+      "repeat": 3,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 4,
+      "stock_busy": 20,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 0.16666666666666666,
+      "terminal_busy_rate": 0.8333333333333334,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "stock_busy": 20,
+        "created": 4
+      },
+      "batch_wall_ms": 104.1365,
+      "completed_journeys_per_second": 230.4667431688217,
+      "created_orders_per_second": 38.41112386147028,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 30.8786,
+        "p95_ms": 39.8119,
+        "p99_ms": 55.3704
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 30.8885,
+        "p95_ms": 39.8199,
+        "p99_ms": 55.3771
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 34.6706,
+        "p95_ms": 75.403,
+        "p99_ms": 87.9988
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 65.1895,
+        "p95_ms": 101.2991,
+        "p99_ms": 104.1365
+      },
+      "successful_journey_latency": {
+        "n": 4,
+        "p50_ms": 39.5495,
+        "p95_ms": 55.3771,
+        "p99_ms": 55.3771
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 0.7674015,
+      "connection_holding_seconds_with_setup_and_cleanup": 0.7996339,
+      "service_active_seconds": 0.7628472,
+      "mean_open_connections_in_batch": 7.369188516994521,
+      "mean_active_service_calls": 7.325454571643948,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 32.5688,
+        "p95_ms": 34.7764,
+        "p99_ms": 34.7764
+      },
+      "connection_seconds_per_created_order": 0.191850375,
+      "final_inventory": {
+        "available_stock": 2,
+        "reserved_stock": 4
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 4,
+        "FlashSalePurchase": 4,
+        "InventoryMovement": 4,
+        "InventoryReservation": 4,
+        "Order": 4,
+        "OrderItem": 4
+      }
+    },
+    {
+      "run_number": 18,
+      "strategy": "conditional",
+      "profile": "scarce",
+      "repeat": 3,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 0,
+      "insufficient_stock": 18,
+      "attempts": 24,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.75,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "insufficient_stock": 18,
+        "created": 6
+      },
+      "batch_wall_ms": 130.3093,
+      "completed_journeys_per_second": 184.17718459081584,
+      "created_orders_per_second": 46.04429614770396,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 32.416,
+        "p95_ms": 83.8377,
+        "p99_ms": 84.213
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 32.4344,
+        "p95_ms": 83.8578,
+        "p99_ms": 84.2334
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 62.789,
+        "p95_ms": 113.3647,
+        "p99_ms": 116.662
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 90.8809,
+        "p95_ms": 128.5297,
+        "p99_ms": 130.3093
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 53.3503,
+        "p95_ms": 81.2449,
+        "p99_ms": 81.2449
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 0.9907848,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.0120236,
+      "service_active_seconds": 0.9832917,
+      "mean_open_connections_in_batch": 7.603331458307274,
+      "mean_active_service_calls": 7.5458290390632135,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.1809,
+        "p95_ms": 8.0571,
+        "p99_ms": 8.0571
+      },
+      "connection_seconds_per_created_order": 0.1651308,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 19,
+      "strategy": "conditional",
+      "profile": "scarce",
+      "repeat": 3,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 0,
+      "insufficient_stock": 18,
+      "attempts": 24,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.75,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 6,
+        "insufficient_stock": 18
+      },
+      "batch_wall_ms": 134.7287,
+      "completed_journeys_per_second": 178.1357646885927,
+      "created_orders_per_second": 44.533941172148175,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 31.8517,
+        "p95_ms": 89.989,
+        "p99_ms": 90.2135
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 31.8623,
+        "p95_ms": 90.0077,
+        "p99_ms": 90.2306
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 68.1093,
+        "p95_ms": 119.6475,
+        "p99_ms": 120.9468
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 92.943,
+        "p95_ms": 133.76,
+        "p99_ms": 134.7287
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 58.3898,
+        "p95_ms": 86.2843,
+        "p99_ms": 86.2843
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.0155841,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.0372933,
+      "service_active_seconds": 1.0092172,
+      "mean_open_connections_in_batch": 7.5379937607948415,
+      "mean_active_service_calls": 7.490736569120017,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.4218,
+        "p95_ms": 8.0626,
+        "p99_ms": 8.0626
+      },
+      "connection_seconds_per_created_order": 0.16926401666666668,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 20,
+      "strategy": "nowait",
+      "profile": "scarce",
+      "repeat": 3,
+      "initial_stock": 6,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 6,
+      "stock_busy": 11,
+      "insufficient_stock": 7,
+      "attempts": 55,
+      "success_rate": 0.25,
+      "terminal_busy_rate": 0.4583333333333333,
+      "terminal_sold_out_rate": 0.2916666666666667,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 31,
+      "attempt_outcomes": {
+        "stock_busy": 42,
+        "created": 6,
+        "insufficient_stock": 7
+      },
+      "batch_wall_ms": 250.2222,
+      "completed_journeys_per_second": 95.91475096933846,
+      "created_orders_per_second": 23.978687742334614,
+      "attempt_latency": {
+        "n": 55,
+        "p50_ms": 29.1251,
+        "p95_ms": 36.5995,
+        "p99_ms": 39.1453
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 87.7061,
+        "p95_ms": 108.4662,
+        "p99_ms": 115.3823
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 105.3368,
+        "p95_ms": 209.6653,
+        "p99_ms": 209.742
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 176.1738,
+        "p95_ms": 234.1034,
+        "p99_ms": 250.2222
+      },
+      "successful_journey_latency": {
+        "n": 6,
+        "p50_ms": 39.1512,
+        "p95_ms": 71.977,
+        "p99_ms": 71.977
+      },
+      "actual_backoff_ms_total": 245.2184,
+      "connection_holding_seconds_in_batch": 1.8342422,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.856068,
+      "service_active_seconds": 1.5832623,
+      "mean_open_connections_in_batch": 7.3304534929354785,
+      "mean_active_service_calls": 6.327425384318418,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.5779,
+        "p95_ms": 8.6121,
+        "p99_ms": 8.6121
+      },
+      "connection_seconds_per_created_order": 0.3057070333333333,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 6
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 6,
+        "FlashSalePurchase": 6,
+        "InventoryMovement": 6,
+        "InventoryReservation": 6,
+        "Order": 6,
+        "OrderItem": 6
+      }
+    },
+    {
+      "run_number": 21,
+      "strategy": "nowait",
+      "profile": "ample",
+      "repeat": 3,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 4,
+      "stock_busy": 20,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 0.16666666666666666,
+      "terminal_busy_rate": 0.8333333333333334,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "stock_busy": 20,
+        "created": 4
+      },
+      "batch_wall_ms": 101.2038,
+      "completed_journeys_per_second": 237.1452455342586,
+      "created_orders_per_second": 39.5242075890431,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 31.4449,
+        "p95_ms": 42.3666,
+        "p99_ms": 44.9216
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 31.4567,
+        "p95_ms": 42.3797,
+        "p99_ms": 44.9285
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 31.9539,
+        "p95_ms": 74.3951,
+        "p99_ms": 85.5226
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 66.5077,
+        "p95_ms": 99.5527,
+        "p99_ms": 101.2038
+      },
+      "successful_journey_latency": {
+        "n": 4,
+        "p50_ms": 38.5084,
+        "p95_ms": 44.9285,
+        "p99_ms": 44.9285
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 0.7538832,
+      "connection_holding_seconds_with_setup_and_cleanup": 0.7772911,
+      "service_active_seconds": 0.7466235,
+      "mean_open_connections_in_batch": 7.449159023673024,
+      "mean_active_service_calls": 7.37742555121448,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.2364,
+        "p95_ms": 7.6816,
+        "p99_ms": 7.6816
+      },
+      "connection_seconds_per_created_order": 0.1884708,
+      "final_inventory": {
+        "available_stock": 20,
+        "reserved_stock": 4
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 4,
+        "FlashSalePurchase": 4,
+        "InventoryMovement": 4,
+        "InventoryReservation": 4,
+        "Order": 4,
+        "OrderItem": 4
+      }
+    },
+    {
+      "run_number": 22,
+      "strategy": "conditional",
+      "profile": "ample",
+      "repeat": 3,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 1,
+      "valid": true,
+      "jobs": 24,
+      "created": 24,
+      "stock_busy": 0,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 1.0,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 24
+      },
+      "batch_wall_ms": 253.2762,
+      "completed_journeys_per_second": 94.75821257583618,
+      "created_orders_per_second": 94.75821257583618,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 73.7083,
+        "p95_ms": 99.7386,
+        "p99_ms": 107.6016
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 73.7165,
+        "p95_ms": 99.7481,
+        "p99_ms": 107.6088
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 72.4021,
+        "p95_ms": 175.1455,
+        "p99_ms": 184.7688
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 148.0916,
+        "p95_ms": 245.3392,
+        "p99_ms": 253.2762
+      },
+      "successful_journey_latency": {
+        "n": 24,
+        "p50_ms": 73.7165,
+        "p95_ms": 99.7481,
+        "p99_ms": 107.6088
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.7849154,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.8095498,
+      "service_active_seconds": 1.7815967,
+      "mean_open_connections_in_batch": 7.047308037628486,
+      "mean_active_service_calls": 7.034204950958677,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.5197,
+        "p95_ms": 8.843,
+        "p99_ms": 8.843
+      },
+      "connection_seconds_per_created_order": 0.074371475,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 24
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 24,
+        "FlashSalePurchase": 24,
+        "InventoryMovement": 24,
+        "InventoryReservation": 24,
+        "Order": 24,
+        "OrderItem": 24
+      }
+    },
+    {
+      "run_number": 23,
+      "strategy": "conditional",
+      "profile": "ample",
+      "repeat": 3,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 24,
+      "stock_busy": 0,
+      "insufficient_stock": 0,
+      "attempts": 24,
+      "success_rate": 1.0,
+      "terminal_busy_rate": 0.0,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 0,
+      "attempt_outcomes": {
+        "created": 24
+      },
+      "batch_wall_ms": 242.8656,
+      "completed_journeys_per_second": 98.82008814751863,
+      "created_orders_per_second": 98.82008814751863,
+      "attempt_latency": {
+        "n": 24,
+        "p50_ms": 73.1442,
+        "p95_ms": 92.0297,
+        "p99_ms": 100.4841
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 73.1505,
+        "p95_ms": 92.0357,
+        "p99_ms": 100.4894
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 64.3956,
+        "p95_ms": 165.4458,
+        "p99_ms": 174.4152
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 140.2452,
+        "p95_ms": 234.6073,
+        "p99_ms": 242.8656
+      },
+      "successful_journey_latency": {
+        "n": 24,
+        "p50_ms": 73.1505,
+        "p95_ms": 92.0357,
+        "p99_ms": 100.4894
+      },
+      "actual_backoff_ms_total": 0.0,
+      "connection_holding_seconds_in_batch": 1.7087118,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.7331245,
+      "service_active_seconds": 1.7055113,
+      "mean_open_connections_in_batch": 7.035627112279384,
+      "mean_active_service_calls": 7.0224490417745455,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 7.2075,
+        "p95_ms": 7.6529,
+        "p99_ms": 7.6529
+      },
+      "connection_seconds_per_created_order": 0.07119632499999999,
+      "final_inventory": {
+        "available_stock": 0,
+        "reserved_stock": 24
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 24,
+        "FlashSalePurchase": 24,
+        "InventoryMovement": 24,
+        "InventoryReservation": 24,
+        "Order": 24,
+        "OrderItem": 24
+      }
+    },
+    {
+      "run_number": 24,
+      "strategy": "nowait",
+      "profile": "ample",
+      "repeat": 3,
+      "initial_stock": 24,
+      "worker_count": 8,
+      "max_attempts": 3,
+      "valid": true,
+      "jobs": 24,
+      "created": 10,
+      "stock_busy": 14,
+      "insufficient_stock": 0,
+      "attempts": 58,
+      "success_rate": 0.4166666666666667,
+      "terminal_busy_rate": 0.5833333333333334,
+      "terminal_sold_out_rate": 0.0,
+      "unexpected_error_rate": 0.0,
+      "retry_attempts": 34,
+      "attempt_outcomes": {
+        "stock_busy": 48,
+        "created": 10
+      },
+      "batch_wall_ms": 281.3206,
+      "completed_journeys_per_second": 85.31191814605828,
+      "created_orders_per_second": 35.54663256085761,
+      "attempt_latency": {
+        "n": 58,
+        "p50_ms": 26.8869,
+        "p95_ms": 43.2815,
+        "p99_ms": 48.8284
+      },
+      "journey_latency": {
+        "n": 24,
+        "p50_ms": 81.8589,
+        "p95_ms": 112.3964,
+        "p99_ms": 118.6719
+      },
+      "queue_latency": {
+        "n": 24,
+        "p50_ms": 112.4787,
+        "p95_ms": 214.4767,
+        "p99_ms": 215.2462
+      },
+      "batch_end_to_end_latency": {
+        "n": 24,
+        "p50_ms": 148.7078,
+        "p95_ms": 259.6953,
+        "p99_ms": 281.3206
+      },
+      "successful_journey_latency": {
+        "n": 10,
+        "p50_ms": 45.2186,
+        "p95_ms": 79.7941,
+        "p99_ms": 79.7941
+      },
+      "actual_backoff_ms_total": 272.515,
+      "connection_holding_seconds_in_batch": 1.9316489,
+      "connection_holding_seconds_with_setup_and_cleanup": 1.9602725,
+      "service_active_seconds": 1.6504582,
+      "mean_open_connections_in_batch": 6.866361368488479,
+      "mean_active_service_calls": 5.866823119245445,
+      "peak_open_connections": 8,
+      "peak_active_service_calls": 8,
+      "connection_setup": {
+        "n": 8,
+        "p50_ms": 9.1152,
+        "p95_ms": 9.6524,
+        "p99_ms": 9.6524
+      },
+      "connection_seconds_per_created_order": 0.19316488999999998,
+      "final_inventory": {
+        "available_stock": 14,
+        "reserved_stock": 10
+      },
+      "final_fact_counts": {
+        "AddressSnapshot": 10,
+        "FlashSalePurchase": 10,
+        "InventoryMovement": 10,
+        "InventoryReservation": 10,
+        "Order": 10,
+        "OrderItem": 10
+      }
+    }
+  ]
+}

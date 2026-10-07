@@ -1,0 +1,4 @@
+..................s........... [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_inventory_load.py:433: Requires PROJECT_ONE_TEST_FLASH_SALE_LOAD=true and isolated MySQL.
+29 passed, 1 skipped, 260 subtests passed in 36.58s

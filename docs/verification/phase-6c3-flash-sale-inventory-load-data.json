@@ -1,0 +1,682 @@
+{
+  "date": "2026-10-08",
+  "timezone": "Asia/Shanghai",
+  "source": {
+    "base_commit": "3f3afbcbef385d27fb1918a6aabbe08be2725d79",
+    "branch_at_execution": "codex/flash-sale-baseline",
+    "business_code_changed": false,
+    "default_strategy": "NOWAIT",
+    "candidate_location": "test-only existing conditional helper",
+    "new_code": "Gated load harness plus independent standard-library analysis CLI"
+  },
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "pytest": "9.1.1",
+    "mysql": "8.4.10",
+    "mysql_image": "mysql:8.4.10",
+    "host": "127.0.0.1",
+    "port": 3307,
+    "test_database": "test_project_one",
+    "session_isolation": "READ-COMMITTED",
+    "mysql_max_connections": 151,
+    "django_env": "test",
+    "payment_events_async": false,
+    "catalog_cache_enabled": false,
+    "os": "Windows-10-10.0.26200-SP0",
+    "cpu": "AMD Ryzen 7 8840HX with Radeon Graphics",
+    "physical_cores": 12,
+    "logical_cpus": 24,
+    "host_physical_memory_bytes": 16299335680,
+    "docker_visible_cpus": 24,
+    "docker_memory_bytes": 7889154048,
+    "mysql_container_cpu_limit": 0,
+    "mysql_container_memory_limit": 0,
+    "resources_dedicated_or_pinned": false,
+    "worker_running": false,
+    "grants_changed": false,
+    "service_started_or_stopped": false,
+    "experiment_worker_connect_timeout_seconds": 5,
+    "experiment_worker_read_timeout_seconds": 10,
+    "experiment_worker_write_timeout_seconds": 10,
+    "experiment_lock_wait_timeout_seconds": 5,
+    "timeouts_are_test_thread_only": true,
+    "mysqlclient": "2.3.0"
+  },
+  "preflight": {
+    "test_database_existed": false,
+    "other_visible_test_connections": 0,
+    "application_test_database_grant_confirmed": true,
+    "development_schema_table_count": 26,
+    "client_timeouts_readonly_probe_passed": true
+  },
+  "target": {
+    "command": "PROJECT_ONE_TEST_FLASH_SALE_LOAD=true python -m pytest backend/apps/promotions/tests/test_flash_sale_inventory_load.py -q -s --tb=short",
+    "mysql_database_setting": "project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 1,
+    "elapsed_seconds": 23.58,
+    "warmups": 2,
+    "measured_batches": 24,
+    "invalid_batches": 0,
+    "measured_jobs": 576,
+    "measured_attempts": 767,
+    "created_orders": 250,
+    "lock_timeouts_1205": 0,
+    "deadlocks_1213": 0,
+    "unexpected_errors": 0,
+    "stock_busy_3572_attempts": 383,
+    "worker_connections_per_batch": 8,
+    "all_worker_connections_observed_prestart_and_absent_afterclose": true,
+    "totals_by_strategy": {
+      "nowait": {
+        "jobs": 288,
+        "terminal_outcomes": {
+          "stock_busy": 192,
+          "created": 70,
+          "insufficient_stock": 26
+        },
+        "attempt_outcomes": {
+          "stock_busy": 383,
+          "created": 70,
+          "insufficient_stock": 26
+        }
+      },
+      "conditional": {
+        "jobs": 288,
+        "terminal_outcomes": {
+          "created": 180,
+          "insufficient_stock": 108
+        },
+        "attempt_outcomes": {
+          "created": 180,
+          "insufficient_stock": 108
+        }
+      }
+    }
+  },
+  "regression": {
+    "command": "PROJECT_ONE_TEST_FLASH_SALE_LOAD=false python -m pytest backend/apps/promotions/tests -q --tb=short",
+    "mysql_database_setting": "test_project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 29,
+    "skipped": 1,
+    "subtests_passed": 260,
+    "elapsed_seconds": 36.58,
+    "skipped_scope": "This new explicit load experiment; confirms default gating",
+    "scope": "Promotion models/checkout/qualification/controlled comparison; no full unrelated ordering/payment or realMQ/Redis rerun"
+  },
+  "measurement": {
+    "workers": 8,
+    "customers_per_batch": 24,
+    "initial_stock_profiles": {
+      "ample": 24,
+      "scarce": 6
+    },
+    "total_attempt_budgets": [
+      1,
+      3
+    ],
+    "only_retry_code": "stock_busy",
+    "same_key_on_retry": true,
+    "backoff_ms": [
+      5,
+      10
+    ],
+    "repeats_per_condition": 3,
+    "measured_batches": 24,
+    "warmups_excluded": 2,
+    "fresh_dataset_per_batch": true,
+    "artificial_transaction_hold": false,
+    "server_polling_or_SQL_wrapper_during_measurement": false,
+    "timestamps": "perf_counter_ns offsets from common release origin; all24 submissions at0",
+    "journey": "worker job start to terminal, includes all attempts/backoff; excludes harness queue",
+    "queue": "origin to worker job start",
+    "batch_e2e": "origin to job terminal, includes load generator queue only, no HTTP/frontend/auth/payment",
+    "throughput": "completed journeys or created orders divided by origin-to-last-terminal wall",
+    "connection_holding": "sum of worker session-open-to-closed intervals intersected with [0,last_terminal]; contains backoff/idle, not SQL CPU/lock-wait seconds",
+    "session_open": "ensure_connection returns; setup duration also contains wrapper/session timeout/connectionID preparation",
+    "service_active": "sum and overlapping peak of actual create_flash_sale_order call intervals; contains Python/DB waiting, not SQL concurrency",
+    "percentiles": "nearest rank ceil(p*n); each journey n24, p95 rank23/p99=max; per-run range across3 repeats, no percentile averaging",
+    "two_algorithms_success_inventory_SQLs": 2,
+    "performance_capacity_claim": false
+  },
+  "analysis": {
+    "command": "python scripts/analyze_flash_sale_load.py docs/verification/phase-6c3-flash-sale-inventory-load-target-output.txt --output docs/verification/phase-6c3-flash-sale-inventory-load-analysis.json",
+    "file": "docs/verification/phase-6c3-flash-sale-inventory-load-analysis.json",
+    "complete_matrix": true,
+    "invalid_run_count": 0,
+    "groups": [
+      {
+        "profile": "ample",
+        "max_attempts": 1,
+        "strategy": "conditional",
+        "runs": 3,
+        "run_numbers": [
+          2,
+          16,
+          22
+        ],
+        "created_each_run": [
+          24,
+          24,
+          24
+        ],
+        "busy_each_run": [
+          0,
+          0,
+          0
+        ],
+        "sold_out_each_run": [
+          0,
+          0,
+          0
+        ],
+        "attempts_each_run": [
+          24,
+          24,
+          24
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            243.7209,
+            253.2762
+          ],
+          "connection_holding_seconds_in_batch": [
+            1.7137356,
+            1.7849154
+          ],
+          "service_active_seconds": [
+            1.7107911,
+            1.7815967
+          ],
+          "connection_seconds_per_created_order": [
+            0.07140565,
+            0.074371475
+          ],
+          "created_orders_per_second": [
+            94.75821257583618,
+            98.47329465794685
+          ],
+          "journey_latency_per_run_p95_ms": [
+            92.9147,
+            99.7481
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            236.1426,
+            245.3392
+          ]
+        }
+      },
+      {
+        "profile": "ample",
+        "max_attempts": 1,
+        "strategy": "nowait",
+        "runs": 3,
+        "run_numbers": [
+          1,
+          15,
+          21
+        ],
+        "created_each_run": [
+          3,
+          3,
+          4
+        ],
+        "busy_each_run": [
+          21,
+          21,
+          20
+        ],
+        "sold_out_each_run": [
+          0,
+          0,
+          0
+        ],
+        "attempts_each_run": [
+          24,
+          24,
+          24
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            97.9425,
+            101.2038
+          ],
+          "connection_holding_seconds_in_batch": [
+            0.7538832,
+            0.7716575
+          ],
+          "service_active_seconds": [
+            0.7466235,
+            0.7679256
+          ],
+          "connection_seconds_per_created_order": [
+            0.1884708,
+            0.25721916666666667
+          ],
+          "created_orders_per_second": [
+            30.023418266247674,
+            39.5242075890431
+          ],
+          "journey_latency_per_run_p95_ms": [
+            38.5289,
+            42.3797
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            97.9015,
+            99.5527
+          ]
+        }
+      },
+      {
+        "profile": "ample",
+        "max_attempts": 3,
+        "strategy": "conditional",
+        "runs": 3,
+        "run_numbers": [
+          3,
+          9,
+          23
+        ],
+        "created_each_run": [
+          24,
+          24,
+          24
+        ],
+        "busy_each_run": [
+          0,
+          0,
+          0
+        ],
+        "sold_out_each_run": [
+          0,
+          0,
+          0
+        ],
+        "attempts_each_run": [
+          24,
+          24,
+          24
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            242.8656,
+            279.4734
+          ],
+          "connection_holding_seconds_in_batch": [
+            1.7087118,
+            2.0016914
+          ],
+          "service_active_seconds": [
+            1.7055113,
+            1.9986691
+          ],
+          "connection_seconds_per_created_order": [
+            0.07119632499999999,
+            0.08340380833333333
+          ],
+          "created_orders_per_second": [
+            85.87579354600473,
+            98.82008814751863
+          ],
+          "journey_latency_per_run_p95_ms": [
+            89.3082,
+            103.6156
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            234.6073,
+            271.7012
+          ]
+        }
+      },
+      {
+        "profile": "ample",
+        "max_attempts": 3,
+        "strategy": "nowait",
+        "runs": 3,
+        "run_numbers": [
+          4,
+          10,
+          24
+        ],
+        "created_each_run": [
+          11,
+          10,
+          10
+        ],
+        "busy_each_run": [
+          13,
+          14,
+          14
+        ],
+        "sold_out_each_run": [
+          0,
+          0,
+          0
+        ],
+        "attempts_each_run": [
+          60,
+          57,
+          58
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            277.3133,
+            281.3206
+          ],
+          "connection_holding_seconds_in_batch": [
+            1.8887516,
+            1.9316489
+          ],
+          "service_active_seconds": [
+            1.6141176,
+            1.6504582
+          ],
+          "connection_seconds_per_created_order": [
+            0.1734898,
+            0.19316488999999998
+          ],
+          "created_orders_per_second": [
+            35.54663256085761,
+            39.666326858466576
+          ],
+          "journey_latency_per_run_p95_ms": [
+            107.4559,
+            114.0905
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            254.0645,
+            259.6953
+          ]
+        }
+      },
+      {
+        "profile": "scarce",
+        "max_attempts": 1,
+        "strategy": "conditional",
+        "runs": 3,
+        "run_numbers": [
+          6,
+          12,
+          18
+        ],
+        "created_each_run": [
+          6,
+          6,
+          6
+        ],
+        "busy_each_run": [
+          0,
+          0,
+          0
+        ],
+        "sold_out_each_run": [
+          18,
+          18,
+          18
+        ],
+        "attempts_each_run": [
+          24,
+          24,
+          24
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            130.3093,
+            138.7289
+          ],
+          "connection_holding_seconds_in_batch": [
+            0.9907848,
+            1.0502609
+          ],
+          "service_active_seconds": [
+            0.9832917,
+            1.0453041
+          ],
+          "connection_seconds_per_created_order": [
+            0.1651308,
+            0.17504348333333333
+          ],
+          "created_orders_per_second": [
+            43.24982033303803,
+            46.04429614770396
+          ],
+          "journey_latency_per_run_p95_ms": [
+            83.8578,
+            94.414
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            128.5297,
+            138.654
+          ]
+        }
+      },
+      {
+        "profile": "scarce",
+        "max_attempts": 1,
+        "strategy": "nowait",
+        "runs": 3,
+        "run_numbers": [
+          5,
+          11,
+          17
+        ],
+        "created_each_run": [
+          3,
+          4,
+          4
+        ],
+        "busy_each_run": [
+          21,
+          20,
+          20
+        ],
+        "sold_out_each_run": [
+          0,
+          0,
+          0
+        ],
+        "attempts_each_run": [
+          24,
+          24,
+          24
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            101.9545,
+            106.2138
+          ],
+          "connection_holding_seconds_in_batch": [
+            0.7643414,
+            0.804192
+          ],
+          "service_active_seconds": [
+            0.7605604,
+            0.8003991
+          ],
+          "connection_seconds_per_created_order": [
+            0.19108535,
+            0.268064
+          ],
+          "created_orders_per_second": [
+            28.244917327126984,
+            39.23318735318205
+          ],
+          "journey_latency_per_run_p95_ms": [
+            39.8199,
+            45.5349
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            100.0556,
+            104.1507
+          ]
+        }
+      },
+      {
+        "profile": "scarce",
+        "max_attempts": 3,
+        "strategy": "conditional",
+        "runs": 3,
+        "run_numbers": [
+          7,
+          13,
+          19
+        ],
+        "created_each_run": [
+          6,
+          6,
+          6
+        ],
+        "busy_each_run": [
+          0,
+          0,
+          0
+        ],
+        "sold_out_each_run": [
+          18,
+          18,
+          18
+        ],
+        "attempts_each_run": [
+          24,
+          24,
+          24
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            134.7287,
+            140.3155
+          ],
+          "connection_holding_seconds_in_batch": [
+            1.0155841,
+            1.0718829
+          ],
+          "service_active_seconds": [
+            1.0092172,
+            1.06561
+          ],
+          "connection_seconds_per_created_order": [
+            0.16926401666666668,
+            0.17864715
+          ],
+          "created_orders_per_second": [
+            42.760778388702605,
+            44.533941172148175
+          ],
+          "journey_latency_per_run_p95_ms": [
+            90.0077,
+            94.5504
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            133.76,
+            139.8073
+          ]
+        }
+      },
+      {
+        "profile": "scarce",
+        "max_attempts": 3,
+        "strategy": "nowait",
+        "runs": 3,
+        "run_numbers": [
+          8,
+          14,
+          20
+        ],
+        "created_each_run": [
+          6,
+          6,
+          6
+        ],
+        "busy_each_run": [
+          8,
+          9,
+          11
+        ],
+        "sold_out_each_run": [
+          10,
+          9,
+          7
+        ],
+        "attempts_each_run": [
+          53,
+          52,
+          55
+        ],
+        "observed_ranges": {
+          "batch_wall_ms": [
+            232.9976,
+            250.2222
+          ],
+          "connection_holding_seconds_in_batch": [
+            1.7032529,
+            1.8342422
+          ],
+          "service_active_seconds": [
+            1.4623089,
+            1.5832623
+          ],
+          "connection_seconds_per_created_order": [
+            0.28387548333333334,
+            0.3057070333333333
+          ],
+          "created_orders_per_second": [
+            23.978687742334614,
+            25.751338211209042
+          ],
+          "journey_latency_per_run_p95_ms": [
+            106.422,
+            121.9052
+          ],
+          "batch_end_to_end_latency_per_run_p95_ms": [
+            229.604,
+            234.1034
+          ]
+        }
+      }
+    ],
+    "raw_records_location": "docs/verification/phase-6c3-flash-sale-inventory-load-target-output.txt",
+    "raw_record_count": 24,
+    "warmup_record_count": 2,
+    "raw_records_duplicated_in_this_file": false
+  },
+  "postflight": {
+    "test_database_exists": false,
+    "other_visible_test_connections": 0,
+    "development_schema_table_count_before": 26,
+    "development_schema_table_count_after": 26,
+    "development_migrate_run": false
+  },
+  "static_checks": {
+    "AST": "passed",
+    "collection": "30 tests collected",
+    "django_check": "0 issues",
+    "migration_drift": "No changes detected"
+  },
+  "limits": [
+    "Finite closed batches8workers24journeys; no continuous arrival/capacity or networkHTTP evidence",
+    "n24 per condition/repeat; p99 observed maximum, not stable tail estimate",
+    "Connection intervals are client observation; active calls include Python and DB waiting, not database CPU or lock graph",
+    "No server sampling inside timed region; no deadlock observed does not prove universal deadlock freedom",
+    "Fresh isolated schema only; no development data migration/upgrade or realMQ/Redis rerun",
+    "Candidate remains test-only; no production strategy, backoff or API contract changed"
+  ],
+  "source_sha256": {
+    "backend/apps/promotions/tests/test_flash_sale_inventory_load.py": "fe05383f357b9af8e4f03b656660ad0ed5ee022e36fbbddde6f8bde63e161a53",
+    "scripts/analyze_flash_sale_load.py": "78b6ebe501975e2e9a83a326016ede007b7ad9a38d9253aff6b97a69771cc234",
+    "backend/apps/promotions/services.py": "0e5c58406bb819f7c3dd7de2efff4b2fbdae417343b042568dd125b5e4a49447",
+    "backend/apps/promotions/tests/test_flash_sale_inventory_comparison.py": "4c5fbca35da9cd4a273e0c48769b04416a2ab8dca3851600c738c15a113c3cca",
+    "backend/apps/promotions/models.py": "6a6df1dda514bf3fc3d1768ea32babf4505d8e019447751418b113aa2e1ab10d",
+    "backend/apps/inventory/models.py": "27ceaad4cffe144b5a559fd4086088016d3e2bf2cc6856b902a77f660a4a3a96",
+    "backend/apps/accounts/models.py": "a3c583e25107edee40c9770fc374b6d6dafd35de7a8dbfd3c0df352a96b8b430",
+    "backend/apps/ordering/models.py": "0ad4cca4dcd289a37858622cb6042383c6790cd98262ea55942697356984f98e",
+    "backend/config/settings.py": "f7e90dbee5bb66816de752df4961f74ef9fe43a2cf4d96dba369c454bc8fed7c"
+  },
+  "output_sha256": {
+    "docs/verification/phase-6c3-flash-sale-inventory-load-target-output.txt": "df9c6877bf924c53a3e9db95580f3215070d3df7d9237c1343e8386dda4fde2a",
+    "docs/verification/phase-6c3-flash-sale-inventory-load-regression-output.txt": "26034cc136323da78cc2483c9c2caf4666dc6b5fb579872fea527e67f341ffd5",
+    "docs/verification/phase-6c3-flash-sale-inventory-load-analysis.json": "59b5ceddc4d69f2de10194c1342bf3f101cf085707fbbaafad8bfab3642b01fd"
+  },
+  "fingerprint_normalization": "UTF-8 file bytes with CRLF normalized to LF; stable across Git checkouts"
+}

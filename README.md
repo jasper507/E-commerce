@@ -27,9 +27,17 @@ A test-only conditional UPDATE uses that same complete checkout transaction;
 controlled commit/rollback, qualification and write-failure cases passed 6 targets
 and all 29 promotion tests. Server PROCESSLIST recorded the unfinished inventory
 UPDATE before release and the later 0/1 affected rows. Production still defaults
-to NOWAIT; performance, resource costs and final strategy ADR remain pending.
+to NOWAIT; later slices measure resource costs before a final strategy ADR.
 See the [comparison evidence](docs/verification/phase-6c2-flash-sale-inventory-comparison.md)
 and [guide](docs/learning/phase-6c2-flash-sale-inventory-comparison-study-guide.md).
+On 2026-10-08, Phase 6C-3 measured 24 finite batches (8 workers, 24 customer
+journeys, two stock levels and retry budgets, three repetitions): all valid,
+576 journeys and 767 attempts. A standard-library CLI independently reconstructs
+latency and connection intervals from raw clocks. The target passed; ordinary
+promotion regression was 29 passed and 1 explicitly skipped load experiment.
+This is service-level cost evidence, not sustained production capacity; default
+NOWAIT remains unchanged. See the [load evidence](docs/verification/phase-6c3-flash-sale-inventory-load.md)
+and [guide](docs/learning/phase-6c3-flash-sale-inventory-load-study-guide.md).
 After the RabbitMQ/Linux Worker baseline, bounded retries and manual publication
 recovery, Phase 5C-4 adds a persisted processing lease and explicit single-run
 `--recover-stale` repair. It checks the original claim version in a short
