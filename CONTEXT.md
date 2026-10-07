@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.35
+# Project One — Domain Context v1.36
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6C-5 正式条件 UPDATE、真实1205整单回滚/原Key重试及相关回归通过；HTTP/前端待接入
-- 文档版本：v1.35
+- 当前阶段：main 已验收6C-5；6D最小HTTP基础为隔离分支候选，等待政策尚待答复，未合main，前端待接入
+- 文档版本：v1.36
 - 更新日期：2026-10-08
 - 范围来源：`PROJECT_CHARTER.md` v1.4、2026-10-01 支付范围决定（第 33 节）及 ADR 0001
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
@@ -1349,3 +1349,16 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 1213/2006在UPDATE发往服务器前注入，actual_sql_attempted=false：分别验证已知错误映射/保留cause、未知错误原样透传，并核对完整回滚及原Key重试/重放。不是实际死锁、网络断连或提交不确定恢复。既有条件提交0行、回滚1行、同用户库存5双Key最多一单、流水实写后异常回滚均重新通过；历史NOWAIT仍实际3572。
 - promotions/ordering/payments相关回归183 passed/403子场景、141.49秒，7 skip（负载1、显式支付到期并发6），12真实MQ未选入；check0 issues、迁移漂移No changes detected。没有重跑真实MQ/Redis/5D或负载矩阵；负载策略绑定仅静态核对。不把测试时长当性能提升，不证明生产容量或普遍无死锁。
 - docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md与verification同名.md/data.json、target/regression-output.txt保留教学、3条新失败完整快照、6项对照摘要、全部9条raw、源码/输出指纹及边界。ADR更新为Accepted/Implemented，仅正式服务层；下一片最小HTTP前确定顾客等待预算，随后极简页面与端到端/独立讲述验收。Redis Lua范围仍另行确认，分布式锁默认No-Go。
+
+## 53. Phase 6D：HTTP 基础候选，等待政策待答复（2026-10-08）
+
+- 用户选中“确定顾客等待预算，接入最小活动查询和下单HTTP”要求开始。面试目标是独立解释Session/CSRF、输入、服务端价格/用户、幂等和业务事务；HTTP适配Supporting/Pair，等待/事务政策Depth/Learning。最小合同与回归达到后不增加负载实验。
+- 开始前main/现有codex分支及两个远端均b4456bd、工作区干净；上一片已推送，无空提交。复用codex/flash-sale-baseline隔离候选，没有新分支/worktree/源码副本。本轮只保存该分支，等待确认前不合main。
+- 明确询问临时5秒HTTP调用会话行锁等待并恢复，或继续沿用现有值（本机50秒）；目前没有答复，不能用默认选项/沉默当确认。因此未实现5秒设置、恢复逻辑、前置锁短等待合同、自动重试或总HTTP截止；原ADR接入前等待门槛仍未完成。
+- 新增promotions serializers/views/urls与test_flash_sale_api，总URL一行include，services只更新模块说明；除模块docstring外整个业务模块AST与基点相同。原模型、配置、依赖、迁移、测试、库存/资格/Key/锁序、普通下单、支付/关闭与前端未改。
+- GET /api/flash-sales/items/匿名列表，仅sale/item/SKU/Product/Category全启用且starts<=now<ends；一次捕获now、关联预加载。仅公开购买id与活动/商品/价/时间、CNY、qty1和in_stock布尔，不公开库存数字或顾客/资格。售罄/缺Inventory仍显示false；小规模不分页，没有容量或有货即成交保证。
+- POST /api/flash-sales/orders/继承SessionAuthentication与CSRF、IsAuthenticated；两个ID正整数到BigAutoField上限，Key trim/1–128可打印字符。只用request.user与服务端活动价/qty1，多余price/quantity/user_id/scope字段忽略且无作用。新建201、重放200，复用OrderSerializer与原本人订单查询；View只映射OrderRuleError，原库存1205/1213 stock_busy与其他数据库错误透传保持。
+- 12项HTTP目标、162子场景通过，19.73秒首次通过；实际检查五级可见性/时间边界、公开字段、无库存/售罄回滚、方法/Session/CSRF、ID/Key、伪造价格/数量/用户无效、重放/冲突/限购、失效/改价后重放、地址/订单归属、跨scope/顾客同Key及六事实/库存/cart。
+- 相关promotions/ordering/payments加原登录API回归207 passed/565子场景，152.27秒；7 skip（负载1、显式支付到期锁6）、12真实MQ未选入。check0、迁移漂移No changes detected。独立只读评审无阻止基础候选保存的问题，要求等等待答复再合main；本轮没有另行制造HTTP数据库锁超时或注入故障。
+- 已有MySQL8.4.10/3307/READ-COMMITTED，session50、rollback_on_timeout=false；pytest只操作临时test_project_one。前后临时库不存在、可见连接0、开发schema表数26，后检session50；没有开发迁移/业务SQL、服务启停/GRANT改动。APIClient为进程内请求测试，force_login建立Session，不是浏览器/真实网络验收；未重跑真实MQ/Redis/5D/负载矩阵。
+- docs/learning/phase-6d-flash-sale-http-study-guide.md与verification同名.md/data.json、target/regression-output.txt保存候选合同、完整请求解释、实测与源码/输出指纹；没有逐请求SQL/ORM raw新采集或历史证据改写。候选不等于Phase6D全部完成，待拥有者选等待方案后补必要处理/验证并整合main，再做极简页面与端到端验收。

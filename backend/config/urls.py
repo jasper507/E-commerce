@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/catalog/", include("apps.catalog.urls")),
     path("api/cart/", include("apps.ordering.urls")),
     path("api/orders/", include("apps.ordering.order_urls")),
+    path("api/flash-sales/", include("apps.promotions.urls")),
     path("api/payments/", include("apps.payments.urls")),
     path("admin/", admin.site.urls),
     path("health/", health_check, name="health"),

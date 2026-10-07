@@ -1,0 +1,7 @@
+........................................... [ 20%]
+.................................s..................................ssssss................... [ 63%]
+..............................................................................              [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_inventory_load.py:433: Requires PROJECT_ONE_TEST_FLASH_SALE_LOAD=true and isolated MySQL.
+SKIPPED [6] backend\apps\ordering\tests\test_payment_expiration_concurrency.py:178: Requires explicit local MySQL lock observation experiment.
+207 passed, 7 skipped, 12 deselected, 565 subtests passed in 152.27s (0:02:32)

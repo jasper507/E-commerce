@@ -15,6 +15,13 @@ related regression: 183 passed / 403 subtests, 7 explicit experiments skipped an
 HTTP/customer wait budget and frontend acceptance remain pending. See the
 [current guide](docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md)
 and [evidence](docs/verification/phase-6c5-flash-sale-inventory-failures.md).
+On the isolated candidate branch, Phase 6D adds public current-item discovery
+and Session/CSRF checkout endpoints with unchanged business service logic.
+Its 12 HTTP targets / 162 subtests passed. The owner has been asked to choose
+a temporary five-second session row-lock wait or the existing value; no answer
+has been received, so no new wait setting is implemented and this candidate
+is not integrated into main. See the [HTTP guide](docs/learning/phase-6d-flash-sale-http-study-guide.md)
+and [verification scope](docs/verification/phase-6d-flash-sale-http.md).
 The following paragraphs retain the state observed in each earlier slice.
 
 The narrow business loop has

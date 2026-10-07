@@ -1,0 +1,163 @@
+{
+  "date": "2026-10-08",
+  "timezone": "Asia/Shanghai",
+  "status": "verified HTTP foundation candidate; wait-policy decision pending; not integrated into main",
+  "source": {
+    "base_commit": "b4456bd1d498c7fe370e8a793f63e11ffa5f4fae",
+    "branch_at_execution": "codex/flash-sale-baseline",
+    "main_still_base_commit": true,
+    "business_service_ast_unchanged_except_module_description": true,
+    "existing_tests_changed": false
+  },
+  "owner_wait_decision": {
+    "question_presented": true,
+    "answer_received": false,
+    "proposed_options": [
+      "temporary five-second session row-lock wait around HTTP service with restoration",
+      "inherit existing session value, locally 50 seconds"
+    ],
+    "new_wait_setting_implemented": false,
+    "automatic_retry": false,
+    "total_http_deadline_implemented": false,
+    "integration_to_main_pending_owner_answer": true
+  },
+  "contracts": {
+    "public_get": "/api/flash-sales/items/",
+    "get_scope": "current open and all sale/item/SKU/Product/Category active; stock false or missing Inventory remains visible",
+    "get_pagination": "none; small learning-project scope",
+    "public_fields": [
+      "id",
+      "sale_name",
+      "starts_at",
+      "ends_at",
+      "product_slug",
+      "product_name",
+      "sku_code",
+      "color",
+      "attributes",
+      "price",
+      "currency",
+      "quantity",
+      "in_stock"
+    ],
+    "post": "/api/flash-sales/orders/",
+    "authentication": "existing SessionAuthentication + CSRF; IsAuthenticated",
+    "post_fields": [
+      "flash_sale_item_id",
+      "address_id"
+    ],
+    "other_input_fields": "ignored and cannot set owner, price, quantity or creation_scope",
+    "new_order_http_status": 201,
+    "replay_http_status": 200,
+    "order_output": "existing OrderSerializer",
+    "busy_mapping": "only existing inventory UPDATE 1205/1213 stock_busy; other SQL DatabaseError propagation unchanged"
+  },
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "pytest": "9.1.1",
+    "mysql": "8.4.10",
+    "host": "127.0.0.1",
+    "port": 3307,
+    "isolation": "READ-COMMITTED",
+    "session_row_lock_wait_seconds": 50,
+    "innodb_rollback_on_timeout": false,
+    "test_database": "test_project_one",
+    "django_env": "test",
+    "payment_events_async": false,
+    "catalog_cache_enabled": false,
+    "service_started_or_stopped": false,
+    "grants_changed": false,
+    "development_migrate_run": false
+  },
+  "preflight": {
+    "test_database_existed": false,
+    "visible_test_connections": 0,
+    "development_schema_table_count": 26,
+    "test_database_grant_confirmed": true
+  },
+  "target": {
+    "command": "python -m pytest backend/apps/promotions/tests/test_flash_sale_api.py -q --tb=short",
+    "mysql_database_setting": "project_one",
+    "passed": 12,
+    "subtests_passed": 162,
+    "elapsed_seconds": 19.73,
+    "exit_code": 0,
+    "test_methods": [
+      "test_guest_receives_only_public_activity_and_item_fields",
+      "test_public_query_requires_all_active_flags_and_current_time_window",
+      "test_zero_or_missing_inventory_is_visible_but_checkout_rolls_back",
+      "test_public_items_are_read_only_and_order_creation_has_no_get",
+      "test_checkout_requires_session_and_a_valid_csrf_token",
+      "test_item_and_address_inputs_are_required_and_bounded_database_ids",
+      "test_checkout_requires_a_nonempty_printable_idempotency_key",
+      "test_create_uses_server_price_fixed_quantity_and_session_owner",
+      "test_replay_precedes_activity_checks_and_conflicts_do_not_duplicate_facts",
+      "test_unavailable_items_and_wrong_owner_addresses_have_no_checkout_effects",
+      "test_existing_order_queries_return_only_the_session_owners_flash_sale_order",
+      "test_cart_scope_and_other_customer_can_use_the_same_idempotency_key"
+    ],
+    "fixture": "existing FlashSaleCheckoutFixture / TransactionTestCase; no inherited test methods",
+    "client": "APIClient(enforce_csrf_checks=True), force_login creates session; csrf endpoint supplies cookie"
+  },
+  "regression": {
+    "command": "python -m pytest backend/apps/promotions/tests backend/apps/ordering/tests backend/apps/payments/tests backend/apps/accounts/tests/test_session_auth_api.py -m 'not rabbitmq_integration' -q --tb=short",
+    "mysql_database_setting": "test_project_one",
+    "passed": 207,
+    "subtests_passed": 565,
+    "skipped": 7,
+    "deselected": 12,
+    "elapsed_seconds": 152.27,
+    "exit_code": 0,
+    "skip_reasons": {
+      "explicit_load_experiment": 1,
+      "explicit_payment_expiration_lock_experiment": 6
+    },
+    "deselected_scope": "real RabbitMQ integration tests"
+  },
+  "static_checks": {
+    "django_check": "System check identified no issues (0 silenced).",
+    "migration_drift": "No changes detected",
+    "python_ast": 15,
+    "original_business_service_ast_preserved": true,
+    "readonly_independent_review": "no blocking issue for candidate save; requires evidence links and no premature main integration"
+  },
+  "postflight": {
+    "test_database_exists": false,
+    "visible_test_connections": 0,
+    "development_schema_table_count_before": 26,
+    "development_schema_table_count_after": 26,
+    "session_row_lock_wait_seconds": 50
+  },
+  "fingerprint_normalization": "UTF-8 file bytes with CRLF normalized to LF; stable across Git checkouts",
+  "source_sha256": {
+    "backend/apps/promotions/services.py": "a9bf46558f667a3ff249f0077ba4099b88c8e13fa96d4c7a5237ee094ea3d552",
+    "backend/apps/promotions/models.py": "6a6df1dda514bf3fc3d1768ea32babf4505d8e019447751418b113aa2e1ab10d",
+    "backend/apps/promotions/lifecycle_services.py": "50fdbdcfd185bf3eb8ef52a12fc24503cc05d553fdd8789ceed56ec411a3a875",
+    "backend/apps/promotions/serializers.py": "d3c691f76b305c3456762b0a5afa03ad0a272bb04001533f1ee56315c77af369",
+    "backend/apps/promotions/views.py": "562622e036ab50c43ea5d000605818cb21040fd2ec42ecd029dd37be10c3205b",
+    "backend/apps/promotions/urls.py": "65e9d9199e5db545a7ea09bbce440fdea24f0be46dd1df2839415eb2db3728ca",
+    "backend/apps/promotions/tests/test_flash_sale_api.py": "be5e273649798cd8c8010a665545e63817585724f3f2ff5d54fdf69ccec613e8",
+    "backend/apps/promotions/tests/test_flash_sale_checkout.py": "1512037833f0d62c78cd48772bbce3f00fd561e42737f11ade65b3e21e56bc10",
+    "backend/apps/ordering/services.py": "547c0ba26ccf278e86d46300be7fb3656792cf78b74f823f734286eb171707f9",
+    "backend/apps/ordering/serializers.py": "ac3e11b7ff3917f5a9f506658faa5007383b7a6d637d195c4dac9210a438e760",
+    "backend/apps/ordering/views.py": "19f9bd7764b5b6fdb134335bf5f0a2acf70db28e8122eddd6e41d13e1fa3699b",
+    "backend/apps/payments/services.py": "c76142484b5f58c352b2ddf59b49b3821c10822011ad64cf1ec5633bed5cb169",
+    "backend/apps/accounts/views.py": "6167df0a9e200e91f07d56807f3bb66df84ab45023ac5e298731eb203deb0a20",
+    "backend/config/settings.py": "f7e90dbee5bb66816de752df4961f74ef9fe43a2cf4d96dba369c454bc8fed7c",
+    "backend/config/urls.py": "58baea39177c05624f38977e82fa5d2912212bc078b5269f59d44c565aeec118"
+  },
+  "raw_output_sha256": {
+    "docs/verification/phase-6d-flash-sale-http-target-output.txt": "fc66ab01e0a6936317a69bb03a06cdf618f0c6cb997cb3bc3b40bde21721f621",
+    "docs/verification/phase-6d-flash-sale-http-regression-output.txt": "caa3c37acc53d07a5327d9a6435b6873aa52349c2232ffc55870dbc7a2bc293e"
+  },
+  "limits": [
+    "Wait policy has no owner answer yet; no new short-wait wrapper or restoration tests and no integration into main",
+    "APIClient is in-process DRF request testing, not real HTTP network or browser acceptance",
+    "No frontend, development migration, deployment or development business-data writes",
+    "No new load matrix, real MQ/Redis or explicit payment-expiration lock rerun",
+    "Public listing is not paginated; no large-list capacity claim",
+    "No fresh SQL/connection evidence emitted in these pytest output files; previous historical raw data is not rewritten",
+    "No request-wide deadline, automatic retry or new generic database-error mapping"
+  ]
+}

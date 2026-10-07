@@ -1,4 +1,4 @@
-"""秒杀下单的 MySQL 基线；当前仅供隔离实验，不开放 HTTP 入口。"""
+"""秒杀下单的 MySQL 业务事务；HTTP 和隔离实验复用相同规则。"""
 
 import hashlib
 import json
