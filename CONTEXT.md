@@ -1,10 +1,10 @@
-# Project One — Domain Context v1.28
+# Project One — Domain Context v1.29
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6A秒杀下单服务基线已实现；MySQL目标验证待环境恢复，支付C4/5D证据与本地增量保留
-- 文档版本：v1.28
-- 更新日期：2026-10-06
+- 当前阶段：Phase 6A秒杀下单/限购通过真实MySQL目标与订单/支付回归；下一片接资格核销与关闭释放
+- 文档版本：v1.29
+- 更新日期：2026-10-07
 - 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
@@ -1249,3 +1249,23 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
   未启动/停止服务、运行数据库测试、迁移开发库、发布飞书或生成新业务代码。
 - 授权保留原Review/测试/敏感信息检查要求，不允许混入未知进行中修改、强推或覆盖远端历史。
   每次实际保存是否成功以git log、git status及远端核对为准。
+
+
+## 46. Phase 6A：真实 MySQL 验收（2026-10-07）
+
+- 用户明确要求开始前一片的隔离MySQL验证。Depth/Learning，沿用be2b4f6源码，业务代码与测试均未修改。
+- 本轮开始时Docker已运行，只有MySQL8.4.10 db容器健康，宿主127.0.0.1:3307；
+  未发现pytest/支付Worker，既定test_project_one不存在，应用授权与无可见测试连接已只读核对。
+  没有启动/停止服务、换3306、扩数据库授权或操作开发业务数据。
+- pytest在test_project_one新建、执行迁移和测试，再清理该库；不执行开发库migrate。
+  目标10 passed、79 subtests passed，15.63秒；两独立连接59/60，一笔创建与一笔限购409。
+  六类事实各1、活动价89.00、数量1、购物车数量2不变，库存5/0→4/1，HELD/1。
+- ordering/payments回归151 passed、83 subtests passed，100.58秒；6项5D显式实验skip，
+  12项真实RabbitMQ集成未选入。本轮未重跑真实MQ/Redis或5D锁等待实验，不算重新验证旧证据。
+- 后检测试库不存在、测试连接0，开发schema表数前后26；check为0 issues，迁移漂移No changes detected。
+- 当前结果不等于HTTP/前端验收、资格消费/释放或旧订单事件不影响重购已实现；
+  不证明User记录锁等待、无死锁或性能胜负。只验证新建隔离库迁移，不验证已有开发数据升级/逆向回退。
+- docs/verification/phase-6a-flash-sale-checkout-data.json记录原始并发输出、结果、源码指纹和边界；
+  同目录target-output.txt/regression-output.txt保留原始pytest输出，阶段指南与当前路线图同步。
+- 按持续授权保存本片证据；分支安全整合与推送结果以Git历史、远端核对和最终汇报为准。
+  下一片一并接入正常支付资格核销与真正未付关闭释放，再测O1关闭→O2重购、旧Key和迟到事件。

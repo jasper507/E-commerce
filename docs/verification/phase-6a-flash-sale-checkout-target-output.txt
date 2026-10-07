@@ -1,0 +1,3 @@
+uuuuuu.uuuuuuuu.uuuuu.uuuuuuuuuuuu.uuuuuuuuuuuuuuuuuu.uuuuuu.uuuuuu.FLASH_SALE_CHECKOUT_RACE [{"connection_id": 60, "created": true, "key": "flash-sale-concurrent-b", "order_id": 25}, {"connection_id": 59, "error_code": "flash_sale_limit_reached", "http_status": 409, "key": "flash-sale-concurrent-a"}]
+uuuuuu.uuuuuu.uuuuuu.
+10 passed, 79 subtests passed in 15.63s

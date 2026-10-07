@@ -3,13 +3,13 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase 6A 秒杀下单服务基线已实现，真实 MySQL 验证待环境恢复；支付 C4/5D 证据与本地增量保留
+- 当前阶段：Phase 6A 秒杀下单/限购服务基线通过真实 MySQL 目标与订单/支付回归；下一片接资格核销与关闭释放
 - 文档版本：v1.2
-- 路线图进度更新：2026-10-06
+- 路线图进度更新：2026-10-07
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D与尚未完成真实MySQL验证的Phase 6A增量由codex/flash-sale-baseline分支管理；Phase 6A未整合进main。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；未执行开发库恢复、迁移或浏览器验收。
+- 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过，见docs/verification/phase-6a-flash-sale-checkout.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；未执行开发库恢复、迁移或浏览器验收。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -920,7 +920,7 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 
 ### Phase 6 — Flash Sale & Concurrency Track
 
-- [ ] 单活动商品下单/限购服务基线（Phase 6A 已实现，MySQL 目标测试未运行；暂不开放 HTTP/支付/关闭，见阶段指南与验证记录）
+- [x] 单活动商品下单/限购服务基线（Phase 6A 真实MySQL目标10项与订单/支付回归151项通过；暂不开放 HTTP/支付/关闭，见阶段指南与验证记录）
 - [ ] 超卖复现
 - [ ] MySQL 最终事实与方案对比
 - [ ] Redis Lua 流量准入/原子前置候选

@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-07",
+  "timezone": "Asia/Shanghai",
+  "source": {
+    "commit": "be2b4f6a125a46bfa07b5e17c71094eb9c95ec27",
+    "branch_at_execution": "codex/flash-sale-baseline",
+    "business_code_changed": false
+  },
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "mysql": "8.4.10",
+    "host": "127.0.0.1",
+    "port": 3307,
+    "test_database": "test_project_one",
+    "django_env": "test",
+    "payment_events_async": false,
+    "catalog_cache_enabled": false,
+    "worker_running": false,
+    "database_grants_changed": false
+  },
+  "preflight": {
+    "test_database_existed": false,
+    "other_visible_test_connections": 0,
+    "application_test_database_grant_confirmed": true
+  },
+  "target": {
+    "command": "python -m pytest backend/apps/promotions/tests -q -s --tb=short",
+    "mysql_database_setting": "project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 10,
+    "subtests_passed": 79,
+    "elapsed_seconds": 15.63,
+    "race_output": [
+      {
+        "connection_id": 60,
+        "created": true,
+        "key": "flash-sale-concurrent-b",
+        "order_id": 25
+      },
+      {
+        "connection_id": 59,
+        "error_code": "flash_sale_limit_reached",
+        "http_status": 409,
+        "key": "flash-sale-concurrent-a"
+      }
+    ],
+    "contract_verified_by_passing_assertions": {
+      "initial_stock": {
+        "available": 5,
+        "reserved": 0
+      },
+      "final_stock": {
+        "available": 4,
+        "reserved": 1
+      },
+      "fact_counts": {
+        "Order": 1,
+        "OrderItem": 1,
+        "AddressSnapshot": 1,
+        "InventoryReservation": 1,
+        "InventoryMovement": 1,
+        "FlashSalePurchase": 1
+      },
+      "order_quantity": 1,
+      "order_total": "89.00",
+      "catalog_sku_price": "129.00",
+      "cart_quantity_unchanged": 2,
+      "purchase_status": "HELD",
+      "blocking_marker": 1,
+      "verification_helper": "FlashSaleCheckoutTests._assert_complete_flash_sale_order"
+    }
+  },
+  "regression": {
+    "command": "python -m pytest backend/apps/ordering/tests backend/apps/payments/tests -m \"not rabbitmq_integration and not redis_integration\" -q --tb=short",
+    "mysql_database_setting": "test_project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 151,
+    "skipped": 6,
+    "deselected": 12,
+    "subtests_passed": 83,
+    "elapsed_seconds": 100.58,
+    "skipped_reason": "Phase 5D requires an explicit lock observation experiment; disabled this run",
+    "deselected_reason": "RabbitMQ integration excluded; no real MQ verification this run"
+  },
+  "postflight": {
+    "test_database_exists": false,
+    "other_test_connections": 0,
+    "development_schema_table_count_before": 26,
+    "development_schema_table_count_after": 26,
+    "development_migrate_run": false
+  },
+  "static_checks": {
+    "django_check": "0 issues",
+    "migration_drift": "No changes detected"
+  },
+  "limits": [
+    "Service tests, no flash-sale HTTP or frontend acceptance",
+    "No qualification consumption or release lifecycle integration",
+    "No O1-close/O2-rebuy or late-event verification for flash-sale orders",
+    "No observed User record-lock wait, benchmark or absence-of-deadlock claim",
+    "Fresh test schema migrations executed, no existing development-data upgrade or reverse-migration test",
+    "No real RabbitMQ or Redis verification this run"
+  ],
+  "source_sha256": {
+    "backend/apps/promotions/services.py": "8167c34f2048c2140ae5216836338a2ed936438e3de1f30e7b3ef4bacbacf360",
+    "backend/apps/promotions/models.py": "6a6df1dda514bf3fc3d1768ea32babf4505d8e019447751418b113aa2e1ab10d",
+    "backend/apps/promotions/tests/test_flash_sale_checkout.py": "9555ff416bfe0492738b3a3e152bf05d0b2d88a704686e4484972187cbef950f",
+    "backend/apps/promotions/tests/test_flash_sale_models.py": "d033972e3e53076580a0ac4388837ecaf0d3f45ca81d322312d75cb2d286e6f2",
+    "backend/apps/promotions/migrations/0001_initial.py": "4b0ac50e826b31e92c038a5bac22cec673cda309d454d7872c056663f97ebc5c",
+    "backend/apps/ordering/models.py": "0ad4cca4dcd289a37858622cb6042383c6790cd98262ea55942697356984f98e",
+    "backend/apps/ordering/services.py": "547c0ba26ccf278e86d46300be7fb3656792cf78b74f823f734286eb171707f9",
+    "backend/apps/ordering/lifecycle_services.py": "ab7764d25ddbd747f0af7d5202c121e27d401eca1704d0090795c4283f25d8f9",
+    "backend/apps/ordering/migrations/0004_order_creation_scope.py": "f5410c5f21db4fe6fd5a6a768197ee7f2ea1a35eee9c778989a5c090c58c2d8d",
+    "backend/apps/payments/services.py": "064b58b29360f0e8e90a9e1a05681dd71c7822a81d211a3eeb5bd7e7457b0b94",
+    "backend/config/settings.py": "f7e90dbee5bb66816de752df4961f74ef9fe43a2cf4d96dba369c454bc8fed7c"
+  },
+  "raw_output_sha256": {
+    "docs/verification/phase-6a-flash-sale-checkout-target-output.txt": "1a54b96abd0450f4fdf44d00594905fa0c4ca6084d53ab95ed0d551acdbd45c4",
+    "docs/verification/phase-6a-flash-sale-checkout-regression-output.txt": "26836b2957d261ee6dec8908a9d7fd41b683d200686350ef7ff8f5044b80b94c"
+  },
+  "fingerprint_normalization": "UTF-8 file bytes with CRLF normalized to LF; stable across Git checkouts"
+}

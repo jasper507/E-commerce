@@ -1,0 +1,6 @@
+......................................................sss [ 36%]
+sss............................................................................ [ 86%]
+.....................                                                 [100%]
+=========================== short test summary info ===========================
+SKIPPED [6] backend\apps\ordering\tests\test_payment_expiration_concurrency.py:178: Requires explicit local MySQL lock observation experiment.
+151 passed, 6 skipped, 12 deselected, 83 subtests passed in 100.58s (0:01:40)
