@@ -18,10 +18,18 @@ and [verification record](docs/verification/phase-6b-flash-sale-lifecycle.md).
 Phase 6C-1 adds the current NOWAIT service baseline for two different customers
 competing for one item, including held-first commit/rollback and original-key
 retry. After correcting the test observation context, 3 targets and all 23
-promotion tests passed. Production code and migrations are unchanged; complete
-conditional-update comparison and performance work remain pending. See its
+promotion tests passed. That slice kept production code and migrations unchanged;
+the following slice adds the complete conditional-update correctness comparison. See its
 [verification](docs/verification/phase-6c1-flash-sale-contention.md) and
 [learning guide](docs/learning/phase-6c1-flash-sale-contention-study-guide.md).
+Phase 6C-2 extracts the unchanged default NOWAIT reservation into a private helper.
+A test-only conditional UPDATE uses that same complete checkout transaction;
+controlled commit/rollback, qualification and write-failure cases passed 6 targets
+and all 29 promotion tests. Server PROCESSLIST recorded the unfinished inventory
+UPDATE before release and the later 0/1 affected rows. Production still defaults
+to NOWAIT; performance, resource costs and final strategy ADR remain pending.
+See the [comparison evidence](docs/verification/phase-6c2-flash-sale-inventory-comparison.md)
+and [guide](docs/learning/phase-6c2-flash-sale-inventory-comparison-study-guide.md).
 After the RabbitMQ/Linux Worker baseline, bounded retries and manual publication
 recovery, Phase 5C-4 adds a persisted processing lease and explicit single-run
 `--recover-stale` repair. It checks the original claim version in a short

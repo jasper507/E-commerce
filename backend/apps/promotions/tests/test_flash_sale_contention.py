@@ -21,7 +21,7 @@ from apps.promotions.tests.test_flash_sale_checkout import FlashSaleCheckoutFixt
 User = get_user_model()
 
 
-class FlashSaleContentionTests(FlashSaleCheckoutFixture):
+class FlashSaleContentionFixture(FlashSaleCheckoutFixture):
     def setUp(self):
         super().setUp()
         self.assertTrue(connection.features.has_select_for_update_nowait)
@@ -196,6 +196,7 @@ class FlashSaleContentionTests(FlashSaleCheckoutFixture):
             {"scenario": scenario, **observations}, default=str, sort_keys=True
         ))
 
+class FlashSaleContentionTests(FlashSaleContentionFixture):
     def test_two_customers_contend_for_one_item_without_partial_orders(self):
         observer_connection_id = self._connection_id()
         start, results = Barrier(2), Queue()

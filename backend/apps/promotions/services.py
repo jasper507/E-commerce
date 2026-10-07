@@ -33,6 +33,24 @@ def _request_fingerprint(*, flash_sale_item_id, address_id):
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
+def _reserve_flash_sale_inventory(sku):
+    """调用者持有下单事务；库存繁忙时由外层回滚此前订单与资格。"""
+
+    try:
+        inventory = Inventory.objects.select_for_update(nowait=True).filter(sku=sku).first()
+    except DatabaseError as exc:
+        if not exc.args or exc.args[0] != MYSQL_LOCK_NOWAIT_ERROR:
+            raise
+        raise OrderRuleError("stock_busy", "库存正在更新，请重试原请求。", 409) from exc
+    if inventory is None or inventory.available_stock < 1:
+        raise OrderRuleError("insufficient_stock", "活动商品库存不足。", 409)
+
+    inventory.available_stock -= 1
+    inventory.reserved_stock += 1
+    inventory.save(update_fields=("available_stock", "reserved_stock"))
+    return inventory
+
+
 @transaction.atomic
 def create_flash_sale_order(*, user, flash_sale_item_id, address_id, idempotency_key):
     """购买一件活动 SKU：订单、名额、预占和流水共同提交或回滚。"""
@@ -143,18 +161,7 @@ def create_flash_sale_order(*, user, flash_sale_item_id, address_id, idempotency
             ) from exc
         raise
 
-    try:
-        inventory = Inventory.objects.select_for_update(nowait=True).filter(sku=sku).first()
-    except DatabaseError as exc:
-        if not exc.args or exc.args[0] != MYSQL_LOCK_NOWAIT_ERROR:
-            raise
-        raise OrderRuleError("stock_busy", "库存正在更新，请重试原请求。", 409) from exc
-    if inventory is None or inventory.available_stock < 1:
-        raise OrderRuleError("insufficient_stock", "活动商品库存不足。", 409)
-
-    inventory.available_stock -= 1
-    inventory.reserved_stock += 1
-    inventory.save(update_fields=("available_stock", "reserved_stock"))
+    inventory = _reserve_flash_sale_inventory(sku)
     reservation = InventoryReservation.objects.create(
         order_item=order_item,
         inventory=inventory,

@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.31
+# Project One — Domain Context v1.32
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6C-1完整秒杀NOWAIT竞争基线通过真实MySQL；下一片对照完整事务的原子条件更新候选
-- 文档版本：v1.31
+- 当前阶段：Phase 6C-2同完整秒杀事务NOWAIT/条件UPDATE候选正确性与行为对照通过真实MySQL；默认仍NOWAIT，负载/资源成本与最终ADR待完成
+- 文档版本：v1.32
 - 更新日期：2026-10-07
 - 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
@@ -1296,3 +1296,17 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 模块回归promotions全部23 passed/122 subtests、58.92秒；未重跑完整ordering/payments或真实MQ/Redis/5D。check0 issues、迁移漂移No changes detected。pytest临时库建表/迁移/夹具/清理；后检test_project_one不存在、可见连接0，开发schema表数前后26，无开发migrate/业务写入或服务启停/GRANT改动。
 - 记录docs/learning/phase-6c1-flash-sale-contention-study-guide.md；verification同名.md/.json以及initial-failure/target/regression-output.txt保留所有运行、3条实际ORM证据、源码和输出指纹。本机服务层2顾客正确性实验，无HTTP网络、压测/性能指标、锁等待表观测或普遍无死锁证明。
 - 按持续授权保存/推送，经验证安全整合main，实际提交/远端以Git核对为准。下一片将条件UPDATE候选放入相同完整下单事务，比较首单提交/回滚与失败重试；在负载和权衡证据形成前不替换正式策略或宣称性能胜出。
+
+## 49. Phase 6C-2：同完整秒杀事务的库存策略对照（2026-10-07）
+
+- 用户要求开始下一片。Depth/Learning，承接6C-1；开始前main/现有codex分支与两远端都为8465d2a，工作区干净，之前成果已推送，无空提交。继续复用现有分支隔离实验，不新建worktree或源码副本。
+- 最小实现：正式create_flash_sale_order仅提取库存步骤为私有_reserve_flash_sale_inventory(sku)，默认仍NOWAIT/check/save，公开签名、返回契约与锁序不变。将helper内联的AST等于基点checkout。候选只在新test_flash_sale_inventory_comparison.py用F表达式UPDATE available>=1、available-1/reserved+1，影响0行抛库存不足离开atomic、1行后继续原Reservation/Movement；没有正式策略开关。
+- 两算法共用同一份User/Address/活动/Order/快照/Item/Purchase逻辑；候选patch只替换库存函数并覆盖双方线程、join、重试/重放全生命周期。6C-1只分离无test_方法的FlashSaleContentionFixture，原14方法AST保持；collect29无继承重复。
+- 测试固定2个不同Customer/地址、同活动商品、活动89/普通129、库存1/0、cart2/3；两算法各比较A完整下单后外层事务提交或回滚。B失败不留6类事实/Key/资格，成功单关系/归属、qty1/HELD1/RESERVED/RESERVE(-1,+1)、cart不变及winner Key重放均核对。
+- 应用账号data_lock_waits读取能力只读检查1142，本片不扩GRANT或切换特权观察连接。只按B的connectionID+test库读PROCESSLIST，真实Query/库存UPDATE/STATEupdating，A未release且B未done。支持受控窗口内服务端UPDATE未完成、放行后0/1行；不代表采到RECORD WAITING/锁索引或B→A等待图。
+- 真实MySQL8.4.10目标6 passed/138 subtests，27.16秒，首轮通过。NOWAIT commit A3522/B3523、rollback A3526/B3527：均真实3572并在放行前busy，A提交后B原Key不足，A回滚后B原Key重试成功。
+- 条件commit A3512/B3513、观察3511，A提交后更新0行，B库存不足且自己的订单/Purchase回滚；条件rollback A3515/B3516、观察3514，A回滚后更新1行，B第一次请求直接建Order7，无需重发。最终6事实各1、库存0/1，均无败方残留且成功Key重放不重复预占。
+- 候选同用户库存5双Key连接3519/3520仅一单，败方flash_sale_limit_reached且未发库存SQL，库存4/1。候选Movement实际完成后注入异常，先确认全部6事实/库存已改，再验证全部回滚到0事实/库存1,0；原Key重试与重放成功，最终仅一套预占和流水。
+- promotions模块回归29 passed/260 subtests，74.04秒，首次通过；check0 issues、迁移漂移No changes detected。临时test_project_one创建/迁移/夹具/清理，后检不存在、可见连接0、开发schema前后26；无开发migrate/业务写入、服务启停、权限/依赖/配置/模型/迁移/HTTP前端变更。未重跑完整ordering/payments或真实MQ/Redis/5D。
+- docs/learning/phase-6c2-flash-sale-inventory-comparison-study-guide.md与verification同名.md/.json、target/regression-output.txt记录6条实际ORM/SQL/行数/连接快照、源码/输出指纹和条件限制。测试耗时不是接口性能，受控等待不是普遍无死锁证明；等待期间B连接/事务及既有User/Address/Purchase锁仍保留，资源成本未测。
+- 正式策略继续默认NOWAIT；本片是实验候选正确性与行为对照，不是最终采用或性能胜出。下一片设计同条件负载、忙/不足/成功与重试成本、延迟分布/连接占用/死锁证据，再据结果形成ADR。按持续授权保存并验证后整合main，提交/远端以Git核对为准。
