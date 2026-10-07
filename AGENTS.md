@@ -1,5 +1,13 @@
 # Project One Agent Instructions
 
+## Primary Collaboration Gate — Interview Value First
+
+- At the start of each chat and before proposing another learning slice, design, implementation or experiment, ask: "How does this help the owner prepare for a China backend/software engineering internship or graduate interview and become a stronger engineer?"
+- Before advancing, briefly state the concrete skill, interview follow-up it supports, and smallest credible evidence. Supporting work may explain its indirect contribution. A roadmap item or technology name alone is insufficient.
+- For comparisons and deeper experiments, explain why these candidates matter, the learning cost and a stopping condition. Once evidence supports the intended explanation, consolidate understanding before adding more experiments; protect time for coding, algorithms and computer science fundamentals.
+- Distinguish official hiring requirements, public first-person interview accounts and inference. Do not imply that a specific keyword is mandatory, invent interview frequency or live interviews, or promise hiring outcomes.
+- This gate takes precedence over automatic roadmap progression while preserving correctness, safety and honest evidence. When the owner asks to pause and discuss, stop the original slice until explicitly resumed; perform only separately authorized work in that turn.
+
 Read `PROJECT_CHARTER.md` before planning or changing this project. Use `PROJECT_INSTRUCTIONS.md` as the detailed collaboration policy.
 
 ## Mission
