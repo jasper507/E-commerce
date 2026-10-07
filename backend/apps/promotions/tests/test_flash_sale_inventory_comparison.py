@@ -1,4 +1,4 @@
-"""相同完整秒杀事务的库存策略实验；条件更新候选仅存在于本测试。"""
+"""相同完整秒杀事务的库存策略对照；历史 NOWAIT 与正式条件更新。"""
 
 import json
 from contextlib import nullcontext
@@ -9,38 +9,26 @@ from time import monotonic
 from unittest.mock import patch
 
 from django.db import DatabaseError, close_old_connections, connection, connections, transaction
-from django.db.models import F
 
-from apps.inventory.models import Inventory, InventoryMovement
+from apps.inventory.models import InventoryMovement
 from apps.ordering.models import Order
 from apps.ordering.services import OrderRuleError
 from apps.promotions.models import FlashSalePurchase
-from apps.promotions.tests.test_flash_sale_contention import FlashSaleContentionFixture
-
-
-def _conditional_reserve_inventory(sku):
-    """不增加正式策略开关：只替换同一个下单事务的库存预占步骤。"""
-    if not connection.in_atomic_block:
-        raise AssertionError("条件更新实验必须处于完整下单事务内")
-    updated = Inventory.objects.filter(sku=sku, available_stock__gte=1).update(
-        available_stock=F("available_stock") - 1,
-        reserved_stock=F("reserved_stock") + 1,
-    )
-    if updated != 1:
-        raise OrderRuleError("insufficient_stock", "活动商品库存不足。", 409)
-    # UPDATE 已持有该行的写锁，后续预占和流水继续使用原服务实现。
-    return Inventory.objects.get(sku=sku)
+from apps.promotions.tests.test_flash_sale_contention import (
+    FlashSaleContentionFixture,
+    _nowait_reserve_inventory,
+)
 
 
 class FlashSaleInventoryComparisonTests(FlashSaleContentionFixture):
     def _strategy(self, strategy):
         if strategy == "nowait":
-            return nullcontext()
+            return patch(
+                "apps.promotions.services._reserve_flash_sale_inventory",
+                new=_nowait_reserve_inventory,
+            )
         self.assertEqual(strategy, "conditional")
-        return patch(
-            "apps.promotions.services._reserve_flash_sale_inventory",
-            new=_conditional_reserve_inventory,
-        )
+        return nullcontext()
 
     def _inventory_trace(self, *, strategy, observations, started=None):
         def observe(execute, sql, params, many, context):

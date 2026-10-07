@@ -1,9 +1,10 @@
-"""完整秒杀事务的两顾客竞争基线；只在隔离 MySQL 测试库运行。"""
+"""历史 NOWAIT 完整秒杀事务的两顾客竞争对照；只在隔离 MySQL 测试库运行。"""
 
 import json
 from decimal import Decimal
 from queue import Queue
 from threading import Barrier, Event, Thread
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError, close_old_connections, connection, connections, transaction
@@ -12,13 +13,31 @@ from apps.accounts.models import Address
 from apps.catalog.models import SKU
 from apps.inventory.models import Inventory, InventoryMovement, InventoryReservation
 from apps.ordering.models import AddressSnapshot, Cart, CartItem, Order, OrderItem
-from apps.ordering.services import OrderRuleError
+from apps.ordering.services import MYSQL_LOCK_NOWAIT_ERROR, OrderRuleError
 from apps.promotions.models import FlashSalePurchase
 from apps.promotions.services import create_flash_sale_order
 from apps.promotions.tests.test_flash_sale_checkout import FlashSaleCheckoutFixture
 
 
 User = get_user_model()
+
+
+def _nowait_reserve_inventory(sku):
+    """调用者持有下单事务；库存繁忙时由外层回滚此前订单与资格。"""
+
+    try:
+        inventory = Inventory.objects.select_for_update(nowait=True).filter(sku=sku).first()
+    except DatabaseError as exc:
+        if not exc.args or exc.args[0] != MYSQL_LOCK_NOWAIT_ERROR:
+            raise
+        raise OrderRuleError("stock_busy", "库存正在更新，请重试原请求。", 409) from exc
+    if inventory is None or inventory.available_stock < 1:
+        raise OrderRuleError("insufficient_stock", "活动商品库存不足。", 409)
+
+    inventory.available_stock -= 1
+    inventory.reserved_stock += 1
+    inventory.save(update_fields=("available_stock", "reserved_stock"))
+    return inventory
 
 
 class FlashSaleContentionFixture(FlashSaleCheckoutFixture):
@@ -197,6 +216,15 @@ class FlashSaleContentionFixture(FlashSaleCheckoutFixture):
         ))
 
 class FlashSaleContentionTests(FlashSaleContentionFixture):
+    def setUp(self):
+        super().setUp()
+        history = patch(
+            "apps.promotions.services._reserve_flash_sale_inventory",
+            new=_nowait_reserve_inventory,
+        )
+        history.start()
+        self.addCleanup(history.stop)
+
     def test_two_customers_contend_for_one_item_without_partial_orders(self):
         observer_connection_id = self._connection_id()
         start, results = Barrier(2), Queue()

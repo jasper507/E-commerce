@@ -23,8 +23,8 @@ from apps.ordering.models import AddressSnapshot, Cart, CartItem, Order, OrderIt
 from apps.ordering.services import OrderRuleError
 from apps.promotions.models import FlashSale, FlashSaleItem, FlashSalePurchase
 from apps.promotions.services import create_flash_sale_order
-from apps.promotions.tests.test_flash_sale_inventory_comparison import (
-    _conditional_reserve_inventory,
+from apps.promotions.tests.test_flash_sale_contention import (
+    _nowait_reserve_inventory,
 )
 
 
@@ -97,10 +97,10 @@ class FlashSaleInventoryLoadTests(TransactionTestCase):
 
     def _strategy(self, strategy):
         if strategy == "nowait":
-            return nullcontext()
+            return patch("apps.promotions.services._reserve_flash_sale_inventory",
+                         new=_nowait_reserve_inventory)
         self.assertEqual(strategy, "conditional")
-        return patch("apps.promotions.services._reserve_flash_sale_inventory",
-                     new=_conditional_reserve_inventory)
+        return nullcontext()
 
     def _job(self, *, customer, fixture, worker_id, connection_id, max_attempts, clock, stop):
         stamp = lambda: perf_counter_ns() - clock["origin_ns"]

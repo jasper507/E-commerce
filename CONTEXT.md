@@ -1,11 +1,11 @@
-# Project One — Domain Context v1.34
+# Project One — Domain Context v1.35
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6C-4 单活动 SKU 条件 UPDATE 方向已接受并记录 ADR；正式代码仍 NOWAIT，最小落地与失败合同待完成
-- 文档版本：v1.34
+- 当前阶段：Phase 6C-5 正式条件 UPDATE、真实1205整单回滚/原Key重试及相关回归通过；HTTP/前端待接入
+- 文档版本：v1.35
 - 更新日期：2026-10-08
-- 范围来源：`PROJECT_CHARTER.md` v1.3、2026-10-01 支付范围决定（第 33 节）及 ADR 0001
+- 范围来源：`PROJECT_CHARTER.md` v1.4、2026-10-01 支付范围决定（第 33 节）及 ADR 0001
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
@@ -1336,3 +1336,16 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 1205/1213 不等同 0 行或库存不足。MySQL 锁等待超时默认可能仅回滚当前语句，完整业务必须让异常退出 atomic；正式等待预算、错误映射和自动重试政策尚待下一片确认与验证，没有增加配置或接口合同。
 - docs/adr/0001-flash-sale-inventory-conditional-update.md 与 docs/learning/phase-6c4-flash-sale-strategy-decision-study-guide.md 保存决定、教学和停止条件。仅静态核对链接、历史证据指纹及变更范围；没有数据库操作、迁移、业务测试或 MQ/Redis/浏览器验收。
 - Redis Lua 在总纲必做表与候选清单的措辞需另行确认，此次 ok 不能据以删除该范围或自动实现。下一片正式最小落地与失败合同，再接 HTTP、极简页面和端到端验收；不自动扩展普通促销。提交与远端状态以 Git 核对为准。
+
+## 52. Phase 6C-5：正式条件 UPDATE 与失败回滚（2026-10-08）
+
+- 用户要求下一步，并明确选择沿用现有会话上限，本机50秒；本片只落地库存步骤与错误处理，隔离测试竞争连接用1秒，HTTP接入前再确定顾客等待预算。Depth/Learning，面试目标是解释库存边界、语句失败/整单回滚、原Key重试与证据边界；达到必要证据后停止，不增加压测矩阵。
+- 开始前main与远端79e2caa且干净，复用现有codex/flash-sale-baseline，将该分支快进并推送到同一基点、核对远端后才生成代码；没有新分支、worktree或源码副本。完成阶段按持续授权提交、推送及安全整合main，具体结果以Git核对为准。
+- 正式_reserve_flash_sale_inventory按sku/available>=1执行F表达式available-1/reserved+1，0行保持库存不足，1行GET后继续原预占/流水。仅该UPDATE的1205/1213转stock_busy409并保留cause，其他数据库异常上抛，无自动重试；异常离开原atomic整单回滚。前面User/Address锁和其他SQL错误不在该转换范围。
+- create_flash_sale_order与指纹函数AST不变，保留User串行化、地址归属、服务端价格、资格/Key及相对锁序。原NOWAIThelper函数体完整迁入测试，NOWAIT分支显式patch历史实现、条件分支直接正式helper；三个既有文件31个原方法AST保持（排除策略绑定方法）。模型、迁移、配置、依赖、普通下单、支付/关闭、HTTP/前端未改；旧证据不重写。
+- 真实MySQL8.4.10、READ-COMMITTED，现有127.0.0.1:3307 db健康，rollback_on_timeout=false、deadlock_detect=true。预检/后检session等待50秒、临时test_project_one不存在、可见测试连接0、开发schema表数26。没有服务启停、GRANT修改、开发migrate或业务数据写入；pytest只操作临时测试库。
+- 目标9 passed/198子场景、19.14秒，首次通过：3项新失败合同加6项既有完整策略对照。真实1205 Observer1685/Holder1686/Contender1687；holder只锁库存不写业务。竞争事务UPDATE前订单/Item/快照/Purchase各1，Reservation/Movement各0，实际SQL抛1205且只尝试一次、约1.015秒；PROCESSLIST看到放行前尚未完成UPDATE，不等于锁索引或阻塞图证据。
+- 竞争请求在holder放行前返回stock_busy409、cause1205、退出atomic恢复autocommit；两观察视角六类事实0、库存1/0、无失败Key订单。放行后原Key创建Order6、同Key重放Order6/created=false，最终六事实各1、库存0/1、HELD1、qty1/活动89、预占/流水一次且cart不变；observer会话与OPTIONS前后保持。
+- 1213/2006在UPDATE发往服务器前注入，actual_sql_attempted=false：分别验证已知错误映射/保留cause、未知错误原样透传，并核对完整回滚及原Key重试/重放。不是实际死锁、网络断连或提交不确定恢复。既有条件提交0行、回滚1行、同用户库存5双Key最多一单、流水实写后异常回滚均重新通过；历史NOWAIT仍实际3572。
+- promotions/ordering/payments相关回归183 passed/403子场景、141.49秒，7 skip（负载1、显式支付到期并发6），12真实MQ未选入；check0 issues、迁移漂移No changes detected。没有重跑真实MQ/Redis/5D或负载矩阵；负载策略绑定仅静态核对。不把测试时长当性能提升，不证明生产容量或普遍无死锁。
+- docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md与verification同名.md/data.json、target/regression-output.txt保留教学、3条新失败完整快照、6项对照摘要、全部9条raw、源码/输出指纹及边界。ADR更新为Accepted/Implemented，仅正式服务层；下一片最小HTTP前确定顾客等待预算，随后极简页面与端到端/独立讲述验收。Redis Lua范围仍另行确认，分布式锁默认No-Go。

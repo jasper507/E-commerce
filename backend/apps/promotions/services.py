@@ -6,13 +6,13 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError, IntegrityError, transaction
+from django.db.models import F
 from django.utils import timezone
 
 from apps.accounts.models import Address
 from apps.inventory.models import Inventory, InventoryMovement, InventoryReservation
 from apps.ordering.models import AddressSnapshot, Order, OrderItem
 from apps.ordering.services import (
-    MYSQL_LOCK_NOWAIT_ERROR,
     ZERO_MONEY,
     OrderRuleError,
     _money,
@@ -34,21 +34,21 @@ def _request_fingerprint(*, flash_sale_item_id, address_id):
 
 
 def _reserve_flash_sale_inventory(sku):
-    """调用者持有下单事务；库存繁忙时由外层回滚此前订单与资格。"""
+    """调用者持有下单事务；失败必须回滚此前订单与资格。"""
 
     try:
-        inventory = Inventory.objects.select_for_update(nowait=True).filter(sku=sku).first()
+        updated = Inventory.objects.filter(sku=sku, available_stock__gte=1).update(
+            available_stock=F("available_stock") - 1,
+            reserved_stock=F("reserved_stock") + 1,
+        )
     except DatabaseError as exc:
-        if not exc.args or exc.args[0] != MYSQL_LOCK_NOWAIT_ERROR:
+        # 仅将已知库存锁竞争转换为繁忙，不吞掉连接等其他数据库故障。
+        if not exc.args or exc.args[0] not in (1205, 1213):
             raise
         raise OrderRuleError("stock_busy", "库存正在更新，请重试原请求。", 409) from exc
-    if inventory is None or inventory.available_stock < 1:
+    if updated != 1:
         raise OrderRuleError("insufficient_stock", "活动商品库存不足。", 409)
-
-    inventory.available_stock -= 1
-    inventory.reserved_stock += 1
-    inventory.save(update_fields=("available_stock", "reserved_stock"))
-    return inventory
+    return Inventory.objects.get(sku=sku)
 
 
 @transaction.atomic

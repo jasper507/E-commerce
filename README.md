@@ -1,7 +1,23 @@
 # Project One — Django E-commerce
 
 Project One is a backend-heavy Django/DRF modular monolith for building and
-demonstrating reproducible engineering evidence. The narrow business loop has
+demonstrating reproducible engineering evidence.
+
+Current flash-sale status (2026-10-08): Phase 6C-5 adopts conditional UPDATE in
+the production service for one activity SKU and quantity one. Inventory UPDATE
+errors 1205/1213 map to stock_busy and exit the entire checkout transaction;
+other database errors propagate. The owner chose to inherit the existing session
+wait value (locally 50 seconds), with no automatic retry or new configuration;
+this is not an HTTP deadline. A real isolated MySQL 1205 demonstrated full rollback,
+original-key retry and successful replay. Targets: 9 passed / 198 subtests;
+related regression: 183 passed / 403 subtests, 7 explicit experiments skipped and
+12 RabbitMQ tests deselected. Deadlock/disconnect branches were injected only.
+HTTP/customer wait budget and frontend acceptance remain pending. See the
+[current guide](docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md)
+and [evidence](docs/verification/phase-6c5-flash-sale-inventory-failures.md).
+The following paragraphs retain the state observed in each earlier slice.
+
+The narrow business loop has
 a Mock Payment baseline, inventory reservation/commit, cancellation/refund
 simulation, and simulated fulfilment. Redis work is temporarily closed at
 Phase 4J. Earlier Redis/payment work was committed and pushed to main on

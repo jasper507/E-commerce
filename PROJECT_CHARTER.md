@@ -1,17 +1,17 @@
-# Project One — Project Charter v1.3
+# Project One — Project Charter v1.4
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase 6C-4 已接受单活动 SKU 条件 UPDATE 选型并记录 ADR；正式代码仍 NOWAIT，最小落地与失败合同待完成
-- 文档版本：v1.3
+- 当前阶段：Phase 6C-5 单活动 SKU 条件 UPDATE 已正式落地；真实超时整单回滚、原 Key 重试及相关回归通过，HTTP/前端待接入
+- 文档版本：v1.4
 - 路线图进度更新：2026-10-08
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
 - 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过；Phase 6B新增资格生命周期目标11项、promotions/ordering/payments回归171项通过；Phase 6C-1补当前NOWAIT完整秒杀双顾客竞争；6C-2同完整事务候选正确性通过；6C-3完成8worker/24顾客、两库存/预算/策略各3轮共24批次的时延/重试/连接成本，全部有效且默认未换策略，见docs/verification/phase-6c3-flash-sale-inventory-load.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；未执行开发库恢复、迁移或浏览器验收。
 
-最新决定（2026-10-08）：项目拥有者明确同意单个活动 SKU 库存预占采用条件 UPDATE，见 [ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md)。v1.3 记录已接受的策略方向，不表示正式源码已切换；普通购物车多 SKU、Redis Lua 范围及 HTTP 合同不由这次确认自动变更。
+最新状态（2026-10-08）：单活动 SKU 条件 UPDATE 已在 Phase 6C-5 正式落地，见 [ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md) 和 [验证记录](docs/verification/phase-6c5-flash-sale-inventory-failures.md)。拥有者选择沿用现有会话上限，本机观察 50 秒；库存 UPDATE 的 1205/1213 返回繁忙并退出整单事务，未知错误上抛，无自动重试。目标9项/198子场景、相关回归183项/403子场景通过；普通多 SKU、Redis Lua 范围及 HTTP 合同未变，HTTP 顾客等待预算仍待确定。上段及阶段条目中“默认未换策略”描述各片当时状态。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -397,7 +397,7 @@ Order v1.0 合法转换：
 7. 创建 Order 时在同一 MySQL 事务中原子预占库存；任何外部支付调用只能发生在事务提交后。
 8. 支付成功时核销预占；`PENDING_PAYMENT` 取消或 `EXPIRED` 时释放预占；`PAID` 且未发货取消时恢复库存并创建 Refund Simulation。
 9. 库存预占、核销和释放都必须使用唯一业务标识做到最多一次，并保持 `available_stock >= 0`、`reserved_stock >= 0`。
-10. 普通 read-modify-write 只作为超卖复现实验基线；单活动 SKU、数量 1 的条件 UPDATE 方向已经 Phase 6C-1/2/3 对照及拥有者确认，由 ADR 0001 定案，正式替换与失败合同仍待验证。普通购物车多 SKU 不属于本次决定。
+10. 普通 read-modify-write 只作为超卖复现实验基线；单活动 SKU、数量 1 的条件 UPDATE 已经 Phase 6C-1/2/3 对照及拥有者确认，由 ADR 0001 定案，6C-5 正式替换、真实1205整单回滚/原Key重试及相关回归通过。1213与未知错误仅注入检查，不是真实死锁/断连证据。普通购物车多 SKU 不属于本次决定。
 11. 秒杀定义为每位 Customer 对每个 FlashSaleItem 最多一个成功订单、购买数量固定为 1；数据库唯一约束是首要正确性防线。
 
 ### Payment
@@ -649,7 +649,7 @@ RabbitMQ + Celery 已移入 Level 2 必做，限支付链路，不再以条件�
 → Distributed Lock Gate（默认不采用）
 ```
 
-单活动 SKU 条件 UPDATE 方向已由拥有者在 Phase 6C-4 接受，依据是既有 naive 基线、完整事务正确性与有限负载证据，见 ADR 0001；正式源码仍 NOWAIT，下一片最小落地与失败合同待验证。这不证明生产容量或普遍无死锁，也不改变普通购物车多 SKU。Redis 可以承担缓存或秒杀流量准入，但 MySQL 始终保存最终订单与核心库存事实。
+单活动 SKU 条件 UPDATE 方向已由拥有者在 Phase 6C-4 接受，依据是既有 naive 基线、完整事务正确性与有限负载证据，见 ADR 0001；6C-5 正式服务替换与真实超时回滚/重试通过，沿用现有会话等待值、无自动重试。这不证明生产容量或普遍无死锁，也不改变普通购物车多 SKU。Redis 可以承担缓存或秒杀流量准入，但 MySQL 始终保存最终订单与核心库存事实。
 
 核心证据：
 
@@ -888,7 +888,7 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [ ] Transaction
 - [ ] 唯一约束
 - [x] naive 库存并发失败复现（Phase3最小错误基线已于2026-09-26观察2单/2预占，库存0/1；见phase-3-inventory-race-baseline.md，不等于完整秒杀或性能验证）
-- [ ] 原子条件更新与 `select_for_update()` 对比及 Evidence-backed ADR（Phase3/6C-2正确性与6C-3有限负载证据已有，策略决定已由6C-4/ADR0001接受；正式替换与失败行为验证待完成）
+- [x] 原子条件更新与 `select_for_update()` 对比及 Evidence-backed ADR（Phase3/6C-2正确性与6C-3有限负载证据已有，6C-4/ADR0001接受；6C-5正式替换、真实1205与相关回归通过）
 - [ ] N+1、索引、EXPLAIN
 - [ ] SQL 数量和延迟基线
 
@@ -929,8 +929,8 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [x] 同条件有限批次负载、重试/时延/连接成本（6C-3共24有效批次、576旅程/767调用，目标1pass及模块29pass1skip；非持续生产容量，默认未切换）
 - [x] 单活动 SKU 条件 UPDATE 选型决定（6C-4，ADR 0001 已接受；仅文档，源码仍 NOWAIT）
 - [x] naive 超卖基线复用（Phase 3 历史普通库存证据；不是新的完整秒杀压测，不重做同一实验）
-- [ ] 正式条件 UPDATE 最小落地、失败合同与相关回归
-- [ ] MySQL 最终事实与方案总验收（对照与选择已有记录；正式替换尚待验证）
+- [x] 正式条件 UPDATE 最小落地、失败合同与相关回归（6C-5目标9项/198子场景、相关183项/403子场景；1213/2006仅注入，不自动重试）
+- [ ] MySQL 最终事实与方案总验收（正式服务验证已完成；HTTP/端到端与项目拥有者独立讲述待验收）
 - [ ] Redis Lua 流量准入/原子前置候选
 - [x] 每个 Customer + FlashSaleItem 正常成功限购、数量 1（Phase 6A/B 资格及旧订单隔离证据；服务层，HTTP 待接入）
 - [ ] Distributed Lock Gate（默认 No-Go）
@@ -1183,9 +1183,9 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Redis Phase 4J暂时收束，支付/MQ已有同步Mock、真实异步链路、有界重试和人工恢复证据。Phase 6A/B与6C-1/2/3历史证据保留，6C-4已接受单活动SKU条件UPDATE方向并保存ADR；正式默认仍NOWAIT。当前状态见CONTEXT第46–51节。
+Redis Phase 4J暂时收束，支付/MQ已有同步Mock、真实异步链路、有界重试和人工恢复证据。Phase 6A/B与6C-1/2/3历史证据保留，6C-4保存ADR，6C-5正式条件UPDATE及失败回滚/重试通过。当前状态见CONTEXT第46–52节。
 
 1. 选型 ADR 已完成；继续练习独立解释影响行数 0/1、完整事务回滚、限购/幂等各自职责与证据边界，不把一次正确预测当成全部学习验收。
-2. 下一片按 ADR 最小替换库存步骤，先确认等待预算作用范围与失败合同，再验证真实隔离 MySQL 锁等待超时、失败无残留和原 Key 重试及相关回归。正式默认在该片验证前仍是 NOWAIT；不自动追加负载矩阵。
+2. 先用6C-5真实1205证据解释“语句失败与整单回滚”，然后接最小活动查询/下单HTTP。HTTP接入前确定顾客等待预算与错误响应；本片沿用的50秒只是本机会话值，不是请求截止时间。不自动追加负载矩阵。
 3. 支付MQ继续保留本期人工兜底，不横向新增异步功能或周期接管；既有MQ/Worker证据不能当成本轮已重跑。
 4. 秒杀下单HTTP/前端与开发数据库迁移属于后续独立切片；现有开发数据操作另行确认，不进入第三方Sandbox或外部账号。
