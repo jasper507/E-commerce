@@ -1,0 +1,1059 @@
+{
+  "date": "2026-10-07",
+  "timezone": "Asia/Shanghai",
+  "source": {
+    "base_commit": "8d1bfed9a8b3a793e7a8de55b2e9ec5f39463393",
+    "branch_at_execution": "codex/flash-sale-baseline",
+    "working_tree_changed": true,
+    "description": "Phase 6B candidate changes on the base commit; identify exact tested code by normalized source fingerprints"
+  },
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "mysql": "8.4.10",
+    "host": "127.0.0.1",
+    "port": 3307,
+    "test_database": "test_project_one",
+    "django_env": "test",
+    "payment_events_async": false,
+    "catalog_cache_enabled": false,
+    "worker_running": false,
+    "database_grants_changed": false
+  },
+  "preflight": {
+    "test_database_existed": false,
+    "other_visible_test_connections": 0,
+    "application_test_database_grant_confirmed": true,
+    "development_schema_table_count": 26
+  },
+  "target": {
+    "command": "python -m pytest backend/apps/promotions/tests/test_flash_sale_lifecycle.py -q -s --tb=short",
+    "mysql_database_setting": "project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 11,
+    "subtests_passed": 13,
+    "elapsed_seconds": 23.26,
+    "actual_orm_snapshot_record_count": 17,
+    "actual_orm_snapshots": [
+      {
+        "close_method": "cancel",
+        "scenario": "late_old_success_preserves_new_held",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": null,
+                "attempt_number": 1,
+                "id": 1,
+                "status": "SUCCEEDED"
+              }
+            ],
+            "events": [
+              {
+                "error_code": "",
+                "id": 1,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              },
+              {
+                "error_code": "late_success_refund_simulated",
+                "id": 2,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              },
+              {
+                "error_code": "late_success_refund_simulated",
+                "id": 3,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 1,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 1,
+            "order_status": "CANCELED",
+            "purchase": {
+              "blocking_marker": null,
+              "customer_id": 1,
+              "flash_sale_item_id": 1,
+              "order_id": 1,
+              "status": "RELEASED"
+            },
+            "refunds": [
+              {
+                "attempt_id": 1,
+                "reason": "LATE_SUCCESS",
+                "status": "SIMULATED"
+              }
+            ],
+            "reservation_status": "RELEASED"
+          },
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 2,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 1,
+              "flash_sale_item_id": 1,
+              "order_id": 2,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "scenario": "unpaid_expiry_released",
+        "snapshots": [
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              5,
+              0
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 1,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 3,
+            "order_status": "EXPIRED",
+            "purchase": {
+              "blocking_marker": null,
+              "customer_id": 3,
+              "flash_sale_item_id": 2,
+              "order_id": 3,
+              "status": "RELEASED"
+            },
+            "refunds": [],
+            "reservation_status": "RELEASED"
+          }
+        ]
+      },
+      {
+        "close_method": "expiry",
+        "scenario": "late_old_success_preserves_new_held",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": null,
+                "attempt_number": 1,
+                "id": 2,
+                "status": "SUCCEEDED"
+              }
+            ],
+            "events": [
+              {
+                "error_code": "",
+                "id": 4,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              },
+              {
+                "error_code": "late_success_refund_simulated",
+                "id": 5,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              },
+              {
+                "error_code": "late_success_refund_simulated",
+                "id": 6,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 1,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 4,
+            "order_status": "EXPIRED",
+            "purchase": {
+              "blocking_marker": null,
+              "customer_id": 5,
+              "flash_sale_item_id": 3,
+              "order_id": 4,
+              "status": "RELEASED"
+            },
+            "refunds": [
+              {
+                "attempt_id": 2,
+                "reason": "LATE_SUCCESS",
+                "status": "SIMULATED"
+              }
+            ],
+            "reservation_status": "RELEASED"
+          },
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 5,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 5,
+              "flash_sale_item_id": 3,
+              "order_id": 5,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "error_code": "flash_sale_purchase_invariant_error",
+        "event_id": 7,
+        "event_status": "ERROR",
+        "failure_kind": "BLOCKED",
+        "processing_attempt_count": 1,
+        "scenario": "inconsistent_purchase_blocked",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": null,
+                "attempt_number": 1,
+                "id": 3,
+                "status": "FAILED"
+              }
+            ],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 6,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 7,
+              "flash_sale_item_id": 4,
+              "order_id": 6,
+              "status": "CONSUMED"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "scenario": "paid_cancel_keeps_consumed",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": null,
+                "attempt_number": 1,
+                "id": 4,
+                "status": "SUCCEEDED"
+              }
+            ],
+            "events": [
+              {
+                "error_code": "",
+                "id": 8,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              },
+              {
+                "error_code": "late_success_refund_simulated",
+                "id": 9,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 3,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              5,
+              0
+            ],
+            "movements": {
+              "COMMIT": 1,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 1
+            },
+            "order_id": 7,
+            "order_status": "CANCELED",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 9,
+              "flash_sale_item_id": 5,
+              "order_id": 7,
+              "status": "CONSUMED"
+            },
+            "refunds": [
+              {
+                "attempt_id": 4,
+                "reason": "PAID_CANCEL",
+                "status": "SIMULATED"
+              }
+            ],
+            "reservation_status": "RESTORED"
+          }
+        ]
+      },
+      {
+        "close_method": "cancel",
+        "scenario": "close_write_rolled_back",
+        "snapshots": [
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 8,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 11,
+              "flash_sale_item_id": 6,
+              "order_id": 8,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "close_method": "cancel",
+        "scenario": "close_retry_released_once",
+        "snapshots": [
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              5,
+              0
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 1,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 8,
+            "order_status": "CANCELED",
+            "purchase": {
+              "blocking_marker": null,
+              "customer_id": 11,
+              "flash_sale_item_id": 6,
+              "order_id": 8,
+              "status": "RELEASED"
+            },
+            "refunds": [],
+            "reservation_status": "RELEASED"
+          }
+        ]
+      },
+      {
+        "close_method": "expiry",
+        "scenario": "close_write_rolled_back",
+        "snapshots": [
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 9,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 11,
+              "flash_sale_item_id": 6,
+              "order_id": 9,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "close_method": "expiry",
+        "scenario": "close_retry_released_once",
+        "snapshots": [
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              5,
+              0
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 1,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 9,
+            "order_status": "EXPIRED",
+            "purchase": {
+              "blocking_marker": null,
+              "customer_id": 11,
+              "flash_sale_item_id": 6,
+              "order_id": 9,
+              "status": "RELEASED"
+            },
+            "refunds": [],
+            "reservation_status": "RELEASED"
+          }
+        ]
+      },
+      {
+        "error_code": "database_transient_error",
+        "event_id": 10,
+        "event_status": "ERROR",
+        "failure_kind": "TRANSIENT",
+        "processing_attempt_count": 1,
+        "retry_at": "2026-10-07T07:01:09.764677+00:00",
+        "scenario": "payment_write_rolled_back",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": 1,
+                "attempt_number": 1,
+                "id": 5,
+                "status": "CREATED"
+              }
+            ],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 10,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 13,
+              "flash_sale_item_id": 7,
+              "order_id": 10,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "scenario": "payment_retry_consumed_once",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": null,
+                "attempt_number": 1,
+                "id": 5,
+                "status": "SUCCEEDED"
+              }
+            ],
+            "events": [
+              {
+                "error_code": "",
+                "id": 10,
+                "processing_attempt_count": 2,
+                "processing_status": "PROCESSED"
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              0
+            ],
+            "movements": {
+              "COMMIT": 1,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 10,
+            "order_status": "PAID",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 13,
+              "flash_sale_item_id": 7,
+              "order_id": 10,
+              "status": "CONSUMED"
+            },
+            "refunds": [],
+            "reservation_status": "COMMITTED"
+          }
+        ]
+      },
+      {
+        "scenario": "paid_consumed_and_replayed",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": null,
+                "attempt_number": 1,
+                "id": 6,
+                "status": "SUCCEEDED"
+              }
+            ],
+            "events": [
+              {
+                "error_code": "",
+                "id": 11,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              },
+              {
+                "error_code": "",
+                "id": 12,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              0
+            ],
+            "movements": {
+              "COMMIT": 1,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 11,
+            "order_status": "PAID",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 15,
+              "flash_sale_item_id": 8,
+              "order_id": 11,
+              "status": "CONSUMED"
+            },
+            "refunds": [],
+            "reservation_status": "COMMITTED"
+          }
+        ]
+      },
+      {
+        "scenario": "two_connection_payment_vs_expiry",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": null,
+                "attempt_number": 1,
+                "id": 7,
+                "status": "SUCCEEDED"
+              }
+            ],
+            "events": [
+              {
+                "error_code": "",
+                "id": 13,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              0
+            ],
+            "movements": {
+              "COMMIT": 1,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 12,
+            "order_status": "PAID",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 17,
+              "flash_sale_item_id": 9,
+              "order_id": 12,
+              "status": "CONSUMED"
+            },
+            "refunds": [],
+            "reservation_status": "COMMITTED"
+          }
+        ],
+        "thread_results": [
+          {
+            "connection_id": 571,
+            "outcome": {
+              "changed": false,
+              "code": "payment_unresolved"
+            },
+            "role": "expiry"
+          },
+          {
+            "connection_id": 572,
+            "outcome": {
+              "attempt_count": 1,
+              "status": "PROCESSED"
+            },
+            "role": "payment"
+          }
+        ]
+      },
+      {
+        "scenario": "unpaid_cancel_released_and_rebuy",
+        "snapshots": [
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 2,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 1,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 13,
+            "order_status": "CANCELED",
+            "purchase": {
+              "blocking_marker": null,
+              "customer_id": 19,
+              "flash_sale_item_id": 10,
+              "order_id": 13,
+              "status": "RELEASED"
+            },
+            "refunds": [],
+            "reservation_status": "RELEASED"
+          },
+          {
+            "attempts": [],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 14,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 19,
+              "flash_sale_item_id": 10,
+              "order_id": 14,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "attempt_status": "CREATED",
+        "scenario": "unresolved_attempt_keeps_held",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": 1,
+                "attempt_number": 1,
+                "id": 8,
+                "status": "CREATED"
+              }
+            ],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 15,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 21,
+              "flash_sale_item_id": 11,
+              "order_id": 15,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "attempt_status": "PENDING",
+        "scenario": "unresolved_attempt_keeps_held",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": 1,
+                "attempt_number": 1,
+                "id": 9,
+                "status": "PENDING"
+              }
+            ],
+            "events": [
+              {
+                "error_code": "",
+                "id": 15,
+                "processing_attempt_count": 1,
+                "processing_status": "PROCESSED"
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 16,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 21,
+              "flash_sale_item_id": 11,
+              "order_id": 16,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      },
+      {
+        "attempt_status": "UNKNOWN",
+        "scenario": "unresolved_attempt_keeps_held",
+        "snapshots": [
+          {
+            "attempts": [
+              {
+                "active_marker": 1,
+                "attempt_number": 1,
+                "id": 10,
+                "status": "UNKNOWN"
+              }
+            ],
+            "events": [],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": [
+              4,
+              1
+            ],
+            "movements": {
+              "COMMIT": 0,
+              "RELEASE": 0,
+              "RESERVE": 1,
+              "RESTORE": 0
+            },
+            "order_id": 17,
+            "order_status": "PENDING_PAYMENT",
+            "purchase": {
+              "blocking_marker": 1,
+              "customer_id": 21,
+              "flash_sale_item_id": 11,
+              "order_id": 17,
+              "status": "HELD"
+            },
+            "refunds": [],
+            "reservation_status": "RESERVED"
+          }
+        ]
+      }
+    ]
+  },
+  "fixture_notes": [
+    "OperationalError(1205) was injected after a real Purchase.save; no actual MySQL lock-timeout or deadlock observation",
+    "Close failure was injected after a real RELEASED Purchase.save and escaped the atomic transaction",
+    "Inconsistent Purchase status and terminal Attempt are synthetic isolated fault fixtures; they are not normal business operations",
+    "MockGatewayPayment was changed from FAILED to SUCCEEDED to construct a late-provider-result scenario; signatures and original amount/reference are verified"
+  ],
+  "limits": [
+    "Service-only qualification lifecycle verification, no flash-sale checkout HTTP or frontend acceptance",
+    "Two independent connections released by Barrier; no captured record-lock wait or forced two-order lock interleavings",
+    "No benchmark, performance choice or absence-of-deadlock claim",
+    "Fresh isolated schema migrations only; no existing development-data upgrade or reverse-migration verification",
+    "No real RabbitMQ or Redis verification in this run",
+    "Phase 6A historical source hashes and counts retained; current checkout tests remove the obsolete lifecycle-unavailable guard test"
+  ],
+  "source_sha256": {
+    "backend/apps/promotions/lifecycle_services.py": "50fdbdcfd185bf3eb8ef52a12fc24503cc05d553fdd8789ceed56ec411a3a875",
+    "backend/apps/promotions/services.py": "8167c34f2048c2140ae5216836338a2ed936438e3de1f30e7b3ef4bacbacf360",
+    "backend/apps/promotions/models.py": "6a6df1dda514bf3fc3d1768ea32babf4505d8e019447751418b113aa2e1ab10d",
+    "backend/apps/promotions/tests/test_flash_sale_checkout.py": "1512037833f0d62c78cd48772bbce3f00fd561e42737f11ade65b3e21e56bc10",
+    "backend/apps/promotions/tests/test_flash_sale_lifecycle.py": "5cb02800c34da14e850905cd8e7fd59606826a4f467138f06257c4158046eb29",
+    "backend/apps/promotions/tests/test_flash_sale_models.py": "d033972e3e53076580a0ac4388837ecaf0d3f45ca81d322312d75cb2d286e6f2",
+    "backend/apps/ordering/lifecycle_services.py": "2ea0e075e4dd45dd6abeb593c541986a07c58dc367e797a95df2a344e0dd68ca",
+    "backend/apps/ordering/models.py": "0ad4cca4dcd289a37858622cb6042383c6790cd98262ea55942697356984f98e",
+    "backend/apps/payments/services.py": "c76142484b5f58c352b2ddf59b49b3821c10822011ad64cf1ec5633bed5cb169",
+    "backend/config/settings.py": "f7e90dbee5bb66816de752df4961f74ef9fe43a2cf4d96dba369c454bc8fed7c",
+    "backend/apps/promotions/migrations/0001_initial.py": "4b0ac50e826b31e92c038a5bac22cec673cda309d454d7872c056663f97ebc5c",
+    "backend/apps/ordering/migrations/0004_order_creation_scope.py": "f5410c5f21db4fe6fd5a6a768197ee7f2ea1a35eee9c778989a5c090c58c2d8d"
+  },
+  "raw_output_sha256": {
+    "docs/verification/phase-6b-flash-sale-lifecycle-target-output.txt": "2647814514f130181b29615cbffa279b80dd33f5803cedf5312df89d419fef1a",
+    "docs/verification/phase-6b-flash-sale-lifecycle-regression-output.txt": "c6d4a19af217d0c0d9c5c90cfe3668e059b84dc56cdb71e111284871ec717f40"
+  },
+  "fingerprint_normalization": "UTF-8 file bytes with CRLF normalized to LF; stable across Git checkouts",
+  "postflight": {
+    "test_database_exists": false,
+    "other_visible_test_connections": 0,
+    "development_schema_table_count_before": 26,
+    "development_schema_table_count_after": 26,
+    "development_migrate_run": false
+  },
+  "static_checks": {
+    "django_check": "System check identified no issues (0 silenced).",
+    "migration_drift": "No changes detected"
+  },
+  "regression": {
+    "command": "python -m pytest backend/apps/promotions/tests backend/apps/ordering/tests backend/apps/payments/tests -m \"not rabbitmq_integration and not redis_integration\" -q --tb=short",
+    "mysql_database_setting": "test_project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 171,
+    "skipped": 6,
+    "deselected": 12,
+    "subtests_passed": 163,
+    "elapsed_seconds": 149.47,
+    "skipped_scope": "Phase 5D explicit local MySQL lock observation",
+    "deselected_scope": "Real RabbitMQ integration"
+  }
+}

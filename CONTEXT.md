@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.29
+# Project One — Domain Context v1.30
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6A秒杀下单/限购通过真实MySQL目标与订单/支付回归；下一片接资格核销与关闭释放
-- 文档版本：v1.29
+- 当前阶段：Phase 6B资格核销/关闭释放与旧单事件隔离通过真实MySQL；下一步复述本片规则，再进入库存并发方案实验
+- 文档版本：v1.30
 - 更新日期：2026-10-07
 - 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
@@ -1269,3 +1269,17 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
   同目录target-output.txt/regression-output.txt保留原始pytest输出，阶段指南与当前路线图同步。
 - 按持续授权保存本片证据；分支安全整合与推送结果以Git历史、远端核对和最终汇报为准。
   下一片一并接入正常支付资格核销与真正未付关闭释放，再测O1关闭→O2重购、旧Key和迟到事件。
+
+## 47. Phase 6B：资格消费、释放与旧订单事件隔离（2026-10-07）
+
+- 项目拥有者要求接着推进已确认的资格生命周期。Depth/Learning；沿用已推送的8d1bfed，继续在现有codex/flash-sale-baseline隔离本次支付/库存事务增量。开始新代码前工作区干净，main/工作分支远端均等于该基点，无空提交。
+- 每单一条Purchase：正常成功HELD/1→CONSUMED/1，与Order/Attempt/库存/事件同业务事务提交；真正未付关闭HELD/1→RELEASED/NULL，与库存释放和订单关闭同事务。已付取消恢复库存与退款模拟，但资格仍CONSUMED/1。
+- CREATED/PENDING/UNKNOWN仍禁止取消或到期释放。可信FAILED只结束Attempt，资格直到订单真正关闭才释放。到期扫描现在包含秒杀订单，每单独立事务；未确认支付仍跳过。
+- 资格helper只按原order锁购买记录，核对owner/status/marker。支付和关闭保持Order→Attempt→Purchase→Reservation→Inventory；缺失或冲突抛异常并回滚，支付Inbox另留ERROR/BLOCKED/flash_sale_purchase_invariant_error，不盲目重试或自动补资格。
+- O1未付关闭后可用新Key创建O2；旧Key始终返回O1。O1迟到成功在原关闭分支只更新旧Attempt、Event与唯一退款模拟，不消费资格、不核销库存、不查同顾客当前名额。资金侧Attempt成功不代表已关闭O1成为正常活动成功购买。
+- 真实MySQL8.4.10，已有Docker db健康，127.0.0.1:3307；没有启动/停止服务、改GRANT、运行开发库迁移或业务SQL。临时test_project_one由pytest创建/迁移/清理，目标11 passed、13 subtests passed，23.26秒。
+- 目标实测包括正常/重复支付、付后取消保持消费、未付取消/到期/扫描、三种未确认Attempt保护、取消与到期两种O1→O2→旧事件、实写后异常回滚与受控重试、资格冲突BLOCKED。两连接571/572同时放行，本轮到期先返回payment_unresolved，最终PAID/CONSUMED1、库存4/0、COMMIT1/RELEASE0。
+- promotions/ordering/payments相关回归171 passed、163 subtests passed，149.47秒；6项5D显式锁实验skip、12项真实MQ集成未选入。check为0 issues，迁移漂移No changes detected。后检测试库不存在、无可见测试连接，开发schema表数前后26。
+- 1205为资格实写后的测试注入，不是实际MySQL锁超时/死锁观测；两连接实验未采集锁等待、未强制两取锁顺序，不证明全无死锁或性能胜出。本轮未重跑真实MQ/Redis/5D，无秒杀下单HTTP/前端、现有开发数据升级或逆向迁移验收。
+- docs/learning/phase-6b-flash-sale-lifecycle-study-guide.md解释规则；docs/verification/phase-6b-flash-sale-lifecycle.md及同名data.json、target/regression-output.txt保留17条实际ORM快照、源码/输出指纹和完整边界。6A原7项下单及fixture方法AST保持，旧第8项临时禁用断言移除；6A历史证据不改写。
+- 按持续授权保存并推送本片，验证后安全整合main，最终提交/远端状态以Git核对为准。下一步先由项目拥有者解释迟到资金成功和正常购买成功的区别，再进入naive超卖复现与MySQL方案对照；不横向扩展普通促销或异步业务。

@@ -55,7 +55,10 @@ Redis 本期暂时收束至 **Track B / Phase 4J：多 Key 回源并发名额**�
 以下保留缓存阶段的实现与实验记录，后续增量见 `CONTEXT.md` 和对应验证文件。
 C4/5D及Phase 6A增量已分组保存。2026-10-07，Phase 6A真实MySQL目标10项、
 订单/支付回归151项通过；6项显式锁实验跳过，12项真实MQ集成未选入。
-秒杀HTTP、支付和关闭生命周期仍未开放，见[验证记录](docs/verification/phase-6a-flash-sale-checkout.md)。
+Phase 6B已接正常支付资格消费与真正未付关闭释放；已付取消保持消费，旧O1迟到事件不改O2。
+生命周期目标11项、秒杀/订单/支付回归171项通过；6项5D显式实验跳过、12项真实MQ未选入，
+本轮未重跑真实MQ/Redis。秒杀下单HTTP和前端仍未新增，开发库未迁移，见
+[学习指南](docs/learning/phase-6b-flash-sale-lifecycle-study-guide.md)与[本轮验证](docs/verification/phase-6b-flash-sale-lifecycle.md)。
 在分代 Key 隔离旧回填的基础上，先实测冷缓存重复回源，再合并同进程、同代、
 同商品的进行中加载。真实 10 并发对照中，冷缓存三轮详情加载从 9/10/7 次变为
 1/1/1 次。随后加入本进程故障回源名额，满员立即503；受控2名额实验为

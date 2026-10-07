@@ -16,6 +16,12 @@ from apps.ordering.models import Order
 from apps.payments.gateway import MockGateway, canonical_payload
 from apps.payments.models import PaymentAttempt, PaymentEvent, RefundSimulation
 from apps.payments.refund_services import simulate_refund
+from apps.promotions.lifecycle_services import (
+    FlashSalePurchaseInvariantError,
+    lock_flash_sale_purchase,
+    transition_flash_sale_purchase,
+)
+from apps.promotions.models import FlashSalePurchase
 
 
 ACTIVE_ATTEMPT_STATUSES = {
@@ -110,12 +116,6 @@ def create_payment_attempt(*, user, order_public_id, idempotency_key):
     ).first()
     if order is None:
         raise PaymentRuleError("order_not_found", "订单不存在，或你无权查看这张订单。", 404)
-    if order.creation_scope == Order.CreationScope.FLASH_SALE:
-        raise PaymentRuleError(
-            "flash_sale_lifecycle_unavailable",
-            "秒杀订单的支付功能尚未开放。",
-            409,
-        )
     if order.status != Order.Status.PENDING_PAYMENT:
         raise PaymentRuleError(
             "order_not_payable", "订单当前不是待支付状态，不能发起支付。", 409
@@ -151,6 +151,7 @@ def create_payment_attempt(*, user, order_public_id, idempotency_key):
             409,
         )
 
+    lock_flash_sale_purchase(order, expected_status=FlashSalePurchase.Status.HELD)
     attempt = PaymentAttempt.objects.create(
         order=order,
         user=user,
@@ -270,7 +271,7 @@ def _commit_inventory(order):
 def process_payment_event(*, event_id):
     """在一个事务里验事件、推进状态，并在成功时原子核销库存。
 
-    锁顺序为 Event → Order → Attempt → Reservation → Inventory。相同 Event 的
+    锁顺序为 Event → Order → Attempt → Purchase（仅秒杀）→ Reservation → Inventory。相同 Event 的
     重放直接返回；终态后的不同成功 Event 只复用同一退款模拟。
     金额、币种和订单必须与服务端原始交易事实一致，前端页面不参与确认。
     """
@@ -307,9 +308,6 @@ def process_payment_event(*, event_id):
     order = Order.objects.select_for_update().get(pk=attempt_hint.order_id)
     attempt = PaymentAttempt.objects.select_for_update().get(pk=attempt_hint.pk)
     event.attempt = attempt
-    if order.creation_scope == Order.CreationScope.FLASH_SALE:
-        return _reject(event, "flash_sale_lifecycle_unavailable")
-
     try:
         amount = Decimal(parsed["amount"])
     except (InvalidOperation, TypeError):
@@ -351,6 +349,7 @@ def process_payment_event(*, event_id):
             Order.Status.COMPLETED,
         }:
             return _reject(event, "terminal_attempt_conflict")
+        lock_flash_sale_purchase(order, expected_status=FlashSalePurchase.Status.CONSUMED)
     elif attempt.status in RETRYABLE_ATTEMPT_STATUSES:
         return _reject(event, "terminal_attempt_conflict")
     elif order.status != Order.Status.PENDING_PAYMENT:
@@ -363,12 +362,14 @@ def process_payment_event(*, event_id):
         attempt.active_marker = None
         attempt.save(update_fields=("status", "active_marker", "updated_at"))
     elif outcome == "SUCCEEDED":
+        purchase = lock_flash_sale_purchase(order, expected_status=FlashSalePurchase.Status.HELD)
         _commit_inventory(order)
         attempt.status = PaymentAttempt.Status.SUCCEEDED
         attempt.active_marker = None
         attempt.save(update_fields=("status", "active_marker", "updated_at"))
         order.status = Order.Status.PAID
         order.save(update_fields=("status", "updated_at"))
+        transition_flash_sale_purchase(purchase, target_status=FlashSalePurchase.Status.CONSUMED)
 
     event.processing_status = PaymentEvent.ProcessingStatus.PROCESSED
     event.error_code = ""
@@ -442,6 +443,8 @@ def _process_claimed_payment_event(*, event_id, processing_attempt):
 
 
 def _classify_processing_failure(error):
+    if isinstance(error, FlashSalePurchaseInvariantError):
+        return PaymentEvent.FailureKind.BLOCKED, "flash_sale_purchase_invariant_error"
     if isinstance(error, PaymentInvariantError):
         return PaymentEvent.FailureKind.BLOCKED, "payment_invariant_error"
     if (

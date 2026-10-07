@@ -9,6 +9,11 @@ from apps.inventory.models import Inventory, InventoryMovement, InventoryReserva
 from apps.ordering.models import Order, Shipment
 from apps.payments.models import PaymentAttempt, RefundSimulation
 from apps.payments.refund_services import simulate_refund
+from apps.promotions.lifecycle_services import (
+    lock_flash_sale_purchase,
+    transition_flash_sale_purchase,
+)
+from apps.promotions.models import FlashSalePurchase
 
 
 UNRESOLVED_PAYMENT_STATUSES = {
@@ -46,6 +51,7 @@ def _close_pending_order_locked(order, *, target_status):
     if any(attempt.status == PaymentAttempt.Status.SUCCEEDED for attempt in attempts):
         raise OrderLifecycleInvariantError("paid_attempt_on_pending_order")
 
+    purchase = lock_flash_sale_purchase(order, expected_status=FlashSalePurchase.Status.HELD)
     reservations = list(
         InventoryReservation.objects.select_for_update()
         .filter(order_item__order=order)
@@ -90,6 +96,7 @@ def _close_pending_order_locked(order, *, target_status):
 
     order.status = target_status
     order.save(update_fields=("status", "updated_at"))
+    transition_flash_sale_purchase(purchase, target_status=FlashSalePurchase.Status.RELEASED)
     return order
 
 
@@ -109,6 +116,8 @@ def _cancel_paid_order_locked(order):
         raise OrderLifecycleInvariantError("missing_or_duplicate_successful_attempt")
     attempt = attempts[0]
 
+    # 付后取消恢复库存并模拟退款，但正常购买已经消费过活动资格。
+    lock_flash_sale_purchase(order, expected_status=FlashSalePurchase.Status.CONSUMED)
     reservations = list(
         InventoryReservation.objects.select_for_update()
         .filter(order_item__order=order)
@@ -158,12 +167,6 @@ def cancel_order(*, public_id, user):
     ).first()
     if order is None:
         raise OrderLifecycleError("order_not_found", "订单不存在，或你无权取消。", 404)
-    if order.creation_scope == Order.CreationScope.FLASH_SALE:
-        raise OrderLifecycleError(
-            "flash_sale_lifecycle_unavailable",
-            "秒杀订单的取消功能尚未开放。",
-            409,
-        )
     if order.status == Order.Status.CANCELED:
         return order, False
     if order.status == Order.Status.PENDING_PAYMENT:
@@ -182,8 +185,6 @@ def expire_pending_order(*, order_id, as_of=None):
 
     as_of = as_of or timezone.now()
     order = Order.objects.select_for_update().get(pk=order_id)
-    if order.creation_scope == Order.CreationScope.FLASH_SALE:
-        return order, False
     if order.status != Order.Status.PENDING_PAYMENT:
         return order, False
     if not InventoryReservation.objects.filter(
@@ -201,7 +202,6 @@ def expire_due_orders(*, as_of=None):
         InventoryReservation.objects.filter(
             expires_at__lte=as_of,
             order_item__order__status=Order.Status.PENDING_PAYMENT,
-            order_item__order__creation_scope=Order.CreationScope.CART,
         )
         .order_by("order_item__order_id")
         .values_list("order_item__order_id", flat=True)

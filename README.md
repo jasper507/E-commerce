@@ -7,10 +7,14 @@ simulation, and simulated fulfilment. Redis work is temporarily closed at
 Phase 4J. Earlier Redis/payment work was committed and pushed to main on
 2026-10-05 (`2dacc9a`). The C4/5D increments and Phase 6A checkout baseline have been saved in focused
 commits. On 2026-10-07, Phase 6A passed 10 isolated MySQL target tests and 151
-related ordering/payment regression tests; 6 explicit lock experiments were
-skipped and 12 RabbitMQ integration tests excluded. Flash-sale HTTP, payment
-and close lifecycle entry points remain unavailable. See the
-[verification record](docs/verification/phase-6a-flash-sale-checkout.md).
+related ordering/payment regression tests. Phase 6B now consumes qualification on
+normal payment and releases it on genuine unpaid closure; paid cancellation
+retains consumed qualification, and late O1 events preserve O2. Its 11 lifecycle
+targets and 171 promotions/ordering/payment regression tests passed; 6 explicit
+lock experiments were skipped and 12 RabbitMQ tests excluded. This run did not
+repeat real MQ/Redis verification. Flash-sale checkout HTTP and frontend entry
+points remain absent. See the [learning guide](docs/learning/phase-6b-flash-sale-lifecycle-study-guide.md)
+and [verification record](docs/verification/phase-6b-flash-sale-lifecycle.md).
 After the RabbitMQ/Linux Worker baseline, bounded retries and manual publication
 recovery, Phase 5C-4 adds a persisted processing lease and explicit single-run
 `--recover-stale` repair. It checks the original claim version in a short

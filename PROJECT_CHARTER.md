@@ -3,13 +3,13 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase 6A 秒杀下单/限购服务基线通过真实 MySQL 目标与订单/支付回归；下一片接资格核销与关闭释放
+- 当前阶段：Phase 6B 秒杀资格核销、关闭释放及旧单事件隔离通过真实 MySQL；下一步复述后进入库存并发方案实验
 - 文档版本：v1.2
 - 路线图进度更新：2026-10-07
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过，见docs/verification/phase-6a-flash-sale-checkout.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；未执行开发库恢复、迁移或浏览器验收。
+- 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过；Phase 6B新增资格生命周期目标11项、promotions/ordering/payments回归171项通过，见docs/verification/phase-6b-flash-sale-lifecycle.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；未执行开发库恢复、迁移或浏览器验收。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -920,7 +920,8 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 
 ### Phase 6 — Flash Sale & Concurrency Track
 
-- [x] 单活动商品下单/限购服务基线（Phase 6A 真实MySQL目标10项与订单/支付回归151项通过；暂不开放 HTTP/支付/关闭，见阶段指南与验证记录）
+- [x] 单活动商品下单/限购服务基线（Phase 6A 真实MySQL目标10项与订单/支付回归151项通过；历史证据保留）
+- [x] 资格消费/真正未付关闭释放与O1旧事件隔离（Phase 6B目标11项、相关回归171项通过；未新增秒杀下单HTTP/前端，见阶段指南与验证记录）
 - [ ] 超卖复现
 - [ ] MySQL 最终事实与方案对比
 - [ ] Redis Lua 流量准入/原子前置候选
@@ -1171,10 +1172,9 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Redis Phase 4J 当前阶段暂时收束，支付模块已有同步 Mock、Inbox、查单及取消/退款模拟基线。MVP-4 文档中的环境限制是旧阶段记录；当前实现与较新 MySQL 证据结合 `CONTEXT.md`、`phase-2b-*.md` 与相关代码读取，不能将旧待办当作当前全部进度。下一步：
+Redis Phase 4J暂时收束，支付/MQ已有同步Mock、真实异步链路、有界重试和人工恢复证据。Phase 6A下单/限购及6B资格生命周期已通过真实隔离MySQL；较早阶段限制保留在各阶段记录，当前状态见CONTEXT第46/47节。
 
-1. 讨论支付异步处理中的 HTTP 已受理/订单已支付边界、可重试失败、UNKNOWN 的查单恢复，以及取消/过期的保守规则；使用具体场景确认预期，不重复已经理解的基础题。
-2. Phase 5A 建立人工恢复基线，Phase 5B 已补分类、总共 3 次持久预算（包含首次）、5/10 秒到期门槛及耗尽状态，并验证真实受控 MySQL 死锁后的次数保留；当前无自动调度，PROCESSING 中断不自动接管。操作指南与证据在 `docs/learning/phase-5b-payment-event-retry-study-guide.md` 和对应验证文件，项目拥有者随后学习。
-3. Phase 5C-1/2 基础链路与有界重试、C3 人工发布补漏、C4 人工过期领取修复及真实 Worker 中断已形成证据，继续沿用 MySQL 总共3次预算与5/10秒暂态失败门槛。C4过期领取释放不重置预算，锁内跳过仍在运行的事务；终态重投不新增核销或退款。MQ 消息次数不能替代 MySQL 预算，人工修复/补投不是周期自动补偿。
-4. 原Attempt查单已有实现与测试，Phase 5D已补支付/到期的六种真实锁竞争证据；下一步统一核对已有支付规则、状态机、恢复流程与验证记录，整理支付与MQ Evidence Pack，不重写已有查单。项目拥有者确认本期人工兜底；不进入第三方Sandbox，不操作开发数据库或外部账号。
-5. 先整理支付与MQ证据及学习验收，再按路线图进入库存/商品秒杀主线；不横向添加普通优惠券或支付之外的异步功能。前序成果已按项目拥有者要求推送main，C4增量留本地待审阅；开发库迁移与数据操作另行确认。
+1. 先由项目拥有者复述Phase 6B：资格与库存为什么同事务，付后取消为什么不返活动资格，O1迟到资金成功为什么不改变O2，以及异常时业务回滚与Inbox保留的区别。
+2. 按Phase 6库存主线推进naive超卖复现，再在相同条件下比较MySQL行锁与原子条件更新；保留失败、正确性与实测取舍，尚不宣称方案或性能胜出。
+3. 支付MQ继续保留本期人工兜底，不横向新增异步功能或周期接管；既有MQ/Worker证据不能当成本轮已重跑。
+4. 秒杀下单HTTP/前端与开发数据库迁移属于后续独立切片；现有开发数据操作另行确认，不进入第三方Sandbox或外部账号。

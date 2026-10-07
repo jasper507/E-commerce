@@ -9,27 +9,14 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.db import close_old_connections, connection, connections
-from django.test import TransactionTestCase, override_settings
+from django.test import TransactionTestCase
 from django.utils import timezone
 
 from apps.accounts.models import Address
 from apps.catalog.models import Category, Product, SKU
 from apps.inventory.models import Inventory, InventoryMovement, InventoryReservation
-from apps.ordering.lifecycle_services import (
-    OrderLifecycleError,
-    cancel_order,
-    expire_due_orders,
-    expire_pending_order,
-)
 from apps.ordering.models import AddressSnapshot, Cart, CartItem, Order, OrderItem
 from apps.ordering.services import OrderRuleError, create_order_from_cart
-from apps.payments.gateway import MockGateway
-from apps.payments.models import PaymentAttempt, PaymentEvent
-from apps.payments.services import (
-    PaymentRuleError,
-    create_payment_attempt,
-    receive_payment_event,
-)
 from apps.promotions.models import FlashSale, FlashSaleItem, FlashSalePurchase
 from apps.promotions.services import create_flash_sale_order
 
@@ -37,7 +24,7 @@ from apps.promotions.services import create_flash_sale_order
 User = get_user_model()
 
 
-class FlashSaleCheckoutTests(TransactionTestCase):
+class FlashSaleCheckoutFixture(TransactionTestCase):
     def setUp(self):
         self.assertEqual(connection.vendor, "mysql", "秒杀并发合约必须由真实 MySQL 验证")
         self.assertTrue(connection.settings_dict["NAME"].startswith("test_"))
@@ -179,6 +166,8 @@ class FlashSaleCheckoutTests(TransactionTestCase):
         self.assertEqual(Address.objects.count(), 3)
         self._assert_cart_unchanged()
 
+
+class FlashSaleCheckoutTests(FlashSaleCheckoutFixture):
     def test_same_customer_concurrent_different_keys_reserves_only_one_item(self):
         start = Barrier(2)
         results = Queue()
@@ -354,65 +343,3 @@ class FlashSaleCheckoutTests(TransactionTestCase):
         _, created = self._checkout(key="flash-sale-write-failure")
         self.assertIs(created, True)
         self._assert_complete_flash_sale_order(key="flash-sale-write-failure")
-
-    def test_existing_lifecycle_services_do_not_process_flash_sale_order_yet(self):
-        order, _ = self._checkout(key="flash-sale-lifecycle-boundary")
-
-        with self.assertRaises(PaymentRuleError) as payment_error:
-            create_payment_attempt(
-                user=self.user,
-                order_public_id=order.public_id,
-                idempotency_key="flash-sale-payment-boundary",
-            )
-        self.assertEqual(payment_error.exception.code, "flash_sale_lifecycle_unavailable")
-        self.assertEqual(payment_error.exception.http_status, 409)
-        self.assertEqual(PaymentAttempt.objects.count(), 0)
-        with self.assertRaises(OrderLifecycleError) as cancel_error:
-            cancel_order(public_id=order.public_id, user=self.user)
-        self.assertEqual(cancel_error.exception.code, "flash_sale_lifecycle_unavailable")
-        self.assertEqual(cancel_error.exception.http_status, 409)
-
-        # 到期数据只用于证明现有扫描也受边界保护，不表示秒杀释放流程已实现。
-        as_of = timezone.now()
-        InventoryReservation.objects.filter(order_item__order=order).update(
-            expires_at=as_of - timedelta(seconds=1)
-        )
-        expired_order, changed = expire_pending_order(order_id=order.pk, as_of=as_of)
-        self.assertEqual(expired_order.pk, order.pk)
-        self.assertIs(changed, False)
-        self.assertEqual(expire_due_orders(as_of=as_of), (0, 0))
-        self.assertEqual(PaymentAttempt.objects.count(), 0)
-        self._assert_complete_flash_sale_order(key="flash-sale-lifecycle-boundary")
-
-        # 历史夹具故意绕过公共创建入口，证明处理器自身也会拒绝秒杀核销。
-        attempt = PaymentAttempt.objects.create(
-            order=order,
-            user=self.user,
-            amount=order.total,
-            currency="CNY",
-            attempt_number=1,
-            idempotency_key="flash-sale-historical-attempt-fixture",
-            request_fingerprint="f" * 64,
-            active_marker=1,
-        )
-        gateway = MockGateway()
-        payload, signature = gateway.create_payment(attempt)
-        self.assertEqual(payload["status"], "SUCCEEDED")
-        self.assertTrue(gateway.verify_event(payload, signature))
-        with override_settings(PAYMENT_EVENTS_ASYNC=False):
-            event = receive_payment_event(payload=payload, signature=signature)
-
-        event.refresh_from_db()
-        attempt.refresh_from_db()
-        self.assertEqual(event.processing_status, PaymentEvent.ProcessingStatus.REJECTED)
-        self.assertEqual(event.error_code, "flash_sale_lifecycle_unavailable")
-        self.assertEqual(event.attempt_id, attempt.pk)
-        self.assertEqual(attempt.status, PaymentAttempt.Status.CREATED)
-        self.assertEqual(attempt.active_marker, 1)
-        self.assertEqual(PaymentAttempt.objects.count(), 1)
-        self.assertEqual(PaymentEvent.objects.count(), 1)
-        self.assertEqual(
-            InventoryMovement.objects.filter(movement_type=InventoryMovement.Type.COMMIT).count(),
-            0,
-        )
-        self._assert_complete_flash_sale_order(key="flash-sale-lifecycle-boundary")
