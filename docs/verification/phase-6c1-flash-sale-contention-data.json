@@ -1,0 +1,1065 @@
+{
+  "date": "2026-10-07",
+  "timezone": "Asia/Shanghai",
+  "source": {
+    "base_commit": "f713d035f5d88e4eac20b525e4b3f8ee7e975156",
+    "branch_at_execution": "codex/flash-sale-baseline",
+    "business_code_changed": false
+  },
+  "initial_failure": {
+    "command": "python -m pytest backend/apps/promotions/tests/test_flash_sale_contention.py -q -s --tb=short",
+    "failed": 2,
+    "passed": 1,
+    "subtests_passed": 18,
+    "elapsed_seconds": 18.65,
+    "exit_code": 1,
+    "cause": "Frozen OrderRuleError escaped a generator-based SQL observation context manager; contextlib attempted to assign __traceback__",
+    "test_source_sha256": "d14e2461decaebe2b1f07dd745fb2381f228534ffd652e00ab8e70af416e2918",
+    "raw_output": "docs/verification/phase-6c1-flash-sale-contention-initial-failure-output.txt",
+    "repair": "Catch OrderRuleError after the service atomic transaction exits, inside the observation context; do not change the production exception or inventory algorithm"
+  },
+  "fingerprint_normalization": "UTF-8 file bytes with CRLF normalized to LF; stable across Git checkouts",
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "pytest": "9.1.1",
+    "mysql": "8.4.10",
+    "mysql_image": "mysql:8.4.10",
+    "host": "127.0.0.1",
+    "port": 3307,
+    "test_database": "test_project_one",
+    "django_env": "test",
+    "payment_events_async": false,
+    "catalog_cache_enabled": false,
+    "os": "Windows-10-10.0.26200-SP0",
+    "architecture": "AMD64",
+    "logical_cpus": 24,
+    "docker_mysql_nano_cpus_limit": 0,
+    "docker_mysql_memory_bytes_limit": 0,
+    "worker_running": false,
+    "database_grants_changed": false,
+    "service_started_or_stopped": false
+  },
+  "preflight": {
+    "test_database_existed": false,
+    "other_visible_test_connections": 0,
+    "application_test_database_grant_confirmed": true,
+    "development_schema_table_count": 26
+  },
+  "experiment": {
+    "dataset": "2 different customers, own addresses, one active sale item at89.00, ordinarySKU129.00, initial available1/reserved0, cart quantities2and3",
+    "concurrency": 2,
+    "warmup": false,
+    "load_duration": null,
+    "throughput_p50_p95_p99": null,
+    "fixed_seed": null,
+    "ordering": "Barrier for natural competition; Event for held first transaction commit and rollback",
+    "successful_target_runs": 1,
+    "failed_target_runs": 1,
+    "method": "Service calls inside process with independent MySQL connections, no HTTP transport",
+    "timeouts": "Test failure/cleanup boundaries, not performance guarantees"
+  },
+  "target": {
+    "command": "python -m pytest backend/apps/promotions/tests/test_flash_sale_contention.py -q -s --tb=short",
+    "mysql_database_setting": "project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 3,
+    "subtests_passed": 42,
+    "elapsed_seconds": 20.22,
+    "exit_code": 0,
+    "actual_orm_record_count": 3,
+    "actual_orm_records": [
+      {
+        "after_release": {
+          "address_snapshots": [],
+          "carts": [
+            {
+              "cart__user_id": 1,
+              "cart_id": 1,
+              "quantity": 2,
+              "sku_id": 1
+            },
+            {
+              "cart__user_id": 2,
+              "cart_id": 2,
+              "quantity": 3,
+              "sku_id": 1
+            }
+          ],
+          "fact_counts": {
+            "AddressSnapshot": 0,
+            "FlashSalePurchase": 0,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 0,
+            "OrderItem": 0
+          },
+          "inventory": {
+            "available_stock": 1,
+            "reserved_stock": 0
+          },
+          "items": [],
+          "movements": [],
+          "orders": [],
+          "ordinary_sku_price": "129.00",
+          "owned_fact_counts": {
+            "1": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            },
+            "2": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            }
+          },
+          "purchases": [],
+          "reservations": []
+        },
+        "committed_view_before_release": {
+          "address_snapshots": [],
+          "carts": [
+            {
+              "cart__user_id": 1,
+              "cart_id": 1,
+              "quantity": 2,
+              "sku_id": 1
+            },
+            {
+              "cart__user_id": 2,
+              "cart_id": 2,
+              "quantity": 3,
+              "sku_id": 1
+            }
+          ],
+          "fact_counts": {
+            "AddressSnapshot": 0,
+            "FlashSalePurchase": 0,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 0,
+            "OrderItem": 0
+          },
+          "inventory": {
+            "available_stock": 1,
+            "reserved_stock": 0
+          },
+          "items": [],
+          "movements": [],
+          "orders": [],
+          "ordinary_sku_price": "129.00",
+          "owned_fact_counts": {
+            "1": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            },
+            "2": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            }
+          },
+          "purchases": [],
+          "reservations": []
+        },
+        "contender": {
+          "connection_id": 3255,
+          "error_code": "stock_busy",
+          "http_status": 409,
+          "key": "flash-contention-second",
+          "returned_before_release": true,
+          "snapshot_after_return": {
+            "address_snapshots": [],
+            "carts": [
+              {
+                "cart__user_id": 1,
+                "cart_id": 1,
+                "quantity": 2,
+                "sku_id": 1
+              },
+              {
+                "cart__user_id": 2,
+                "cart_id": 2,
+                "quantity": 3,
+                "sku_id": 1
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            },
+            "inventory": {
+              "available_stock": 1,
+              "reserved_stock": 0
+            },
+            "items": [],
+            "movements": [],
+            "orders": [],
+            "ordinary_sku_price": "129.00",
+            "owned_fact_counts": {
+              "1": {
+                "AddressSnapshot": 0,
+                "FlashSalePurchase": 0,
+                "InventoryMovement": 0,
+                "InventoryReservation": 0,
+                "Order": 0,
+                "OrderItem": 0
+              },
+              "2": {
+                "AddressSnapshot": 0,
+                "FlashSalePurchase": 0,
+                "InventoryMovement": 0,
+                "InventoryReservation": 0,
+                "Order": 0,
+                "OrderItem": 0
+              }
+            },
+            "purchases": [],
+            "reservations": []
+          },
+          "user_id": 2
+        },
+        "final": {
+          "address_snapshots": [
+            {
+              "detail": "测试路 3 号",
+              "order_id": 3
+            }
+          ],
+          "carts": [
+            {
+              "cart__user_id": 1,
+              "cart_id": 1,
+              "quantity": 2,
+              "sku_id": 1
+            },
+            {
+              "cart__user_id": 2,
+              "cart_id": 2,
+              "quantity": 3,
+              "sku_id": 1
+            }
+          ],
+          "fact_counts": {
+            "AddressSnapshot": 1,
+            "FlashSalePurchase": 1,
+            "InventoryMovement": 1,
+            "InventoryReservation": 1,
+            "Order": 1,
+            "OrderItem": 1
+          },
+          "inventory": {
+            "available_stock": 0,
+            "reserved_stock": 1
+          },
+          "items": [
+            {
+              "line_total": "89.00",
+              "order_id": 3,
+              "quantity": 1,
+              "sku_id": 1,
+              "unit_price": "89.00"
+            }
+          ],
+          "movements": [
+            {
+              "available_delta": -1,
+              "inventory_id": 1,
+              "movement_type": "RESERVE",
+              "reservation_id": 2,
+              "reserved_delta": 1
+            }
+          ],
+          "orders": [
+            {
+              "creation_scope": "flash_sale_checkout",
+              "id": 3,
+              "idempotency_key": "flash-contention-second",
+              "status": "PENDING_PAYMENT",
+              "total": "89.00",
+              "user_id": 2
+            }
+          ],
+          "ordinary_sku_price": "129.00",
+          "owned_fact_counts": {
+            "1": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            },
+            "2": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            }
+          },
+          "purchases": [
+            {
+              "blocking_marker": 1,
+              "customer_id": 2,
+              "flash_sale_item_id": 1,
+              "order_id": 3,
+              "status": "HELD"
+            }
+          ],
+          "reservations": [
+            {
+              "id": 2,
+              "inventory_id": 1,
+              "order_item_id": 3,
+              "quantity": 1,
+              "status": "RESERVED"
+            }
+          ]
+        },
+        "holder": {
+          "connection_id": 3254,
+          "created": true,
+          "key": "flash-contention-first",
+          "order_id": 1,
+          "transaction_result": "rolled_back",
+          "uncommitted_snapshot": {
+            "address_snapshots": [
+              {
+                "detail": "测试路 1 号",
+                "order_id": 1
+              }
+            ],
+            "carts": [
+              {
+                "cart__user_id": 1,
+                "cart_id": 1,
+                "quantity": 2,
+                "sku_id": 1
+              },
+              {
+                "cart__user_id": 2,
+                "cart_id": 2,
+                "quantity": 3,
+                "sku_id": 1
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": {
+              "available_stock": 0,
+              "reserved_stock": 1
+            },
+            "items": [
+              {
+                "line_total": "89.00",
+                "order_id": 1,
+                "quantity": 1,
+                "sku_id": 1,
+                "unit_price": "89.00"
+              }
+            ],
+            "movements": [
+              {
+                "available_delta": -1,
+                "inventory_id": 1,
+                "movement_type": "RESERVE",
+                "reservation_id": 1,
+                "reserved_delta": 1
+              }
+            ],
+            "orders": [
+              {
+                "creation_scope": "flash_sale_checkout",
+                "id": 1,
+                "idempotency_key": "flash-contention-first",
+                "status": "PENDING_PAYMENT",
+                "total": "89.00",
+                "user_id": 1
+              }
+            ],
+            "ordinary_sku_price": "129.00",
+            "owned_fact_counts": {
+              "1": {
+                "AddressSnapshot": 1,
+                "FlashSalePurchase": 1,
+                "InventoryMovement": 1,
+                "InventoryReservation": 1,
+                "Order": 1,
+                "OrderItem": 1
+              },
+              "2": {
+                "AddressSnapshot": 0,
+                "FlashSalePurchase": 0,
+                "InventoryMovement": 0,
+                "InventoryReservation": 0,
+                "Order": 0,
+                "OrderItem": 0
+              }
+            },
+            "purchases": [
+              {
+                "blocking_marker": 1,
+                "customer_id": 1,
+                "flash_sale_item_id": 1,
+                "order_id": 1,
+                "status": "HELD"
+              }
+            ],
+            "reservations": [
+              {
+                "id": 1,
+                "inventory_id": 1,
+                "order_item_id": 1,
+                "quantity": 1,
+                "status": "RESERVED"
+              }
+            ]
+          },
+          "user_id": 1
+        },
+        "inventory_queries": [
+          {
+            "mysql_error_number": 3572,
+            "nowait": true,
+            "sql": "SELECT `inventory_inventory`.`id`, `inventory_inventory`.`sku_id`, `inventory_inventory`.`available_stock`, `inventory_inventory`.`reserved_stock` FROM `inventory_inventory` WHERE `inventory_inventory`.`sku_id` = %s ORDER BY `inventory_inventory`.`id` ASC LIMIT 1 FOR UPDATE NOWAIT"
+          }
+        ],
+        "observer_connection_id": 3250,
+        "retry": {
+          "created": true,
+          "order_id": 3
+        },
+        "scenario": "held_first_rollback"
+      },
+      {
+        "after_release": {
+          "address_snapshots": [
+            {
+              "detail": "测试路 1 号",
+              "order_id": 4
+            }
+          ],
+          "carts": [
+            {
+              "cart__user_id": 3,
+              "cart_id": 3,
+              "quantity": 2,
+              "sku_id": 2
+            },
+            {
+              "cart__user_id": 4,
+              "cart_id": 4,
+              "quantity": 3,
+              "sku_id": 2
+            }
+          ],
+          "fact_counts": {
+            "AddressSnapshot": 1,
+            "FlashSalePurchase": 1,
+            "InventoryMovement": 1,
+            "InventoryReservation": 1,
+            "Order": 1,
+            "OrderItem": 1
+          },
+          "inventory": {
+            "available_stock": 0,
+            "reserved_stock": 1
+          },
+          "items": [
+            {
+              "line_total": "89.00",
+              "order_id": 4,
+              "quantity": 1,
+              "sku_id": 2,
+              "unit_price": "89.00"
+            }
+          ],
+          "movements": [
+            {
+              "available_delta": -1,
+              "inventory_id": 2,
+              "movement_type": "RESERVE",
+              "reservation_id": 3,
+              "reserved_delta": 1
+            }
+          ],
+          "orders": [
+            {
+              "creation_scope": "flash_sale_checkout",
+              "id": 4,
+              "idempotency_key": "flash-contention-first",
+              "status": "PENDING_PAYMENT",
+              "total": "89.00",
+              "user_id": 3
+            }
+          ],
+          "ordinary_sku_price": "129.00",
+          "owned_fact_counts": {
+            "3": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "4": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            }
+          },
+          "purchases": [
+            {
+              "blocking_marker": 1,
+              "customer_id": 3,
+              "flash_sale_item_id": 2,
+              "order_id": 4,
+              "status": "HELD"
+            }
+          ],
+          "reservations": [
+            {
+              "id": 3,
+              "inventory_id": 2,
+              "order_item_id": 4,
+              "quantity": 1,
+              "status": "RESERVED"
+            }
+          ]
+        },
+        "committed_view_before_release": {
+          "address_snapshots": [],
+          "carts": [
+            {
+              "cart__user_id": 3,
+              "cart_id": 3,
+              "quantity": 2,
+              "sku_id": 2
+            },
+            {
+              "cart__user_id": 4,
+              "cart_id": 4,
+              "quantity": 3,
+              "sku_id": 2
+            }
+          ],
+          "fact_counts": {
+            "AddressSnapshot": 0,
+            "FlashSalePurchase": 0,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 0,
+            "OrderItem": 0
+          },
+          "inventory": {
+            "available_stock": 1,
+            "reserved_stock": 0
+          },
+          "items": [],
+          "movements": [],
+          "orders": [],
+          "ordinary_sku_price": "129.00",
+          "owned_fact_counts": {
+            "3": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            },
+            "4": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            }
+          },
+          "purchases": [],
+          "reservations": []
+        },
+        "contender": {
+          "connection_id": 3259,
+          "error_code": "stock_busy",
+          "http_status": 409,
+          "key": "flash-contention-second",
+          "returned_before_release": true,
+          "snapshot_after_return": {
+            "address_snapshots": [],
+            "carts": [
+              {
+                "cart__user_id": 3,
+                "cart_id": 3,
+                "quantity": 2,
+                "sku_id": 2
+              },
+              {
+                "cart__user_id": 4,
+                "cart_id": 4,
+                "quantity": 3,
+                "sku_id": 2
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            },
+            "inventory": {
+              "available_stock": 1,
+              "reserved_stock": 0
+            },
+            "items": [],
+            "movements": [],
+            "orders": [],
+            "ordinary_sku_price": "129.00",
+            "owned_fact_counts": {
+              "3": {
+                "AddressSnapshot": 0,
+                "FlashSalePurchase": 0,
+                "InventoryMovement": 0,
+                "InventoryReservation": 0,
+                "Order": 0,
+                "OrderItem": 0
+              },
+              "4": {
+                "AddressSnapshot": 0,
+                "FlashSalePurchase": 0,
+                "InventoryMovement": 0,
+                "InventoryReservation": 0,
+                "Order": 0,
+                "OrderItem": 0
+              }
+            },
+            "purchases": [],
+            "reservations": []
+          },
+          "user_id": 4
+        },
+        "final": {
+          "address_snapshots": [
+            {
+              "detail": "测试路 1 号",
+              "order_id": 4
+            }
+          ],
+          "carts": [
+            {
+              "cart__user_id": 3,
+              "cart_id": 3,
+              "quantity": 2,
+              "sku_id": 2
+            },
+            {
+              "cart__user_id": 4,
+              "cart_id": 4,
+              "quantity": 3,
+              "sku_id": 2
+            }
+          ],
+          "fact_counts": {
+            "AddressSnapshot": 1,
+            "FlashSalePurchase": 1,
+            "InventoryMovement": 1,
+            "InventoryReservation": 1,
+            "Order": 1,
+            "OrderItem": 1
+          },
+          "inventory": {
+            "available_stock": 0,
+            "reserved_stock": 1
+          },
+          "items": [
+            {
+              "line_total": "89.00",
+              "order_id": 4,
+              "quantity": 1,
+              "sku_id": 2,
+              "unit_price": "89.00"
+            }
+          ],
+          "movements": [
+            {
+              "available_delta": -1,
+              "inventory_id": 2,
+              "movement_type": "RESERVE",
+              "reservation_id": 3,
+              "reserved_delta": 1
+            }
+          ],
+          "orders": [
+            {
+              "creation_scope": "flash_sale_checkout",
+              "id": 4,
+              "idempotency_key": "flash-contention-first",
+              "status": "PENDING_PAYMENT",
+              "total": "89.00",
+              "user_id": 3
+            }
+          ],
+          "ordinary_sku_price": "129.00",
+          "owned_fact_counts": {
+            "3": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "4": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            }
+          },
+          "purchases": [
+            {
+              "blocking_marker": 1,
+              "customer_id": 3,
+              "flash_sale_item_id": 2,
+              "order_id": 4,
+              "status": "HELD"
+            }
+          ],
+          "reservations": [
+            {
+              "id": 3,
+              "inventory_id": 2,
+              "order_item_id": 4,
+              "quantity": 1,
+              "status": "RESERVED"
+            }
+          ]
+        },
+        "holder": {
+          "connection_id": 3258,
+          "created": true,
+          "key": "flash-contention-first",
+          "order_id": 4,
+          "transaction_result": "committed",
+          "uncommitted_snapshot": {
+            "address_snapshots": [
+              {
+                "detail": "测试路 1 号",
+                "order_id": 4
+              }
+            ],
+            "carts": [
+              {
+                "cart__user_id": 3,
+                "cart_id": 3,
+                "quantity": 2,
+                "sku_id": 2
+              },
+              {
+                "cart__user_id": 4,
+                "cart_id": 4,
+                "quantity": 3,
+                "sku_id": 2
+              }
+            ],
+            "fact_counts": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "inventory": {
+              "available_stock": 0,
+              "reserved_stock": 1
+            },
+            "items": [
+              {
+                "line_total": "89.00",
+                "order_id": 4,
+                "quantity": 1,
+                "sku_id": 2,
+                "unit_price": "89.00"
+              }
+            ],
+            "movements": [
+              {
+                "available_delta": -1,
+                "inventory_id": 2,
+                "movement_type": "RESERVE",
+                "reservation_id": 3,
+                "reserved_delta": 1
+              }
+            ],
+            "orders": [
+              {
+                "creation_scope": "flash_sale_checkout",
+                "id": 4,
+                "idempotency_key": "flash-contention-first",
+                "status": "PENDING_PAYMENT",
+                "total": "89.00",
+                "user_id": 3
+              }
+            ],
+            "ordinary_sku_price": "129.00",
+            "owned_fact_counts": {
+              "3": {
+                "AddressSnapshot": 1,
+                "FlashSalePurchase": 1,
+                "InventoryMovement": 1,
+                "InventoryReservation": 1,
+                "Order": 1,
+                "OrderItem": 1
+              },
+              "4": {
+                "AddressSnapshot": 0,
+                "FlashSalePurchase": 0,
+                "InventoryMovement": 0,
+                "InventoryReservation": 0,
+                "Order": 0,
+                "OrderItem": 0
+              }
+            },
+            "purchases": [
+              {
+                "blocking_marker": 1,
+                "customer_id": 3,
+                "flash_sale_item_id": 2,
+                "order_id": 4,
+                "status": "HELD"
+              }
+            ],
+            "reservations": [
+              {
+                "id": 3,
+                "inventory_id": 2,
+                "order_item_id": 4,
+                "quantity": 1,
+                "status": "RESERVED"
+              }
+            ]
+          },
+          "user_id": 3
+        },
+        "inventory_queries": [
+          {
+            "mysql_error_number": 3572,
+            "nowait": true,
+            "sql": "SELECT `inventory_inventory`.`id`, `inventory_inventory`.`sku_id`, `inventory_inventory`.`available_stock`, `inventory_inventory`.`reserved_stock` FROM `inventory_inventory` WHERE `inventory_inventory`.`sku_id` = %s ORDER BY `inventory_inventory`.`id` ASC LIMIT 1 FOR UPDATE NOWAIT"
+          }
+        ],
+        "observer_connection_id": 3256,
+        "retry": {
+          "error_code": "insufficient_stock",
+          "http_status": 409,
+          "winner_replay": {
+            "created": false,
+            "order_id": 4
+          }
+        },
+        "scenario": "held_first_commit"
+      },
+      {
+        "final": {
+          "address_snapshots": [
+            {
+              "detail": "测试路 1 号",
+              "order_id": 7
+            }
+          ],
+          "carts": [
+            {
+              "cart__user_id": 5,
+              "cart_id": 5,
+              "quantity": 2,
+              "sku_id": 3
+            },
+            {
+              "cart__user_id": 6,
+              "cart_id": 6,
+              "quantity": 3,
+              "sku_id": 3
+            }
+          ],
+          "fact_counts": {
+            "AddressSnapshot": 1,
+            "FlashSalePurchase": 1,
+            "InventoryMovement": 1,
+            "InventoryReservation": 1,
+            "Order": 1,
+            "OrderItem": 1
+          },
+          "inventory": {
+            "available_stock": 0,
+            "reserved_stock": 1
+          },
+          "items": [
+            {
+              "line_total": "89.00",
+              "order_id": 7,
+              "quantity": 1,
+              "sku_id": 3,
+              "unit_price": "89.00"
+            }
+          ],
+          "movements": [
+            {
+              "available_delta": -1,
+              "inventory_id": 3,
+              "movement_type": "RESERVE",
+              "reservation_id": 4,
+              "reserved_delta": 1
+            }
+          ],
+          "orders": [
+            {
+              "creation_scope": "flash_sale_checkout",
+              "id": 7,
+              "idempotency_key": "flash-contention-first",
+              "status": "PENDING_PAYMENT",
+              "total": "89.00",
+              "user_id": 5
+            }
+          ],
+          "ordinary_sku_price": "129.00",
+          "owned_fact_counts": {
+            "5": {
+              "AddressSnapshot": 1,
+              "FlashSalePurchase": 1,
+              "InventoryMovement": 1,
+              "InventoryReservation": 1,
+              "Order": 1,
+              "OrderItem": 1
+            },
+            "6": {
+              "AddressSnapshot": 0,
+              "FlashSalePurchase": 0,
+              "InventoryMovement": 0,
+              "InventoryReservation": 0,
+              "Order": 0,
+              "OrderItem": 0
+            }
+          },
+          "purchases": [
+            {
+              "blocking_marker": 1,
+              "customer_id": 5,
+              "flash_sale_item_id": 3,
+              "order_id": 7,
+              "status": "HELD"
+            }
+          ],
+          "reservations": [
+            {
+              "id": 4,
+              "inventory_id": 3,
+              "order_item_id": 7,
+              "quantity": 1,
+              "status": "RESERVED"
+            }
+          ]
+        },
+        "observer_connection_id": 3260,
+        "outcomes": [
+          {
+            "connection_id": 3262,
+            "error_code": "stock_busy",
+            "http_status": 409,
+            "key": "flash-contention-second",
+            "user_id": 6
+          },
+          {
+            "connection_id": 3261,
+            "created": true,
+            "key": "flash-contention-first",
+            "order_id": 7,
+            "user_id": 5
+          }
+        ],
+        "scenario": "two_customers_stock_one"
+      }
+    ]
+  },
+  "source_sha256": {
+    "backend/apps/promotions/tests/test_flash_sale_contention.py": "35aaabdc1ab03e2e486df370d6212bf8b95f1884ba831e771de5291b04246eb6",
+    "backend/apps/promotions/tests/test_flash_sale_checkout.py": "1512037833f0d62c78cd48772bbce3f00fd561e42737f11ade65b3e21e56bc10",
+    "backend/apps/promotions/tests/test_flash_sale_lifecycle.py": "5cb02800c34da14e850905cd8e7fd59606826a4f467138f06257c4158046eb29",
+    "backend/apps/promotions/services.py": "8167c34f2048c2140ae5216836338a2ed936438e3de1f30e7b3ef4bacbacf360",
+    "backend/apps/promotions/models.py": "6a6df1dda514bf3fc3d1768ea32babf4505d8e019447751418b113aa2e1ab10d",
+    "backend/apps/promotions/lifecycle_services.py": "50fdbdcfd185bf3eb8ef52a12fc24503cc05d553fdd8789ceed56ec411a3a875",
+    "backend/apps/ordering/services.py": "547c0ba26ccf278e86d46300be7fb3656792cf78b74f823f734286eb171707f9",
+    "backend/apps/ordering/lifecycle_services.py": "2ea0e075e4dd45dd6abeb593c541986a07c58dc367e797a95df2a344e0dd68ca",
+    "backend/apps/payments/services.py": "c76142484b5f58c352b2ddf59b49b3821c10822011ad64cf1ec5633bed5cb169",
+    "backend/config/settings.py": "f7e90dbee5bb66816de752df4961f74ef9fe43a2cf4d96dba369c454bc8fed7c"
+  },
+  "raw_output_sha256": {
+    "docs/verification/phase-6c1-flash-sale-contention-target-output.txt": "77d2f337ca3953631243eea439c36e635376c85586586c1b7f547c13e2ed6acc",
+    "docs/verification/phase-6c1-flash-sale-contention-initial-failure-output.txt": "efdbeca419696846b21e4a3d25a224b374ac0bc450f60e138269049193ce6148",
+    "docs/verification/phase-6c1-flash-sale-contention-regression-output.txt": "02c2d6c70da6da447440ffafb5473a3b4f9b1edf9f301c34b39694be4522b962"
+  },
+  "limits": [
+    "Current NOWAIT service baseline only; no conditional update integrated or compared in a complete order transaction",
+    "Real SQL and 3572 observed, but no record-lock wait-table observation",
+    "Two-customer correctness scenarios only; no benchmark, production latency, performance winner or universal deadlock-freedom claim",
+    "No flash-sale HTTP or frontend acceptance",
+    "No development migrate or business-data write; temporary fresh test schema only",
+    "No real MQ/Redis rerun; earlier Phase3/6A/6B evidence retains its historical scope"
+  ],
+  "postflight": {
+    "test_database_exists": false,
+    "other_visible_test_connections": 0,
+    "development_schema_table_count_before": 26,
+    "development_schema_table_count_after": 26,
+    "development_migrate_run": false
+  },
+  "static_checks": {
+    "django_check": "System check identified no issues (0 silenced).",
+    "migration_drift": "No changes detected"
+  },
+  "regression": {
+    "command": "python -m pytest backend/apps/promotions/tests -q --tb=short",
+    "mysql_database_setting": "test_project_one",
+    "mysql_test_database_setting": "test_project_one",
+    "passed": 23,
+    "subtests_passed": 122,
+    "elapsed_seconds": 58.92,
+    "exit_code": 0,
+    "scope": "Promotion models, existing checkout and qualification lifecycle, new contention scenarios; business code unchanged, no unrelated full ordering/payment or real service regression"
+  }
+}

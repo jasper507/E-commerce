@@ -59,6 +59,9 @@ Phase 6B已接正常支付资格消费与真正未付关闭释放；已付取消
 生命周期目标11项、秒杀/订单/支付回归171项通过；6项5D显式实验跳过、12项真实MQ未选入，
 本轮未重跑真实MQ/Redis。秒杀下单HTTP和前端仍未新增，开发库未迁移，见
 [学习指南](docs/learning/phase-6b-flash-sale-lifecycle-study-guide.md)与[本轮验证](docs/verification/phase-6b-flash-sale-lifecycle.md)。
+Phase6C-1补完整秒杀NOWAIT双顾客库存1竞争、首单提交/回滚及原Key重试；修正测试观察器后
+目标3项、promotions全部23项通过，业务代码/迁移不变，完整条件更新对照及性能仍待进行，见
+[验证记录](docs/verification/phase-6c1-flash-sale-contention.md)与[学习指南](docs/learning/phase-6c1-flash-sale-contention-study-guide.md)。
 在分代 Key 隔离旧回填的基础上，先实测冷缓存重复回源，再合并同进程、同代、
 同商品的进行中加载。真实 10 并发对照中，冷缓存三轮详情加载从 9/10/7 次变为
 1/1/1 次。随后加入本进程故障回源名额，满员立即503；受控2名额实验为

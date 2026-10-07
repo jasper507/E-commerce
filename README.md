@@ -15,6 +15,13 @@ lock experiments were skipped and 12 RabbitMQ tests excluded. This run did not
 repeat real MQ/Redis verification. Flash-sale checkout HTTP and frontend entry
 points remain absent. See the [learning guide](docs/learning/phase-6b-flash-sale-lifecycle-study-guide.md)
 and [verification record](docs/verification/phase-6b-flash-sale-lifecycle.md).
+Phase 6C-1 adds the current NOWAIT service baseline for two different customers
+competing for one item, including held-first commit/rollback and original-key
+retry. After correcting the test observation context, 3 targets and all 23
+promotion tests passed. Production code and migrations are unchanged; complete
+conditional-update comparison and performance work remain pending. See its
+[verification](docs/verification/phase-6c1-flash-sale-contention.md) and
+[learning guide](docs/learning/phase-6c1-flash-sale-contention-study-guide.md).
 After the RabbitMQ/Linux Worker baseline, bounded retries and manual publication
 recovery, Phase 5C-4 adds a persisted processing lease and explicit single-run
 `--recover-stale` repair. It checks the original claim version in a short

@@ -1,9 +1,9 @@
-# Project One — Domain Context v1.30
+# Project One — Domain Context v1.31
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6B资格核销/关闭释放与旧单事件隔离通过真实MySQL；下一步复述本片规则，再进入库存并发方案实验
-- 文档版本：v1.30
+- 当前阶段：Phase 6C-1完整秒杀NOWAIT竞争基线通过真实MySQL；下一片对照完整事务的原子条件更新候选
+- 文档版本：v1.31
 - 更新日期：2026-10-07
 - 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
@@ -1283,3 +1283,16 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 1205为资格实写后的测试注入，不是实际MySQL锁超时/死锁观测；两连接实验未采集锁等待、未强制两取锁顺序，不证明全无死锁或性能胜出。本轮未重跑真实MQ/Redis/5D，无秒杀下单HTTP/前端、现有开发数据升级或逆向迁移验收。
 - docs/learning/phase-6b-flash-sale-lifecycle-study-guide.md解释规则；docs/verification/phase-6b-flash-sale-lifecycle.md及同名data.json、target/regression-output.txt保留17条实际ORM快照、源码/输出指纹和完整边界。6A原7项下单及fixture方法AST保持，旧第8项临时禁用断言移除；6A历史证据不改写。
 - 按持续授权保存并推送本片，验证后安全整合main，最终提交/远端状态以Git核对为准。下一步先由项目拥有者解释迟到资金成功和正常购买成功的区别，再进入naive超卖复现与MySQL方案对照；不横向扩展普通促销或异步业务。
+
+## 48. Phase 6C-1：完整秒杀下单的双顾客库存竞争（2026-10-07）
+
+- 用户要求开始下一片，并正确预测B遇到A库存锁占用会立即返回繁忙。Depth/Learning，本片只补当前NOWAIT完整服务基线，原子条件更新仍下一片候选。已有Phase3 naive超卖和库存SQL策略对比已记录，复用历史证据，不重复称为首次复现。
+- 开始前main/现有codex/flash-sale-baseline/两远端均f713d03，工作区干净；无需空提交。复用现有分支隔离未提交/回滚实验，不生成worktree或源码副本。
+- 仅新增test_flash_sale_contention.py及本片学习/证据文件，更新当前进度；既有业务代码、模型、旧测试、迁移、依赖、配置、HTTP/前端未改。2个不同Customer/地址、同活动商品、活动价89/普通129、初始库存1/0、购物车数量2/3固定。
+- 3项Oracle：两个独立连接同时服务下单恰好一单成功；A完整建单仍持外层事务时B实际库存NOWAIT/3572→stock_busy并在release前退出；A提交后B原Key库存不足、A成功Key幂等重放；A回滚后六类事实0且库存1/0，B原Key可成功，不留失败订单/资格/Key。
+- 首轮2 failed/1 passed/18 subtests、18.65秒，测试观察器退出时FrozenInstanceError掩盖原OrderRuleError。contextlib会修改__traceback__，而现有业务异常为冻结dataclass；无DB最小复现确认。只在观察器内部、服务atomic退出后捕获实际业务错误，真实SQL/回滚/判定不变；保留失败输出与修正前测试指纹。
+- 修正后真实MySQL8.4.10目标3 passed/42 subtests、20.22秒。提交场景A3258/B3259、观察3256；回滚A3254/B3255、观察3250；同时抢A3261/B3262、观察3260。2个hold场景均采真实FOR UPDATE NOWAIT、3572及release前完成返回。
+- A事务内看到六事实各1、库存0/1；B及观察连接在A释放前看到已提交的六事实0、库存1/0，这是未提交可见性，不表示A尚未写入。提交后6事实归A；回滚后0，B原Key再试后6事实归B。成功单qty1/89、HELD1/RESERVED/RESERVE(-1,+1)与两购物车不变均验证。
+- 模块回归promotions全部23 passed/122 subtests、58.92秒；未重跑完整ordering/payments或真实MQ/Redis/5D。check0 issues、迁移漂移No changes detected。pytest临时库建表/迁移/夹具/清理；后检test_project_one不存在、可见连接0，开发schema表数前后26，无开发migrate/业务写入或服务启停/GRANT改动。
+- 记录docs/learning/phase-6c1-flash-sale-contention-study-guide.md；verification同名.md/.json以及initial-failure/target/regression-output.txt保留所有运行、3条实际ORM证据、源码和输出指纹。本机服务层2顾客正确性实验，无HTTP网络、压测/性能指标、锁等待表观测或普遍无死锁证明。
+- 按持续授权保存/推送，经验证安全整合main，实际提交/远端以Git核对为准。下一片将条件UPDATE候选放入相同完整下单事务，比较首单提交/回滚与失败重试；在负载和权衡证据形成前不替换正式策略或宣称性能胜出。
