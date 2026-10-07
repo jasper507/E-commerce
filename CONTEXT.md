@@ -1,11 +1,11 @@
-# Project One — Domain Context v1.33
+# Project One — Domain Context v1.34
 
 ## 0. 文档状态
 
-- 当前阶段：Phase 6C-3同条件有限批次、重试/时延/连接成本已实测；候选仍测试选用、正式默认NOWAIT，解释结果与最终选型ADR待完成
-- 文档版本：v1.33
+- 当前阶段：Phase 6C-4 单活动 SKU 条件 UPDATE 方向已接受并记录 ADR；正式代码仍 NOWAIT，最小落地与失败合同待完成
+- 文档版本：v1.34
 - 更新日期：2026-10-08
-- 范围来源：`PROJECT_CHARTER.md` v1.2 及 2026-10-01 支付范围决定（第 33 节）
+- 范围来源：`PROJECT_CHARTER.md` v1.3、2026-10-01 支付范围决定（第 33 节）及 ADR 0001
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
@@ -1325,3 +1325,14 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 模块回归29 passed/1 skipped/260 subtests，36.58s；skip本片负载开关关闭，check0 issues、迁移漂移No changes detected。后检临时test_project_one清理、可见连接0、开发schema前后26；未重跑全ordering/payments或真实MQ/Redis。
 - docs/learning/phase-6c3-flash-sale-inventory-load-study-guide.md与verification同名.md/data.json/analysis.json/target/regression-output.txt记录真实环境、24轮raw（2warmup另列）、每批时延/连接/结果、源码与输出指纹、纯标准库复算命令。raw不重复复制到summary。
 - 有限closed batch、8worker/24旅程、无网络HTTP/持续到达率/生产容量/锁等待图/普遍无死锁结论；未固定CPU或独占宿主资源。结果支持评估候选，等待占用连接/事务和快速拒绝需要重试的代价仍须项目拥有者独立解释。下一步结合数据确认故障/超时行为、完成选型ADR；本片不自动正式切换。按持续授权验证后保存/推送与整合main，提交/远端以Git核对为准。
+
+## 51. Phase 6C-4：条件 UPDATE 选型收口（2026-10-08）
+
+- 拥有者对“单个商品的库存预占采用条件 UPDATE”明确回复 ok 并要求开始下一片。本片 Depth/Learning，只保存策略决定、解释及进度，不继续新负载组合或修改正式代码。
+- 开始前 main 与 origin/main 同为 86b1bd8，工作区干净，前序已推送，无空提交。ADR 0001 状态为 Accepted decision / Implementation pending：单活动 SKU、数量 1；当前正式 helper 仍 NOWAIT，普通多 SKU 下单不在决定内。
+- 数据库按唯一 SKU 与 available>=1 条件执行 available-1/reserved+1，0 行为无可预占匹配（含库存不足或记录缺失），1 行为库存步骤成功但整单仍待事务提交。保留用户串行化、地址归属、服务端价格、scope Key、购买资格约束与 Purchase→Inventory 相对锁序。
+- 拥有者正确预测首单提交后等候者更新 0 行、返回库存不足；已解释前提为未先发生等待超时或其他错误，并给出首单回滚后更新 1 行的分支。不声称已经独立掌握全部失败合同或模块验收。
+- 复用 6C-2/3 真实历史证据，不重跑测试：同产出库存6/三次预算，候选24调用与NOWAIT52–55，有限本机数据支持取舍，不推广生产容量、所有负载更快或普遍无死锁。候选仍有 GET，等待仍保留事务、连接和此前相关锁。
+- 1205/1213 不等同 0 行或库存不足。MySQL 锁等待超时默认可能仅回滚当前语句，完整业务必须让异常退出 atomic；正式等待预算、错误映射和自动重试政策尚待下一片确认与验证，没有增加配置或接口合同。
+- docs/adr/0001-flash-sale-inventory-conditional-update.md 与 docs/learning/phase-6c4-flash-sale-strategy-decision-study-guide.md 保存决定、教学和停止条件。仅静态核对链接、历史证据指纹及变更范围；没有数据库操作、迁移、业务测试或 MQ/Redis/浏览器验收。
+- Redis Lua 在总纲必做表与候选清单的措辞需另行确认，此次 ok 不能据以删除该范围或自动实现。下一片正式最小落地与失败合同，再接 HTTP、极简页面和端到端验收；不自动扩展普通促销。提交与远端状态以 Git 核对为准。

@@ -38,6 +38,12 @@ promotion regression was 29 passed and 1 explicitly skipped load experiment.
 This is service-level cost evidence, not sustained production capacity; default
 NOWAIT remains unchanged. See the [load evidence](docs/verification/phase-6c3-flash-sale-inventory-load.md)
 and [guide](docs/learning/phase-6c3-flash-sale-inventory-load-study-guide.md).
+Phase 6C-4 records the owner's accepted conditional UPDATE direction for one
+flash-sale SKU and quantity one in [ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md).
+Implementation is pending: production remains NOWAIT; this documentation slice
+does not rerun experiments or change ordinary multi-SKU checkout. Bounded failure
+handling and minimal production replacement are next, followed by HTTP and a
+small customer entry. See the [decision learning guide](docs/learning/phase-6c4-flash-sale-strategy-decision-study-guide.md).
 After the RabbitMQ/Linux Worker baseline, bounded retries and manual publication
 recovery, Phase 5C-4 adds a persisted processing lease and explicit single-run
 `--recover-stale` repair. It checks the original claim version in a short

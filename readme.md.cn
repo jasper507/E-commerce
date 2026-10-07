@@ -70,6 +70,9 @@ Phase6C-2提取默认NOWAIT库存私有函数，条件UPDATE仅实验测试选�
 576旅程/767调用，保存原始时钟并由标准库脚本复算时延与连接成本；目标通过，模块29pass/1skip。
 这是服务层成本证据，非生产持续容量，正式默认未切换，见
 [负载记录](docs/verification/phase-6c3-flash-sale-inventory-load.md)与[学习指南](docs/learning/phase-6c3-flash-sale-inventory-load-study-guide.md)。
+Phase6C-4已由拥有者确认单活动SKU、数量1的条件UPDATE选型，见
+[ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md)与[决策指南](docs/learning/phase-6c4-flash-sale-strategy-decision-study-guide.md)。
+本片仅记录决定和教学，正式代码仍NOWAIT，没有重跑实验；下一片最小落地与失败合同，随后接HTTP和极简入口。
 在分代 Key 隔离旧回填的基础上，先实测冷缓存重复回源，再合并同进程、同代、
 同商品的进行中加载。真实 10 并发对照中，冷缓存三轮详情加载从 9/10/7 次变为
 1/1/1 次。随后加入本进程故障回源名额，满员立即503；受控2名额实验为
