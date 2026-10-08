@@ -10,7 +10,8 @@ refresh with the page retained in the URL, and retry/error recovery. Order
 detail and checkout responses are unchanged. Isolated MySQL targets passed
 28 tests / 171 subtests, related regression passed 63 tests / 8 subtests, and
 the frontend build passed. Browser checks use mocked responses; no query-plan
-or performance improvement is claimed. See the [pagination verification](docs/verification/phase-3-order-list-pagination.md).
+or performance improvement is claimed. See the [pagination verification](docs/verification/phase-3-order-list-pagination.md)
+and [complete study guide](docs/learning/phase-3-order-list-pagination-study-guide.md).
 The owner has confirmed future Lua admission and Elasticsearch search;
 neither is implemented by this slice. Older paragraphs retain their historical status.
 

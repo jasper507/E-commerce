@@ -1,0 +1,38 @@
+sequenceDiagram
+    autonumber
+    actor U as 顾客
+    participant V as Vue订单页
+    participant H as Django/DRF
+    participant M as MySQL
+    U->>V: 打开或翻页 /orders?page=2
+    Note over U,V: 前端先检查URL页码<br/>格式无效时本地提示，不发请求<br/>后端非法页分支也覆盖直接API调用
+    V->>H: GET订单列表 + Session Cookie
+    H->>M: Session请求读取会话与用户
+    M-->>H: 当前身份
+    alt 未登录
+        H-->>V: 403
+        V-->>U: 登录入口，保留返回页
+    else 已登录
+        Note over H,M: 所有订单查询先按本人过滤<br/>本流程不写订单、库存或支付
+        H->>H: 校验正整数页码
+        alt 页码格式无效
+            H-->>V: 404无效页
+            V-->>U: 错误提示，可回第一页
+        else 页码格式有效
+            H->>M: COUNT本人订单
+            M-->>H: 本人总数
+            alt 页码越界
+                H-->>V: 404不存在的页
+                V-->>U: 错误提示，可回第一页
+            else 当前页有效
+                H->>M: 时间与ID倒序，取当前页并JOIN地址
+                M-->>H: 当前页订单与地址快照
+                H->>M: 批量查当前页items
+                M-->>H: 商品明细快照
+                H-->>V: 200 + count/next/previous/results
+                V-->>U: 卡片、金额、状态与翻页按钮
+                Note over V,U: 页码写入URL<br/>刷新与重试仍查当前页
+            end
+        end
+    end
+    Note over H,M: 认证查询不计入3条数据查询预算<br/>图不表示跨查询或跨请求的统一快照

@@ -91,6 +91,13 @@ RabbitMQ + Celery payment-event processing is required for Interview Core, as pa
 - Test duplicate, reordered, invalid, concurrent, timeout, and dependency-failure paths where relevant.
 - Do not let AI-generated tests and implementation share an unconfirmed definition of correctness.
 
+## Required Slice Deliverables — Owner Confirmed 2026-10-08
+
+- Every completed slice must provide both a verification record under `docs/verification/` and a complete study guide under `docs/learning/`, with reciprocal links. Code, passing tests or a chat summary alone do not complete delivery. This applies to Depth, Supporting and Boilerplate; scale length to the slice without omitting its business rules or evidence boundaries.
+- The guide must explain the business loop formed by this part, the original problem, invariants and end-to-end request flow, actual core code with concrete values, why the design was chosen, meaningful alternatives and trade-offs, verified outcomes, remaining gaps, and the next concrete slice and stopping condition. Include independent oral-answer practice; a provided guide does not prove the owner has mastered it.
+- Verification records distinguish current execution, historical evidence, static checks and unverified behavior. Documentation-only supplementation may reuse the slice's existing record and append its new static checks; do not rerun unrelated experiments or create a recursive guide about writing the guide.
+- Before finalizing, check source excerpts, links, terminology, and evidence claims; render and visually inspect any supplied diagram. Link both deliverables in the final response. See `PROJECT_INSTRUCTIONS.md` and `docs/learning/knowledge-base-authoring-sop.md` for the detailed format.
+
 ## Communication
 
 - Explain new terms as `English Term + simple Chinese explanation`.
