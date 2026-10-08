@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant B as 浏览器 / Vue
+    participant A as Django API
+    participant D as MySQL
+    B->>B: 冻结并存储四字段<br/>userId / K1 / itemId / addressId
+    Note over B: 存储失败不 POST<br/>K1 是实际 UUID Key 的缩写
+    B->>A: me 核对身份<br/>Session / CSRF 下 POST 原意图
+    rect rgb(236,244,250)
+        A->>D: 事务：锁用户，原 K1 尚无订单
+        A->>D: 校验、建 89 元订单与快照<br/>条件 UPDATE 预占一件
+        Note over D: 可售 / 预占：1/0 → 0/1<br/>RESERVE 一次
+        D-->>A: COMMIT 成功
+    end
+    Note over B,A: 受控验收：route.fetch 已取得真实 201<br/>随后 route.abort 丢弃客户端响应
+    A-xB: 页面没有确认成功
+    B->>B: 同标签页刷新，读取原四字段<br/>显示待确认，活动当前无货
+    Note over B: 不换 Key，不自动重试<br/>顾客主动点击确认原购买
+    B->>A: 核对身份后 POST 原 K1 和原参数
+    rect rgb(236,250,241)
+        A->>D: 锁用户后先查原 K1<br/>摘要一致，读取已提交原订单
+        D-->>A: 同一订单 / 当前状态<br/>没有再次库存 UPDATE
+    end
+    A-->>B: 200 同 public_id<br/>确认订单，原意图仍保留
+    Note over B,D: 后续 Mock 支付仅核销一次<br/>0/1 → 0/0，COMMIT 流水一次

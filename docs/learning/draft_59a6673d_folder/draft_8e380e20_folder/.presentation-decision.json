@@ -1,0 +1,1 @@
+{"visual_plan":{"blocks":[{"min_count":1,"purpose":"幂等与限购为何分开","type":"whiteboard"}],"reason":"核心时序用原生画板说明，其余用具体例子和对照表"},"audience":"Project One 作者，初学后端的计算机学生","presentation_mode":"rich","reader_task":"从具体秒杀业务场景理解幂等与限购为何分开，解释理由、替代、收益与边界","genre_contract":"router.knowledge"}

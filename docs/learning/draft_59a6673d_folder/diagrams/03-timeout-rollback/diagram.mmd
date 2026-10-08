@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant U as 顾客浏览器
+    participant A as HTTP与业务服务
+    participant D as MySQL数据库
+    participant H as 库存持锁者
+    U->>A: 原Key、原活动项与地址
+    A->>D: 事务外读原会话值，临时设锁等待5秒
+    H->>D: 另一事务持有目标库存行锁
+    rect rgb(255, 244, 231)
+        A->>D: 开始下单事务，建立订单与HELD资格
+        A->>D: 条件UPDATE等待库存锁
+        D-->>A: 锁等待超时1205
+        A->>D: 异常退出atomic，整单回滚
+    end
+    A->>D: 事务结束后恢复本连接原等待值
+    alt 恢复成功
+        D-->>A: 原会话状态恢复
+    else 恢复失败
+        A->>D: 告警并丢弃连接，保留原业务结果
+    end
+    A-->>U: 409 stock_busy，原意图保留
+    H->>D: 持锁事务结束，库存可继续竞争
+    U->>A: 顾客手动用原Key与原参数确认
+    A->>D: 重跑完整下单流程，不只重跑UPDATE
+    Note over A,D: 5秒限制行锁等待，不是整个HTTP请求期限

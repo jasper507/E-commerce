@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant A as 顾客A的下单事务
+    participant DB as MySQL 库存1/0
+    participant B as 顾客B的下单事务
+    Note over A,B: 两位不同顾客各买一件；省略用户、地址、快照和资格步骤
+    alt 历史策略 NOWAIT
+        A->>DB: 取库存行锁，预占为0/1
+        DB-->>A: 写入成功，事务尚未提交
+        B->>DB: SELECT FOR UPDATE NOWAIT
+        DB-->>B: 3572 锁忙，stock_busy
+        B->>DB: 整单回滚，释放本次资源
+        Note over A,B: A随后提交或回滚；B本次都已退出，需要原Key重试
+    else 当前策略 条件 UPDATE
+        A->>DB: WHERE available大于等于1；available减1、reserved加1
+        DB-->>A: 更新1行，继续写预占与流水
+        B->>DB: 同一库存条件 UPDATE
+        Note over DB,B: A未结束，B等待；连接和先前的锁仍占用
+        alt A整单提交
+            A->>DB: COMMIT，库存0/1生效并释放锁
+            DB-->>B: 当前库存不满足条件，更新0行
+            B->>DB: 库存不足，整单回滚
+        else A后续失败并回滚
+            A->>DB: ROLLBACK，库存恢复1/0并释放锁
+            DB-->>B: 当前条件满足，更新1行
+            B->>DB: 完成自己的预占和流水，整单COMMIT
+        end
+    end
+    Note over A,B: 这是受控交错示意，不保证谁先成功；条件UPDATE也可能超时或死锁

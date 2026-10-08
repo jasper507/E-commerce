@@ -1,0 +1,51 @@
+[
+  {
+    "id": 0,
+    "title": "秒杀与库存并发",
+    "profile": "passed",
+    "source_links": 2,
+    "draft_sha256": "166673c6eb86bae85695367d62aaf19bfc1d07d1361ff9897bb69bd7e3a6d6eb"
+  },
+  {
+    "id": 1,
+    "title": "01 重复下单：幂等与限购为什么分开",
+    "profile": "passed",
+    "source_links": 4,
+    "draft_sha256": "f87bdf3851a20c998cbc2db1f8421c4711732646ce1db588d830723f6c6b1b09"
+  },
+  {
+    "id": 2,
+    "title": "02 抢最后一件：为什么选择条件 UPDATE",
+    "profile": "passed",
+    "source_links": 5,
+    "draft_sha256": "61c1f7c7452594aff1144f9caa25e7a3116fe978dd31a484a15342e13c39c8ef"
+  },
+  {
+    "id": 3,
+    "title": "03 下单失败：为什么整单回滚与等待 5 秒",
+    "profile": "passed",
+    "source_links": 6,
+    "draft_sha256": "d50ca23650abe67a789e3eee2248957c5dfb6d092d7e1643d82d1490cc37469f"
+  },
+  {
+    "id": 4,
+    "title": "04 从付款到关闭：资格生命周期与 MQ 的业务价值",
+    "profile": "passed",
+    "source_links": 6,
+    "draft_sha256": "1de520c4d0e914a13d57eb9872c3e022b1f080e201ce895faf0e2d66cdf47f3f"
+  },
+  {
+    "id": 5,
+    "title": "05 响应丢失：为什么保留原购买意图",
+    "profile": "passed",
+    "source_links": 7,
+    "draft_sha256": "42d20087016cfc8924451914fc362502f24d5508ba11d4c5266e0d4ea6794132"
+  },
+  {
+    "id": 6,
+    "title": "06 证据与演进：哪些结论可以向面试官讲",
+    "profile": "passed",
+    "source_links": 7,
+    "draft_sha256": "bca25f952a17c2dbff48b7313a6571e3c6247ce6225d03082dd5f6a22dbe29c4"
+  }
+]

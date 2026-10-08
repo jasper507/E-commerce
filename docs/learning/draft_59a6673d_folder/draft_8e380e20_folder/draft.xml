@@ -1,0 +1,35 @@
+<title>01 重复下单：幂等与限购为什么分开</title>
+<p><b>同一个购买意图重试，找回原订单；换一个请求编号，也不能绕过活动限购。</b>这两件事分别由幂等和购买资格保护，库存条件更新负责第三件事：不卖出没有的货。</p>
+<p>适用读者：理解普通下单、正在学习并发的项目拥有者。读完应能回答“客户连续点击两次，为什么不生成两张单”“换 Key 为什么仍被拒绝”。证据来自本项目隔离 MySQL 与 HTTP 验证；不代表生产容量或真实支付。</p>
+<p>导航将在发布时补齐。</p>
+<h1 seq="auto">同一个点击，可能到达服务器两次</h1>
+<p>顾客抢活动商品，价格 89 元，地址 A。第一次请求已经提交，但响应丢失，浏览器不知道是否成交。若重新创建订单，就可能重复占库存、占资格；若一律报“已经买过”，顾客又找不到刚才那张订单。</p>
+<p><b>Idempotency（幂等：重复执行同一意图，不额外产生一份业务效果）</b>用来解决这个不确定结果。浏览器把购买意图保存为 K1，恢复时继续提交 K1 和原参数。服务器返回原订单 O1 的当前事实，HTTP 200；第一次新建返回 201。重放不是重新参加一次活动，也不保证响应正文逐字不变。</p>
+<whiteboard type="blank"/>
+<p>图中先查原订单，再考虑新建资格。旧 K1 始终关联 O1；资格释放后，只有新的 K2 才可能创建 O2。</p>
+<h1 seq="auto">三层保护对应三条业务规则</h1>
+<table><thead><tr><th><p>保护层</p></th><th><p>业务问题</p></th><th><p>当前规则</p></th></tr></thead><tbody><tr><td><p>请求幂等</p></td><td><p>是不是同一次购买的重试？</p></td><td><p>同用户、秒杀 scope、同 Key；参数摘要相同才返回原单</p></td></tr><tr><td><p>活动限购</p></td><td><p>换 Key 后能否再占一份资格？</p></td><td><p>同顾客、同活动项，最多一份 HELD 或 CONSUMED</p></td></tr><tr><td><p>库存原子更新</p></td><td><p>不同顾客还能否抢到最后一件？</p></td><td><p>MySQL 条件 UPDATE 只允许可售库存大于等于 1 时预占</p></td></tr></tbody></table>
+<p>scope 是请求所属业务范围。普通购物车与秒杀的 Key 分开保存，同样的字符串不会误命中另一种下单。Fingerprint（请求摘要：把决定购买意图的参数压成一个可比较的值）包含活动项 ID 与地址 ID。</p>
+<pre lang="python" caption="核心节选：先确认是不是原意图"><code>existing = Order.objects.filter(
+    user=locked_user,
+    creation_scope=Order.CreationScope.FLASH_SALE,
+    idempotency_key=idempotency_key,
+).first()
+if existing is not None:
+    if existing.request_fingerprint != fingerprint:
+        raise OrderRuleError("idempotency_conflict", "该幂等键已用于不同请求。", 409)
+    return _order_with_details(existing.pk), False</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/promotions/services.py#L66-L85">源码：锁用户、比较摘要、重放原单</a>。K1 从地址 A 改成地址 B，返回 409，不能把同一个意图偷偷改成另一张订单。</p>
+<h1 seq="auto">为什么重放要排在活动检查之前</h1>
+<p>O1 已经成交后，活动可能结束、商品可能改价或下架，地址也可能删除。重试要读取已经提交的订单和快照，所以先识别旧 Key；只有没有原单的新意图，才重新检查本人地址、活动时间、商品可购买性和资格。</p>
+<p>例如 O1 创建时是 89 元，后来活动价改为 99 元：K1 找回的仍是原订单快照；K2 是新的购买，必须按当前规则检查。接口仍校验登录和输入格式，重放优先不意味着绕过认证。</p>
+<h1 seq="auto">限购不能只依赖浏览器或 Key</h1>
+<p>浏览器禁用按钮只能减少误点击，顾客还能刷新、打开第二个标签页或直接发送请求。只按 Key 去重也无效，因为 K1 与 K2 是两个编号。当前购买记录与具体订单一对一关联，保留三种状态：</p>
+<table><thead><tr><th><p>状态</p></th><th><p>业务含义</p></th><th><p>是否阻止新 Key</p></th></tr></thead><tbody><tr><td><p>HELD / marker=1</p></td><td><p>订单待付，资格已占用</p></td><td><p>是</p></td></tr><tr><td><p>CONSUMED / marker=1</p></td><td><p>已成功购买</p></td><td><p>是；已付取消也不返还资格</p></td></tr><tr><td><p>RELEASED / marker=NULL</p></td><td><p>真正未付订单已经合法关闭</p></td><td><p>否；新 Key 可重新申请，仍检查活动和库存</p></td></tr></tbody></table>
+<p>数据库联合唯一约束为 customer、flash_sale_item、blocking_marker：marker=1 的阻挡记录最多一条；MySQL 允许多个 NULL，已释放历史可以继续保留。状态与 marker 还有一致性约束，防止把 HELD 错标为 NULL。<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/promotions/models.py#L59-L114">购买记录及数据库约束</a>。</p>
+<p>同一用户的新建请求先取得 User 行锁，使竞争请求按顺序检查；数据库唯一约束再作为后备保护。代价是该用户的相关操作会等待，不能称为零锁或无竞争。库存、订单、资格和流水仍须同事务提交，不能只创建资格就宣称下单成功。</p>
+<h1 seq="auto">为什么选当前方案，证据到哪里为止</h1>
+<p>“每个顾客永久只有一条活动记录”比较简单，却不适合关闭后重购并保留历史；“每单一条资格 + 阻挡唯一约束”多了一份状态管理，但能明确区分 O1 与 O2，旧订单事件不会误改新订单资格。单靠 Redis 标记还要额外解决它与 MySQL 订单提交的一致性；当前基线暂不引入。</p>
+<p>2026-10-07 的 6A 隔离 MySQL 验证：同顾客、不同 Key 的两连接竞购，只有一单及一份预占；同 Key 重放、异参冲突和唯一约束也经过检查。2026-10-08 的 HTTP 验证覆盖 201/200、异参 409、活动结束后旧 Key 重放。属于历史验收，本次归档未重跑。</p>
+<p><a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-6a-flash-sale-checkout.md#L26-L55">6A MySQL 证据与边界</a>；<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-6d-flash-sale-http.md#L22-L49">HTTP 合同证据</a>。测试不能据此证明生产防刷、跨设备意图自动合并或全部死锁不存在。</p>
+<p><b>闭卷自检：</b>库存 100 件时，为什么 K2 仍可能被拒绝？O1 取消后，为什么 K1 返回 O1，而 K2 才能申请 O2？能分别说清三层保护及一个代价，就达到本页学习目标，不必追加同类实验。</p>

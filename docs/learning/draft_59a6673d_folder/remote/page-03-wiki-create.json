@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": false,
+    "node_token": "AOvlwoTENiyvgok63ivct7xGnWe",
+    "node_type": "origin",
+    "obj_token": "JRKodKDfCotBDPx1acucZpsXnQg",
+    "obj_type": "docx",
+    "origin_node_token": "AOvlwoTENiyvgok63ivct7xGnWe",
+    "parent_node_token": "B49NwtiePiCqqFkz61kc4ac9n79",
+    "resolved_by": "explicit_space_id",
+    "resolved_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "title": "03 下单失败：为什么整单回滚与等待 5 秒",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/AOvlwoTENiyvgok63ivct7xGnWe"
+  }
+}

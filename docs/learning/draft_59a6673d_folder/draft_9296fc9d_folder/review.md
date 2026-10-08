@@ -1,0 +1,71 @@
+# 02 抢最后一件：为什么选择条件 UPDATE
+
+属于库存并发与秒杀主线。学习目标是独立回答：两个顾客抢最后一件，如何守住库存边界；为什么本项目从 NOWAIT 改为条件 UPDATE；改善了什么，又付出什么代价。
+
+文档创建：2026-10-08。源码快照：18ffbe2f2bf674d31f3d2dc055976aedd41af010。下列实验是历史已运行证据，本次归档未重新运行。
+
+导航将在发布时补齐。
+
+## 业务问题：看到一件，不代表两个人都能买到
+
+活动价 89 元，同一活动 SKU 只剩一件。A、B 分别点击购买，业务规则是最多一张订单提交，失败者不能留下订单、购买资格或库存预占。SKU 是具体商品规格；Inventory 与 SKU 一对一，每单固定购买一件。
+
+错误的“先读取 1，再各自在 Python 判断，再写回 0”会让两个人都通过检查。历史 Phase 3 在隔离 MySQL 中固定这一交错，实际出现两订单、两预占，而库存表仍为 0/1：旧快照覆盖不能代表实际销售数量。这是普通结账的最小错误示范，不是当前秒杀实现，也不是高并发容量测试。[错误基线证据](https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-3-inventory-race-baseline.md#L27)
+
+## 可选方法：正确性之外，还要决定顾客等待方式
+
+| 方法 | 业务行为 | 取舍 |
+| --- | --- | --- |
+| NOWAIT 行锁，历史策略 | 先锁库存；别人持锁时立即返回 stock_busy。即使对方随后回滚，本次也已退出。 | 快速释放本请求资源，但顾客或应用要决定是否重试；繁忙不等于售罄。 |
+| 条件 UPDATE，当前策略 | 数据库同时判断库存至少一件并增减库存；竞争时可能等待，取得锁后按当时库存得到 0 或 1 行。 | 让一次正在进行的请求有机会完成；等待占用连接和先前取得的锁，可能超时或死锁。 |
+| 普通 SELECT FOR UPDATE | 等待取得行锁，再读取、判断并更新库存。 | 也是可行方案，步骤更显式；本期没有第三套完整事务负载实测，不能给它编造性能排名。 |
+
+Row Lock（行锁）让同一库存记录的竞争写入按顺序执行。条件 UPDATE 仍会取写锁，并不是“没有锁”；本期适合数量固定为一件的单 SKU，不因此替换普通多 SKU 购物车、支付核销或取消释放。
+
+## 请求怎样运行：把条件放进数据库，整单仍共同提交
+
+下单事务先处理用户、地址、活动规则、订单与购买资格，再执行库存步骤。A 更新一行后仍未提交，B 的 UPDATE 可以等待。A 提交，B 看见可售为 0，更新零行并整单回滚；A 回滚，库存恢复为 1，B 可以更新一行，再完成自己的订单。图中省略普通字段写入，但取锁与提交仍属于完整下单事务。
+
+[原生时序图插入位置；发布后由飞书画板展示]
+
+```python
+updated = Inventory.objects.filter(sku=sku, available_stock__gte=1).update(
+    available_stock=F("available_stock") - 1,
+    reserved_stock=F("reserved_stock") + 1,
+)
+# ……已知锁错误处理见下一页……
+if updated != 1:
+    raise OrderRuleError("insufficient_stock", "活动商品库存不足。", 409)
+return Inventory.objects.get(sku=sku)
+```
+
+F expression（字段表达式）让 MySQL 用数据库中的值加减，不把 Python 的旧值写回。初始 available/reserved 为 1/0，成功预占后是 0/1；支付成功才核销 reserved。更新一行只表示库存步骤成功，后面预占或流水失败，整个事务仍须回滚。
+
+更新零行表示没有匹配的库存行，也包括库存记录不存在；沿用当前统一库存不足响应。SQL 抛异常与零行不同。幂等键保护同一请求重放、购买资格约束保护每人限购、条件更新保护数量边界，三者不能互相替代。[核心源码](https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/promotions/services.py#L36)；[完整下单事务](https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/promotions/services.py#L54)
+
+## 显著提升在哪里：用相同产出比较请求成本
+
+6C-2 先比较首单提交、回滚、同用户竞争及后续写入失败；6C-3 再测成本；6C-4 记录选型；6C-5 才正式替换库存 helper 并验证失败合同。不是一看到“原子”就认定更快。
+
+2026-10-08 本机隔离 MySQL，24 位顾客、8 个 worker（并行执行任务的线程）、库存 6、每人买一件；历史 NOWAIT 对 stock_busy 最多三次总尝试，退避 5/10 毫秒。以下各是三轮范围：
+
+| 同条件指标 | NOWAIT＋有限重试 | 条件 UPDATE |
+| --- | --- | --- |
+| 每轮提交订单 | 6 | 6 |
+| 每轮服务调用 | 52–55 | 24 |
+| 购买旅程 p95 | 106.42–121.91 ms | 90.01–94.55 ms |
+| 批次连接开放区间合计 | 1.703–1.834 s | 1.016–1.072 s |
+
+同样卖完六件，条件方案减少了重复尝试，观察到较短旅程和较少连接开放时间。p95 是每轮 24 个旅程按耗时排序的第 23 个，旅程包括重试与退避；连接合计包括等待、退避、空闲，不是 SQL CPU 时间。三轮范围不是平均 p95。[负载结果与测量口径](https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-6c3-flash-sale-inventory-load.md#L59)
+
+它不是所有负载下都胜出：库存 24 的三次预算对照中，总连接时间范围有交叠。两种成功库存步骤都是两条 SQL：旧策略 SELECT＋UPDATE，当前 UPDATE＋GET；完整下单更不止一条。有限本机服务批次不含 HTTP、生产流量或持续容量，不能据此承诺生产吞吐与稳定尾延迟。[决定及证据边界](https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/adr/0001-flash-sale-inventory-conditional-update.md#L39)
+
+## 能独立讲到什么程度，就先停止扩展
+
+最小充分证据已有：同完整事务的正确性对照、同业务产出的成本、正式失败回滚验证。先解释这些，再评估 Redis Lua 是否真能减少数据库准入压力；Lua 不自动解决 Redis 与 MySQL 跨系统一致性。
+
+1. 为什么 A 回滚后，条件 UPDATE 的 B 可以成功，而 NOWAIT 的 B 要重试？
+2. 为什么更新一行不等于订单完成？三种保护各守什么规则？
+3. 哪些数据支持本次选择？为什么不能说无锁、单 SQL 或生产更快？
+
+以上是待复述的学习验收题，不代表项目拥有者已通过独立讲述验收。

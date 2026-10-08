@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title>秒杀与库存并发</title>",
+      "document_id": "MVBrdxZAPoDcPzxQnTPctXXgn3g",
+      "revision_id": 1
+    }
+  }
+}

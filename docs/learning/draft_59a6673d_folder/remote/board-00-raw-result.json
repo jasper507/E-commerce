@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "output_path": "remote/board-00-raw.json"
+  }
+}

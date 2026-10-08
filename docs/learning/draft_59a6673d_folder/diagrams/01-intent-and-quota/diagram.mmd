@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant U as 用户浏览器
+    participant A as 秒杀 API
+    participant D as MySQL
+    U->>A: 提交活动项、地址、Key
+    A->>D: 开始事务，锁当前用户
+    A->>D: 查用户 + 秒杀 scope + Key
+    D-->>A: 原订单与参数摘要，或未找到
+    alt 同 Key、同参数
+        A->>D: 读取原订单与快照
+        A->>D: 结束事务，释放用户锁
+        A-->>U: 200，返回 O1 当前事实
+        Note over A,D: 不再预占，不重新检查活动价
+    else 同 Key、不同参数
+        A->>D: 结束事务，回滚并释放锁
+        A-->>U: 409，意图冲突
+        Note over A,D: 如 K1 从地址 A 改成 B
+    else 新 Key
+        A->>D: 检查本人地址、活动与商品
+        A->>D: 查询该活动项阻挡资格
+        alt HELD 或 CONSUMED
+            A->>D: 结束事务，回滚并释放锁
+            A-->>U: 409，活动限购
+            Note over U,D: 换 K2 不能绕过资格
+        else 无阻挡资格
+            Note over A,D: 无历史，或 O1 已合法 RELEASED
+            A->>D: 创建订单 O2、快照、HELD 资格
+            A->>D: 条件 UPDATE 预占一件
+            A->>D: 写 Reservation 与 RESERVE 流水
+            A->>D: 一起提交全部事实
+            A-->>U: 201，新订单 O2
+            Note over A,D: 前提为当前活动开放、库存充足
+        end
+    end
+    Note over U,D: 关闭 O1 后，旧 K1 仍返回 O1；新 K2 才申请 O2

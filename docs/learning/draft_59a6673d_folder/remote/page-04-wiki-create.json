@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": false,
+    "node_token": "HDK7wuA36iLRG3k511lca7rInvb",
+    "node_type": "origin",
+    "obj_token": "T5Asd41r4oDZWaxmxJIcJSNQnq4",
+    "obj_type": "docx",
+    "origin_node_token": "HDK7wuA36iLRG3k511lca7rInvb",
+    "parent_node_token": "B49NwtiePiCqqFkz61kc4ac9n79",
+    "resolved_by": "explicit_space_id",
+    "resolved_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "title": "04 从付款到关闭：资格生命周期与 MQ 的业务价值",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/HDK7wuA36iLRG3k511lca7rInvb"
+  }
+}

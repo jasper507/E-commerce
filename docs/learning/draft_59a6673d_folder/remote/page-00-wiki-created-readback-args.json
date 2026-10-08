@@ -1,0 +1,10 @@
+[
+  "wiki",
+  "+node-get",
+  "--node-token",
+  "B49NwtiePiCqqFkz61kc4ac9n79",
+  "--as",
+  "user",
+  "--format",
+  "json"
+]

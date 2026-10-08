@@ -1,0 +1,1 @@
+<p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/B49NwtiePiCqqFkz61kc4ac9n79">秒杀与库存并发</a>：业务限购、请求幂等、条件 UPDATE 选型、事务回滚与锁等待、支付资格生命周期和响应丢失恢复；总览下有六个问题子页及六张原生时序图。</p>

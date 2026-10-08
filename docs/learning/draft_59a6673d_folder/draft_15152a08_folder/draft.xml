@@ -1,0 +1,37 @@
+<title>05 响应丢失：为什么保留原购买意图</title>
+<h1 seq="auto">响应丢失：为什么保留原购买意图</h1>
+<p>导航将在发布时补齐。</p>
+<p>适合已经知道“下单会预占库存”的 Project One 作者。读完要能解释：浏览器没有看到成功，不等于服务器没有建单；刷新后怎样确认原购买，而不再次扣库存。这支撑你独立回答请求重试、幂等与故障边界。最小可信证据是实际建单、原 Key 重放得到同单，以及库存流水只出现一次。</p>
+<p>适用版本：2026-10-08，源码提交 18ffbe2f2bf674d31f3d2dc055976aedd41af010。工程验收已有记录；拥有者独立讲述整个模块仍待完成。本页只整理现有实现，不追加实验。</p>
+<h2 seq="auto">业务问题：顾客以为失败，但订单可能已成立</h2>
+<p>顾客抢最后一件商品，活动价 89 元、普通价 129 元。服务器完成建单，库存从“可售 1 / 预占 0”变成“可售 0 / 预占 1”，响应却没被页面确认。如果此时自动换新 Key 再下单，后端会把它当作另一笔购买，无法用它确认刚才那张订单。限购能挡住部分新购买，却不能代替找回原结果。</p>
+<p><b>Purchase Intent（购买意图）</b>是“谁用哪个 Key，购买哪个活动项，配送到哪个地址”的固定记录；<b>Idempotency-Key（幂等键）</b>让后端识别同一次业务请求的重放。示例用 K1 缩写真实 UUID Key，保存内容为 {userId:1, key:K1, itemId:711, addressId:1}，不是只保存一个 Key。</p>
+<h2 seq="auto">为什么先保存完整意图，再发请求</h2>
+<p>前端先冻结四字段，并成功写入 sessionStorage（同标签页会话存储，刷新后仍可读取），随后才 POST。存储失败直接停止，没有“先靠内存继续发”的后备路径；否则刷新后丢失 Key，就破坏了本页承诺。</p>
+<pre lang="typescript" caption="真实核心节选：保存失败就不发送"><code>try {
+  saveFlashSaleIntent(original)
+} catch {
+  storageError.value = '浏览器无法保存购买信息，因此尚未发送下单请求。请启用会话存储后刷新。'
+  return
+}
+intent.value = original
+await submitIntent()</code></pre>
+<p>来源：<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/frontend/src/views/FlashSalesView.vue#L109-L120">冻结、保存和发送顺序</a>；<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/frontend/src/flashSaleIntent.ts#L11-L29">读取校验与存储</a>。</p>
+<p>替代方案是在内存里仅保存 Key，代码更短，但刷新就丢失，而且活动项或地址变化后难以恢复原参数。当前方案多了恢复、身份核对和错误状态，换来同标签页刷新后的原请求确认；不承诺跨设备、跨标签页或关闭标签页后的恢复。</p>
+<h2 seq="auto">完整时序：重放读取原事实，不再预占</h2>
+<whiteboard type="blank"/>
+<p>图中先完成数据库事务提交，再出现受控响应丢失；刷新读取原四字段，顾客主动确认。没有自动重试或自动创建新 Key。每次发送前调用 /api/auth/me/ 核对当前身份；用户 ID 只是前端恢复检查，服务器仍以 Session（服务端登录会话）识别用户，并通过 CSRF 校验防止别的网站冒用浏览器发起写请求。</p>
+<p>为什么列表已经无货仍能确认？后端锁当前用户后，<b>先查同用户、秒杀 scope、原 Key 的已提交订单</b>；同摘要直接返回原订单，再向后才是新购买的本人地址、活动和库存检查。因此活动结束、列表消失、地址不再显示或当前售罄，都不应由页面挡住原意图确认。原订单已保存成交价和地址快照，不依赖地址簿重新创建它。</p>
+<pre lang="python" caption="真实核心节选：旧 Key 命中后提前返回"><code>if existing is not None:
+    if existing.request_fingerprint != fingerprint:
+        raise OrderRuleError("idempotency_conflict", "该幂等键已用于不同请求。", 409)
+    return _order_with_details(existing.pk), False</code></pre>
+<p>来源：<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/promotions/services.py#L66-L85">先查旧 Key，再检查新购买地址</a>。False 表示不是本次新建，HTTP 返回 200；首次创建为 201。重放返回订单当前状态，付款后可以是 PAID，不要求整份 JSON 与第一次逐字相同。</p>
+<h2 seq="auto">页面怎样区分“未确认”和“明确拒绝”</h2>
+<table><colgroup><col width="220"/><col width="560"/></colgroup><thead><tr><th><p>结果</p></th><th><p>业务解释与页面行为</p></th></tr></thead><tbody><tr><td><p>200 / 201 且订单结构有效</p></td><td><p>确认订单，展示服务端状态，保留原意图；主动“开始新购买”才清理。</p></td></tr><tr><td><p>网络、5xx、解析失败、异常成功结构</p></td><td><p>结果待确认，保留原 Key 和参数，不擅自认为没建单。</p></td></tr><tr><td><p>403 或 stock_busy / checkout_busy</p></td><td><p>保留原意图；403 可能是登录或安全校验问题，不能直接等同未登录。</p></td></tr><tr><td><p>同 Key 改地址，409 冲突</p></td><td><p>这是不同请求，不会修改原订单；保留原意图，先核对订单。</p></td></tr><tr><td><p>明确业务 code + 404 / 409 拒绝</p></td><td><p>进入“本次购买未成功”，例如地址不存在、活动关闭、库存不足；仍须主动开始新购买。</p></td></tr></tbody></table>
+<p>不是所有 409 都允许开始新购买，繁忙与幂等冲突被单独保留。<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/frontend/src/views/FlashSalesView.vue#L70-L104">失败分类</a>与<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/frontend/src/api/flashSales.ts#L51-L69">Session/CSRF 请求及成功结构校验</a>共同决定结果，不能只看 HTTP 数字。</p>
+<h2 seq="auto">已有证据证明到哪一步</h2>
+<p>Phase 6E 历史浏览器验收先用 route.fetch 真正发送请求并取得上游 201，随后 route.abort 丢弃客户端响应。刷新后原四字段不变，页面虽显示无货，原 Key 真正返回 200 和同一 public_id；同 Key 刻意改地址真正返回 409，数据库事实不变。后续 Mock 支付让订单 PAID，资格 CONSUMED，库存从 0/1 变为 0/0，RESERVE 与 COMMIT 各一条。</p>
+<p>这是<b>真实建单之后的受控客户端丢响应</b>，不是切断真实网络，也没有证明数据库提交结果未知时的恢复。503、畸形 200、有效 Session 下 403 为客户端响应注入；存储失败注入观察到下单 POST 为 0。历史构建和目标/回归已通过，本次知识库整理没有重新运行这些检查。记录：<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-6e-flash-sale-browser.md#L41-L72">浏览器事实与注入边界</a>；<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-6e-flash-sale-browser.md#L94-L105">历史串行检查</a>。</p>
+<h2 seq="auto">闭卷复述与停止条件</h2>
+<p>能独立沿浏览器 → HTTP → 事务 → MySQL 回答以下三题，就先整理理解，不追加基础设施：①服务端已建单但页面没确认，为什么新 Key 不安全？②刷新后活动无货、地址列表不可见，为什么仍能返回 200 同单？③同 Key 改地址为什么 409，库存为什么仍只预占一次？同时必须说出同标签页范围和故障注入边界。知识库给出的参考解释不等于拥有者已通过这项验收。</p>

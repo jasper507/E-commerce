@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title>电商项目</title><p>Project One 电商项目的学习资料按模块归档。通过下面的入口阅读业务流程、核心代码、操作指南、实验记录和面试问题。</p><ul><li><a href=\"https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh\">支付</a>：支付状态、超时查单、幂等、MQ故障恢复和订单到期；总览下保留七个问题子页。</li><li><a href=\"https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf\">Redis 学习与面试总结</a>：商品缓存一致性、并发保护、故障降级、真实实验与面试问答；沿用原文档。</li></ul><p>支付与 Redis 分别维护各自的学习材料。原有文档链接和原生画板继续保留。</p><p><a href=\"https://ocnbkcx1ug58.feishu.cn/wiki/B49NwtiePiCqqFkz61kc4ac9n79\">秒杀与库存并发</a>：业务限购、请求幂等、条件 UPDATE 选型、事务回滚与锁等待、支付资格生命周期和响应丢失恢复；总览下有六个问题子页及六张原生时序图。</p>",
+      "document_id": "P0LPd9AkmoAhq8xCgOdcqEL2nag",
+      "revision_id": 3
+    }
+  }
+}

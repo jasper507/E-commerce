@@ -1,0 +1,37 @@
+<title>04 从付款到关闭：资格生命周期与 MQ 的业务价值</title>
+<p><b>付款成功要同时确认订单、核销库存并消费资格；真正未付关闭要同时释放库存与资格。MQ 把支付通知的接收与处理分开，MySQL 仍决定交易事实。</b>秒杀建单目前是同步 MySQL 事务，未实施“抢购请求入队后异步建单”。</p>
+<p>适用读者：已经理解预占和幂等，想把支付、取消和后台任务串起来的项目拥有者。读完应能回答“为什么用了 MQ 还需要恢复扫描”“旧订单的迟到付款为什么不能影响新订单”。源码基于归档提交，证据为历史隔离验收，本次未重跑。</p>
+<p>导航将在发布时补齐。</p>
+<h1 seq="auto">业务先决定资格何时消费和返还</h1>
+<p>例子从库存 5/0 开始，两个数字分别是 available（可售）和 reserved（预占）。顾客下单一件后库存 4/1，订单待付，资格 HELD。支付失败与订单关闭是两种不同事件：一次付款失败，顾客仍可以在原订单上尝试付款，不能立刻把库存与资格返还给别人。</p>
+<table><thead><tr><th><p>业务结果</p></th><th><p>订单 / 资格</p></th><th><p>库存与后续购买</p></th></tr></thead><tbody><tr><td><p>正常付款成功</p></td><td><p>PAID / CONSUMED</p></td><td><p>4/1→4/0；不再减可售；禁止新 Key 重购</p></td></tr><tr><td><p>真正未付取消或到期</p></td><td><p>CANCELED 或 EXPIRED / RELEASED</p></td><td><p>4/1→5/0；允许新 Key 重新申请</p></td></tr><tr><td><p>Attempt 仍 CREATED/PENDING/UNKNOWN</p></td><td><p>付款尚未确认；暂缓关闭</p></td><td><p>不释放，先查询原付款结果</p></td></tr><tr><td><p>已付、未发货取消</p></td><td><p>CANCELED / CONSUMED</p></td><td><p>恢复库存、模拟退款；成功购买资格不返还</p></td></tr></tbody></table>
+<p>UNKNOWN 是结果未知，不是付款失败。没有确认就释放，可能先允许第二张订单，再收到第一张付款成功，造成两份交易争夺一份资源。</p>
+<h1 seq="auto">哪些修改必须一起提交</h1>
+<p>Transaction（事务：一组数据库修改一起成功或一起回滚）保护跨表一致。成功通知处理中，锁序为 Event → Order → Attempt → Purchase → Reservation → Inventory；真正未付关闭从 Order 开始核对 Attempt，再处理 Purchase 和库存。不是所有入口都要先锁 Event。</p>
+<pre lang="python" caption="成功分支核心节选：同一个业务事务"><code>purchase = lock_flash_sale_purchase(
+    order, expected_status=FlashSalePurchase.Status.HELD
+)
+_commit_inventory(order)
+# 同事务保存 Attempt SUCCEEDED、Order PAID
+transition_flash_sale_purchase(
+    purchase, target_status=FlashSalePurchase.Status.CONSUMED
+)
+# 同事务保存 Event 处理结果</code></pre>
+<p>节选中的注释概括了省略的保存语句。<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/payments/services.py#L365-L381">完整成功分支</a>与<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/promotions/lifecycle_services.py#L13-L52">按原订单取锁与资格转换</a>。资格更新异常时，已执行的库存、订单修改也回滚，不能留下 PAID / HELD 的半完成事实。</p>
+<p>替代方案是业务提交后再补写资格：锁少一点，却增加失败窗口和补偿责任。当前把它们放在一个 MySQL 事务内，多持有一把本单资格锁，换取直接可验证的一致性。</p>
+<h1 seq="auto">为什么业务需要 MQ</h1>
+<p>同步基线在 HTTP 请求里保存通知并立即处理。库存锁竞争或处理异常会拖住这次请求；进程在入箱后中断，顾客还得等网关重发或人工恢复。我们的目标是先可靠保存收到的通知，再让后台独立完成校验和业务事务。</p>
+<p>Message Queue（消息队列，简称 MQ：在接收方与处理方之间传递待处理工作的通道）在本项目由 RabbitMQ 保存任务消息，Celery Worker（后台执行进程）读取内部 Event ID，调用已有处理入口。业务规则没有搬成第二套，消息也不包含可信付款金额或库存决策。</p>
+<whiteboard type="blank"/>
+<p>图里的四个边界要分开：Inbox 提交 → 发布 ID → Worker 业务提交 → 消费确认。调用网关和等待 Broker 都在数据库事务外，不能带着订单或库存锁等待网络。</p>
+<p>异步 Webhook 的 202 表示原文已入箱；不是付款成功，也不是消息一定已可靠发布。ACK（消息消费确认：告诉队列本次投递已被确认）同样不能单独证明订单已付，须查 MySQL 的业务终态。</p>
+<table><thead><tr><th><p>方案</p></th><th><p>业务收益</p></th><th><p>付出的代价</p></th></tr></thead><tbody><tr><td><p>同步 + 人工或定时 Inbox 扫描</p></td><td><p>系统简单，复用一个处理器</p></td><td><p>请求与业务处理耦合；及时性或轮询成本要权衡</p></td></tr><tr><td><p>持久 Inbox + MQ 后台处理</p></td><td><p>接收和处理分开，独立任务执行；可安排到期重试</p></td><td><p>增加 Broker/Worker、重复投递、漏投和中断恢复责任</p></td></tr></tbody></table>
+<p>当前默认仍同步，异步是本地开发/测试可选路径，真实 RabbitMQ 与 Worker 已有验证。尚不能声称 MQ 提高了秒杀吞吐，或天然保证“业务效果恰好一次”。秒杀库存竞争仍由 MySQL 解决。<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/payments/services.py#L583-L609">入箱后选择同步/异步</a>；<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/backend/apps/payments/dispatch.py#L13-L30">事务外发布 ID</a>。</p>
+<h1 seq="auto">重复、暂时失败和进程中断怎样收尾</h1>
+<p>重复消息可再次到达，Event 领取资格与锁内终态判断挡住重复业务效果；不同事件指向同一成功 Attempt，也不能重复核销。MySQL 保存累计处理预算：总共 3 次包含首次，允许的暂时失败分别等待 5 秒、10 秒；未知错误、库存/资格不一致阻断调查，次数耗尽停止。Celery 不另设一份业务重试预算。</p>
+<p>提交 Inbox 后进程可能还没发布就中断，或 Broker 不可用。人工补投重新发送原 ID，允许重复，不能把 published 当成 paid。Worker 领取 PROCESSING 后硬中断，还需要持久租约：默认 60 秒，到期只是检查资格的条件，不是死亡证明。人工恢复锁内核对状态、次数版本和截止，拿不到业务锁就跳过；修复后再补投或同步处理，预算不清零。尚无无人值守恢复时限承诺。</p>
+<p>2026-10-05 的真实 C4 验证分别中断在领取提交后、业务未提交、业务提交后 ACK 前及退款提交后：恢复最终只核销一次或只退款一次。C3 真实停 Broker 验证提交后漏投的人工补发。这里只概括业务价值；具体命令、MQ 配置与原始过程沿用<a href="https://ocnbkcx1ug58.feishu.cn/wiki/CDXkw84eWiDj5ZkzitPcs1PhnIh">已有支付与 MQ 知识库</a>。</p>
+<h1 seq="auto">旧订单迟到成功，不能碰新订单资格</h1>
+<p>O1 真正未付关闭，资格 RELEASED 后，顾客可用 K2 创建 O2，资格 HELD。此时 O1 收到可信成功通知，系统保持 O1 关闭、只为 O1 模拟退款，不走正常库存核销，也不按“顾客当前活动资格”去改 O2。购买记录必须按 order 定位，这是保留每单历史的业务理由。</p>
+<p>2026-10-07 的 6B 验证覆盖 O1 关闭→O2 重购→旧 Key→O1 迟到成功及重复通知，O2 保持 HELD，旧单退款一次。6B 只做服务层 MySQL；其中 1205 是测试注入，不能说成真实锁超时实验。<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-6b-flash-sale-lifecycle.md#L35-L62">6B 证据和限制</a>；<a href="https://github.com/jasper507/E-commerce/blob/18ffbe2f2bf674d31f3d2dc055976aedd41af010/docs/verification/phase-5c4-payment-worker-recovery.md#L80-L93">C4 四个真实中断窗口</a>。</p>
+<p><b>闭卷自检：</b>解释“202、published、ACK、PAID”各代表什么；画出一次支付成功的同事务事实；说明 MQ 为什么还需要 Inbox 补漏，以及 O1 迟到成功为什么不能释放 O2。能结合一条真实证据说清边界，即达到本页目标。</p>

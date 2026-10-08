@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "new_blocks": [
+        {
+          "block_id": "doxcnLnnwkrb1tf6mgjmLDx6Xxg",
+          "block_token": "O1DFwpelTh22uOb98ttcdVkLnye",
+          "block_type": "whiteboard"
+        }
+      ],
+      "revision_id": 2,
+      "url": "https://ocnbkcx1ug58.feishu.cn/docx/JRKodKDfCotBDPx1acucZpsXnQg"
+    },
+    "result": "success",
+    "warnings": []
+  }
+}

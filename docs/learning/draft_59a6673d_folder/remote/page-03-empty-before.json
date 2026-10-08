@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title>03 下单失败：为什么整单回滚与等待 5 秒</title>",
+      "document_id": "JRKodKDfCotBDPx1acucZpsXnQg",
+      "revision_id": 1
+    }
+  }
+}

@@ -1,0 +1,12 @@
+[
+  "docs",
+  "+script",
+  "--command",
+  "parse",
+  "--content",
+  "@./draft_948dc651_folder/publish.xml",
+  "--as",
+  "user",
+  "--format",
+  "json"
+]

@@ -1,0 +1,36 @@
+sequenceDiagram
+    participant U as 顾客页面
+    participant A as Django接收入口
+    participant D as MySQL事实
+    participant G as Mock支付网关
+    participant Q as RabbitMQ
+    participant W as Celery Worker
+    U->>A: 为原订单发起付款
+    A->>D: 短事务保存Attempt并提交
+    A->>G: 事务外创建原支付尝试
+    G-->>A: 返回带签名的网关通知
+    A->>D: 短事务保存原Event并提交
+    Note over A,D: 若提交后漏投，原Event可人工补投原ID
+    A->>Q: 事务外发布内部Event ID
+    Q-->>A: 接收本次发布
+    A-->>U: 异步模式已受理，付款结果待确认
+    Note over U,D: 已受理不等于订单PAID
+    Q-->>W: 投递原Event ID
+    W->>D: 短事务领取资格，次数加1并提交
+    rect rgb(235, 248, 240)
+        W->>D: 业务事务重新核对资格、签名与金额
+        W->>D: Attempt成功、Order已付、库存核销
+        W->>D: Purchase消费、流水与Event结果一起提交
+    end
+    alt 正常处理完成
+        W-->>Q: 业务处理返回后ACK
+    else 业务提交后ACK前中断
+        Note over Q,W: 原消息未ACK，恢复后再次投递
+        Q-->>W: 再次投递同一Event ID
+        W->>D: 读取PROCESSED终态，不再核销
+        W-->>Q: ACK重复消息
+    end
+    U->>A: 读取原订单与原付款结果
+    A->>D: 查询MySQL当前状态
+    A-->>U: 返回订单PAID等权威结果
+    Note over A,W: 图为已实现的可选异步支付模式；当前默认仍同步

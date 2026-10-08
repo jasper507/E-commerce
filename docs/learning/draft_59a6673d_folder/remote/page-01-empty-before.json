@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "content": "<title>01 重复下单：幂等与限购为什么分开</title>",
+      "document_id": "SANldx7z2osqJyxYQTPc4Yv3nrQ",
+      "revision_id": 1
+    }
+  }
+}

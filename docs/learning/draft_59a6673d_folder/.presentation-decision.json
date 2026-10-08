@@ -1,0 +1,1 @@
+{"audience":"Project One 作者，初学后端的计算机学生","reader_task":"沿89元秒杀业务解释完整请求、选择理由、真实证据和失败代价","genre_contract":"router.knowledge","presentation_mode":"rich","visual_plan":{"reason":"用一张时序图显示下单事务、支付和资格库存状态的业务边界","blocks":[{"type":"whiteboard","min_count":1,"purpose":"说明完整秒杀交易与数据库提交点"}]}}

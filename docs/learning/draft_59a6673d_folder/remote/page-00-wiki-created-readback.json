@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "creator": "ou_ec431efc09979788500cb74a6286cfe2",
+    "has_child": false,
+    "node_create_time": "1791458393",
+    "node_token": "B49NwtiePiCqqFkz61kc4ac9n79",
+    "node_type": "origin",
+    "obj_create_time": "1791458393",
+    "obj_edit_time": "1791458393",
+    "obj_token": "MVBrdxZAPoDcPzxQnTPctXXgn3g",
+    "obj_type": "docx",
+    "origin_node_token": "B49NwtiePiCqqFkz61kc4ac9n79",
+    "owner": "ou_ec431efc09979788500cb74a6286cfe2",
+    "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "space_id": "7693476782908935142",
+    "title": "秒杀与库存并发",
+    "updated_at": "2026-10-08T11:19:53Z"
+  }
+}

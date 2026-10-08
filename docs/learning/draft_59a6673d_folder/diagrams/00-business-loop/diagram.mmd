@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant U as 顾客浏览器
+    participant A as Django业务服务
+    participant D as MySQL交易事实
+    participant G as Mock支付网关
+    U->>A: 活动项711、本人地址1、原Key K1
+    rect rgb(234, 244, 255)
+        A->>D: 下单事务：查旧Key并校验活动、资格
+        A->>D: 条件UPDATE，可售1减到0、预占0加到1
+        A->>D: 订单89元、HELD资格、预占与流水一起提交
+    end
+    D-->>A: 同一套订单事实已提交
+    A-->>U: 201与订单编号
+    U->>A: 为原订单发起Mock付款
+    A->>D: 短事务保存Attempt，提交并释放锁
+    A->>G: 事务外调用原支付尝试
+    G-->>A: 带签名的成功通知
+    A->>D: 短事务入箱原通知并提交
+    rect rgb(235, 248, 240)
+        A->>D: 统一处理事务，校验金额与当前状态
+        A->>D: 预占1减到0、资格CONSUMED、订单PAID
+        A->>D: COMMIT流水与Event结果一起提交
+    end
+    A-->>U: 服务端已确认支付结果
+    Note over A,D: 当前默认同步Mock路径；支付时不再减可售库存

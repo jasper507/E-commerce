@@ -1,0 +1,44 @@
+[
+  {
+    "id": 0,
+    "title": "秒杀与库存并发",
+    "workspace": ".",
+    "diagram": "00-business-loop"
+  },
+  {
+    "id": 1,
+    "title": "01 重复下单：幂等与限购为什么分开",
+    "workspace": "draft_8e380e20_folder",
+    "diagram": "01-intent-and-quota"
+  },
+  {
+    "id": 2,
+    "title": "02 抢最后一件：为什么选择条件 UPDATE",
+    "workspace": "draft_9296fc9d_folder",
+    "diagram": "02-inventory-choice"
+  },
+  {
+    "id": 3,
+    "title": "03 下单失败：为什么整单回滚与等待5秒",
+    "workspace": "draft_89ff66fc_folder",
+    "diagram": "03-timeout-rollback"
+  },
+  {
+    "id": 4,
+    "title": "04 从付款到关闭：资格生命周期与 MQ 的业务价值",
+    "workspace": "draft_bd1b8a9e_folder",
+    "diagram": "04-payment-mq"
+  },
+  {
+    "id": 5,
+    "title": "05 响应丢失：为什么保留原购买意图",
+    "workspace": "draft_15152a08_folder",
+    "diagram": "05-lost-response"
+  },
+  {
+    "id": 6,
+    "title": "06 证据与演进：哪些结论可以向面试官讲",
+    "workspace": "draft_948dc651_folder",
+    "diagram": null
+  }
+]
