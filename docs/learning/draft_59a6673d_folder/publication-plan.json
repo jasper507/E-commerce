@@ -123,16 +123,16 @@
       "title": "06 证据与演进：哪些结论可以向面试官讲",
       "workspace": "draft_948dc651_folder",
       "diagram": null,
-      "draft_sha256": "bca25f952a17c2dbff48b7313a6571e3c6247ce6225d03082dd5f6a22dbe29c4",
+      "draft_sha256": "2b55f5eedf8dab4c1c5babaa9b0676fc1a6e86342b1bb701986e8a6b13e972d5",
       "document_id": "Gm0Bdx3eLokjdpxtMqKcILw3n4f",
       "node_token": "LaqzwVXSHiZsjzkPTuccYlt4n5g",
       "url": "https://ocnbkcx1ug58.feishu.cn/wiki/LaqzwVXSHiZsjzkPTuccYlt4n5g",
       "body_written": true,
       "creation_warnings": [],
-      "publish_sha256": "6873fc1c7dcbec0536477cd76baefc49c9362f5d9e862609d83456b61813425d",
+      "publish_sha256": "ebf6fb09a906dff7703c7d4da2a93a1028fffaebe22bfefa6ad023a52f5ffd9c",
       "navigation_written": true,
       "readback_verified": true,
-      "revision_id": 3
+      "revision_id": 4
     }
   ],
   "renderer_identity": "GPT",
@@ -144,5 +144,6 @@
   "board_count": 6,
   "native_node_count": 148,
   "remote_previews_visually_reviewed": true,
-  "project_navigation_verified": true
+  "project_navigation_verified": true,
+  "future_plan_note": "2026-10-08 Project Charter v1.8 confirms Lua admission and ES search as future plans; not implemented in source snapshot."
 }
