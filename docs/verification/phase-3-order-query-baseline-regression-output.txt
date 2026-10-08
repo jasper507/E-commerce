@@ -1,0 +1,4 @@
+................s                                               [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] backend\apps\ordering\tests\test_order_query_baseline.py:238: explicit order-query experiment only
+16 passed, 1 skipped, 9 subtests passed in 13.51s

@@ -3,6 +3,20 @@
 Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
+Order-query baseline (2026-10-09): an opt-in disposable-MySQL experiment now
+captures the complete order/count/item SQL, existing indexes, execution plans,
+ORM/serialization/render timings and response bytes. With 5,000 synthetic
+orders per customer, a temporary `(user_id, created_at, id)` index removes the
+first-page order sort and reduces that iterator's actual output from 5,000 to
+20 rows; COUNT still reads 5,000 and page 201 still traverses 4,020 orders and
+address lookups. The candidate was removed and the test database destroyed;
+no application model, migration or development database index changed.
+The experiment passed, and related checks passed 16 tests / 9 subtests with
+the experiment skipped by default. See the [verification](docs/verification/phase-3-order-query-baseline.md)
+and [study guide](docs/learning/phase-3-order-query-baseline-study-guide.md).
+These are local warm synthetic measurements, not production capacity or
+HTTP/network latency. Formal index adoption is the proposed next slice.
+
 Current order-list status (2026-10-08): `GET /api/orders/?page=2` now returns
 `count`, `next`, `previous`, and `results`, with a fixed page size of 20 and
 ownership filtering before pagination. The customer page supports navigation,

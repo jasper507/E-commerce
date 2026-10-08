@@ -3,9 +3,9 @@
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：订单列表分页已实现并验证；查询优化证据待下一片；Phase 6E独立讲述仍待完成；Redis Lua准入与Elasticsearch已确认后续计划、尚未实现
+- 当前阶段：订单列表分页与隔离查询/候选索引证据已完成，正式索引尚未落地；Phase 6E独立讲述仍待完成；Redis Lua准入与Elasticsearch已确认后续计划、尚未实现
 - 文档版本：v1.8
-- 路线图进度更新：2026-10-08
+- 路线图进度更新：2026-10-09
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
@@ -22,6 +22,8 @@
 拥有者最新范围与推进决定（2026-10-08，v1.8）：已决定加入Redis Lua和Elasticsearch，Lua第一层选择原子流量准入、验证数据库保护效果；MySQL继续作为订单、库存和支付的最终事实来源，不把本轮范围扩为Redis库存预扣。推进顺序为订单列表分页与真实查询优化基线 → Lua准入 → Elasticsearch商品搜索 → 部署与项目收尾。此决定覆盖本文旧段落和PROJECT_INSTRUCTIONS.md中“Lua暂缓”与“ES尚未决定采用”的范围描述；保留历史记录，不把已确认计划写成实现或验证完成。分词、索引同步与重建、准入故障政策将在各自小片内确定，不一次生成整个模块。
 
 当前分页补片：GET /api/orders/采用固定20条的页码分页，返回count/next/previous/results；先按登录用户过滤，再按-created_at/-id排序和分页，保留原地址/商品快照。前端翻页、URL页码恢复、失败重试和错误页回到第一页已接通。真实隔离MySQL目标28项/171子场景、相关回归63项/8子场景通过；页面使用模拟响应验证，不是实时API端到端或性能证据。未新增索引、迁移、依赖或修改库存/支付业务，见[验证记录](docs/verification/phase-3-order-list-pagination.md)。下一片才验证完整查询计划、实际读取范围和性能；不据本片宣称SQL已变快或Phase6独立讲述已验收。
+
+查询证据补片（2026-10-09）：仅在可销毁test_project_one中建立合成本人/他人各5,000单，捕获实际完整SQL、三个关联表索引和EXPLAIN/EXPLAIN ANALYZE，分开ORM物化、序列化、JSON字节。临时(user_id, created_at, id)候选消除首页订单排序，该索引步骤实际输出由5,000降为20；COUNT仍读5,000，深页OFFSET4000仍经过4,020订单与地址查找。实验1项通过、相关16项/9子场景通过、实验默认skip；候选删除、测试库销毁，应用模型/迁移/开发库没有改变。见[验证](docs/verification/phase-3-order-query-baseline.md)和[指南](docs/learning/phase-3-order-query-baseline-study-guide.md)。证据支持下一片只正式落地此候选，不宣称生产容量或HTTP端到端改善；Lua/ES仍为后续计划。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 

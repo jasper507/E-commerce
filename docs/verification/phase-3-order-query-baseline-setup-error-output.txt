@@ -1,0 +1,137 @@
+Got an error creating the test database: (1044, "Access denied for user 'project_one'@'%' to database 'test_order_query_baseline'")
+
+E
+=================================== ERRORS ====================================
+_________________ ERROR at setup of test_order_query_baseline _________________
+
+self = <django.db.backends.utils.CursorWrapper object at 0x0000016AD1D95D10>
+sql = 'CREATE DATABASE `test_order_query_baseline` ', params = None
+ignored_wrapper_args = (False, {'connection': <DatabaseWrapper vendor='mysql' alias='__no_db__'>, 'cursor': <django.db.backends.utils.CursorWrapper object at 0x0000016AD1D95D10>})
+
+    def _execute(self, sql, params, *ignored_wrapper_args):
+        # Raise a warning during app initialization (stored_app_configs is only
+        # ever set during testing).
+        if not apps.ready and not apps.stored_app_configs:
+            warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+        self.db.validate_no_broken_transaction()
+        with self.db.wrap_database_errors:
+            if params is None:
+                # params default might be backend specific.
+>               return self.cursor.execute(sql)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\django\db\backends\utils.py:103:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\django\db\backends\mysql\base.py:76: in execute
+    return self.cursor.execute(query, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\MySQLdb\cursors.py:219: in execute
+    res = self._query(mogrified_query)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\MySQLdb\cursors.py:498: in _query
+    db.query(q)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_mysql.connection closed at 0000016ACF788980>
+query = b'CREATE DATABASE `test_order_query_baseline` '
+
+    def query(self, query):
+        # Since _mysql releases GIL while querying, we need immutable buffer.
+        if isinstance(query, bytearray):
+            query = bytes(query)
+>       _mysql.connection.query(self, query)
+E       MySQLdb.OperationalError: (1044, "Access denied for user 'project_one'@'%' to database 'test_order_query_baseline'")
+
+.venv\Lib\site-packages\MySQLdb\connections.py:302: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+self = <django.db.backends.mysql.creation.DatabaseCreation object at 0x0000016AD13DEC50>
+cursor = <django.db.backends.utils.CursorWrapper object at 0x0000016AD1D95D10>
+parameters = {'dbname': '`test_order_query_baseline`', 'suffix': ''}
+keepdb = False
+
+    def _execute_create_test_db(self, cursor, parameters, keepdb=False):
+        try:
+>           super()._execute_create_test_db(cursor, parameters, keepdb)
+
+.venv\Lib\site-packages\django\db\backends\mysql\creation.py:22:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\django\db\backends\base\creation.py:190: in _execute_create_test_db
+    cursor.execute("CREATE DATABASE %(dbname)s %(suffix)s" % parameters)
+.venv\Lib\site-packages\django\db\backends\utils.py:79: in execute
+    return self._execute_with_wrappers(
+.venv\Lib\site-packages\django\db\backends\utils.py:92: in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\django\db\backends\utils.py:100: in _execute
+    with self.db.wrap_database_errors:
+.venv\Lib\site-packages\django\db\utils.py:91: in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+.venv\Lib\site-packages\django\db\backends\utils.py:103: in _execute
+    return self.cursor.execute(sql)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\django\db\backends\mysql\base.py:76: in execute
+    return self.cursor.execute(query, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\MySQLdb\cursors.py:219: in execute
+    res = self._query(mogrified_query)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\MySQLdb\cursors.py:498: in _query
+    db.query(q)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_mysql.connection closed at 0000016ACF788980>
+query = b'CREATE DATABASE `test_order_query_baseline` '
+
+    def query(self, query):
+        # Since _mysql releases GIL while querying, we need immutable buffer.
+        if isinstance(query, bytearray):
+            query = bytes(query)
+>       _mysql.connection.query(self, query)
+E       django.db.utils.OperationalError: (1044, "Access denied for user 'project_one'@'%' to database 'test_order_query_baseline'")
+
+.venv\Lib\site-packages\MySQLdb\connections.py:302: OperationalError
+
+During handling of the above exception, another exception occurred:
+
+request = <SubRequest '_django_db_marker' for <Function test_order_query_baseline>>
+
+    @pytest.fixture(autouse=True)
+    def _django_db_marker(request: pytest.FixtureRequest) -> None:
+        """Implement the django_db marker, internal to pytest-django."""
+        marker = request.node.get_closest_marker("django_db")
+        if marker:
+>           request.getfixturevalue("_django_db_helper")
+
+.venv\Lib\site-packages\pytest_django\plugin.py:593:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\pytest_django\fixtures.py:186: in django_db_setup
+    db_cfg = setup_databases(
+.venv\Lib\site-packages\django\test\utils.py:204: in setup_databases
+    connection.creation.create_test_db(
+.venv\Lib\site-packages\django\db\backends\base\creation.py:62: in create_test_db
+    self._create_test_db(verbosity, autoclobber, keepdb)
+.venv\Lib\site-packages\django\db\backends\base\creation.py:204: in _create_test_db
+    self._execute_create_test_db(cursor, test_db_params, keepdb)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <django.db.backends.mysql.creation.DatabaseCreation object at 0x0000016AD13DEC50>
+cursor = <django.db.backends.utils.CursorWrapper object at 0x0000016AD1D95D10>
+parameters = {'dbname': '`test_order_query_baseline`', 'suffix': ''}
+keepdb = False
+
+    def _execute_create_test_db(self, cursor, parameters, keepdb=False):
+        try:
+            super()._execute_create_test_db(cursor, parameters, keepdb)
+        except Exception as e:
+            if len(e.args) < 1 or e.args[0] != 1007:
+                # All errors except "database exists" (1007) cancel tests.
+                self.log("Got an error creating the test database: %s" % e)
+>               sys.exit(2)
+E               SystemExit: 2
+
+.venv\Lib\site-packages\django\db\backends\mysql\creation.py:27: SystemExit
+=========================== short test summary info ===========================
+ERROR backend/apps/ordering/tests/test_order_query_baseline.py::test_order_query_baseline
+1 error in 0.37s

@@ -1,0 +1,10 @@
+
+=================================== ERRORS ====================================
+__ ERROR collecting backend/apps/ordering/tests/test_order_query_baseline.py __
+backend\apps\ordering\tests\test_order_query_baseline.py:53: in <module>
+    raise RuntimeError("Order query experiment requires DJANGO_ENV=test and test_project_one.")
+E   RuntimeError: Order query experiment requires DJANGO_ENV=test and test_project_one.
+=========================== short test summary info ===========================
+ERROR backend/apps/ordering/tests/test_order_query_baseline.py - RuntimeError...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+no tests collected, 1 error in 0.33s
