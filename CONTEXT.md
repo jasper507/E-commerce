@@ -1,11 +1,11 @@
-# Project One — Domain Context v1.37
+# Project One — Domain Context v1.38
 
 ## 0. 文档状态
 
-- 当前阶段：6D最小HTTP与临时5秒/恢复政策已验证，按持续授权整合main，前端与端到端待验收
-- 文档版本：v1.37
+- 当前阶段：6D已验证并合入推送main；下一片极简顾客入口与端到端，Redis Lua暂缓、后续评估
+- 文档版本：v1.38
 - 更新日期：2026-10-08
-- 范围来源：`PROJECT_CHARTER.md` v1.5、2026-10-01 支付范围决定（第 33 节）及 ADR 0001
+- 范围来源：`PROJECT_CHARTER.md` v1.6、2026-10-01 支付范围决定（第 33 节）、ADR 0001及2026-10-08 Lua暂缓决定（第55节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
@@ -163,7 +163,7 @@ SKU B：无线鼠标 M1 / 白色 / ¥139.00 / 库存 20
 | Cache Consistency | 缓存一致性 | Phase 4A 复现旧回填；Phase 4B 已验证成功换代后新请求不选旧代，代号在首条详情 SQL 前捕获。换代失败、提交后崩溃等仍不保证，非强一致。见第 22 节。 |
 | Cache Experiment Parameters | 缓存实验参数 | 具体 Key 结构、基础 TTL 与抖动范围、空值缓存及热点保护参数必须由 baseline 和实验决定。`Experiment Candidate` |
 | Resilience | 故障韧性 | Redis 或其他辅助系统故障时，核心系统按明确规则降级、恢复或对账，不能丢失核心事实；下单仍重新读取 MySQL 权威价格与库存。`Confirmed` |
-| Redis Lua | Redis Lua 脚本 | 作为秒杀流量准入或原子前置判断的实验候选，必须通过并发测试、崩溃窗口和 MySQL 对账决定最终路径。`Experiment Candidate` |
+| Redis Lua | Redis Lua 脚本 | 拥有者2026-10-08明确当前先不加入、后续评估；不阻塞MySQL秒杀/HTTP收尾。以后若采用，须验证并发、失败窗口和MySQL对账。`Deferred by owner / Evaluate later` |
 | Modular Monolith | 模块化单体 | 整个 Django/DRF 后端是一个部署单元，但内部按 Accounts、Catalog、Inventory、Ordering、Payments 等业务职责划分。第一版不拆微服务。`Confirmed` |
 | Django App | Django 应用模块 | 第一批固定为 `accounts`、`catalog`、`inventory`、`ordering`、`payments`；闭环后按需增加 `promotions`、`engagement`。支付异步处理使用必做 RabbitMQ + Celery，不要求拆微服务或建立通用异步平台；Search 继续受 Gate 控制。`Confirmed` |
 | Vue Application Boundary | Vue 工程边界 | 使用一个 Vue 3 + TypeScript/Vite 工程，内部提供 Customer 与 Admin 两套路由和 Layout，并共享认证、API Client、类型和基础组件。`Confirmed` |
@@ -1375,3 +1375,12 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 目标21 passed/259子场景、40.14秒，首次通过；相关promotions/ordering/payments+Session API回归216 passed/662子场景、262.10秒，7 skip（负载1/支付到期锁6）、12真实MQ未选入。check0、迁移漂移No changes detected；没有重新跑MQ/Redis/负载/显式5D锁实验，不以测试耗时作性能结论。
 - 现有MySQL8.4.10/3307/READ-COMMITTED，rollback_on_timeout=false/deadlock_detect=true。前后临时test_project_one不存在、可见测试连接0、开发schema表数26、SESSION/GLOBAL等待均50；pytest只操作临时测试库，没有开发迁移/业务写入、GRANT、服务启停或部署。
 - docs/verification/phase-6d2-flash-sale-http-wait.md/data.json、target/regression-output.txt保存12条新增场景快照、实测/注入区分与源码/输出指纹；6D指南、ADR及当前进度同步。APIClient是进程内请求，浏览器/真实网络/极简顾客入口仍待独立切片；Redis Lua范围另行决定，不能把本片当成整个Phase6结束。
+
+## 55. 新聊天交接与Redis Lua暂缓（2026-10-08）
+
+- 拥有者要求新建聊天，读取/继承当前聊天全部信息并继续下一part；明确“先不加入Redis Lua，后续再进行评估”。源聊天为`009 -- 秒杀与库存并发：Phase 6 学习 (2)`，ID `01a117dc-7164-71e3-a6e4-1a2446f4d48c`。
+- 当前Lua为拥有者确认暂缓，不再作为当前MySQL秒杀/HTTP收尾的必做门槛。Charter v1.6把它从旧Level2表调整为条件性后续评估；旧切片的待确认措辞保留为历史，不覆盖本决定。既有Redis缓存主线保留，不新增Lua代码、预扣或补偿实验。
+- 6D两提交`72e6291`、`0317825`已安全合入并推送main；交接前main/远端均0317825、工作区干净。目标21/259子场景、相关回归216/662子场景沿用第54节的真实结果，本轮文档更新未重新运行业务测试。
+- 下一part为最小秒杀顾客入口、真实浏览器端到端与独立讲述验收；复用Session/CSRF、本人地址、原Key、服务端价/数量与现有订单/Mock支付流程。以正常创建、原Key重放、关键失败和后续订单状态的最小证据收尾，不自动扩展新基础设施或负载矩阵。
+- 继续遵守先说明具体面试/能力收益、初学者中文教学、核心Learning/辅助Pair、生成新代码前保存已审核前批并核对远端的持续授权。开发库迁移/演示数据属于另行说明与确认的操作，不从“新聊天继续”推导出数据库写入授权。
+- 本轮只修改Charter/Context/详细项目规则，静态核对范围、链接和diff，保存后在新聊天继续；没有改源码、依赖、配置、开发数据库或历史测试证据。

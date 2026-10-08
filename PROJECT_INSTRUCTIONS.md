@@ -61,7 +61,7 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 
 三条旗舰主线必须做深：
 
-1. 库存并发与秒杀：超卖复现、事务、原子条件更新/行锁对比、预占/核销/释放、Redis Lua 候选、一人一单、补偿、分布式锁 Gate、压测。
+1. 库存并发与秒杀：超卖复现、事务、原子条件更新/行锁对比、预占/核销/释放、Redis Lua 候选（拥有者2026-10-08决定暂缓、后续评估）、一人一单、补偿、分布式锁 Gate、压测。
 2. Redis 缓存正确性：Cache-Aside、一致性、失效、穿透、击穿、雪崩、热点、故障降级、性能对比。
 3. 支付状态与幂等：后端 Mock Gateway、状态机、Webhook/Event Inbox、唯一事件、重复/乱序回调、UNKNOWN、校验、RabbitMQ + Celery 支付事件异步处理、有界重试、消费者幂等、Inbox 恢复、Worker/Broker 故障验证和退款模拟。
 
@@ -102,6 +102,10 @@ Docker、Nginx、Gunicorn、Linux、CI、日志和 Performance Testing 属于必
 `CRUD Fast Track` 的完成标准是：主流程可运行；权限与数据归属正确；关键数据库约束存在；至少覆盖一个正常例子和一个重要失败例子；用户能够沿 HTTP → View/Serializer → ORM → MySQL 解释调用链并独立修改一个小条件。它不要求逐行学习重复框架代码，也不能把库存、金额、状态机、幂等或并发规则误判为普通 CRUD。
 
 Interview Core 先完成最窄 MVP：浏览 → 登录 → Cart → Address → Order/库存预占 → Mock Payment → 模拟发货 → 完成。普通业务功能和条件中间件不得阻塞该闭环。闭环完成后，立即转入 MySQL 库存并发、Redis 缓存正确性和支付状态/幂等三条深度主线，而不是继续横向堆功能。
+
+### Redis Lua当前范围 — 拥有者确认2026-10-08
+
+先不加入Redis Lua，后续再进行评估。当前继续最小秒杀顾客入口与浏览器端到端验收，不自动增加Lua准入、预扣、补偿或新负载实验，也不把Lua当作当前MySQL/HTTP收尾前提。既有Redis缓存主线保留；后续以具体瓶颈、正确性风险、面试收益和学习成本重新评估，由拥有者决定是否采用。当前决定优先于旧路线图必做措辞，见PROJECT_CHARTER.md v1.6与CONTEXT.md第55节。
 
 ## 默认协作方式
 
