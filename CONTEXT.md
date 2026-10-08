@@ -1,11 +1,11 @@
-# Project One — Domain Context v1.36
+# Project One — Domain Context v1.37
 
 ## 0. 文档状态
 
-- 当前阶段：main 已验收6C-5；6D最小HTTP基础为隔离分支候选，等待政策尚待答复，未合main，前端待接入
-- 文档版本：v1.36
+- 当前阶段：6D最小HTTP与临时5秒/恢复政策已验证，按持续授权整合main，前端与端到端待验收
+- 文档版本：v1.37
 - 更新日期：2026-10-08
-- 范围来源：`PROJECT_CHARTER.md` v1.4、2026-10-01 支付范围决定（第 33 节）及 ADR 0001
+- 范围来源：`PROJECT_CHARTER.md` v1.5、2026-10-01 支付范围决定（第 33 节）及 ADR 0001
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
@@ -1362,3 +1362,16 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 相关promotions/ordering/payments加原登录API回归207 passed/565子场景，152.27秒；7 skip（负载1、显式支付到期锁6）、12真实MQ未选入。check0、迁移漂移No changes detected。独立只读评审无阻止基础候选保存的问题，要求等等待答复再合main；本轮没有另行制造HTTP数据库锁超时或注入故障。
 - 已有MySQL8.4.10/3307/READ-COMMITTED，session50、rollback_on_timeout=false；pytest只操作临时test_project_one。前后临时库不存在、可见连接0、开发schema表数26，后检session50；没有开发迁移/业务SQL、服务启停/GRANT改动。APIClient为进程内请求测试，force_login建立Session，不是浏览器/真实网络验收；未重跑真实MQ/Redis/5D/负载矩阵。
 - docs/learning/phase-6d-flash-sale-http-study-guide.md与verification同名.md/data.json、target/regression-output.txt保存候选合同、完整请求解释、实测与源码/输出指纹；没有逐请求SQL/ORM raw新采集或历史证据改写。候选不等于Phase6D全部完成，待拥有者选等待方案后补必要处理/验证并整合main，再做极简页面与端到端验收。
+
+## 54. Phase 6D-2：HTTP临时5秒、事务与连接恢复（2026-10-08）
+
+- 用户选中“临时5秒并恢复原会话值”并要求开始。该答复解除第53节的等待门槛；历史记录、JSON和raw保留。面试目标是独立解释行锁等待、整单回滚、Key重试与持久连接状态，HTTP适配Supporting/Pair、失败边界Depth/Learning。必要证据通过后停止，不新增负载或基础设施。
+- 开始前codex/flash-sale-baseline及远端同72e6291且干净，main/远端main同b4456bd；前批已保存，无空提交、新分支或worktree。复用原隔离分支，按持续授权验证、提交/推送和安全整合main；最终提交与远端以Git核对为准。
+- 新http_services适配在原atomic外读取SESSION/暂设5，事务结束后恢复实际原值。拒绝外层atomic/autocommit=false，连接更换后不写旧值；设置失败不下单，恢复失败告警并丢弃连接，保留已提交结果、业务拒绝或原异常。原服务其他SQL1205/1213退出atomic后转checkout_busy409；原库存UPDATE仍stock_busy，未知错误上抛，没有自动重试或总请求期限。
+- View仅改调用，新test_flash_sale_http_wait有9项；原业务services与前片内容完全相同，14个旧源码/测试指纹保持。模型、迁移、配置、依赖、普通下单、支付/关闭、前端未修改。第一片JSON/目标/回归raw保持原样，本片自查，不把旧独立评审当作新代码独立评审。
+- 真实隔离库存Observer586/Holder587/Contender588，User Observer590/Holder591/Contender592；持锁者无业务写入，PROCESSLIST在放行前观察目标SQL未完成，两实际语句SESSION5并各抛1205，单次记录5.0秒。分别HTTP409 stock_busy/checkout_busy，在holder放行前返回，六类事实0、库存5/0、原连接恢复50；放行后原Key201、重放200/同单，最终六事实各1、库存4/1、价89/qty1、HELD、购物车不变。
+- 实际自定义原值17的成功/重放/限购拒绝均17→5→17，仅成功首次执行库存UPDATE。注入库存前1205、Movement真实INSERT后1213、用户前2006验证回滚与原值13恢复；设置、恢复、close确认失败及连接替换为注入，不能声称真实死锁/断连/提交不确定恢复。
+- 用户正确回答“订单已提交但恢复失败，应保留成功响应并丢弃状态不明连接”；已解释订单事实与清理动作不同。该回答只证明一个判断，仍需闭卷解释原值恢复、错误分类、重试和证据边界，不算整个秒杀模块验收。
+- 目标21 passed/259子场景、40.14秒，首次通过；相关promotions/ordering/payments+Session API回归216 passed/662子场景、262.10秒，7 skip（负载1/支付到期锁6）、12真实MQ未选入。check0、迁移漂移No changes detected；没有重新跑MQ/Redis/负载/显式5D锁实验，不以测试耗时作性能结论。
+- 现有MySQL8.4.10/3307/READ-COMMITTED，rollback_on_timeout=false/deadlock_detect=true。前后临时test_project_one不存在、可见测试连接0、开发schema表数26、SESSION/GLOBAL等待均50；pytest只操作临时测试库，没有开发迁移/业务写入、GRANT、服务启停或部署。
+- docs/verification/phase-6d2-flash-sale-http-wait.md/data.json、target/regression-output.txt保存12条新增场景快照、实测/注入区分与源码/输出指纹；6D指南、ADR及当前进度同步。APIClient是进程内请求，浏览器/真实网络/极简顾客入口仍待独立切片；Redis Lua范围另行决定，不能把本片当成整个Phase6结束。

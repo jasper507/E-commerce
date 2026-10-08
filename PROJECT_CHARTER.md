@@ -1,19 +1,19 @@
-# Project One — Project Charter v1.4
+# Project One — Project Charter v1.5
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：main 已验收 Phase 6C-5；Phase 6D 最小 HTTP 基础在隔离分支验证，等待政策尚待拥有者答复，未合入 main，前端待接入
-- 文档版本：v1.4
+- 当前阶段：Phase 6D 最小 HTTP 与临时5秒/恢复政策已验证，按持续授权整合main，前端与端到端待验收
+- 文档版本：v1.5
 - 路线图进度更新：2026-10-08
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
 - 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过；Phase 6B新增资格生命周期目标11项、promotions/ordering/payments回归171项通过；Phase 6C-1补当前NOWAIT完整秒杀双顾客竞争；6C-2同完整事务候选正确性通过；6C-3完成8worker/24顾客、两库存/预算/策略各3轮共24批次的时延/重试/连接成本，全部有效且默认未换策略，见docs/verification/phase-6c3-flash-sale-inventory-load.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；未执行开发库恢复、迁移或浏览器验收。
 
-最新状态（2026-10-08）：单活动 SKU 条件 UPDATE 已在 Phase 6C-5 正式落地，见 [ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md) 和 [验证记录](docs/verification/phase-6c5-flash-sale-inventory-failures.md)。拥有者选择沿用现有会话上限，本机观察 50 秒；库存 UPDATE 的 1205/1213 返回繁忙并退出整单事务，未知错误上抛，无自动重试。目标9项/198子场景、相关回归183项/403子场景通过；普通多 SKU、Redis Lua 范围及 HTTP 合同未变，HTTP 顾客等待预算仍待确定。上段及阶段条目中“默认未换策略”描述各片当时状态。
+前序状态（2026-10-08）：单活动 SKU 条件 UPDATE 已在 Phase 6C-5 正式落地，见 [ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md) 和 [验证记录](docs/verification/phase-6c5-flash-sale-inventory-failures.md)。当时拥有者选择沿用现有会话上限，本机观察 50 秒；库存 UPDATE 的 1205/1213 返回繁忙并退出整单事务，未知错误上抛，无自动重试。目标9项/198子场景、相关回归183项/403子场景通过；普通多 SKU、Redis Lua 范围不变。上段及阶段条目中“默认未换策略”描述各片当时状态。
 
-Phase 6D 候选新增公开当前活动项查询与 Session/CSRF 秒杀下单，复用原业务事务及订单响应；目标12项/162子场景通过。等待选择为调用临时5秒并恢复会话，或继续沿用现有值；尚未收到答复，因此未实现新等待设置、未合main。候选与实际回归范围见 [HTTP验证记录](docs/verification/phase-6d-flash-sale-http.md)。本记录在候选分支，不代表main或运行环境已开放该入口。
+最新状态：Phase 6D新增公开当前活动项查询与Session/CSRF秒杀下单，原业务事务与订单响应复用。拥有者明确选择临时5秒并恢复原会话值，6D-2在事务外实施；其他下单SQL的1205/1213返回checkout_busy，库存步骤仍stock_busy，恢复失败保留原结果并丢弃连接。真实库存/用户锁超时、回滚、连接恢复及原Key重试通过，目标21项/259子场景、相关回归216项/662子场景；7 skip、12真实MQ未选入。见 [当前HTTP等待验证](docs/verification/phase-6d2-flash-sale-http-wait.md)。5秒不是总HTTP期限，无自动重试或全局配置修改；前端/真实网络端到端仍待验收，Git整合以提交与远端核对为准。前片JSON/raw保留历史，不把旧待答复状态当作当前状态。v1.5记录这项政策与进度，不扩大项目范围。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -934,10 +934,10 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [x] 正式条件 UPDATE 最小落地、失败合同与相关回归（6C-5目标9项/198子场景、相关183项/403子场景；1213/2006仅注入，不自动重试）
 - [ ] MySQL 最终事实与方案总验收（正式服务验证已完成；HTTP/端到端与项目拥有者独立讲述待验收）
 - [ ] Redis Lua 流量准入/原子前置候选
-- [x] 每个 Customer + FlashSaleItem 正常成功限购、数量 1（Phase 6A/B 资格及旧订单隔离证据；服务层，HTTP 待接入）
+- [x] 每个 Customer + FlashSaleItem 正常成功限购、数量 1（Phase 6A/B 资格及旧订单隔离证据；6D已接HTTP，端到端待验收）
 - [ ] Distributed Lock Gate（默认 No-Go）
 - [ ] 压测和补偿
-- [ ] 最小秒杀 HTTP 查询/下单入口（6D基础候选在隔离分支，权限/输入/重放目标通过；等待政策待确认，未合main）
+- [x] 最小秒杀 HTTP 查询/下单入口（6D及6D-2权限/输入/重放、临时5秒与恢复、真实锁超时及相关回归通过；Git整合以核对为准）
 - [ ] 极简顾客入口、端到端与面试讲述验收
 
 Redis Lua 在 Level 2 必做表与本阶段候选清单中措辞不同，须由拥有者另行确认本期范围。本次 `ok` 只接受条件 UPDATE，不删除 Lua 要求，也不自动实施。原“压测和补偿”总验收复用有限负载及资格生命周期证据，只有具体新失败或入口验证需要才增加实验。
@@ -1185,9 +1185,9 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Redis Phase 4J暂时收束，支付/MQ已有同步Mock、真实异步链路、有界重试和人工恢复证据。Phase 6A/B与6C-1/2/3历史证据保留，6C-4保存ADR，6C-5正式条件UPDATE及失败回滚/重试通过。当前状态见CONTEXT第46–52节。
+Redis Phase 4J暂时收束，支付/MQ已有同步Mock、真实异步链路、有界重试和人工恢复证据。Phase 6A/B与6C-1/2/3历史证据保留，6C-4保存ADR，6C-5正式条件UPDATE及失败回滚/重试通过，6D已连接HTTP和等待恢复政策。当前状态见CONTEXT第46–54节。
 
 1. 选型 ADR 已完成；继续练习独立解释影响行数 0/1、完整事务回滚、限购/幂等各自职责与证据边界，不把一次正确预测当成全部学习验收。
-2. 6D最小HTTP基础已形成隔离候选，先完成拥有者对临时5秒或沿用现有会话值的等待选择，再补该政策必要实现/验证并安全合main；不能将尚未答复视为同意。原50秒只是本机会话值，不是请求截止时间。不自动追加负载矩阵。
+2. 6D最小HTTP和拥有者选择的临时5秒/恢复政策已通过目标及相关回归，按持续授权保存并整合main。继续复述事务/连接边界；下一片最小顾客入口与端到端，不自动追加负载矩阵。5秒仍不是整个请求期限。
 3. 支付MQ继续保留本期人工兜底，不横向新增异步功能或周期接管；既有MQ/Worker证据不能当成本轮已重跑。
-4. 秒杀下单HTTP/前端与开发数据库迁移属于后续独立切片；现有开发数据操作另行确认，不进入第三方Sandbox或外部账号。
+4. 秒杀前端与开发数据库迁移属于后续独立切片；现有开发数据操作另行确认，不进入第三方Sandbox或外部账号。Redis Lua范围仍待另行决定，不能仅凭当前MySQL/HTTP完成宣称整个Phase6已结束。

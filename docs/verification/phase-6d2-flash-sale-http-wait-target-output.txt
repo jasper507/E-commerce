@@ -1,0 +1,252 @@
+2026-10-08 15:01:51,436 WARNING django.request Conflict: /api/flash-sales/orders/
+uuuuuuFLASH_SALE_HTTP_WAIT {"after": {"connection_id": 580, "wait_seconds": 13}, "before": {"connection_id": 580, "wait_seconds": 13}, "code": "stock_busy", "evidence_kind": "injected_error_branch_only", "final": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "number": 1205, "observations": [{"actual_sql_executed": false, "facts": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 1, "OrderItem": 1}, "session": {"connection_id": 580, "wait_seconds": 5}}], "scenario": "injected_inventory"}
+2026-10-08 15:01:51,475 WARNING django.request Conflict: /api/flash-sales/orders/
+uuuuuuuFLASH_SALE_HTTP_WAIT {"after": {"connection_id": 580, "wait_seconds": 13}, "before": {"connection_id": 580, "wait_seconds": 13}, "code": "checkout_busy", "evidence_kind": "injected_error_branch_only", "final": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "number": 1213, "observations": [{"actual_sql_executed": true, "facts": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 1, "InventoryReservation": 1, "Order": 1, "OrderItem": 1}, "session": {"connection_id": 580, "wait_seconds": 5}}], "scenario": "injected_movement_written"}
+2026-10-08 15:01:51,543 ERROR django.request Internal Server Error: /api/flash-sales/orders/
+Traceback (most recent call last):
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 526, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 474, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 485, in raise_uncaught_exception
+    raise exc
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 523, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\views.py", line 66, in post
+    order, created = create_flash_sale_order_for_http(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\http_services.py", line 48, in create_flash_sale_order_for_http
+    return create_flash_sale_order(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\services.py", line 66, in create_flash_sale_order
+    locked_user = User.objects.select_for_update().get(pk=user.pk)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+          ^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\tests\test_flash_sale_http_wait.py", line 141, in inject
+    raise error
+django.db.utils.OperationalError: (2006, 'TEST-ONLY injected SQL failure')
+uuuuuuuFLASH_SALE_HTTP_WAIT {"after": {"connection_id": 580, "wait_seconds": 13}, "before": {"connection_id": 580, "wait_seconds": 13}, "code": null, "evidence_kind": "injected_error_branch_only", "final": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "number": 2006, "observations": [{"actual_sql_executed": false, "facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "session": {"connection_id": 580, "wait_seconds": 5}}], "scenario": "injected_user"}
+2026-10-08 15:01:52,597 ERROR django.request Internal Server Error: /api/flash-sales/orders/
+Traceback (most recent call last):
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 526, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 474, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 485, in raise_uncaught_exception
+    raise exc
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 523, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\views.py", line 66, in post
+    order, created = create_flash_sale_order_for_http(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\http_services.py", line 37, in create_flash_sale_order_for_http
+    cursor.execute("SELECT @@SESSION.innodb_lock_wait_timeout")
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\tests\test_flash_sale_http_wait.py", line 181, in fail
+    raise error
+django.db.utils.OperationalError: (2006, 'TEST-ONLY setup acknowledgement failure')
+u.uuuuuuFLASH_SALE_HTTP_WAIT {"before": {"connection_id": 583, "wait_seconds": 50}, "evidence_kind": "injected_error_branch_only", "final": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "reconnected": {"connection_id": 584, "wait_seconds": 50}, "scenario": "setup_failure_read"}
+2026-10-08 15:01:52,622 ERROR django.request Internal Server Error: /api/flash-sales/orders/
+Traceback (most recent call last):
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 526, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 474, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 485, in raise_uncaught_exception
+    raise exc
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 523, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\views.py", line 66, in post
+    order, created = create_flash_sale_order_for_http(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\http_services.py", line 40, in create_flash_sale_order_for_http
+    cursor.execute("SET SESSION innodb_lock_wait_timeout = %s", (FLASH_SALE_LOCK_WAIT_SECONDS,))
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\tests\test_flash_sale_http_wait.py", line 184, in fail
+    raise error
+django.db.utils.OperationalError: (2006, 'TEST-ONLY setup acknowledgement failure')
+uuuuuuuFLASH_SALE_HTTP_WAIT {"before": {"connection_id": 584, "wait_seconds": 50}, "evidence_kind": "injected_error_branch_only", "final": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "reconnected": {"connection_id": 585, "wait_seconds": 50}, "scenario": "setup_failure_applied_set"}
+2026-10-08 15:01:58,614 WARNING django.request Conflict: /api/flash-sales/orders/
+u.uuuuuuuuuuuuFLASH_SALE_HTTP_WAIT {"contender": {"after": {"connection_id": 588, "wait_seconds": 50}, "autocommit": true, "before": {"connection_id": 588, "wait_seconds": 50}, "in_atomic": false, "payload": {"code": "stock_busy", "detail": "\u5e93\u5b58\u6b63\u5728\u66f4\u65b0\uff0c\u8bf7\u91cd\u8bd5\u539f\u8bf7\u6c42\u3002"}, "returned_before_release": true, "snapshot": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "status": 409}, "evidence_kind": "real_isolated_mysql_1205", "final": {"facts": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 1, "InventoryReservation": 1, "Order": 1, "OrderItem": 1}, "inventory": {"available_stock": 4, "reserved_stock": 1}, "orders": [{"id": 4, "idempotency_key": "http-wait-original-key", "status": "PENDING_PAYMENT", "total": "89.00"}]}, "holder": {"business_writes": false, "committed_without_change": true, "connection_id": 587, "wait_seconds": 50}, "observer": {"connection_id": 586, "wait_seconds": 50}, "queries": [{"elapsed_seconds": 5.0, "facts_before": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 1, "OrderItem": 1}, "in_atomic": true, "mysql_error_number": 1205, "params": [1, 1, 1, 3], "session": {"connection_id": 588, "wait_seconds": 5}, "sql": "UPDATE `inventory_inventory` SET `available_stock` = (`inventory_inventory`.`available_stock` - %s), `reserved_stock` = (`inventory_inventory`.`reserved_stock` + %s) WHERE (`inventory_inventory`.`available_stock` >= %s AND `inventory_inventory`.`sku_id` = %s)"}], "replay_status": 200, "retry_status": 201, "scenario": "real_inventory_http_timeout", "server_sql": {"command": "Query", "connection_id": 588, "observed_before_release": true, "sql": "UPDATE `inventory_inventory` SET `available_stock` = (`inventory_inventory`.`available_stock` - 1), `reserved_stock` = (`inventory_inventory`.`reserved_stock` + 1) WHERE (`inventory_inventory`.`available_stock` >= 1 AND `inventory_inventory`.`sku_id` = 3)", "state": "updating"}}
+2026-10-08 15:02:04,672 WARNING django.request Conflict: /api/flash-sales/orders/
+.uuuuuuuuuuuuFLASH_SALE_HTTP_WAIT {"contender": {"after": {"connection_id": 592, "wait_seconds": 50}, "autocommit": true, "before": {"connection_id": 592, "wait_seconds": 50}, "in_atomic": false, "payload": {"code": "checkout_busy", "detail": "\u4e0b\u5355\u6b63\u5728\u5904\u7406\uff0c\u8bf7\u91cd\u8bd5\u539f\u8bf7\u6c42\u3002"}, "returned_before_release": true, "snapshot": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "status": 409}, "evidence_kind": "real_isolated_mysql_1205", "final": {"facts": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 1, "InventoryReservation": 1, "Order": 1, "OrderItem": 1}, "inventory": {"available_stock": 4, "reserved_stock": 1}, "orders": [{"id": 5, "idempotency_key": "http-wait-original-key", "status": "PENDING_PAYMENT", "total": "89.00"}]}, "holder": {"business_writes": false, "committed_without_change": true, "connection_id": 591, "wait_seconds": 50}, "observer": {"connection_id": 590, "wait_seconds": 50}, "queries": [{"elapsed_seconds": 5.0, "facts_before": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "in_atomic": true, "mysql_error_number": 1205, "params": [7], "session": {"connection_id": 592, "wait_seconds": 5}, "sql": "SELECT `accounts_user`.`id`, `accounts_user`.`password`, `accounts_user`.`last_login`, `accounts_user`.`is_superuser`, `accounts_user`.`first_name`, `accounts_user`.`last_name`, `accounts_user`.`email`, `accounts_user`.`is_staff`, `accounts_user`.`is_active`, `accounts_user`.`date_joined`, `accounts_user`.`username` FROM `accounts_user` WHERE `accounts_user`.`id` = %s LIMIT 21 FOR UPDATE"}], "replay_status": 200, "retry_status": 201, "scenario": "real_user_http_timeout", "server_sql": {"command": "Query", "connection_id": 592, "observed_before_release": true, "sql": "SELECT `accounts_user`.`id`, `accounts_user`.`password`, `accounts_user`.`last_login`, `accounts_user`.`is_superuser`, `accounts_user`.`first_name`, `accounts_user`.`last_name`, `accounts_user`.`email`, `accounts_user`.`is_staff`, `accounts_user`.`is_active`, `accounts_user`.`date_joined`, `accounts_user`.`username` FROM `accounts_user` WHERE `accounts_user`.`id` = 7 LIMIT 21 FOR UPDATE", "state": "statistics"}}
+.uuuuuuFLASH_SALE_HTTP_WAIT {"after": {"connection_id": 596, "wait_seconds": 19}, "before": {"connection_id": 595, "wait_seconds": 17}, "evidence_kind": "injected_connection_replacement", "final": {"facts": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 1, "InventoryReservation": 1, "Order": 1, "OrderItem": 1}, "inventory": {"available_stock": 4, "reserved_stock": 1}, "orders": [{"id": 6, "idempotency_key": "http-wait-original-key", "status": "PENDING_PAYMENT", "total": "89.00"}]}, "scenario": "replaced_connection_keeps_its_value"}
+.uuuuuuFLASH_SALE_HTTP_WAIT {"before": {"connection_id": 597, "wait_seconds": 50}, "evidence_kind": "injected_cleanup_failure", "final": {"facts": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 1, "InventoryReservation": 1, "Order": 1, "OrderItem": 1}, "inventory": {"available_stock": 4, "reserved_stock": 1}, "orders": [{"id": 7, "idempotency_key": "http-wait-original-key", "status": "PENDING_PAYMENT", "total": "89.00"}]}, "reconnected": {"connection_id": 598, "wait_seconds": 50}, "replay_status": 200, "response_status": 201, "scenario": "restore_and_close_failure_keeps_success"}
+2026-10-08 15:02:07,666 WARNING django.request Conflict: /api/flash-sales/orders/
+.uuuuuuFLASH_SALE_HTTP_WAIT {"before": {"connection_id": 599, "wait_seconds": 50}, "evidence_kind": "injected_cleanup_failure", "final": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 0, "reserved_stock": 0}, "orders": []}, "reconnected": {"connection_id": 600, "wait_seconds": 50}, "scenario": "restore_failure_keeps_business"}
+2026-10-08 15:02:07,699 ERROR django.request Internal Server Error: /api/flash-sales/orders/
+Traceback (most recent call last):
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 526, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 474, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 485, in raise_uncaught_exception
+    raise exc
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\rest_framework\views.py", line 523, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\views.py", line 66, in post
+    order, created = create_flash_sale_order_for_http(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\http_services.py", line 48, in create_flash_sale_order_for_http
+    return create_flash_sale_order(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\services.py", line 66, in create_flash_sale_order
+    locked_user = User.objects.select_for_update().get(pk=user.pk)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+          ^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\backend\apps\promotions\tests\test_flash_sale_http_wait.py", line 249, in fail
+    raise primary
+django.db.utils.OperationalError: (2006, 'TEST-ONLY primary database failure')
+uuuuuuuFLASH_SALE_HTTP_WAIT {"before": {"connection_id": 600, "wait_seconds": 50}, "evidence_kind": "injected_cleanup_failure", "final": {"facts": {"AddressSnapshot": 0, "FlashSalePurchase": 0, "InventoryMovement": 0, "InventoryReservation": 0, "Order": 0, "OrderItem": 0}, "inventory": {"available_stock": 5, "reserved_stock": 0}, "orders": []}, "reconnected": {"connection_id": 601, "wait_seconds": 50}, "scenario": "restore_failure_keeps_unknown"}
+2026-10-08 15:02:08,981 WARNING django.request Conflict: /api/flash-sales/orders/
+u.uuuuuuFLASH_SALE_HTTP_WAIT {"after": {"connection_id": 602, "wait_seconds": 17}, "before": {"connection_id": 602, "wait_seconds": 17}, "final": {"facts": {"AddressSnapshot": 1, "FlashSalePurchase": 1, "InventoryMovement": 1, "InventoryReservation": 1, "Order": 1, "OrderItem": 1}, "inventory": {"available_stock": 4, "reserved_stock": 1}, "orders": [{"id": 9, "idempotency_key": "http-wait-original-key", "status": "PENDING_PAYMENT", "total": "89.00"}]}, "inventory_steps": [{"in_atomic": true, "session": {"connection_id": 602, "wait_seconds": 5}}], "scenario": "success_replay_refusal_restore", "settings": [{"in_atomic": false, "value": 5}, {"in_atomic": false, "value": 17}, {"in_atomic": false, "value": 5}, {"in_atomic": false, "value": 17}, {"in_atomic": false, "value": 5}, {"in_atomic": false, "value": 17}]}
+2026-10-08 15:02:12,166 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:12,183 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:12,199 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:12,214 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:13,138 WARNING django.request Forbidden: /api/flash-sales/orders/
+2026-10-08 15:02:13,173 WARNING django.request Forbidden: /api/flash-sales/orders/
+2026-10-08 15:02:13,175 WARNING django.request Forbidden: /api/flash-sales/orders/
+2026-10-08 15:02:15,143 WARNING django.request Not Found: /api/orders/bd052483-bd87-4779-aabd-8804c26d3d1f/
+2026-10-08 15:02:16,966 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,968 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,971 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,973 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,975 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,977 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,980 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,982 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,984 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,986 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,988 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,991 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,993 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:16,995 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-08 15:02:17,028 WARNING django.request Not Found: /api/flash-sales/orders/
+2026-10-08 15:02:17,048 WARNING django.request Not Found: /api/flash-sales/orders/
+2026-10-08 15:02:17,931 WARNING django.request Method Not Allowed: /api/flash-sales/items/
+2026-10-08 15:02:17,965 WARNING django.request Method Not Allowed: /api/flash-sales/items/
+2026-10-08 15:02:17,967 WARNING django.request Method Not Allowed: /api/flash-sales/orders/
+2026-10-08 15:02:20,045 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:20,070 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:20,093 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,063 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,103 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,141 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,179 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,220 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,259 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,293 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:21,320 WARNING django.request Not Found: /api/flash-sales/orders/
+2026-10-08 15:02:22,243 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-08 15:02:22,295 WARNING django.request Conflict: /api/flash-sales/orders/
+.uuuuuu..uuuuuuuuuu.uuuuuuuu.uuuuuu.uuuuuu.uuuuuu.uuuuuuuuuuuuuuuuuuuuuu.uuuuuu.uuuuuuuuuuuuuu.uuuuuuuuu.uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu.uuuuuuuuuuuuuuuuuuuu.
+21 passed, 259 subtests passed in 40.14s

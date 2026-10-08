@@ -6,12 +6,12 @@ from rest_framework.views import APIView
 
 from apps.ordering.serializers import OrderSerializer
 from apps.ordering.services import OrderRuleError
+from apps.promotions.http_services import create_flash_sale_order_for_http
 from apps.promotions.models import FlashSaleItem
 from apps.promotions.serializers import (
     CreateFlashSaleOrderSerializer,
     PublicFlashSaleItemSerializer,
 )
-from apps.promotions.services import create_flash_sale_order
 
 
 class PublicFlashSaleItemCollectionView(generics.ListAPIView):
@@ -63,7 +63,7 @@ class FlashSaleOrderCreateView(APIView):
             )
 
         try:
-            order, created = create_flash_sale_order(
+            order, created = create_flash_sale_order_for_http(
                 user=request.user,
                 idempotency_key=idempotency_key,
                 **serializer.validated_data,

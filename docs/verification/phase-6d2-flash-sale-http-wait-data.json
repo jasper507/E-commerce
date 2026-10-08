@@ -1,0 +1,734 @@
+{
+  "date": "2026-10-08",
+  "timezone": "Asia/Shanghai",
+  "status": "HTTP wait adapter implemented and verified; integration follows standing authorization; final branch state is recorded in Git",
+  "source": {
+    "base_commit": "72e6291322171fb5dfbd65c345587b7c200e9c3e",
+    "main_at_start": "b4456bd1d498c7fe370e8a793f63e11ffa5f4fae",
+    "branch_at_execution": "codex/flash-sale-baseline",
+    "core_service_unchanged": true,
+    "existing_tests_unchanged": true,
+    "first_http_json_and_raw_unchanged": true
+  },
+  "owner_wait_decision": {
+    "answer_received": true,
+    "decision": "temporary 5 seconds and restore the actual original session value",
+    "seconds": 5,
+    "automatic_retry": false,
+    "total_http_deadline": false,
+    "global_wait_change": false
+  },
+  "owner_understanding": {
+    "question": "order committed but restoring the session wait fails",
+    "answer": "preserve successful order response and discard connection of uncertain state",
+    "scope": "one correct prediction, not full independent mastery"
+  },
+  "contracts": {
+    "inventory_update_1205_1213": "stock_busy/409 after atomic exits",
+    "other_checkout_sql_1205_1213": "checkout_busy/409 after atomic exits",
+    "unknown_database_error": "propagates",
+    "read_or_set_failure": "discard connection, propagate error, no checkout call",
+    "restore_failure": "safe warning, attempt close and discard, preserve original result or exception",
+    "connection_replaced": "do not apply the old session value to a different physical connection",
+    "external_transaction": "reject outer atomic or autocommit false"
+  },
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "pytest": "9.1.1",
+    "mysql": "8.4.10",
+    "host": "127.0.0.1",
+    "port": 3307,
+    "isolation": "READ-COMMITTED",
+    "rollback_on_timeout": false,
+    "deadlock_detect": true,
+    "test_database": "test_project_one",
+    "payment_events_async": false,
+    "catalog_cache_enabled": false,
+    "development_migrate": false,
+    "development_business_write": false,
+    "services_started_or_stopped": false,
+    "grants_changed": false
+  },
+  "preflight": {
+    "test_database_exists": false,
+    "visible_test_connections": 0,
+    "development_schema_table_count": 26,
+    "session_wait_seconds": 50,
+    "global_wait_seconds": 50,
+    "isolated_test_grant_confirmed": true
+  },
+  "target": {
+    "command": "python -m pytest backend/apps/promotions/tests/test_flash_sale_http_wait.py backend/apps/promotions/tests/test_flash_sale_api.py -q -s --tb=short",
+    "mysql_database_setting": "project_one",
+    "passed": 21,
+    "subtests_passed": 259,
+    "elapsed_seconds": 40.14,
+    "exit_code": 0,
+    "first_run_passed": true,
+    "new_test_methods": [
+      "test_success_replay_and_business_refusal_restore_the_actual_original_value",
+      "test_injected_inventory_other_sql_and_unknown_errors_restore_and_roll_back",
+      "test_read_or_applied_setup_failure_discards_connection_before_any_order",
+      "test_restore_failure_keeps_committed_success_even_if_physical_close_raises",
+      "test_restore_failure_preserves_business_refusal_and_original_unknown_error",
+      "test_replaced_connection_does_not_receive_the_old_session_value",
+      "test_wait_wrapper_requires_its_own_outer_transaction_boundary",
+      "test_real_inventory_timeout_returns_stock_busy_then_original_key_retries",
+      "test_real_user_timeout_returns_checkout_busy_then_original_key_retries"
+    ],
+    "existing_api_test_count": 12
+  },
+  "regression": {
+    "command": "python -m pytest backend/apps/promotions/tests backend/apps/ordering/tests backend/apps/payments/tests backend/apps/accounts/tests/test_session_auth_api.py -m 'not rabbitmq_integration' -q --tb=short",
+    "mysql_database_setting": "test_project_one",
+    "passed": 216,
+    "subtests_passed": 662,
+    "elapsed_seconds": 262.1,
+    "skipped": 7,
+    "skip_reasons": {
+      "flash_sale_load": 1,
+      "payment_expiration_lock_experiments": 6
+    },
+    "deselected_real_rabbitmq": 12,
+    "exit_code": 0
+  },
+  "static_checks": {
+    "django_check": "0 issues",
+    "migration_drift": "No changes detected",
+    "source_ast_passed": true,
+    "core_and_existing_tests_match_prior_fingerprints": true,
+    "first_http_evidence_preserved": true,
+    "new_independent_agent_review": false
+  },
+  "postflight": {
+    "test_database_exists": false,
+    "visible_test_connections": 0,
+    "development_schema_table_count": 26,
+    "session_wait_seconds": 50,
+    "global_wait_seconds": 50
+  },
+  "scenarios": [
+    {
+      "after": {
+        "connection_id": 580,
+        "wait_seconds": 13
+      },
+      "before": {
+        "connection_id": 580,
+        "wait_seconds": 13
+      },
+      "code": "stock_busy",
+      "evidence_kind": "injected_error_branch_only",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 0,
+          "FlashSalePurchase": 0,
+          "InventoryMovement": 0,
+          "InventoryReservation": 0,
+          "Order": 0,
+          "OrderItem": 0
+        },
+        "inventory": {
+          "available_stock": 5,
+          "reserved_stock": 0
+        },
+        "orders": []
+      },
+      "number": 1205,
+      "observations": [
+        {
+          "actual_sql_executed": false,
+          "facts": {
+            "AddressSnapshot": 1,
+            "FlashSalePurchase": 1,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 1,
+            "OrderItem": 1
+          },
+          "session": {
+            "connection_id": 580,
+            "wait_seconds": 5
+          }
+        }
+      ],
+      "scenario": "injected_inventory"
+    },
+    {
+      "after": {
+        "connection_id": 580,
+        "wait_seconds": 13
+      },
+      "before": {
+        "connection_id": 580,
+        "wait_seconds": 13
+      },
+      "code": "checkout_busy",
+      "evidence_kind": "injected_error_branch_only",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 0,
+          "FlashSalePurchase": 0,
+          "InventoryMovement": 0,
+          "InventoryReservation": 0,
+          "Order": 0,
+          "OrderItem": 0
+        },
+        "inventory": {
+          "available_stock": 5,
+          "reserved_stock": 0
+        },
+        "orders": []
+      },
+      "number": 1213,
+      "observations": [
+        {
+          "actual_sql_executed": true,
+          "facts": {
+            "AddressSnapshot": 1,
+            "FlashSalePurchase": 1,
+            "InventoryMovement": 1,
+            "InventoryReservation": 1,
+            "Order": 1,
+            "OrderItem": 1
+          },
+          "session": {
+            "connection_id": 580,
+            "wait_seconds": 5
+          }
+        }
+      ],
+      "scenario": "injected_movement_written"
+    },
+    {
+      "after": {
+        "connection_id": 580,
+        "wait_seconds": 13
+      },
+      "before": {
+        "connection_id": 580,
+        "wait_seconds": 13
+      },
+      "code": null,
+      "evidence_kind": "injected_error_branch_only",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 0,
+          "FlashSalePurchase": 0,
+          "InventoryMovement": 0,
+          "InventoryReservation": 0,
+          "Order": 0,
+          "OrderItem": 0
+        },
+        "inventory": {
+          "available_stock": 5,
+          "reserved_stock": 0
+        },
+        "orders": []
+      },
+      "number": 2006,
+      "observations": [
+        {
+          "actual_sql_executed": false,
+          "facts": {
+            "AddressSnapshot": 0,
+            "FlashSalePurchase": 0,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 0,
+            "OrderItem": 0
+          },
+          "session": {
+            "connection_id": 580,
+            "wait_seconds": 5
+          }
+        }
+      ],
+      "scenario": "injected_user"
+    },
+    {
+      "before": {
+        "connection_id": 583,
+        "wait_seconds": 50
+      },
+      "evidence_kind": "injected_error_branch_only",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 0,
+          "FlashSalePurchase": 0,
+          "InventoryMovement": 0,
+          "InventoryReservation": 0,
+          "Order": 0,
+          "OrderItem": 0
+        },
+        "inventory": {
+          "available_stock": 5,
+          "reserved_stock": 0
+        },
+        "orders": []
+      },
+      "reconnected": {
+        "connection_id": 584,
+        "wait_seconds": 50
+      },
+      "scenario": "setup_failure_read"
+    },
+    {
+      "before": {
+        "connection_id": 584,
+        "wait_seconds": 50
+      },
+      "evidence_kind": "injected_error_branch_only",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 0,
+          "FlashSalePurchase": 0,
+          "InventoryMovement": 0,
+          "InventoryReservation": 0,
+          "Order": 0,
+          "OrderItem": 0
+        },
+        "inventory": {
+          "available_stock": 5,
+          "reserved_stock": 0
+        },
+        "orders": []
+      },
+      "reconnected": {
+        "connection_id": 585,
+        "wait_seconds": 50
+      },
+      "scenario": "setup_failure_applied_set"
+    },
+    {
+      "contender": {
+        "after": {
+          "connection_id": 588,
+          "wait_seconds": 50
+        },
+        "autocommit": true,
+        "before": {
+          "connection_id": 588,
+          "wait_seconds": 50
+        },
+        "in_atomic": false,
+        "payload": {
+          "code": "stock_busy",
+          "detail": "库存正在更新，请重试原请求。"
+        },
+        "returned_before_release": true,
+        "snapshot": {
+          "facts": {
+            "AddressSnapshot": 0,
+            "FlashSalePurchase": 0,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 0,
+            "OrderItem": 0
+          },
+          "inventory": {
+            "available_stock": 5,
+            "reserved_stock": 0
+          },
+          "orders": []
+        },
+        "status": 409
+      },
+      "evidence_kind": "real_isolated_mysql_1205",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 1,
+          "FlashSalePurchase": 1,
+          "InventoryMovement": 1,
+          "InventoryReservation": 1,
+          "Order": 1,
+          "OrderItem": 1
+        },
+        "inventory": {
+          "available_stock": 4,
+          "reserved_stock": 1
+        },
+        "orders": [
+          {
+            "id": 4,
+            "idempotency_key": "http-wait-original-key",
+            "status": "PENDING_PAYMENT",
+            "total": "89.00"
+          }
+        ]
+      },
+      "holder": {
+        "business_writes": false,
+        "committed_without_change": true,
+        "connection_id": 587,
+        "wait_seconds": 50
+      },
+      "observer": {
+        "connection_id": 586,
+        "wait_seconds": 50
+      },
+      "queries": [
+        {
+          "elapsed_seconds": 5.0,
+          "facts_before": {
+            "AddressSnapshot": 1,
+            "FlashSalePurchase": 1,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 1,
+            "OrderItem": 1
+          },
+          "in_atomic": true,
+          "mysql_error_number": 1205,
+          "params": [
+            1,
+            1,
+            1,
+            3
+          ],
+          "session": {
+            "connection_id": 588,
+            "wait_seconds": 5
+          },
+          "sql": "UPDATE `inventory_inventory` SET `available_stock` = (`inventory_inventory`.`available_stock` - %s), `reserved_stock` = (`inventory_inventory`.`reserved_stock` + %s) WHERE (`inventory_inventory`.`available_stock` >= %s AND `inventory_inventory`.`sku_id` = %s)"
+        }
+      ],
+      "replay_status": 200,
+      "retry_status": 201,
+      "scenario": "real_inventory_http_timeout",
+      "server_sql": {
+        "command": "Query",
+        "connection_id": 588,
+        "observed_before_release": true,
+        "sql": "UPDATE `inventory_inventory` SET `available_stock` = (`inventory_inventory`.`available_stock` - 1), `reserved_stock` = (`inventory_inventory`.`reserved_stock` + 1) WHERE (`inventory_inventory`.`available_stock` >= 1 AND `inventory_inventory`.`sku_id` = 3)",
+        "state": "updating"
+      }
+    },
+    {
+      "contender": {
+        "after": {
+          "connection_id": 592,
+          "wait_seconds": 50
+        },
+        "autocommit": true,
+        "before": {
+          "connection_id": 592,
+          "wait_seconds": 50
+        },
+        "in_atomic": false,
+        "payload": {
+          "code": "checkout_busy",
+          "detail": "下单正在处理，请重试原请求。"
+        },
+        "returned_before_release": true,
+        "snapshot": {
+          "facts": {
+            "AddressSnapshot": 0,
+            "FlashSalePurchase": 0,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 0,
+            "OrderItem": 0
+          },
+          "inventory": {
+            "available_stock": 5,
+            "reserved_stock": 0
+          },
+          "orders": []
+        },
+        "status": 409
+      },
+      "evidence_kind": "real_isolated_mysql_1205",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 1,
+          "FlashSalePurchase": 1,
+          "InventoryMovement": 1,
+          "InventoryReservation": 1,
+          "Order": 1,
+          "OrderItem": 1
+        },
+        "inventory": {
+          "available_stock": 4,
+          "reserved_stock": 1
+        },
+        "orders": [
+          {
+            "id": 5,
+            "idempotency_key": "http-wait-original-key",
+            "status": "PENDING_PAYMENT",
+            "total": "89.00"
+          }
+        ]
+      },
+      "holder": {
+        "business_writes": false,
+        "committed_without_change": true,
+        "connection_id": 591,
+        "wait_seconds": 50
+      },
+      "observer": {
+        "connection_id": 590,
+        "wait_seconds": 50
+      },
+      "queries": [
+        {
+          "elapsed_seconds": 5.0,
+          "facts_before": {
+            "AddressSnapshot": 0,
+            "FlashSalePurchase": 0,
+            "InventoryMovement": 0,
+            "InventoryReservation": 0,
+            "Order": 0,
+            "OrderItem": 0
+          },
+          "in_atomic": true,
+          "mysql_error_number": 1205,
+          "params": [
+            7
+          ],
+          "session": {
+            "connection_id": 592,
+            "wait_seconds": 5
+          },
+          "sql": "SELECT `accounts_user`.`id`, `accounts_user`.`password`, `accounts_user`.`last_login`, `accounts_user`.`is_superuser`, `accounts_user`.`first_name`, `accounts_user`.`last_name`, `accounts_user`.`email`, `accounts_user`.`is_staff`, `accounts_user`.`is_active`, `accounts_user`.`date_joined`, `accounts_user`.`username` FROM `accounts_user` WHERE `accounts_user`.`id` = %s LIMIT 21 FOR UPDATE"
+        }
+      ],
+      "replay_status": 200,
+      "retry_status": 201,
+      "scenario": "real_user_http_timeout",
+      "server_sql": {
+        "command": "Query",
+        "connection_id": 592,
+        "observed_before_release": true,
+        "sql": "SELECT `accounts_user`.`id`, `accounts_user`.`password`, `accounts_user`.`last_login`, `accounts_user`.`is_superuser`, `accounts_user`.`first_name`, `accounts_user`.`last_name`, `accounts_user`.`email`, `accounts_user`.`is_staff`, `accounts_user`.`is_active`, `accounts_user`.`date_joined`, `accounts_user`.`username` FROM `accounts_user` WHERE `accounts_user`.`id` = 7 LIMIT 21 FOR UPDATE",
+        "state": "statistics"
+      }
+    },
+    {
+      "after": {
+        "connection_id": 596,
+        "wait_seconds": 19
+      },
+      "before": {
+        "connection_id": 595,
+        "wait_seconds": 17
+      },
+      "evidence_kind": "injected_connection_replacement",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 1,
+          "FlashSalePurchase": 1,
+          "InventoryMovement": 1,
+          "InventoryReservation": 1,
+          "Order": 1,
+          "OrderItem": 1
+        },
+        "inventory": {
+          "available_stock": 4,
+          "reserved_stock": 1
+        },
+        "orders": [
+          {
+            "id": 6,
+            "idempotency_key": "http-wait-original-key",
+            "status": "PENDING_PAYMENT",
+            "total": "89.00"
+          }
+        ]
+      },
+      "scenario": "replaced_connection_keeps_its_value"
+    },
+    {
+      "before": {
+        "connection_id": 597,
+        "wait_seconds": 50
+      },
+      "evidence_kind": "injected_cleanup_failure",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 1,
+          "FlashSalePurchase": 1,
+          "InventoryMovement": 1,
+          "InventoryReservation": 1,
+          "Order": 1,
+          "OrderItem": 1
+        },
+        "inventory": {
+          "available_stock": 4,
+          "reserved_stock": 1
+        },
+        "orders": [
+          {
+            "id": 7,
+            "idempotency_key": "http-wait-original-key",
+            "status": "PENDING_PAYMENT",
+            "total": "89.00"
+          }
+        ]
+      },
+      "reconnected": {
+        "connection_id": 598,
+        "wait_seconds": 50
+      },
+      "replay_status": 200,
+      "response_status": 201,
+      "scenario": "restore_and_close_failure_keeps_success"
+    },
+    {
+      "before": {
+        "connection_id": 599,
+        "wait_seconds": 50
+      },
+      "evidence_kind": "injected_cleanup_failure",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 0,
+          "FlashSalePurchase": 0,
+          "InventoryMovement": 0,
+          "InventoryReservation": 0,
+          "Order": 0,
+          "OrderItem": 0
+        },
+        "inventory": {
+          "available_stock": 0,
+          "reserved_stock": 0
+        },
+        "orders": []
+      },
+      "reconnected": {
+        "connection_id": 600,
+        "wait_seconds": 50
+      },
+      "scenario": "restore_failure_keeps_business"
+    },
+    {
+      "before": {
+        "connection_id": 600,
+        "wait_seconds": 50
+      },
+      "evidence_kind": "injected_cleanup_failure",
+      "final": {
+        "facts": {
+          "AddressSnapshot": 0,
+          "FlashSalePurchase": 0,
+          "InventoryMovement": 0,
+          "InventoryReservation": 0,
+          "Order": 0,
+          "OrderItem": 0
+        },
+        "inventory": {
+          "available_stock": 5,
+          "reserved_stock": 0
+        },
+        "orders": []
+      },
+      "reconnected": {
+        "connection_id": 601,
+        "wait_seconds": 50
+      },
+      "scenario": "restore_failure_keeps_unknown"
+    },
+    {
+      "after": {
+        "connection_id": 602,
+        "wait_seconds": 17
+      },
+      "before": {
+        "connection_id": 602,
+        "wait_seconds": 17
+      },
+      "final": {
+        "facts": {
+          "AddressSnapshot": 1,
+          "FlashSalePurchase": 1,
+          "InventoryMovement": 1,
+          "InventoryReservation": 1,
+          "Order": 1,
+          "OrderItem": 1
+        },
+        "inventory": {
+          "available_stock": 4,
+          "reserved_stock": 1
+        },
+        "orders": [
+          {
+            "id": 9,
+            "idempotency_key": "http-wait-original-key",
+            "status": "PENDING_PAYMENT",
+            "total": "89.00"
+          }
+        ]
+      },
+      "inventory_steps": [
+        {
+          "in_atomic": true,
+          "session": {
+            "connection_id": 602,
+            "wait_seconds": 5
+          }
+        }
+      ],
+      "scenario": "success_replay_refusal_restore",
+      "settings": [
+        {
+          "in_atomic": false,
+          "value": 5
+        },
+        {
+          "in_atomic": false,
+          "value": 17
+        },
+        {
+          "in_atomic": false,
+          "value": 5
+        },
+        {
+          "in_atomic": false,
+          "value": 17
+        },
+        {
+          "in_atomic": false,
+          "value": 5
+        },
+        {
+          "in_atomic": false,
+          "value": 17
+        }
+      ]
+    }
+  ],
+  "fingerprint_normalization": "UTF-8 bytes; CRLF normalized to LF",
+  "source_sha256": {
+    "backend/apps/promotions/services.py": "a9bf46558f667a3ff249f0077ba4099b88c8e13fa96d4c7a5237ee094ea3d552",
+    "backend/apps/promotions/models.py": "6a6df1dda514bf3fc3d1768ea32babf4505d8e019447751418b113aa2e1ab10d",
+    "backend/apps/promotions/lifecycle_services.py": "50fdbdcfd185bf3eb8ef52a12fc24503cc05d553fdd8789ceed56ec411a3a875",
+    "backend/apps/promotions/serializers.py": "d3c691f76b305c3456762b0a5afa03ad0a272bb04001533f1ee56315c77af369",
+    "backend/apps/promotions/views.py": "d8bd1b018e3d467e29de8ccf72d452f379e5d27fccb8040d515aba68b117a858",
+    "backend/apps/promotions/urls.py": "65e9d9199e5db545a7ea09bbce440fdea24f0be46dd1df2839415eb2db3728ca",
+    "backend/apps/promotions/tests/test_flash_sale_api.py": "be5e273649798cd8c8010a665545e63817585724f3f2ff5d54fdf69ccec613e8",
+    "backend/apps/promotions/tests/test_flash_sale_checkout.py": "1512037833f0d62c78cd48772bbce3f00fd561e42737f11ade65b3e21e56bc10",
+    "backend/apps/ordering/services.py": "547c0ba26ccf278e86d46300be7fb3656792cf78b74f823f734286eb171707f9",
+    "backend/apps/ordering/serializers.py": "ac3e11b7ff3917f5a9f506658faa5007383b7a6d637d195c4dac9210a438e760",
+    "backend/apps/ordering/views.py": "19f9bd7764b5b6fdb134335bf5f0a2acf70db28e8122eddd6e41d13e1fa3699b",
+    "backend/apps/payments/services.py": "c76142484b5f58c352b2ddf59b49b3821c10822011ad64cf1ec5633bed5cb169",
+    "backend/apps/accounts/views.py": "6167df0a9e200e91f07d56807f3bb66df84ab45023ac5e298731eb203deb0a20",
+    "backend/config/settings.py": "f7e90dbee5bb66816de752df4961f74ef9fe43a2cf4d96dba369c454bc8fed7c",
+    "backend/config/urls.py": "58baea39177c05624f38977e82fa5d2912212bc078b5269f59d44c565aeec118",
+    "backend/apps/promotions/http_services.py": "cc3f2a8fa57bb7bb6bb351054fba94e91d21172b432c40188937aabe43da14a8",
+    "backend/apps/promotions/tests/test_flash_sale_http_wait.py": "bac0cd34b952914d63fe3612f0e038ae75f9e17264bea4b7b70a48d3d298183e"
+  },
+  "raw_output_sha256": {
+    "docs/verification/phase-6d2-flash-sale-http-wait-target-output.txt": "d3efaf9ef89e5cfcae2fe31836b1516a316ec3a2cc511bab1041b194f9c57ce1",
+    "docs/verification/phase-6d2-flash-sale-http-wait-regression-output.txt": "25e9df55f291a167a1d5e6f1f580a81ed6b12399749441c5ef5c603082a13089"
+  },
+  "limits": [
+    "APIClient in-process requests, no real HTTP network/browser acceptance",
+    "Only inventory and user timeouts are real MySQL 1205; 1213, 2006, setup/restore/close and replacement scenarios are injected",
+    "No real deadlock, network disconnect or uncertain-commit recovery claim",
+    "No complete HTTP deadline, automatic retry, new performance result or production capacity claim",
+    "No real MQ/Redis, old load matrix or explicit payment expiration experiments rerun",
+    "Frontend and end-to-end acceptance remain pending; Redis Lua scope requires separate owner decision"
+  ]
+}

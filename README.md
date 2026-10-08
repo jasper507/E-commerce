@@ -3,25 +3,25 @@
 Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
-Current flash-sale status (2026-10-08): Phase 6C-5 adopts conditional UPDATE in
-the production service for one activity SKU and quantity one. Inventory UPDATE
-errors 1205/1213 map to stock_busy and exit the entire checkout transaction;
-other database errors propagate. The owner chose to inherit the existing session
-wait value (locally 50 seconds), with no automatic retry or new configuration;
-this is not an HTTP deadline. A real isolated MySQL 1205 demonstrated full rollback,
-original-key retry and successful replay. Targets: 9 passed / 198 subtests;
-related regression: 183 passed / 403 subtests, 7 explicit experiments skipped and
-12 RabbitMQ tests deselected. Deadlock/disconnect branches were injected only.
-HTTP/customer wait budget and frontend acceptance remain pending. See the
-[current guide](docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md)
-and [evidence](docs/verification/phase-6c5-flash-sale-inventory-failures.md).
-On the isolated candidate branch, Phase 6D adds public current-item discovery
-and Session/CSRF checkout endpoints with unchanged business service logic.
-Its 12 HTTP targets / 162 subtests passed. The owner has been asked to choose
-a temporary five-second session row-lock wait or the existing value; no answer
-has been received, so no new wait setting is implemented and this candidate
-is not integrated into main. See the [HTTP guide](docs/learning/phase-6d-flash-sale-http-study-guide.md)
-and [verification scope](docs/verification/phase-6d-flash-sale-http.md).
+Current flash-sale status (2026-10-08): Phase 6D adds public current-item discovery
+and Session/CSRF checkout endpoints, reusing the Phase 6C-5 conditional UPDATE
+and complete checkout transaction. The owner chose a temporary five-second
+SESSION row-lock wait around the HTTP service, with restoration of the actual
+original value after commit or rollback. Inventory UPDATE 1205/1213 returns
+stock_busy/409; other checkout SQL 1205/1213 returns checkout_busy/409 after
+the transaction exits. Unknown database errors propagate; there is no automatic
+retry or whole-request deadline. Restoration failure discards the connection
+and preserves the committed order result or original exception.
+Real isolated inventory and user locks each produced MySQL 1205, full rollback,
+restoration and original-key retry/replay. Cleanup and deadlock/disconnect
+branches use fault injection, not real network/deadlock evidence.
+Targets: 21 passed / 259 subtests; related regression: 216 passed / 662 subtests,
+7 explicit experiments skipped and 12 RabbitMQ tests deselected. Frontend and
+end-to-end acceptance remain pending; development data and migrations were not
+changed. See the [HTTP guide](docs/learning/phase-6d-flash-sale-http-study-guide.md)
+and [current wait evidence](docs/verification/phase-6d2-flash-sale-http-wait.md).
+The [first HTTP record](docs/verification/phase-6d-flash-sale-http.md) preserves
+the earlier candidate state before the owner answered the wait question.
 The following paragraphs retain the state observed in each earlier slice.
 
 The narrow business loop has
