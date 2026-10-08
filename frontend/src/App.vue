@@ -11,6 +11,7 @@
 
       <nav aria-label="主导航">
         <RouterLink :to="{ name: 'catalog-products' }">浏览商品</RouterLink>
+        <RouterLink :to="{ name: 'flash-sales' }">限时秒杀</RouterLink>
         <RouterLink :to="{ name: 'cart' }">购物车</RouterLink>
         <RouterLink :to="{ name: 'checkout' }">结账</RouterLink>
         <RouterLink :to="{ name: 'orders' }">我的订单</RouterLink>

@@ -4,6 +4,7 @@ import NotFoundView from '../views/NotFoundView.vue'
 import AddressesView from '../views/AddressesView.vue'
 import CartView from '../views/CartView.vue'
 import CheckoutView from '../views/CheckoutView.vue'
+import FlashSalesView from '../views/FlashSalesView.vue'
 import LoginView from '../views/LoginView.vue'
 import OrderDetailView from '../views/OrderDetailView.vue'
 import OrdersView from '../views/OrdersView.vue'
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/products/:slug',
       name: 'catalog-product-detail',
       component: ProductDetailView,
+    },
+    {
+      path: '/flash-sales',
+      name: 'flash-sales',
+      component: FlashSalesView,
     },
     {
       path: '/login',
