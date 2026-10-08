@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "timezone": "Asia/Shanghai",
+  "implementation_commit": "67d8c82121c5bc97813811589daaebcc89804262",
+  "baseline_commit": "e47b76d51ffc190bf1971707e11aa57bc1293aed",
+  "environment": {
+    "frontend_url": "http://127.0.0.1:5173/flash-sales",
+    "backend_url": "http://127.0.0.1:8000",
+    "browser_plugin": "not_available",
+    "browser_tool": "cached Playwright CLI",
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "mysql_version": "8.4.10",
+    "mysql_host": "127.0.0.1",
+    "mysql_port": 3307,
+    "isolation": "READ-COMMITTED",
+    "test_database": "test_project_one",
+    "payment_events_async": false,
+    "catalog_cache_enabled": false,
+    "node_version": "v24.16.0"
+  },
+  "precheck": {
+    "test_schema_count": 0,
+    "test_connections": 0,
+    "development_tables": 26,
+    "browser_ports_clear": true
+  },
+  "browser_observations": [
+    {
+      "scenario": "injected_storage_failure",
+      "flash_sale_posts": 0,
+      "stored_intent": null,
+      "recovered_selection": true
+    },
+    {
+      "scenario": "real_201_then_client_response_loss",
+      "upstream": {
+        "status": 201,
+        "public_id": "6acb7918-f8e2-4a72-974a-fa712a45e5a1",
+        "total": "89.00",
+        "quantity": 1,
+        "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+        "params": {
+          "flash_sale_item_id": 711,
+          "address_id": 1
+        }
+      },
+      "intent": {
+        "userId": 1,
+        "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+        "itemId": 711,
+        "addressId": 1
+      },
+      "restored": {
+        "userId": 1,
+        "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+        "itemId": 711,
+        "addressId": 1
+      },
+      "sold_out_replay_enabled": true
+    },
+    {
+      "scenario": "injected_503",
+      "status": 503,
+      "original_intent_preserved": true,
+      "new_purchase_blocked": true,
+      "request": {
+        "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+        "params": {
+          "flash_sale_item_id": 711,
+          "address_id": 1
+        }
+      }
+    },
+    {
+      "scenario": "injected_malformed_200",
+      "status": 200,
+      "original_intent_preserved": true,
+      "new_purchase_blocked": true,
+      "request": {
+        "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+        "params": {
+          "flash_sale_item_id": 711,
+          "address_id": 1
+        }
+      }
+    },
+    {
+      "scenario": "injected_csrf_403_with_valid_session",
+      "status": 403,
+      "original_intent_preserved": true,
+      "new_purchase_blocked": true,
+      "request": {
+        "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+        "params": {
+          "flash_sale_item_id": 711,
+          "address_id": 1
+        }
+      }
+    },
+    {
+      "scenario": "real_same_key_replay",
+      "status": 200,
+      "public_id": "6acb7918-f8e2-4a72-974a-fa712a45e5a1",
+      "total": "89.00",
+      "order_status": "PENDING_PAYMENT",
+      "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+      "params": {
+        "flash_sale_item_id": 711,
+        "address_id": 1
+      }
+    },
+    {
+      "scenario": "real_same_key_changed_address_http_check",
+      "status": 409,
+      "code": "idempotency_conflict",
+      "saved_address_id": 1,
+      "attempted_address_id": 2
+    },
+    {
+      "scenario": "real_paid_order_replay_and_mobile",
+      "status": 200,
+      "public_id": "6acb7918-f8e2-4a72-974a-fa712a45e5a1",
+      "order_status": "PAID",
+      "layout": {
+        "width": 390,
+        "scrollWidth": 390,
+        "overlay": false
+      }
+    },
+    {
+      "scenario": "explicit_new_purchase_after_confirmation",
+      "stored_intent": null,
+      "new_selection_visible": true
+    }
+  ],
+  "database_snapshots": {
+    "after_lost_response": {
+      "order_count": 1,
+      "public_id": "6acb7918-f8e2-4a72-974a-fa712a45e5a1",
+      "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+      "order_status": "PENDING_PAYMENT",
+      "total": "89.00",
+      "item_count": 1,
+      "items": [
+        {
+          "quantity": 1,
+          "unit_price": "89.00"
+        }
+      ],
+      "address_snapshot_count": 1,
+      "synthetic_address_detail": "隔离地址 A",
+      "inventory": {
+        "available_stock": 0,
+        "reserved_stock": 1
+      },
+      "reservation_count": 1,
+      "reservation_statuses": [
+        "RESERVED"
+      ],
+      "purchase_count": 1,
+      "purchase_statuses": [
+        {
+          "status": "HELD",
+          "blocking_marker": 1
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "RESERVE",
+          "available_delta": -1,
+          "reserved_delta": 1
+        }
+      ],
+      "payment_attempt_count": 0,
+      "payment_attempt_statuses": [],
+      "payment_event_statuses": []
+    },
+    "after_replay": {
+      "order_count": 1,
+      "public_id": "6acb7918-f8e2-4a72-974a-fa712a45e5a1",
+      "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+      "order_status": "PENDING_PAYMENT",
+      "total": "89.00",
+      "item_count": 1,
+      "items": [
+        {
+          "quantity": 1,
+          "unit_price": "89.00"
+        }
+      ],
+      "address_snapshot_count": 1,
+      "synthetic_address_detail": "隔离地址 A",
+      "inventory": {
+        "available_stock": 0,
+        "reserved_stock": 1
+      },
+      "reservation_count": 1,
+      "reservation_statuses": [
+        "RESERVED"
+      ],
+      "purchase_count": 1,
+      "purchase_statuses": [
+        {
+          "status": "HELD",
+          "blocking_marker": 1
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "RESERVE",
+          "available_delta": -1,
+          "reserved_delta": 1
+        }
+      ],
+      "payment_attempt_count": 0,
+      "payment_attempt_statuses": [],
+      "payment_event_statuses": []
+    },
+    "after_changed_address": {
+      "order_count": 1,
+      "public_id": "6acb7918-f8e2-4a72-974a-fa712a45e5a1",
+      "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+      "order_status": "PENDING_PAYMENT",
+      "total": "89.00",
+      "item_count": 1,
+      "items": [
+        {
+          "quantity": 1,
+          "unit_price": "89.00"
+        }
+      ],
+      "address_snapshot_count": 1,
+      "synthetic_address_detail": "隔离地址 A",
+      "inventory": {
+        "available_stock": 0,
+        "reserved_stock": 1
+      },
+      "reservation_count": 1,
+      "reservation_statuses": [
+        "RESERVED"
+      ],
+      "purchase_count": 1,
+      "purchase_statuses": [
+        {
+          "status": "HELD",
+          "blocking_marker": 1
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "RESERVE",
+          "available_delta": -1,
+          "reserved_delta": 1
+        }
+      ],
+      "payment_attempt_count": 0,
+      "payment_attempt_statuses": [],
+      "payment_event_statuses": []
+    },
+    "after_mock_payment": {
+      "order_count": 1,
+      "public_id": "6acb7918-f8e2-4a72-974a-fa712a45e5a1",
+      "key": "flash-sale-99875397-c94f-4387-b569-3843cfd2aee5",
+      "order_status": "PAID",
+      "total": "89.00",
+      "item_count": 1,
+      "items": [
+        {
+          "quantity": 1,
+          "unit_price": "89.00"
+        }
+      ],
+      "address_snapshot_count": 1,
+      "synthetic_address_detail": "隔离地址 A",
+      "inventory": {
+        "available_stock": 0,
+        "reserved_stock": 0
+      },
+      "reservation_count": 1,
+      "reservation_statuses": [
+        "COMMITTED"
+      ],
+      "purchase_count": 1,
+      "purchase_statuses": [
+        {
+          "status": "CONSUMED",
+          "blocking_marker": 1
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "RESERVE",
+          "available_delta": -1,
+          "reserved_delta": 1
+        },
+        {
+          "movement_type": "COMMIT",
+          "available_delta": 0,
+          "reserved_delta": -1
+        }
+      ],
+      "payment_attempt_count": 1,
+      "payment_attempt_statuses": [
+        "SUCCEEDED"
+      ],
+      "payment_event_statuses": [
+        "PROCESSED"
+      ]
+    }
+  },
+  "official_tests": {
+    "target": {
+      "passed": 12,
+      "subtests_passed": 162,
+      "duration_seconds": 19.95,
+      "files": [
+        "backend/apps/promotions/tests/test_flash_sale_api.py"
+      ]
+    },
+    "regression": {
+      "passed": 51,
+      "subtests_passed": 19,
+      "duration_seconds": 57.25,
+      "files": [
+        "backend/apps/promotions/tests/test_flash_sale_lifecycle.py",
+        "backend/apps/payments/tests/test_payment_api.py",
+        "backend/apps/accounts/tests/test_session_auth_api.py"
+      ]
+    }
+  },
+  "postcheck": {
+    "test_schema_count": 0,
+    "test_connections": 0,
+    "development_tables": 26,
+    "browser_ports_clear": true,
+    "session_lock_wait": 50,
+    "global_lock_wait": 50
+  },
+  "review": {
+    "independent_static_review": "no blocking findings in six frontend files",
+    "build": "vue-tsc and Vite passed",
+    "normal_console": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "mobile_scroll_width": 390,
+    "mobile_viewport_width": 390,
+    "framework_overlay": false
+  },
+  "limitations": [
+    "Response loss was a client fault injection after actual upstream HTTP 201; not a real network disconnection or uncertain database commit.",
+    "403, 503 and malformed success response checks used client response injection.",
+    "Changed-address 409 was real browser HTTP via fetch; the frozen UI did not permit changing saved parameters.",
+    "Same-tab sessionStorage refresh recovery only; no cross-tab, closed-tab or cross-device recovery claim.",
+    "Other synthetic account showed an empty address selection instead of the original intent; restoring old cookies failed because switching Django identity invalidated the old Session. Re-login of the original synthetic account recovered the unchanged intent.",
+    "Initial target test was launched after a process-stop identity check failed; that first result is excluded. Both servers were then stopped, empty schema/connections/ports asserted, and the formal target/regression ran serially.",
+    "User correctly predicted 409 for same-key changed-address; independent end-to-end explanation remains pending.",
+    "No Redis, RabbitMQ worker, load experiment, deployment or development data verification was run."
+  ],
+  "normalized_lf_source_sha256": {
+    "frontend/src/App.vue": "b0080252306d34bad1dd7f904c660d8e9b444a11de3fb80a8e5ec14d73d698fc",
+    "frontend/src/router/index.ts": "d0eee3a99a49b81d50f35e6ad55307ef7882abc703dc8f3df012ef1bfc8a8a8b",
+    "frontend/src/types/flashSale.ts": "633c8e2514e79b57365e89186a061086eb46e57857689a64b28cb8dd4da8eb02",
+    "frontend/src/flashSaleIntent.ts": "e474c4ee19969886e7ed9c345c03a969a3f45010c3e548420130302a2058d72f",
+    "frontend/src/api/flashSales.ts": "3e9985653834769ad23ea5650ffd112274c3312c25074f1227671c0fc0dd7582",
+    "frontend/src/views/FlashSalesView.vue": "2317bec6f4f6f35eb7acd23cb5d8be4afd4a657a7d87514c174a4a8a3e20f59c",
+    "backend/apps/promotions/services.py": "a9bf46558f667a3ff249f0077ba4099b88c8e13fa96d4c7a5237ee094ea3d552",
+    "backend/apps/promotions/http_services.py": "cc3f2a8fa57bb7bb6bb351054fba94e91d21172b432c40188937aabe43da14a8",
+    "backend/apps/promotions/views.py": "d8bd1b018e3d467e29de8ccf72d452f379e5d27fccb8040d515aba68b117a858",
+    "backend/apps/promotions/serializers.py": "d3c691f76b305c3456762b0a5afa03ad0a272bb04001533f1ee56315c77af369"
+  },
+  "normalized_lf_output_sha256": {
+    "phase-6e-flash-sale-browser-target-output.txt": "168b2bd7c28cc85e912d12c14160d1e98c9eefb8b1d9c09846a7fd4bd0de593f",
+    "phase-6e-flash-sale-browser-regression-output.txt": "9280c95552f339d0a3788ba57b22b66f795738306eeccdd9e98ae7d5ebc03cdc"
+  },
+  "local_screenshots": {
+    "ready-desktop.png": {
+      "path": "C:\\Users\\youyu\\AppData\\Local\\Temp\\project-one-phase6e-334fa46dc74c405f90a2c6cf2d3f5456\\ready-desktop.png",
+      "sha256": "02bdfcce1686733f2d6c7d01ff203b09245f6fe2207bfbee63e2242a2eb741de"
+    },
+    "pending-desktop.png": {
+      "path": "C:\\Users\\youyu\\AppData\\Local\\Temp\\project-one-phase6e-334fa46dc74c405f90a2c6cf2d3f5456\\pending-desktop.png",
+      "sha256": "0ddf6323a07ee7b1f6bc75e37d3ff82c98b8841234458877c263f38e4f25e503"
+    },
+    "confirmed-desktop.png": {
+      "path": "C:\\Users\\youyu\\AppData\\Local\\Temp\\project-one-phase6e-334fa46dc74c405f90a2c6cf2d3f5456\\confirmed-desktop.png",
+      "sha256": "6e4b95cec6962ede428858cc7bdd132f22214dc90aff75311352da92e16c1e52"
+    },
+    "confirmed-mobile.png": {
+      "path": "C:\\Users\\youyu\\AppData\\Local\\Temp\\project-one-phase6e-334fa46dc74c405f90a2c6cf2d3f5456\\confirmed-mobile.png",
+      "sha256": "b326fce3c06e798df2f759bd72c3b86605a1d7121f498f146c6b42d7be810767"
+    },
+    "paid-desktop.png": {
+      "path": "C:\\Users\\youyu\\AppData\\Local\\Temp\\project-one-phase6e-334fa46dc74c405f90a2c6cf2d3f5456\\paid-desktop.png",
+      "sha256": "3aab4a26d4a6d638df3b623d9313bca106b87b4897f25accce07d0de3b224e67"
+    }
+  }
+}

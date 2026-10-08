@@ -1,11 +1,11 @@
-# Project One — Domain Context v1.38
+# Project One — Domain Context v1.39
 
 ## 0. 文档状态
 
-- 当前阶段：6D已验证并合入推送main；下一片极简顾客入口与端到端，Redis Lua暂缓、后续评估
-- 文档版本：v1.38
+- 当前阶段：6E极简顾客入口与浏览器验收通过；独立讲述待完成，Redis Lua仍暂缓
+- 文档版本：v1.39
 - 更新日期：2026-10-08
-- 范围来源：`PROJECT_CHARTER.md` v1.6、2026-10-01 支付范围决定（第 33 节）、ADR 0001及2026-10-08 Lua暂缓决定（第55节）
+- 范围来源：`PROJECT_CHARTER.md` v1.7、2026-10-01 支付范围决定（第 33 节）、ADR 0001及2026-10-08 Lua暂缓决定（第55节）
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
@@ -1384,3 +1384,17 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 下一part为最小秒杀顾客入口、真实浏览器端到端与独立讲述验收；复用Session/CSRF、本人地址、原Key、服务端价/数量与现有订单/Mock支付流程。以正常创建、原Key重放、关键失败和后续订单状态的最小证据收尾，不自动扩展新基础设施或负载矩阵。
 - 继续遵守先说明具体面试/能力收益、初学者中文教学、核心Learning/辅助Pair、生成新代码前保存已审核前批并核对远端的持续授权。开发库迁移/演示数据属于另行说明与确认的操作，不从“新聊天继续”推导出数据库写入授权。
 - 本轮只修改Charter/Context/详细项目规则，静态核对范围、链接和diff，保存后在新聊天继续；没有改源码、依赖、配置、开发数据库或历史测试证据。
+
+## 56. Phase 6E：极简顾客入口与浏览器验收（2026-10-08）
+
+- 用户回答“地址不一样冲突，409”，并要求开始next part；已解释同Key改地址对应idempotency_conflict，仍应先用原item/address/Key确认原购买。只证明该单题判断，独立完整链路复述尚未验收。
+- 本片目标是用浏览器与MySQL证明响应丢失后刷新仍取回同单，库存只预占一次；Depth/Learning解释意图与失败，Supporting/Pair交付页面胶水。最小正常创建、原Key重放、关键拒绝及Mock支付证据通过后收束，不追加Lua、MQ或负载。
+- 开始时main/远端均e47b76d且干净。新增FlashSalesView、flashSales API、flashSale类型和flashSaleIntent，App/nav与router共六个前端文件；实现67d8c82已提交推送main且远端核对一致。后端、模型/迁移、依赖、Vite代理、全局样式、普通Checkout、支付/关闭未改。
+- 首次POST前成功sessionStorage保存并冻结{userId,key,itemId,addressId}；存储失败不POST。按用户分区、发送前/me核对身份。刷新待确认直接用原参数，不被列表无货/消失或地址列表变化挡住；未知网络/5xx/解析/403/繁忙/冲突保留，不自动换Key。明确拒绝与确认后须主动开始新购买才清理。仅同标签页刷新恢复，不声称跨标签页/关闭后/跨设备协调。
+- 使用专用缓存Playwright CLI（Browser plugin absent）和真实隔离Django testserver/Vite。派生catalog fixture36对象，库存401初始1/0，活动701/项711/SKU301/价89。合成注册、登录与两本人地址均只写test_project_one。
+- 实际201后客户端abort注入：一单/六类交易事实各一、一次RESERVE，库存0/1；刷新四字段不变、列表无货仍可确认。真200同public_id；刻意浏览器fetch同Key改地址真409/idempotency_conflict，数据库快照完全不变，不声称UI可改冻结参数。支付后PAID/Attempt SUCCEEDED/Event PROCESSED/Purchase CONSUMED/Reservation COMMITTED、库存0/0，RESERVE/COMMIT各一；再次原Key200返回当前PAID。
+- 存储失败注入下单POST0；503、畸形200、有效Session下403响应注入保持pending/原参数，不准新购买。响应丢失为真实201后的客户端故障注入，不是真实断网/数据库提交不确定恢复。账号切换旧Cookie无法恢复（Django注销旧Session）；原合成账号重新登录后意图恢复，未访问外部账号。
+- 桌面1280×720与手机390×844截图已查看，手机scrollWidth390无横向溢出，无框架覆盖层；正常刷新后控制台0errors/0warnings。匿名与故障/拒绝场景的资源失败日志为预期结果。
+- 前端build通过；独立静态审查无阻塞。收尾第一次停止PID的路径断言失败后误开始target，该结果不作正式串行证据；随后停本轮进程/浏览器，确认库/连接0与端口空闲后重跑。正式目标12passed/162子场景19.95秒，生命周期/支付API/Session回归51passed/19子场景57.25秒；不把历史216项或耗时当本轮/性能证据。
+- 前后测试库不存在、测试连接0、开发schema26表；后检SESSION/GLOBAL等待50，8000/5173无监听。只使用可丢弃测试库，没有开发迁移/业务写入、外部发布、MQ/Redis/负载重跑。记录与JSON/正式raw见docs/verification/phase-6e-flash-sale-browser.md及关联文件；截图在项目外。
+- 下一步仅闭卷复述浏览器→HTTP→业务事务→MySQL，解释200同单/一次预占、409异参及注入边界。独立讲述通过前不标整个Phase6总验收完成，不自动追加基础设施。
