@@ -1,0 +1,3 @@
+.Formal migration index selected for first and deep pages; snapshots and ownership preserved.
+.
+2 passed in 13.33s

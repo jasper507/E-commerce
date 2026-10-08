@@ -109,6 +109,12 @@ class Order(models.Model):
 
     class Meta:
         ordering = ("-created_at", "-id")
+        indexes = (
+            models.Index(
+                fields=("user", "created_at", "id"),
+                name="ordering_order_user_created_id",
+            ),
+        )
         # 不同下单入口独立识别同一次请求；旧订单默认属于购物车入口。
         constraints = (
             models.UniqueConstraint(

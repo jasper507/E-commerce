@@ -1,0 +1,5 @@
+--
+-- Create index ordering_order_user_created_id on field(s) user, created_at, id of model order
+--
+CREATE INDEX `ordering_order_user_id_7730925b` ON `ordering_order` (`user_id`);
+DROP INDEX `ordering_order_user_created_id` ON `ordering_order`;

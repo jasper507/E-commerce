@@ -80,6 +80,20 @@ def indexes():
     return result
 
 
+def assert_unindexed_baseline():
+    definitions = {}
+    for row in indexes()[Order._meta.db_table]:
+        definitions.setdefault(row["Key_name"], []).append((row["Seq_in_index"], row["Column_name"]))
+    if any(
+        [column for _, column in sorted(parts)] == ["user_id", "created_at", "id"]
+        for parts in definitions.values()
+    ):
+        raise RuntimeError(
+            "Order-list index already exists; this is not the unindexed baseline. "
+            "Reproduce the historical experiment from e85e592 in an isolated checkout."
+        )
+
+
 def analyze_tables():
     with connection.cursor() as cursor:
         for table in TABLES:
@@ -241,6 +255,7 @@ def test_order_query_baseline():
     assert connection.get_autocommit()
     output = Path(os.environ["PROJECT_ONE_ORDER_QUERY_OUTPUT"])
     assert not output.exists(), "Choose a new evidence filename; do not overwrite an earlier run."
+    assert_unindexed_baseline()
     owner, expected = create_read_fixture()
     analyze_tables()
     with connection.cursor() as cursor:

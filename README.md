@@ -3,7 +3,19 @@
 Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
-Order-query baseline (2026-10-09): an opt-in disposable-MySQL experiment now
+Order-list index implementation (2026-10-09): the verified
+`(user_id, created_at, id)` index is declared in the model and migration 0005.
+Isolated MySQL verified forward/reverse/forward migration, unchanged existing
+orders and snapshots, and use of the formal index for first/deep pages. Targets
+passed 2 tests; related checks passed 29 tests / 171 subtests with 2 opt-in
+experiments skipped. The development database has not applied this migration.
+See the [verification](docs/verification/phase-3-order-list-index.md) and
+[study guide](docs/learning/phase-3-order-list-index-study-guide.md).
+The old baseline experiment now rejects an already-indexed schema; reproduce
+its historical measurements from e85e592 in an isolated checkout. The next
+planned slice is Lua admission, while COUNT and deep OFFSET costs remain.
+
+Historical order-query baseline (2026-10-09): an opt-in disposable-MySQL experiment
 captures the complete order/count/item SQL, existing indexes, execution plans,
 ORM/serialization/render timings and response bytes. With 5,000 synthetic
 orders per customer, a temporary `(user_id, created_at, id)` index removes the
@@ -15,7 +27,7 @@ The experiment passed, and related checks passed 16 tests / 9 subtests with
 the experiment skipped by default. See the [verification](docs/verification/phase-3-order-query-baseline.md)
 and [study guide](docs/learning/phase-3-order-query-baseline-study-guide.md).
 These are local warm synthetic measurements, not production capacity or
-HTTP/network latency. Formal index adoption is the proposed next slice.
+HTTP/network latency. Formal index adoption was the proposed next slice at that stage.
 
 Current order-list status (2026-10-08): `GET /api/orders/?page=2` now returns
 `count`, `next`, `previous`, and `results`, with a fixed page size of 20 and

@@ -1,0 +1,581 @@
+{
+  "recorded_at_utc": "2026-10-08T16:57:05.180264+00:00",
+  "mysql": "8.4.10",
+  "database": "test_project_one",
+  "source_commit": "e85e592c93f7a6c06dd4a8e8673bc27f8ee048c4",
+  "source_sha256": {
+    "C:\\project-one-ecommerce\\backend\\apps\\ordering\\tests\\test_order_list_index.py": "d825aeed0de29c997632a43ee2b5cdd7f50068b5b7f175aa38e60e8423b5ea6a",
+    "C:\\project-one-ecommerce\\backend\\apps\\ordering\\tests\\test_order_query_baseline.py": "00f94a8a3297ceab5104f54145ecd39ba8b6cd2265a8cba2943dcb5f02694767",
+    "backend\\apps\\ordering\\models.py": "f185bfd00392aa23277faeee345f81f86a8a0cd70023046d02b317d482fa527e",
+    "backend\\apps\\ordering\\migrations\\0005_order_list_index.py": "efe2506e087e6af64f687a4e29e5e8ac1d85d4779fab54a4696a14a29828ca9a"
+  },
+  "migration": [
+    [
+      "ordering",
+      "0005_order_list_index"
+    ]
+  ],
+  "indexes": {
+    "ordering_order": [
+      {
+        "Table": "ordering_order",
+        "Non_unique": 0,
+        "Key_name": "PRIMARY",
+        "Seq_in_index": 1,
+        "Column_name": "id",
+        "Collation": "A",
+        "Cardinality": 9936,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_order",
+        "Non_unique": 0,
+        "Key_name": "public_id",
+        "Seq_in_index": 1,
+        "Column_name": "public_id",
+        "Collation": "A",
+        "Cardinality": 9936,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_order",
+        "Non_unique": 0,
+        "Key_name": "ordering_order_unique_user_scope_key",
+        "Seq_in_index": 1,
+        "Column_name": "user_id",
+        "Collation": "A",
+        "Cardinality": 2,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_order",
+        "Non_unique": 0,
+        "Key_name": "ordering_order_unique_user_scope_key",
+        "Seq_in_index": 2,
+        "Column_name": "creation_scope",
+        "Collation": "A",
+        "Cardinality": 2,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_order",
+        "Non_unique": 0,
+        "Key_name": "ordering_order_unique_user_scope_key",
+        "Seq_in_index": 3,
+        "Column_name": "idempotency_key",
+        "Collation": "A",
+        "Cardinality": 9936,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_order",
+        "Non_unique": 1,
+        "Key_name": "ordering_order_user_created_id",
+        "Seq_in_index": 1,
+        "Column_name": "user_id",
+        "Collation": "A",
+        "Cardinality": 2,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_order",
+        "Non_unique": 1,
+        "Key_name": "ordering_order_user_created_id",
+        "Seq_in_index": 2,
+        "Column_name": "created_at",
+        "Collation": "A",
+        "Cardinality": 1006,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_order",
+        "Non_unique": 1,
+        "Key_name": "ordering_order_user_created_id",
+        "Seq_in_index": 3,
+        "Column_name": "id",
+        "Collation": "A",
+        "Cardinality": 9936,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      }
+    ],
+    "ordering_addresssnapshot": [
+      {
+        "Table": "ordering_addresssnapshot",
+        "Non_unique": 0,
+        "Key_name": "PRIMARY",
+        "Seq_in_index": 1,
+        "Column_name": "id",
+        "Collation": "A",
+        "Cardinality": 9824,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_addresssnapshot",
+        "Non_unique": 0,
+        "Key_name": "order_id",
+        "Seq_in_index": 1,
+        "Column_name": "order_id",
+        "Collation": "A",
+        "Cardinality": 9824,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      }
+    ],
+    "ordering_orderitem": [
+      {
+        "Table": "ordering_orderitem",
+        "Non_unique": 0,
+        "Key_name": "PRIMARY",
+        "Seq_in_index": 1,
+        "Column_name": "id",
+        "Collation": "A",
+        "Cardinality": 19495,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_orderitem",
+        "Non_unique": 1,
+        "Key_name": "ordering_orderitem_order_id_050e4dc5_fk_ordering_order_id",
+        "Seq_in_index": 1,
+        "Column_name": "order_id",
+        "Collation": "A",
+        "Cardinality": 10000,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      },
+      {
+        "Table": "ordering_orderitem",
+        "Non_unique": 1,
+        "Key_name": "ordering_orderitem_sku_id_eebdc6be_fk_catalog_sku_id",
+        "Seq_in_index": 1,
+        "Column_name": "sku_id",
+        "Collation": "A",
+        "Cardinality": 2,
+        "Sub_part": null,
+        "Packed": null,
+        "Null": "",
+        "Index_type": "BTREE",
+        "Comment": "",
+        "Index_comment": "",
+        "Visible": "YES",
+        "Expression": null
+      }
+    ]
+  },
+  "shapes": {
+    "first": {
+      "sample": {
+        "materialize_ms": 8.655700003146194,
+        "serialize_ms": 2.0911000028718263,
+        "render_ms": 0.3630999999586493,
+        "total_stage_ms": 11.10990000597667,
+        "execute_sum_ms": 5.285499995807186,
+        "query_execute_ms": [
+          2.209400001447648,
+          1.8352999904891476,
+          1.2408000038703904
+        ],
+        "query_count": 3,
+        "orders": 20,
+        "items": 40,
+        "response_bytes": 16108,
+        "payload_sha256": "e1f3e992c253df4859a5bf65c56207205d09ad3233ddb1190649351f4a341bdb"
+      },
+      "queries": [
+        {
+          "sql": "SELECT COUNT(*) AS `__count` FROM `ordering_order` WHERE `ordering_order`.`user_id` = %s",
+          "params": [
+            2
+          ],
+          "execute_ms": 2.209400001447648
+        },
+        {
+          "sql": "SELECT `ordering_order`.`id`, `ordering_order`.`user_id`, `ordering_order`.`public_id`, `ordering_order`.`status`, `ordering_order`.`currency`, `ordering_order`.`subtotal`, `ordering_order`.`discount_total`, `ordering_order`.`shipping_fee`, `ordering_order`.`total`, `ordering_order`.`creation_scope`, `ordering_order`.`idempotency_key`, `ordering_order`.`request_fingerprint`, `ordering_order`.`created_at`, `ordering_order`.`updated_at`, `ordering_addresssnapshot`.`id`, `ordering_addresssnapshot`.`order_id`, `ordering_addresssnapshot`.`recipient_name`, `ordering_addresssnapshot`.`phone`, `ordering_addresssnapshot`.`province`, `ordering_addresssnapshot`.`city`, `ordering_addresssnapshot`.`district`, `ordering_addresssnapshot`.`detail` FROM `ordering_order` LEFT OUTER JOIN `ordering_addresssnapshot` ON (`ordering_order`.`id` = `ordering_addresssnapshot`.`order_id`) WHERE `ordering_order`.`user_id` = %s ORDER BY `ordering_order`.`created_at` DESC, `ordering_order`.`id` DESC LIMIT 20",
+          "params": [
+            2
+          ],
+          "execute_ms": 1.8352999904891476
+        },
+        {
+          "sql": "SELECT `ordering_orderitem`.`id`, `ordering_orderitem`.`order_id`, `ordering_orderitem`.`sku_id`, `ordering_orderitem`.`product_name_snapshot`, `ordering_orderitem`.`sku_code_snapshot`, `ordering_orderitem`.`color_snapshot`, `ordering_orderitem`.`attributes_snapshot`, `ordering_orderitem`.`unit_price`, `ordering_orderitem`.`quantity`, `ordering_orderitem`.`discount_amount`, `ordering_orderitem`.`line_total` FROM `ordering_orderitem` WHERE `ordering_orderitem`.`order_id` IN (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ORDER BY `ordering_orderitem`.`id` ASC",
+          "params": [
+            4962,
+            4459,
+            3956,
+            3453,
+            2950,
+            2447,
+            1944,
+            1441,
+            938,
+            435,
+            4894,
+            4391,
+            3888,
+            3385,
+            2882,
+            2379,
+            1876,
+            1373,
+            870,
+            367
+          ],
+          "execute_ms": 1.2408000038703904
+        }
+      ],
+      "plans": [
+        {
+          "sql": "SELECT COUNT(*) AS `__count` FROM `ordering_order` WHERE `ordering_order`.`user_id` = %s",
+          "params": [
+            2
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_order",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "ordering_order_unique_user_scope_key,ordering_order_user_created_id",
+              "key": "ordering_order_user_created_id",
+              "key_len": "8",
+              "ref": "const",
+              "rows": 4968,
+              "filtered": 100.0,
+              "Extra": "Using index"
+            }
+          ],
+          "actual_tree": "-> Aggregate: count(0)  (cost=999 rows=1) (actual time=0.856..0.856 rows=1 loops=1)\n    -> Covering index lookup on ordering_order using ordering_order_user_created_id (user_id=2)  (cost=502 rows=4968) (actual time=0.314..0.727 rows=5000 loops=1)\n"
+        },
+        {
+          "sql": "SELECT `ordering_order`.`id`, `ordering_order`.`user_id`, `ordering_order`.`public_id`, `ordering_order`.`status`, `ordering_order`.`currency`, `ordering_order`.`subtotal`, `ordering_order`.`discount_total`, `ordering_order`.`shipping_fee`, `ordering_order`.`total`, `ordering_order`.`creation_scope`, `ordering_order`.`idempotency_key`, `ordering_order`.`request_fingerprint`, `ordering_order`.`created_at`, `ordering_order`.`updated_at`, `ordering_addresssnapshot`.`id`, `ordering_addresssnapshot`.`order_id`, `ordering_addresssnapshot`.`recipient_name`, `ordering_addresssnapshot`.`phone`, `ordering_addresssnapshot`.`province`, `ordering_addresssnapshot`.`city`, `ordering_addresssnapshot`.`district`, `ordering_addresssnapshot`.`detail` FROM `ordering_order` LEFT OUTER JOIN `ordering_addresssnapshot` ON (`ordering_order`.`id` = `ordering_addresssnapshot`.`order_id`) WHERE `ordering_order`.`user_id` = %s ORDER BY `ordering_order`.`created_at` DESC, `ordering_order`.`id` DESC LIMIT 20",
+          "params": [
+            2
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_order",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "ordering_order_unique_user_scope_key,ordering_order_user_created_id",
+              "key": "ordering_order_user_created_id",
+              "key_len": "8",
+              "ref": "const",
+              "rows": 4968,
+              "filtered": 100.0,
+              "Extra": "Backward index scan"
+            },
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_addresssnapshot",
+              "partitions": null,
+              "type": "eq_ref",
+              "possible_keys": "order_id",
+              "key": "order_id",
+              "key_len": "8",
+              "ref": "test_project_one.ordering_order.id",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": null
+            }
+          ],
+          "actual_tree": "-> Limit: 20 row(s)  (cost=2356 rows=20) (actual time=0.72..0.774 rows=20 loops=1)\n    -> Nested loop left join  (cost=2356 rows=4968) (actual time=0.21..0.262 rows=20 loops=1)\n        -> Index lookup on ordering_order using ordering_order_user_created_id (user_id=2) (reverse)  (cost=618 rows=4968) (actual time=0.2..0.203 rows=20 loops=1)\n        -> Single-row index lookup on ordering_addresssnapshot using order_id (order_id=ordering_order.id)  (cost=0.25 rows=1) (actual time=0.00279..0.0028 rows=1 loops=20)\n"
+        },
+        {
+          "sql": "SELECT `ordering_orderitem`.`id`, `ordering_orderitem`.`order_id`, `ordering_orderitem`.`sku_id`, `ordering_orderitem`.`product_name_snapshot`, `ordering_orderitem`.`sku_code_snapshot`, `ordering_orderitem`.`color_snapshot`, `ordering_orderitem`.`attributes_snapshot`, `ordering_orderitem`.`unit_price`, `ordering_orderitem`.`quantity`, `ordering_orderitem`.`discount_amount`, `ordering_orderitem`.`line_total` FROM `ordering_orderitem` WHERE `ordering_orderitem`.`order_id` IN (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ORDER BY `ordering_orderitem`.`id` ASC",
+          "params": [
+            4962,
+            4459,
+            3956,
+            3453,
+            2950,
+            2447,
+            1944,
+            1441,
+            938,
+            435,
+            4894,
+            4391,
+            3888,
+            3385,
+            2882,
+            2379,
+            1876,
+            1373,
+            870,
+            367
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_orderitem",
+              "partitions": null,
+              "type": "range",
+              "possible_keys": "ordering_orderitem_order_id_050e4dc5_fk_ordering_order_id",
+              "key": "ordering_orderitem_order_id_050e4dc5_fk_ordering_order_id",
+              "key_len": "8",
+              "ref": null,
+              "rows": 40,
+              "filtered": 100.0,
+              "Extra": "Using index condition; Using filesort"
+            }
+          ],
+          "actual_tree": "-> Sort: ordering_orderitem.id  (cost=23 rows=40) (actual time=0.123..0.125 rows=40 loops=1)\n    -> Index range scan on ordering_orderitem using ordering_orderitem_order_id_050e4dc5_fk_ordering_order_id over (order_id = 367) OR (order_id = 435) OR (18 more), with index condition: (ordering_orderitem.order_id in (4962,4459,3956,3453,2950,2447,1944,1441,938,435,4894,4391,3888,3385,2882,2379,1876,1373,870,367))  (cost=23 rows=40) (actual time=0.00997..0.0664 rows=40 loops=1)\n"
+        }
+      ]
+    },
+    "deep": {
+      "sample": {
+        "materialize_ms": 14.094500002101995,
+        "serialize_ms": 2.323599997907877,
+        "render_ms": 0.23009999131318182,
+        "total_stage_ms": 16.648199991323054,
+        "execute_sum_ms": 11.298600016743876,
+        "query_execute_ms": [
+          1.2512000103015453,
+          9.127900004386902,
+          0.9195000020554289
+        ],
+        "query_count": 3,
+        "orders": 20,
+        "items": 40,
+        "response_bytes": 16146,
+        "payload_sha256": "2ed93ac1b9d66785b24fdc857d6ecea1346b00bdbb026d1b04b6862ee0f11b8f"
+      },
+      "queries": [
+        {
+          "sql": "SELECT COUNT(*) AS `__count` FROM `ordering_order` WHERE `ordering_order`.`user_id` = %s",
+          "params": [
+            2
+          ],
+          "execute_ms": 1.2512000103015453
+        },
+        {
+          "sql": "SELECT `ordering_order`.`id`, `ordering_order`.`user_id`, `ordering_order`.`public_id`, `ordering_order`.`status`, `ordering_order`.`currency`, `ordering_order`.`subtotal`, `ordering_order`.`discount_total`, `ordering_order`.`shipping_fee`, `ordering_order`.`total`, `ordering_order`.`creation_scope`, `ordering_order`.`idempotency_key`, `ordering_order`.`request_fingerprint`, `ordering_order`.`created_at`, `ordering_order`.`updated_at`, `ordering_addresssnapshot`.`id`, `ordering_addresssnapshot`.`order_id`, `ordering_addresssnapshot`.`recipient_name`, `ordering_addresssnapshot`.`phone`, `ordering_addresssnapshot`.`province`, `ordering_addresssnapshot`.`city`, `ordering_addresssnapshot`.`district`, `ordering_addresssnapshot`.`detail` FROM `ordering_order` LEFT OUTER JOIN `ordering_addresssnapshot` ON (`ordering_order`.`id` = `ordering_addresssnapshot`.`order_id`) WHERE `ordering_order`.`user_id` = %s ORDER BY `ordering_order`.`created_at` DESC, `ordering_order`.`id` DESC LIMIT 20 OFFSET 4000",
+          "params": [
+            2
+          ],
+          "execute_ms": 9.127900004386902
+        },
+        {
+          "sql": "SELECT `ordering_orderitem`.`id`, `ordering_orderitem`.`order_id`, `ordering_orderitem`.`sku_id`, `ordering_orderitem`.`product_name_snapshot`, `ordering_orderitem`.`sku_code_snapshot`, `ordering_orderitem`.`color_snapshot`, `ordering_orderitem`.`attributes_snapshot`, `ordering_orderitem`.`unit_price`, `ordering_orderitem`.`quantity`, `ordering_orderitem`.`discount_amount`, `ordering_orderitem`.`line_total` FROM `ordering_orderitem` WHERE `ordering_orderitem`.`order_id` IN (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ORDER BY `ordering_orderitem`.`id` ASC",
+          "params": [
+            4285,
+            3782,
+            3279,
+            2776,
+            2273,
+            1770,
+            1267,
+            764,
+            261,
+            4720,
+            4217,
+            3714,
+            3211,
+            2708,
+            2205,
+            1702,
+            1199,
+            696,
+            193,
+            4652
+          ],
+          "execute_ms": 0.9195000020554289
+        }
+      ],
+      "plans": [
+        {
+          "sql": "SELECT COUNT(*) AS `__count` FROM `ordering_order` WHERE `ordering_order`.`user_id` = %s",
+          "params": [
+            2
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_order",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "ordering_order_unique_user_scope_key,ordering_order_user_created_id",
+              "key": "ordering_order_user_created_id",
+              "key_len": "8",
+              "ref": "const",
+              "rows": 4968,
+              "filtered": 100.0,
+              "Extra": "Using index"
+            }
+          ],
+          "actual_tree": "-> Aggregate: count(0)  (cost=999 rows=1) (actual time=0.571..0.571 rows=1 loops=1)\n    -> Covering index lookup on ordering_order using ordering_order_user_created_id (user_id=2)  (cost=502 rows=4968) (actual time=0.0235..0.456 rows=5000 loops=1)\n"
+        },
+        {
+          "sql": "SELECT `ordering_order`.`id`, `ordering_order`.`user_id`, `ordering_order`.`public_id`, `ordering_order`.`status`, `ordering_order`.`currency`, `ordering_order`.`subtotal`, `ordering_order`.`discount_total`, `ordering_order`.`shipping_fee`, `ordering_order`.`total`, `ordering_order`.`creation_scope`, `ordering_order`.`idempotency_key`, `ordering_order`.`request_fingerprint`, `ordering_order`.`created_at`, `ordering_order`.`updated_at`, `ordering_addresssnapshot`.`id`, `ordering_addresssnapshot`.`order_id`, `ordering_addresssnapshot`.`recipient_name`, `ordering_addresssnapshot`.`phone`, `ordering_addresssnapshot`.`province`, `ordering_addresssnapshot`.`city`, `ordering_addresssnapshot`.`district`, `ordering_addresssnapshot`.`detail` FROM `ordering_order` LEFT OUTER JOIN `ordering_addresssnapshot` ON (`ordering_order`.`id` = `ordering_addresssnapshot`.`order_id`) WHERE `ordering_order`.`user_id` = %s ORDER BY `ordering_order`.`created_at` DESC, `ordering_order`.`id` DESC LIMIT 20 OFFSET 4000",
+          "params": [
+            2
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_order",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "ordering_order_unique_user_scope_key,ordering_order_user_created_id",
+              "key": "ordering_order_user_created_id",
+              "key_len": "8",
+              "ref": "const",
+              "rows": 4968,
+              "filtered": 100.0,
+              "Extra": "Backward index scan"
+            },
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_addresssnapshot",
+              "partitions": null,
+              "type": "eq_ref",
+              "possible_keys": "order_id",
+              "key": "order_id",
+              "key_len": "8",
+              "ref": "test_project_one.ordering_order.id",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": null
+            }
+          ],
+          "actual_tree": "-> Limit/Offset: 20/4000 row(s)  (cost=2356 rows=20) (actual time=8.4..8.43 rows=20 loops=1)\n    -> Nested loop left join  (cost=2356 rows=4968) (actual time=0.16..8.34 rows=4020 loops=1)\n        -> Index lookup on ordering_order using ordering_order_user_created_id (user_id=2) (reverse)  (cost=618 rows=4968) (actual time=0.152..3.53 rows=4020 loops=1)\n        -> Single-row index lookup on ordering_addresssnapshot using order_id (order_id=ordering_order.id)  (cost=0.25 rows=1) (actual time=0.00108..0.0011 rows=1 loops=4020)\n"
+        },
+        {
+          "sql": "SELECT `ordering_orderitem`.`id`, `ordering_orderitem`.`order_id`, `ordering_orderitem`.`sku_id`, `ordering_orderitem`.`product_name_snapshot`, `ordering_orderitem`.`sku_code_snapshot`, `ordering_orderitem`.`color_snapshot`, `ordering_orderitem`.`attributes_snapshot`, `ordering_orderitem`.`unit_price`, `ordering_orderitem`.`quantity`, `ordering_orderitem`.`discount_amount`, `ordering_orderitem`.`line_total` FROM `ordering_orderitem` WHERE `ordering_orderitem`.`order_id` IN (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ORDER BY `ordering_orderitem`.`id` ASC",
+          "params": [
+            4285,
+            3782,
+            3279,
+            2776,
+            2273,
+            1770,
+            1267,
+            764,
+            261,
+            4720,
+            4217,
+            3714,
+            3211,
+            2708,
+            2205,
+            1702,
+            1199,
+            696,
+            193,
+            4652
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "SIMPLE",
+              "table": "ordering_orderitem",
+              "partitions": null,
+              "type": "range",
+              "possible_keys": "ordering_orderitem_order_id_050e4dc5_fk_ordering_order_id",
+              "key": "ordering_orderitem_order_id_050e4dc5_fk_ordering_order_id",
+              "key_len": "8",
+              "ref": null,
+              "rows": 40,
+              "filtered": 100.0,
+              "Extra": "Using index condition; Using filesort"
+            }
+          ],
+          "actual_tree": "-> Sort: ordering_orderitem.id  (cost=23 rows=40) (actual time=0.0789..0.081 rows=40 loops=1)\n    -> Index range scan on ordering_orderitem using ordering_orderitem_order_id_050e4dc5_fk_ordering_order_id over (order_id = 193) OR (order_id = 261) OR (18 more), with index condition: (ordering_orderitem.order_id in (4285,3782,3279,2776,2273,1770,1267,764,261,4720,4217,3714,3211,2708,2205,1702,1199,696,193,4652))  (cost=23 rows=40) (actual time=0.00875..0.0658 rows=40 loops=1)\n"
+        }
+      ]
+    }
+  },
+  "method": "one observation per page, no latency threshold, no FORCE INDEX; timings are not a benchmark",
+  "fixture": "5000 owner + 5000 other orders, 10000 addresses, 20000 items; fixed time permutation/ties"
+}

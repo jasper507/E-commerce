@@ -1442,3 +1442,13 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 原首页订单索引步骤实际输出5,000后Sort；临时(user_id,created_at,id)自动被选为反向扫描，输出20且无订单Sort。原/候选COUNT仍读5,000；深页OFFSET4000下候选仍经过4,020订单与地址loops，items仍40行及自身排序。基线全量4,005,001字节、首页16,108字节；本地三阶段之和中位数全量711.57ms、首页10.38ms、深页14.52ms，候选分别717.28/7.42/13.55ms，非HTTP/网络/并发指标。候选全量execute单次208.86ms波动保留，不选最好值。
 - 候选finally删除；静态比较恢复索引定义、各形状内容哈希相同，删后首页恢复5,000+Sort；pytest销毁库。实验1passed21.24秒；分页/订单API相关16passed9子场景及1默认skip13.51秒。没有修改views/models/迁移/前端/配置/依赖/库存支付MQ规则，没有开发业务写入或Lua/ES实现；未重跑浏览器/Redis/MQ矩阵。
 - 新增配套docs/verification/phase-3-order-query-baseline.md与JSON/raw、docs/learning/phase-3-order-query-baseline-study-guide.md；指南无图/源码导览/末尾练习，只有两处关键SQL。当前README/Charter及上一片入口补进度。下一片建议只用模型迁移正式表达这个候选并验证查询/归属/排序/快照与订单回归；开发库迁移须单独说明确认，再进入Lua原子准入。索引写成本/空间、冷缓存、并发/真实网络、统计快照和分页漂移仍缺证据，个人独立理解未验收。
+
+## 62. 正式订单列表联合索引模型与迁移（2026-10-09）
+
+- 用户选中“下一片建议只正式落地这一个订单列表联合索引”并要求开始。本片Supporting/Pair，能力目标是证据→模型声明→可维护迁移→真实结构/查询验收；达到最小迁移/路径/订单回归后收片。开始前main/远端e85e592一致，保留Phase6E指南用户修改。
+- Order.Meta声明普通(user,created_at,id)索引ordering_order_user_created_id，Django生成0005_order_list_index仅AddIndex，保留原(user,scope,key)幂等唯一约束；views/Serializer/分页契约/前端/库存支付规则不改。旧性能实验按SHOW INDEX列序识别并拒绝带正式索引状态，防止错误原基线与重复候选；历史e85e592 JSON/raw未改，复现说明指向隔离旧版本。
+- 新test_order_list_index在真实可销毁MySQL默认验证0004→0005→0004→0005：两笔已有订单、地址/明细三表字段与完整响应不变，原唯一约束保留，旧实验guard在0004允许、0005拒绝，finally恢复0005。显式启用正式计划检查用本人/他人各5,000单、10,000地址/20,000明细，固定时间置换含ties及独立期望；首页/深页当前响应和生产查询字段保持完整归属。
+- 正式索引无FORCE INDEX自动被选为反向扫描：首页订单步骤实际20行/地址loops20；201页OFFSET4000为4,020行/地址loops4,020；均无订单Sort。COUNT仍覆盖读5,000，items仍40行及自身排序；各页20单40items/16,108与16,146字节/3订单数据SQL。仅一次计划观察，不新报时延提升比例或生产/HTTP证据。
+- 目标2passed13.33秒；分页/订单API/秒杀API/迁移回归29passed171子场景2默认skip27.44秒。manage.py check0，makemigrations --check --dry-run无变化；sqlmigrate正反只收集预览未执行，反向预览因当前默认库元数据可补user外键支撑索引，不能当作真实逆迁移逐条日志；最终真实SHOW INDEX无额外独立user_id索引。新计划JSON/raw与正反SQL预览见docs/verification/phase-3-order-list-index*。
+- 前后test_project_one不存在、可见测试连接0、开发schema30表，未运行开发库migrate/业务写入/服务或依赖修改；未重跑支付/MQ/Redis/浏览器矩阵，Lua/ES仍未实现。新增精简指南与验证记录互链（无图/源码导览/末尾题，仅一处重要模型代码），README/Charter与上片进度同步。
+- 订单查询方向达到收束条件，下一片进入已确认Lua原子流量准入：先确定位置、忙时/Redis故障规则与到达MySQL计量口径，仍MySQL事实，不预扣Redis库存。开发库生效要另外说明确认；写成本/空间、大表DDL、冷缓存/并发/网络、COUNT快照/分页漂移与个人独立理解仍缺证据。

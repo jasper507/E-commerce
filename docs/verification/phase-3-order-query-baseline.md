@@ -1,5 +1,7 @@
 # 真实订单查询基线验证 — 2026-10-09
 
+后续进度：模型加入正式列表索引后，当前旧实验会明确拒绝把带索引状态测成原基线；本页JSON/raw及数值固定为e85e592历史实验。复现应使用该版本的隔离checkout，不能直接在最新版重跑下面的旧命令。正式迁移证据见[后续验证](phase-3-order-list-index.md)。
+
 配套[学习指南](../learning/phase-3-order-query-baseline-study-guide.md)。业务源码92709b1；新增实验代码哈希见[原始数据](phase-3-order-query-baseline-data.json)。本片是Supporting/Pair实验，重点是完整列表成本与索引判断，不是接口功能或正式索引迁移。
 
 ## 范围、预期与停止条件
