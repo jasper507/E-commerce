@@ -177,6 +177,18 @@ if CATALOG_CACHE_TTL < 1 or not 0 <= CATALOG_CACHE_TTL_JITTER < CATALOG_CACHE_TT
 if CATALOG_CACHE_ENABLED and not IS_LOCAL_ENVIRONMENT:
     raise ImproperlyConfigured("Catalog cache is currently a local development/test experiment.")
 
+# 独立于商品缓存的准入实验；Redis 无法确认时不进入秒杀下单事务。
+FLASH_SALE_ADMISSION_ENABLED = env_bool("FLASH_SALE_ADMISSION_ENABLED", False)
+FLASH_SALE_ADMISSION_REDIS_URL = env_value("FLASH_SALE_ADMISSION_REDIS_URL", "redis://127.0.0.1:6380/0")
+FLASH_SALE_ADMISSION_KEY_PREFIX = env_value("FLASH_SALE_ADMISSION_KEY_PREFIX", "project-one:development")
+FLASH_SALE_ADMISSION_LIMIT = env_int("FLASH_SALE_ADMISSION_LIMIT", 20)
+FLASH_SALE_ADMISSION_WINDOW_MS = env_int("FLASH_SALE_ADMISSION_WINDOW_MS", 1000)
+
+if not (1 <= FLASH_SALE_ADMISSION_LIMIT <= 2147483647 and 1 <= FLASH_SALE_ADMISSION_WINDOW_MS <= 2147483647):
+    raise ImproperlyConfigured("Flash-sale admission limit and window must be positive 32-bit integers.")
+if FLASH_SALE_ADMISSION_ENABLED and not IS_LOCAL_ENVIRONMENT:
+    raise ImproperlyConfigured("Flash-sale admission is currently a local development/test experiment.")
+
 if PAYMENT_MAX_ATTEMPTS < 1:
     raise ImproperlyConfigured("PAYMENT_MAX_ATTEMPTS must be at least 1.")
 

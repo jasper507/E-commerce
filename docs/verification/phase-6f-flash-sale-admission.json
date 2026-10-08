@@ -1,0 +1,313 @@
+{
+  "date": "2026-10-09",
+  "environment": {
+    "python": "3.11.9",
+    "django": "5.2.17",
+    "drf": "3.18.1",
+    "mysql": "8.4.10",
+    "redis": "8.10.1",
+    "redis_py": "8.1.0"
+  },
+  "policy": {
+    "redis_unknown": 503,
+    "full_including_original_key": 429,
+    "mysql_is_source_of_truth": true,
+    "inventory_predecrement_in_redis": false
+  },
+  "final_summary": "53 passed, 325 subtests passed in 61.45s (0:01:01)",
+  "raw": "phase-6f-flash-sale-admission-regression.raw.txt",
+  "observations": {
+    "admission_atomic": [
+      {
+        "clients": 24,
+        "limit": 4,
+        "admitted": 4,
+        "denied": 20
+      }
+    ],
+    "admission_http_burst": [
+      {
+        "enabled": false,
+        "customers": 24,
+        "workers": 8,
+        "limit": 4,
+        "window_ms": 10000,
+        "transactions": 24,
+        "created": 24,
+        "rate_limited": 0,
+        "request_sql_total": 480,
+        "available": 0,
+        "reserved": 24,
+        "committed_reservations": 0,
+        "elapsed_ms": 297.0,
+        "results": [
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          }
+        ],
+        "boundary": "Fixed authentication; local synthetic burst; elapsed is not a throughput claim."
+      },
+      {
+        "enabled": true,
+        "customers": 24,
+        "workers": 8,
+        "limit": 4,
+        "window_ms": 10000,
+        "transactions": 4,
+        "created": 4,
+        "rate_limited": 20,
+        "request_sql_total": 80,
+        "available": 20,
+        "reserved": 4,
+        "committed_reservations": 0,
+        "elapsed_ms": 125.0,
+        "results": [
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 201,
+            "sql_count": 20,
+            "begins": 1
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          },
+          {
+            "status": 429,
+            "sql_count": 0,
+            "begins": 0
+          }
+        ],
+        "boundary": "Fixed authentication; local synthetic burst; elapsed is not a throughput claim."
+      }
+    ]
+  },
+  "limits": [
+    "Fixed HTTP authentication excludes Session SQL and network.",
+    "Rate budget is not in-flight concurrency.",
+    "Elapsed values only guard the experiment window; not performance improvement.",
+    "Timeout-after-EVAL is injected after real Redis execution, not a real delayed network."
+  ]
+}

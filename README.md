@@ -3,6 +3,21 @@
 Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
+Flash-sale Lua admission (2026-10-09): a default-off, local/test-only shared
+attempt counter runs before the HTTP lock-wait adapter and MySQL checkout.
+Full windows return 429, including original-Key confirmation; unknown Redis
+results return 503. Both preserve the original intent for later confirmation.
+MySQL still owns orders and inventory; no Redis stock pre-decrement is added.
+Real Redis verified 24 simultaneous clients against 4 permits. A controlled
+24-customer / 8-thread API batch reached 24 transactions with admission off,
+4 with it on, and 20 rejections with no checkout SQL after fixed authentication.
+Final checks passed 53 tests / 325 subtests. These are isolated correctness and
+protection observations, not production throughput or an in-flight limit.
+See the [verification](docs/verification/phase-6f-flash-sale-admission.md) and
+[study guide](docs/learning/phase-6f-flash-sale-admission-study-guide.md).
+Development data/configuration is unchanged; the next proposed slice is the
+product-search baseline before the confirmed Elasticsearch work.
+
 Order-list index implementation (2026-10-09): the verified
 `(user_id, created_at, id)` index is declared in the model and migration 0005.
 Isolated MySQL verified forward/reverse/forward migration, unchanged existing
@@ -12,8 +27,8 @@ experiments skipped. The development database has not applied this migration.
 See the [verification](docs/verification/phase-3-order-list-index.md) and
 [study guide](docs/learning/phase-3-order-list-index-study-guide.md).
 The old baseline experiment now rejects an already-indexed schema; reproduce
-its historical measurements from e85e592 in an isolated checkout. The next
-planned slice is Lua admission, while COUNT and deep OFFSET costs remain.
+its historical measurements from e85e592 in an isolated checkout. That stage
+handed off to Lua admission; COUNT and deep OFFSET costs remain.
 
 Historical order-query baseline (2026-10-09): an opt-in disposable-MySQL experiment
 captures the complete order/count/item SQL, existing indexes, execution plans,

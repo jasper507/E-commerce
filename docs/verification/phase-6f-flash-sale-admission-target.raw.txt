@@ -1,0 +1,45 @@
+.admission_atomic {"clients": 24, "limit": 4, "admitted": 4, "denied": 20}
+2026-10-09 02:18:26,527 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:18:26,934 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:18:27,303 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:18:27,640 WARNING apps.promotions.admission Flash-sale admission failed: ResponseError
+2026-10-09 02:18:27,640 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:18:28,053 WARNING apps.promotions.admission Flash-sale admission failed: TimeoutError
+2026-10-09 02:18:28,053 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:18:28,334 WARNING apps.promotions.admission Flash-sale admission failed: TimeoutError
+2026-10-09 02:18:28,334 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:18:28,691 WARNING django.request Forbidden: /api/flash-sales/orders/
+2026-10-09 02:18:28,728 WARNING django.request Forbidden: /api/flash-sales/orders/
+2026-10-09 02:18:28,733 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:18:28,735 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:18:28,737 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:18:28,739 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:18:29,076 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:29,077 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:29,163 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-09 02:18:29,461 WARNING django.request Not Found: /api/flash-sales/orders/
+2026-10-09 02:18:29,464 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+...........admission_http_burst {"enabled": false, "customers": 24, "workers": 8, "limit": 4, "window_ms": 10000, "transactions": 24, "created": 24, "rate_limited": 0, "request_sql_total": 480, "available": 0, "reserved": 24, "committed_reservations": 0, "elapsed_ms": 297.0, "results": [{"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}], "boundary": "Fixed authentication; local synthetic burst; elapsed is not a throughput claim."}
+2026-10-09 02:18:30,827 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,829 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,837 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,842 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,847 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,853 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,854 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,858 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,858 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,862 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,866 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,868 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,868 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,872 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,874 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,877 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,878 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,881 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,882 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:18:30,887 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+.admission_http_burst {"enabled": true, "customers": 24, "workers": 8, "limit": 4, "window_ms": 10000, "transactions": 4, "created": 4, "rate_limited": 20, "request_sql_total": 80, "available": 20, "reserved": 4, "committed_reservations": 0, "elapsed_ms": 125.0, "results": [{"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 201, "sql_count": 20, "begins": 1}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}, {"status": 429, "sql_count": 0, "begins": 0}], "boundary": "Fixed authentication; local synthetic burst; elapsed is not a throughput claim."}
+.
+14 passed in 13.49s

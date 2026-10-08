@@ -1,10 +1,10 @@
-# Project One — Project Charter v1.8
+# Project One — Project Charter v1.9
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：订单列表分页、查询基线及正式联合索引模型/迁移已完成，隔离生效验证通过、开发库未应用；Phase 6E独立讲述仍待完成；Redis Lua准入与Elasticsearch已确认后续计划、尚未实现
-- 文档版本：v1.8
+- 当前阶段：订单列表索引模型/迁移完成，开发库未应用；Phase 6F Lua原子准入及隔离Redis/MySQL验证完成，默认关闭；个人独立讲述待验收；Elasticsearch已确认计划、尚未实现
+- 文档版本：v1.9
 - 路线图进度更新：2026-10-09
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
@@ -26,6 +26,8 @@
 查询证据补片（2026-10-09）：仅在可销毁test_project_one中建立合成本人/他人各5,000单，捕获实际完整SQL、三个关联表索引和EXPLAIN/EXPLAIN ANALYZE，分开ORM物化、序列化、JSON字节。临时(user_id, created_at, id)候选消除首页订单排序，该索引步骤实际输出由5,000降为20；COUNT仍读5,000，深页OFFSET4000仍经过4,020订单与地址查找。实验1项通过、相关16项/9子场景通过、实验默认skip；候选删除、测试库销毁，应用模型/迁移/开发库没有改变。见[验证](docs/verification/phase-3-order-query-baseline.md)和[指南](docs/learning/phase-3-order-query-baseline-study-guide.md)。证据支持下一片只正式落地此候选，不宣称生产容量或HTTP端到端改善；Lua/ES仍为后续计划。
 
 查询正式化补片（2026-10-09）：Order.Meta增加普通(user, created_at, id)索引，0005仅AddIndex，原幂等唯一约束保留；可销毁MySQL真实0004→0005→0004→0005保留三表字段和响应，正式索引自动被首页/深页采用，订单Sort消失，COUNT/深OFFSET成本仍存在。目标2项通过，相关29项/171子场景通过、2个显式实验默认skip；check为0、无迁移漂移。旧基线增加按列序拒绝带索引状态，历史实验保留e85e592记录。模型/迁移完成不表示开发库已应用：本轮未执行开发库迁移。见[验证](docs/verification/phase-3-order-list-index.md)与[指南](docs/learning/phase-3-order-list-index-study-guide.md)。订单查询方向收束，下一片进入已确认Lua原子准入，不扩为Redis库存预扣；个人独立理解、开发库应用、生产性能仍不冒称完成。
+
+Lua准入首片（2026-10-09，v1.9）：拥有者确认Redis无法确认名额先503、满额所有有效POST先429（原Key确认也等待窗口恢复）。全秒杀入口共享一个固定持续窗口计数，首次SET带PX、后续INCR不续期；在HTTP等待适配/MySQL事务前执行，参数和安全校验先行。默认关闭、仅本地/测试，独立Redis短超时零自动重试；无Redis库存预扣、名额退款或业务服务替换。真实24个Redis客户端同时4放行/20拒绝；8线程处理24名合成顾客，关闭/开启为24/4次实际订单事务，20个429在固定认证后0下单SQL。最终53项/325子场景通过；连接失败、坏状态、真实EVAL后响应丢失注入、原Key恢复同单/异参冲突均验证。见[验证](docs/verification/phase-6f-flash-sale-admission.md)与[指南](docs/learning/phase-6f-flash-sale-admission-study-guide.md)。限的是尝试速率，不是严格在途数或生产容量；键丢失、公平性、真实网络/主从故障尚未验证。开发库、开发缓存与部署配置未改，隔离服务结束后停止；下一片建议商品搜索基线及可重建ES派生索引，个人掌握与整体收尾不冒称完成。本文旧暂缓和“Lua未实现”段落保留各片历史，以本段为当前状态。
 
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
@@ -634,7 +636,7 @@ Mock Payment Gateway、PaymentAttempt、Webhook Inbox、RabbitMQ + Celery 支付
 
 | 技术 | 引入前必须出现的问题 | 若引入必须留下的证据 |
 |---|---|---|
-| Redis Lua 秒杀准入/原子前置 | 拥有者2026-10-08决定暂缓；后续基于具体瓶颈、正确性风险、面试收益和学习成本评估，确认采用后再实现 | 真实隔离并发、失败窗口与MySQL对账；当前无Lua实现或验证声明 |
+| Redis Lua 秒杀准入 | 拥有者已确认采用流量准入；Phase6F默认关闭的窗口预算已实现，不预扣Redis库存 | 真实隔离并发额度、事务数对照、503/429及原Key恢复已验证；见Phase6F记录 |
 | Distributed Lock | 默认不使用；数据库约束、条件更新、行锁或 Lua 经证据证明不足 | 锁超时、错误释放和故障边界分析 |
 | Transactional Outbox | 已经存在数据库事实与消息可靠投递之间的一致性问题 | 崩溃窗口、重复投递、幂等消费和恢复证据 |
 | Elasticsearch | MySQL 搜索在功能或测量上不足 | 相关性、中文分词、延迟、同步和重建结果 |
@@ -657,7 +659,7 @@ RabbitMQ + Celery 已移入 Level 2 必做，限支付链路，不再以条件�
 → MySQL Transaction
 → 原子条件更新 / select_for_update 比较
 → 预占、核销、释放与死锁/锁等待重试
-→ Redis Lua 预检查/预扣（暂缓，后续独立评估；不阻塞当前收尾）
+→ Redis Lua 流量准入（默认关闭；MySQL仍是事实来源；不预扣Redis库存）
 → 一人一单
 → 故障补偿与对账
 → Distributed Lock Gate（默认不采用）
@@ -945,7 +947,7 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [x] naive 超卖基线复用（Phase 3 历史普通库存证据；不是新的完整秒杀压测，不重做同一实验）
 - [x] 正式条件 UPDATE 最小落地、失败合同与相关回归（6C-5目标9项/198子场景、相关183项/403子场景；1213/2006仅注入，不自动重试）
 - [ ] MySQL 最终事实与方案总验收（正式服务、HTTP及6E浏览器证据已完成；项目拥有者独立讲述待验收）
-- [ ] Redis Lua 流量准入/原子前置候选（拥有者2026-10-08决定暂缓，后续评估，不阻塞当前MySQL/HTTP收尾）
+- [x] Redis Lua 原子流量准入首片（Phase6F默认关闭；真实隔离额度/事务保护/失败与原Key恢复通过；不预扣库存）
 - [x] 每个 Customer + FlashSaleItem 正常成功限购、数量 1（Phase 6A/B资格及旧订单隔离证据；6D HTTP与6E浏览器已验收，独立讲述待完成）
 - [ ] Distributed Lock Gate（默认 No-Go）
 - [ ] 压测和补偿
@@ -1207,9 +1209,9 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Redis Phase 4J暂时收束，支付/MQ已有同步Mock、真实异步链路、有界重试和人工恢复证据。Phase 6A/B与6C-1/2/3历史证据保留，6C-4保存ADR，6C-5正式条件UPDATE及失败回滚/重试通过，6D已连接HTTP和等待恢复政策，6E极简顾客入口与隔离浏览器证据已完成。当前状态见CONTEXT第46–56节。
+Redis缓存方向暂时收束，支付/MQ保留人工兜底。秒杀MySQL/HTTP/浏览器证据、订单查询基线及索引迁移、Phase6F原子准入首片均已有隔离验证；当前进度见CONTEXT第63节。
 
 1. 选型 ADR 已完成；继续练习独立解释影响行数 0/1、完整事务回滚、限购/幂等各自职责与证据边界，不把一次正确预测当成全部学习验收。
-2. 6D HTTP/临时5秒恢复及6E原意图恢复/浏览器重放/拒绝/Mock支付已有实测证据，按持续授权保存main。下一步只做拥有者闭卷讲述，串起浏览器→HTTP→业务事务→MySQL，并区分实测与注入；不自动追加代码、基础设施或负载矩阵。5秒仍不是整个请求期限。
+2. 下一片建议商品搜索最小基线：确定关键词/筛选/排序与MySQL限制，再建立可重建ES派生索引。Lua已达到本片停止条件，不自动增加限流算法或Redis库存预扣；个人独立讲述另行验收。
 3. 支付MQ继续保留本期人工兜底，不横向新增异步功能或周期接管；既有MQ/Worker证据不能当成本轮已重跑。
-4. 秒杀前端已通过隔离浏览器验收，开发数据库迁移/演示数据操作仍须另行说明与确认，不进入第三方Sandbox或外部账号。Redis Lua保持明确暂缓、后续评估；拥有者独立讲述尚未验收，不能仅凭工程证据宣称整个Phase6已结束。
+4. 开发库迁移、启用准入和演示数据操作仍须另行说明与确认。默认关闭的Lua首片完成不表示开发运行已启用；不进入第三方Sandbox或外部账号，也不把工程证据当作个人理解或整个项目已收尾。

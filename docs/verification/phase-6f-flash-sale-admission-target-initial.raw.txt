@@ -1,0 +1,645 @@
+Fadmission_atomic {"clients": 24, "limit": 4, "admitted": 4, "denied": 20}
+2026-10-09 02:16:37,670 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:16:37,977 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:16:38,269 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:16:38,576 WARNING apps.promotions.admission Flash-sale admission failed: ResponseError
+2026-10-09 02:16:38,577 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:16:44,663 WARNING apps.promotions.admission Flash-sale admission failed: TimeoutError
+2026-10-09 02:16:44,663 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:16:44,957 WARNING apps.promotions.admission Flash-sale admission failed: TimeoutError
+2026-10-09 02:16:44,958 ERROR django.request Service Unavailable: /api/flash-sales/orders/
+2026-10-09 02:16:45,242 WARNING django.request Forbidden: /api/flash-sales/orders/
+2026-10-09 02:16:45,278 WARNING django.request Forbidden: /api/flash-sales/orders/
+2026-10-09 02:16:45,283 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:16:45,285 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:16:45,287 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:16:45,289 WARNING django.request Bad Request: /api/flash-sales/orders/
+2026-10-09 02:16:45,644 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:45,645 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:45,729 WARNING django.request Conflict: /api/flash-sales/orders/
+2026-10-09 02:16:46,021 WARNING django.request Not Found: /api/flash-sales/orders/
+2026-10-09 02:16:46,023 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,277 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,277 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,278 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,280 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,284 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,286 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,287 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,288 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,292 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,295 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,296 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,299 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,301 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,304 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,304 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,309 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,310 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,312 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,314 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+2026-10-09 02:16:47,314 WARNING django.request Too Many Requests: /api/flash-sales/orders/
+..FFFFFEFFFFFF
+=================================== ERRORS ====================================
+__ ERROR at teardown of test_connection_refusal_returns_503_before_checkout ___
+
+settings = <pytest_django.fixtures.Settings object at 0x000001BCC84DFB50>
+
+    @pytest.fixture
+    def budget(settings):
+        url = os.getenv("PROJECT_ONE_TEST_REDIS_URL")
+        if not url:
+            pytest.skip("Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.")
+        assert connection.vendor == "mysql"
+        assert connection.settings_dict["NAME"].startswith("test_")
+        control = redis.Redis.from_url(url, socket_connect_timeout=1, socket_timeout=1)
+        control.ping()
+        settings.FLASH_SALE_ADMISSION_ENABLED = True
+        settings.FLASH_SALE_ADMISSION_REDIS_URL = url
+        settings.FLASH_SALE_ADMISSION_KEY_PREFIX = f"project-one:test:admission:{uuid4().hex}"
+        settings.FLASH_SALE_ADMISSION_LIMIT = 4
+        settings.FLASH_SALE_ADMISSION_WINDOW_MS = 10000
+        admission.get_admission_redis_client.cache_clear()
+        client = admission.get_admission_redis_client()
+        key = admission.admission_key()
+        try:
+            yield SimpleNamespace(control=control, client=client, key=key, url=url)
+        finally:
+            # This fixture owns exactly one random key; never FLUSHDB or scan shared keys.
+            control.delete(key)
+            client.close()
+>           admission.get_admission_redis_client.cache_clear()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'function' object has no attribute 'cache_clear'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:91: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  apps.promotions.admission:admission.py:64 Flash-sale admission failed: TimeoutError
+ERROR    django.request:log.py:253 Service Unavailable: /api/flash-sales/orders/
+================================== FAILURES ===================================
+____________ test_disabled_gate_keeps_mysql_baseline_without_redis ____________
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 1: SKU 1>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+settings = <pytest_django.fixtures.Settings object at 0x000001BCC81FCE10>
+
+    def test_disabled_gate_keeps_mysql_baseline_without_redis(sale, settings):
+        settings.FLASH_SALE_ADMISSION_ENABLED = False
+        with patch.object(admission, "get_admission_redis_client", side_effect=AssertionError("Redis must not run")):
+            response = post(sale)
+        assert response.status_code == 201
+>       assert_facts(sale, 1)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 1: SKU 1>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 1
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+__ test_bad_redis_state_fails_closed_without_repair_or_checkout[persistent] ___
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:27cc94287c9a4173b905f9d5e0939eb5:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 2: SKU 2>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+bad_state = 'persistent'
+
+    @pytest.mark.redis_integration
+    @pytest.mark.parametrize("bad_state", ["persistent", "fraction", "zero", "wrong_type"])
+    def test_bad_redis_state_fails_closed_without_repair_or_checkout(budget, sale, bad_state):
+        if bad_state == "wrong_type":
+            budget.control.lpush(budget.key, "bad")
+            budget.control.pexpire(budget.key, 10000)
+        else:
+            budget.control.set(budget.key, {"persistent": "1", "fraction": "1.5", "zero": "0"}[bad_state])
+            if bad_state != "persistent":
+                budget.control.pexpire(budget.key, 10000)
+        before = budget.control.dump(budget.key)
+        with CaptureQueriesContext(connection) as queries:
+            response = post(sale)
+        assert response.status_code == 503
+        assert response.json()["code"] == "flash_sale_admission_unavailable"
+        assert response["Retry-After"] == "1"
+        assert len(queries) == 0  # Fixed identity: excludes Session authentication SQL.
+        assert budget.control.dump(budget.key) == before
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:182:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 2: SKU 2>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+ERROR    django.request:log.py:253 Service Unavailable: /api/flash-sales/orders/
+___ test_bad_redis_state_fails_closed_without_repair_or_checkout[fraction] ____
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:766f11badd8d48e08239be70ad5375ea:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 3: SKU 3>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+bad_state = 'fraction'
+
+    @pytest.mark.redis_integration
+    @pytest.mark.parametrize("bad_state", ["persistent", "fraction", "zero", "wrong_type"])
+    def test_bad_redis_state_fails_closed_without_repair_or_checkout(budget, sale, bad_state):
+        if bad_state == "wrong_type":
+            budget.control.lpush(budget.key, "bad")
+            budget.control.pexpire(budget.key, 10000)
+        else:
+            budget.control.set(budget.key, {"persistent": "1", "fraction": "1.5", "zero": "0"}[bad_state])
+            if bad_state != "persistent":
+                budget.control.pexpire(budget.key, 10000)
+        before = budget.control.dump(budget.key)
+        with CaptureQueriesContext(connection) as queries:
+            response = post(sale)
+        assert response.status_code == 503
+        assert response.json()["code"] == "flash_sale_admission_unavailable"
+        assert response["Retry-After"] == "1"
+        assert len(queries) == 0  # Fixed identity: excludes Session authentication SQL.
+        assert budget.control.dump(budget.key) == before
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:182:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 3: SKU 3>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+ERROR    django.request:log.py:253 Service Unavailable: /api/flash-sales/orders/
+_____ test_bad_redis_state_fails_closed_without_repair_or_checkout[zero] ______
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:166b8489bee445938238d1a8831667a1:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 4: SKU 4>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+bad_state = 'zero'
+
+    @pytest.mark.redis_integration
+    @pytest.mark.parametrize("bad_state", ["persistent", "fraction", "zero", "wrong_type"])
+    def test_bad_redis_state_fails_closed_without_repair_or_checkout(budget, sale, bad_state):
+        if bad_state == "wrong_type":
+            budget.control.lpush(budget.key, "bad")
+            budget.control.pexpire(budget.key, 10000)
+        else:
+            budget.control.set(budget.key, {"persistent": "1", "fraction": "1.5", "zero": "0"}[bad_state])
+            if bad_state != "persistent":
+                budget.control.pexpire(budget.key, 10000)
+        before = budget.control.dump(budget.key)
+        with CaptureQueriesContext(connection) as queries:
+            response = post(sale)
+        assert response.status_code == 503
+        assert response.json()["code"] == "flash_sale_admission_unavailable"
+        assert response["Retry-After"] == "1"
+        assert len(queries) == 0  # Fixed identity: excludes Session authentication SQL.
+        assert budget.control.dump(budget.key) == before
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:182:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 4: SKU 4>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+ERROR    django.request:log.py:253 Service Unavailable: /api/flash-sales/orders/
+__ test_bad_redis_state_fails_closed_without_repair_or_checkout[wrong_type] ___
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:5dde5c796ba84f4dac2e3c29a89001bb:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 5: SKU 5>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+bad_state = 'wrong_type'
+
+    @pytest.mark.redis_integration
+    @pytest.mark.parametrize("bad_state", ["persistent", "fraction", "zero", "wrong_type"])
+    def test_bad_redis_state_fails_closed_without_repair_or_checkout(budget, sale, bad_state):
+        if bad_state == "wrong_type":
+            budget.control.lpush(budget.key, "bad")
+            budget.control.pexpire(budget.key, 10000)
+        else:
+            budget.control.set(budget.key, {"persistent": "1", "fraction": "1.5", "zero": "0"}[bad_state])
+            if bad_state != "persistent":
+                budget.control.pexpire(budget.key, 10000)
+        before = budget.control.dump(budget.key)
+        with CaptureQueriesContext(connection) as queries:
+            response = post(sale)
+        assert response.status_code == 503
+        assert response.json()["code"] == "flash_sale_admission_unavailable"
+        assert response["Retry-After"] == "1"
+        assert len(queries) == 0  # Fixed identity: excludes Session authentication SQL.
+        assert budget.control.dump(budget.key) == before
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:182:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 5: SKU 5>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  apps.promotions.admission:admission.py:64 Flash-sale admission failed: ResponseError
+ERROR    django.request:log.py:253 Service Unavailable: /api/flash-sales/orders/
+_____________ test_connection_refusal_returns_503_before_checkout _____________
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:081e9f4c099744dc825ca2fee05876f0:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 6: SKU 6>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001BCC84D0450>
+
+    @pytest.mark.redis_integration
+    def test_connection_refusal_returns_503_before_checkout(budget, sale, monkeypatch):
+        with socket.socket() as reserved:
+            reserved.bind(("127.0.0.1", 0))  # Keep this non-listening port reserved, don't stop Redis.
+            port = reserved.getsockname()[1]
+            refusing = redis.Redis(host="127.0.0.1", port=port, socket_connect_timeout=0.1, socket_timeout=0.1)
+            monkeypatch.setattr(admission, "get_admission_redis_client", lambda: refusing)
+            try:
+                with CaptureQueriesContext(connection) as queries:
+                    response = post(sale)
+            finally:
+                refusing.close()
+        assert response.status_code == 503
+        assert len(queries) == 0
+        assert not budget.control.exists(budget.key)
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 6: SKU 6>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  apps.promotions.admission:admission.py:64 Flash-sale admission failed: TimeoutError
+ERROR    django.request:log.py:253 Service Unavailable: /api/flash-sales/orders/
+______ test_unknown_result_after_real_eval_does_not_retry_or_enter_mysql ______
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:6dfa94394ea545f3bada3f488f9f7410:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 7: SKU 7>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+
+    @pytest.mark.redis_integration
+    def test_unknown_result_after_real_eval_does_not_retry_or_enter_mysql(budget, sale):
+        real_eval = budget.client.eval
+
+        def lose_result(*args):
+            real_eval(*args)
+            raise redis.exceptions.TimeoutError("Injected lost result after real EVAL")
+
+        with patch.object(budget.client, "eval", side_effect=lose_result) as eval_call:
+            with CaptureQueriesContext(connection) as queries:
+                response = post(sale)
+        assert response.status_code == 503
+        assert eval_call.call_count == 1
+        assert budget.control.get(budget.key) == b"1"
+        assert len(queries) == 0
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:218:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 7: SKU 7>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  apps.promotions.admission:admission.py:64 Flash-sale admission failed: TimeoutError
+ERROR    django.request:log.py:253 Service Unavailable: /api/flash-sales/orders/
+_______ test_auth_csrf_payload_and_key_validation_do_not_consume_budget _______
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:bcd1faf92e1342daabde56aaaaed7c5f:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 8: SKU 8>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+
+    @pytest.mark.redis_integration
+    def test_auth_csrf_payload_and_key_validation_do_not_consume_budget(budget, sale):
+        client = APIClient(enforce_csrf_checks=True)
+        payload = {"flash_sale_item_id": sale.item.pk, "address_id": sale.address.pk}
+        assert client.post(sale.url, payload, format="json").status_code == 403
+        client.force_login(sale.user)
+        assert client.post(sale.url, payload, format="json", HTTP_IDEMPOTENCY_KEY="valid").status_code == 403
+        assert client.get(reverse("accounts:csrf")).status_code == 204
+        csrf = client.cookies["csrftoken"].value
+        for invalid_payload, key in (({}, "valid"), (payload, ""), (payload, "x" * 129), (payload, "bad\tkey")):
+            response = client.post(sale.url, invalid_payload, format="json", HTTP_X_CSRFTOKEN=csrf, HTTP_IDEMPOTENCY_KEY=key)
+            assert response.status_code == 400
+        assert not budget.control.exists(budget.key)
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:236:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 8: SKU 8>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:253 Forbidden: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Forbidden: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Bad Request: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Bad Request: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Bad Request: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Bad Request: /api/flash-sales/orders/
+_ test_full_window_blocks_original_key_then_recovers_same_order_and_conflict __
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:24ddceecf78149bd9eeaa499537d783b:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 9: SKU 9>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+settings = <pytest_django.fixtures.Settings object at 0x000001BCC853FB90>
+
+    @pytest.mark.redis_integration
+    def test_full_window_blocks_original_key_then_recovers_same_order_and_conflict(budget, sale, settings):
+        settings.FLASH_SALE_ADMISSION_LIMIT = 1
+        first = post(sale)
+        assert first.status_code == 201
+        for address_id in (sale.address.pk, sale.address.pk + 1):
+            with CaptureQueriesContext(connection) as queries:
+                blocked = post(sale, address_id=address_id)
+            assert blocked.status_code == 429
+            assert blocked.json()["code"] == "flash_sale_rate_limited"
+            assert int(blocked["Retry-After"]) >= 1
+            assert len(queries) == 0
+        # Shorten only this owned test key to observe expiry without a ten-second wait.
+        budget.control.pexpire(budget.key, 30)
+        wait_for_expiry(budget)
+        replay = post(sale)
+        assert replay.status_code == 200
+        assert replay.json() == first.json()
+        budget.control.pexpire(budget.key, 30)
+        wait_for_expiry(budget)
+        conflict = post(sale, address_id=sale.address.pk + 1)
+        assert conflict.status_code == 409
+        assert conflict.json()["code"] == "idempotency_conflict"
+>       assert_facts(sale, 1)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:262:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...eItem: Flash sale item 9: SKU 9>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 1
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Conflict: /api/flash-sales/orders/
+___________ test_business_rejection_consumes_attempt_without_refund ___________
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:732321c8a5c94a8e81af131320e26292:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...tem: Flash sale item 10: SKU 10>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+settings = <pytest_django.fixtures.Settings object at 0x000001BCC851D750>
+
+    @pytest.mark.redis_integration
+    def test_business_rejection_consumes_attempt_without_refund(budget, sale, settings):
+        settings.FLASH_SALE_ADMISSION_LIMIT = 1
+        invalid_address = sale.address.pk + 1000000
+        response = post(sale, address_id=invalid_address)
+        assert response.status_code == 404
+        assert response.json()["code"] == "address_not_found"
+        assert budget.control.get(budget.key) == b"1"
+        assert post(sale).status_code == 429
+>       assert_facts(sale, 0)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:274:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...tem: Flash sale item 10: SKU 10>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 0
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:253 Not Found: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+_ test_same_24_customer_burst_counts_actual_checkout_transactions[mysql-baseline] _
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:56e569257a8148c99be811e4421954a7:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...tem: Flash sale item 11: SKU 11>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+settings = <pytest_django.fixtures.Settings object at 0x000001BCC853EE50>
+enabled = False
+
+    @pytest.mark.redis_integration
+    @pytest.mark.parametrize("enabled", [False, True], ids=["mysql-baseline", "lua-admission"])
+    def test_same_24_customer_burst_counts_actual_checkout_transactions(budget, sale, settings, enabled):
+        settings.FLASH_SALE_ADMISSION_ENABLED = enabled
+        customers = [make_customer(f"burst_{index}") for index in range(24)]
+
+        def attempt(index):
+            try:
+                connection.ensure_connection()  # Exclude connection setup from request SQL count.
+                client = APIClient()
+                user, address = customers[index]
+                client.force_authenticate(user)
+                with CaptureQueriesContext(connection) as queries:
+                    response = client.post(
+                        sale.url, {"flash_sale_item_id": sale.item.pk, "address_id": address.pk},
+                        format="json", HTTP_IDEMPOTENCY_KEY=f"burst-key-{index}",
+                    )
+                sql = [entry["sql"] for entry in queries]
+                return {"status": response.status_code, "sql_count": len(sql), "begins": sql.count("BEGIN")}
+            finally:
+                connections.close_all()
+
+        started = time.monotonic()
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            results = list(pool.map(attempt, range(24)))
+        elapsed_ms = round((time.monotonic() - started) * 1000, 2)
+        admitted = 4 if enabled else 24
+        assert sum(result["status"] == 201 for result in results) == admitted
+        assert sum(result["status"] == 429 for result in results) == 24 - admitted
+        assert sum(result["begins"] for result in results) == admitted
+        assert all(result["sql_count"] == 0 for result in results if result["status"] == 429)
+>       assert_facts(sale, admitted)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:308:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...tem: Flash sale item 11: SKU 11>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 24
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+_ test_same_24_customer_burst_counts_actual_checkout_transactions[lua-admission] _
+
+budget = namespace(control=<redis.client.Redis(<redis.connection.ConnectionPool(<redis.connection.Connection(socket_connect_tim...='project-one:test:admission:3b6da50e91964bee903ce26d1db0962a:flash-sale:admission:v1', url='redis://127.0.0.1:6381/0')
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...tem: Flash sale item 12: SKU 12>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+settings = <pytest_django.fixtures.Settings object at 0x000001BCC82D6D50>
+enabled = True
+
+    @pytest.mark.redis_integration
+    @pytest.mark.parametrize("enabled", [False, True], ids=["mysql-baseline", "lua-admission"])
+    def test_same_24_customer_burst_counts_actual_checkout_transactions(budget, sale, settings, enabled):
+        settings.FLASH_SALE_ADMISSION_ENABLED = enabled
+        customers = [make_customer(f"burst_{index}") for index in range(24)]
+
+        def attempt(index):
+            try:
+                connection.ensure_connection()  # Exclude connection setup from request SQL count.
+                client = APIClient()
+                user, address = customers[index]
+                client.force_authenticate(user)
+                with CaptureQueriesContext(connection) as queries:
+                    response = client.post(
+                        sale.url, {"flash_sale_item_id": sale.item.pk, "address_id": address.pk},
+                        format="json", HTTP_IDEMPOTENCY_KEY=f"burst-key-{index}",
+                    )
+                sql = [entry["sql"] for entry in queries]
+                return {"status": response.status_code, "sql_count": len(sql), "begins": sql.count("BEGIN")}
+            finally:
+                connections.close_all()
+
+        started = time.monotonic()
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            results = list(pool.map(attempt, range(24)))
+        elapsed_ms = round((time.monotonic() - started) * 1000, 2)
+        admitted = 4 if enabled else 24
+        assert sum(result["status"] == 201 for result in results) == admitted
+        assert sum(result["status"] == 429 for result in results) == 24 - admitted
+        assert sum(result["begins"] for result in results) == admitted
+        assert all(result["sql_count"] == 0 for result in results if result["status"] == 429)
+>       assert_facts(sale, admitted)
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:308:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+sale = namespace(user=<User: admission_customer>, address=<Address: admission_customer: \u6d4b\u8bd5\u987e\u5ba2>, client=<rest_framework.test.AP...tem: Flash sale item 12: SKU 12>, inventory=<Inventory: Inventory for ADMISSION-MOUSE>, url='/api/flash-sales/orders/')
+count = 4
+
+    def assert_facts(sale, count):
+        assert {model.__name__: model.objects.count() for model in FACT_MODELS} == {
+            model.__name__: count for model in FACT_MODELS
+        }
+        sale.inventory.refresh_from_db()
+>       assert (sale.inventory.available_stock, sale.inventory.reserved_stock, sale.inventory.sold_stock) == (24 - count, count, 0)
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'Inventory' object has no attribute 'sold_stock'
+
+backend\apps\promotions\tests\test_flash_sale_admission.py:108: AttributeError
+------------------------------ Captured log call ------------------------------
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+WARNING  django.request:log.py:253 Too Many Requests: /api/flash-sales/orders/
+=========================== short test summary info ===========================
+ERROR backend/apps/promotions/tests/test_flash_sale_admission.py::test_connection_refusal_returns_503_before_checkout
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_disabled_gate_keeps_mysql_baseline_without_redis
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_bad_redis_state_fails_closed_without_repair_or_checkout[persistent]
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_bad_redis_state_fails_closed_without_repair_or_checkout[fraction]
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_bad_redis_state_fails_closed_without_repair_or_checkout[zero]
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_bad_redis_state_fails_closed_without_repair_or_checkout[wrong_type]
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_connection_refusal_returns_503_before_checkout
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_unknown_result_after_real_eval_does_not_retry_or_enter_mysql
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_auth_csrf_payload_and_key_validation_do_not_consume_budget
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_full_window_blocks_original_key_then_recovers_same_order_and_conflict
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_business_rejection_consumes_attempt_without_refund
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_same_24_customer_burst_counts_actual_checkout_transactions[mysql-baseline]
+FAILED backend/apps/promotions/tests/test_flash_sale_admission.py::test_same_24_customer_burst_counts_actual_checkout_transactions[lua-admission]
+12 failed, 2 passed, 1 error in 19.67s

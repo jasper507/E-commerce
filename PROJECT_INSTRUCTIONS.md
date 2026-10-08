@@ -103,9 +103,13 @@ Docker、Nginx、Gunicorn、Linux、CI、日志和 Performance Testing 属于必
 
 Interview Core 先完成最窄 MVP：浏览 → 登录 → Cart → Address → Order/库存预占 → Mock Payment → 模拟发货 → 完成。普通业务功能和条件中间件不得阻塞该闭环。闭环完成后，立即转入 MySQL 库存并发、Redis 缓存正确性和支付状态/幂等三条深度主线，而不是继续横向堆功能。
 
-### Redis Lua当前范围 — 拥有者确认2026-10-08
+### Redis Lua暂缓历史 — 拥有者确认2026-10-08
 
 先不加入Redis Lua，后续再进行评估。当前继续最小秒杀顾客入口与浏览器端到端验收，不自动增加Lua准入、预扣、补偿或新负载实验，也不把Lua当作当前MySQL/HTTP收尾前提。既有Redis缓存主线保留；后续以具体瓶颈、正确性风险、面试收益和学习成本重新评估，由拥有者决定是否采用。当前决定优先于旧路线图必做措辞，见PROJECT_CHARTER.md v1.6与CONTEXT.md第55节。
+
+### Lua当前范围与故障政策 — 拥有者确认2026-10-08/09
+
+拥有者后续决定加入Lua与Elasticsearch，Lua第一层只做原子流量准入、验证数据库保护，不预扣Redis库存；此决定覆盖上面的暂缓历史。Redis无法确认额度返回503、不进入下单事务；满额所有有效POST先429，已提交订单的原Key确认也等待窗口恢复，仍保留原Key/原参数。MySQL继续负责最终订单、库存、支付及幂等事实。Phase6F首片默认关闭、真实隔离验证通过，见PROJECT_CHARTER.md v1.9、CONTEXT第63节和该片双交付；不把限速说成严格并发上限或生产容量。
 
 ## 默认协作方式
 

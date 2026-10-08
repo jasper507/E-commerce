@@ -1452,3 +1452,13 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 目标2passed13.33秒；分页/订单API/秒杀API/迁移回归29passed171子场景2默认skip27.44秒。manage.py check0，makemigrations --check --dry-run无变化；sqlmigrate正反只收集预览未执行，反向预览因当前默认库元数据可补user外键支撑索引，不能当作真实逆迁移逐条日志；最终真实SHOW INDEX无额外独立user_id索引。新计划JSON/raw与正反SQL预览见docs/verification/phase-3-order-list-index*。
 - 前后test_project_one不存在、可见测试连接0、开发schema30表，未运行开发库migrate/业务写入/服务或依赖修改；未重跑支付/MQ/Redis/浏览器矩阵，Lua/ES仍未实现。新增精简指南与验证记录互链（无图/源码导览/末尾题，仅一处重要模型代码），README/Charter与上片进度同步。
 - 订单查询方向达到收束条件，下一片进入已确认Lua原子流量准入：先确定位置、忙时/Redis故障规则与到达MySQL计量口径，仍MySQL事实，不预扣Redis库存。开发库生效要另外说明确认；写成本/空间、大表DDL、冷缓存/并发/网络、COUNT快照/分页漂移与个人独立理解仍缺证据。
+
+## 63. Lua秒杀入口原子窗口准入（2026-10-09）
+
+- 拥有者选中“下一片进入Lua原子流量准入”要求开始，并两次明确确认：Redis无法确认名额503；满额原Key确认也先429，恢复原Key同参重试。本片Depth/Learning，目标是区分库存正确性、入口保护和确认可用性；达到额度/真实事务/故障/幂等最小证据后停止。开始前main与远端59b54b9一致，Phase6E指南原用户改动保留，不纳入本片。
+- 新admission.lua用单个全入口Key：首次SET PX开启窗口，后续合法INCR保留期限，满额不增加计数/不续期；坏计数/无TTL/错误类型不自动修复。admission.py独立Redis client各100ms超时、16连接、零自动重试，返回未知/故障503；超时可能已消耗名额，不退款。Gate在Session/CSRF与输入/Key格式校验后、HTTP等待适配和订单事务前；429/503带Retry-After，原业务规则及前端代码未改。
+- settings与.env.example增加默认关闭、本地/测试的显式配置（20次/1000ms仅示例）。没有新增依赖、迁移、部署配置或Redis库存预扣；不复制商品缓存fail-open政策。预算是尝试次数，业务404也消耗，不代表库存或严格在途上限；同一部署实例须共享URL/前缀。
+- 真实Redis24独立client Barrier同时竞争，预算4，准确4准入/20拒绝。真实HTTP对照8线程处理24顾客、24库存、89元单价：关闭24 BEGIN/24单/480请求SQL，开启4 BEGIN/4单/80SQL/20次429；各429固定身份后0下单SQL。预占、快照、资格、RESERVE流水各24/4，库存分别0/24与20/4，无核销。固定身份跳过Session，批次297/125ms仅用于未跨10秒窗口检查，不生产吞吐或同产出提速。
+- 坏状态值/类型和PEXPIRETIME未改；真实非监听端口连接失败实际TimeoutError，旧Key/新Key均503，无新增效果，恢复旧Key200同单。真实EVAL后注入丢失响应：计数增1但应用只执行一次脚本、503、无下单，恢复原Key只建一单。原Key满额同参/异参先429，窗口恢复200同单/409冲突，业务效果一次；自然到期、业务拒绝不退次数、认证/CSRF/格式不消耗、默认关闭不创建client均通过。
+- 首轮测试使用不存在sold_stock、factory patch影响fixture清理，12fail/2pass/1error19.67秒保留initial raw；修正后14passed13.49秒。复审补PEXPIRETIME及旧Key503恢复Oracle，最终目标+相关API/HTTP等待/checkout/生命周期53passed325子场景61.45秒。check0、makemigrations dry-run无变化。新docs/verification/phase-6f-flash-sale-admission.md与JSON/三个raw、docs/learning/phase-6f-flash-sale-admission-study-guide.md互链；指南100行、两处关键Lua片段，无图/源码导览/末尾题。
+- 使用已有redis-test6381、随机单Key精确清理，没FLUSHDB；测试schema销毁、可见连接0，开发schema仍30表，隔离Redis结束后停止。未改实际.env、开发缓存/数据库，没有浏览器/MQ重跑。429/503前端意图保留仅静态核对，未展示倒计时；Redis重启/驱逐/主从、真实慢网络、公平性和生产阈值未测。Lua首片已收束，下一片建议商品搜索基线及ES可重建派生索引，ES仍未实现，开发索引迁移/启用准入和个人独立理解待单独处理。

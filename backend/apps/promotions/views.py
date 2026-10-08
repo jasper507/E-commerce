@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from apps.ordering.serializers import OrderSerializer
 from apps.ordering.services import OrderRuleError
+from apps.promotions.admission import FlashSaleAdmissionError, admit_flash_sale_attempt
 from apps.promotions.http_services import create_flash_sale_order_for_http
 from apps.promotions.models import FlashSaleItem
 from apps.promotions.serializers import (
@@ -63,10 +64,17 @@ class FlashSaleOrderCreateView(APIView):
             )
 
         try:
+            admit_flash_sale_attempt()
             order, created = create_flash_sale_order_for_http(
                 user=request.user,
                 idempotency_key=idempotency_key,
                 **serializer.validated_data,
+            )
+        except FlashSaleAdmissionError as error:
+            return Response(
+                {"code": error.code, "detail": error.detail},
+                status=error.http_status,
+                headers={"Retry-After": str(error.retry_after)},
             )
         except OrderRuleError as error:
             return Response(
