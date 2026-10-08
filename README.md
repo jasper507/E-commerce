@@ -3,6 +3,17 @@
 Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
+Current order-list status (2026-10-08): `GET /api/orders/?page=2` now returns
+`count`, `next`, `previous`, and `results`, with a fixed page size of 20 and
+ownership filtering before pagination. The customer page supports navigation,
+refresh with the page retained in the URL, and retry/error recovery. Order
+detail and checkout responses are unchanged. Isolated MySQL targets passed
+28 tests / 171 subtests, related regression passed 63 tests / 8 subtests, and
+the frontend build passed. Browser checks use mocked responses; no query-plan
+or performance improvement is claimed. See the [pagination verification](docs/verification/phase-3-order-list-pagination.md).
+The owner has confirmed future Lua admission and Elasticsearch search;
+neither is implemented by this slice. Older paragraphs retain their historical status.
+
 Current flash-sale status (2026-10-08): Phase 6D adds public current-item discovery
 and Session/CSRF checkout endpoints, reusing the Phase 6C-5 conditional UPDATE
 and complete checkout transaction. The owner chose a temporary five-second

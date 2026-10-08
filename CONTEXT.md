@@ -1400,6 +1400,17 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 下一步仅闭卷复述浏览器→HTTP→业务事务→MySQL，解释200同单/一次预占、409异参及注入边界。独立讲述通过前不标整个Phase6总验收完成，不自动追加基础设施。
 - 用户追问学习指南后补齐docs/learning/phase-6e-flash-sale-browser-study-guide.md，并在6D指南补导航。以当前源码说明完整请求、四字段冻结/恢复、客户端pending与订单PENDING_PAYMENT、错误分类、关键源码、89元前后值、证据限制与小练习；仅文档静态核对，不重跑应用/浏览器/数据库，也不把参考口述当作用户已掌握。
 
+## 57. 订单列表分页与后续Lua/ES计划（2026-10-08）
+
+- 拥有者已决定加入Redis Lua与Elasticsearch；Lua先做原子流量准入、验证数据库保护效果，MySQL仍为订单/库存/支付事实来源。计划顺序：订单分页与真实查询优化基线 → Lua准入 → ES商品搜索 → 部署/收尾。该最新决定覆盖第55节和旧规则中的Lua暂缓/ES尚未采用措辞；这里只记录已确认计划，不声称Lua/ES已实现。Phase6E独立讲述仍待完成，不能因开启新片标为已掌握。
+- 用户明确要求暂停知识点讲解，直接开始项目模块，已展示20条/页、归属/排序、空页、错误处理及20+1验收规则后要求开始。本片Supporting/Pair交付前后端分页，查询优化证据留到下一片Depth/Learning。
+- 开始前main/origin main均18ffbe2且核对一致，无待保存的本聊天已审核代码；保留既有PROJECT_INSTRUCTIONS.md、Phase6E指南及知识库草稿修改，未提交或覆盖。普通小片直接main，无新分支/worktree/源码副本。
+- OrderCollectionView GET使用独立OrderPagination，固定20、不接受last别名；先本人过滤、-created_at/-id排序，再切片、关联预加载和序列化，返回count/next/previous/results。POST、详情及交易服务不变。前端复用PaginatedResponse类型，翻页写URL，刷新/重试保留当前页，错误页可返回第一页；取消旧请求并检查取消状态。
+- 新增6项分页目标，适配订单API和秒杀API现有数组断言。真实隔离MySQL目标28 passed/171子场景（31.83秒）；购物车API/订单生命周期/支付API/Session回归63 passed/8子场景（64.05秒）。系统检查0、迁移漂移No changes detected、前端构建通过。认证固定后的订单数据查询预算为每个非空页3条，不代表整个Session接口只有3条SQL。
+- Playwright专用会话、Vite5181使用模拟响应验证45笔20/20/5、末页禁用、刷新页码恢复、一次503重试、abc页回到第一页、99页404和手机390px无横向溢出，截图已查看；JS运行时异常0。APIClient/MySQL是真实数据库验证，浏览器部分不是实时API端到端。首次页面脚本配置失败已修正，不算通过。
+- pytest前后test_project_one不存在、可见测试连接0，开发schema前后30表。未做开发迁移/业务写入，未改索引/依赖/部署配置/库存/支付/Lua/ES，未重跑MQ/Redis/负载矩阵；保留原有8000/5173进程。验证记录和raw见docs/verification/phase-3-order-list-pagination.md及对应target/regression-output.txt。
+- 页码分页有COUNT与深OFFSET成本，跨请求新增订单可能移动边界；本片不宣称性能改善、生产容量或稳定快照。下一片采集隔离数据的实际完整SQL、已有索引与查询计划，拆开分页和索引的收益后再选择索引；必要证据足够后收片。
+
 ## 57. 秒杀知识库：按业务问题归档（2026-10-08）
 
 - 用户明确要求创建知识库并用lark-operations/lark-whiteboard画时序图，沿用已确认的电商项目Wiki目标。新增“秒杀与库存并发”总览及六个问题页，入口：https://ocnbkcx1ug58.feishu.cn/wiki/B49NwtiePiCqqFkz61kc4ac9n79 。既有支付/Redis内容未覆盖，项目总目录仅追加秒杀导航。

@@ -1,10 +1,26 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { fetchOrders, OrderApiError } from '../api/orders'
+import type { PaginatedResponse } from '../types/catalog'
 import type { Order } from '../types/order'
 
-const orders = ref<Order[]>([])
+const PAGE_SIZE = 20
+const route = useRoute()
+const router = useRouter()
+const orderPage = ref<PaginatedResponse<Order> | null>(null)
+const orders = computed(() => orderPage.value?.results ?? [])
+const currentPage = computed(() => {
+  const rawPage = route.query.page
+  if (rawPage === undefined) return 1
+  if (typeof rawPage !== 'string' || !/^[1-9]\d*$/.test(rawPage)) return null
+  const page = Number(rawPage)
+  return Number.isSafeInteger(page) ? page : null
+})
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil((orderPage.value?.count ?? 0) / PAGE_SIZE))
+})
 const loading = ref(true)
 const loginRequired = ref(false)
 const errorMessage = ref('')
@@ -31,29 +47,45 @@ function formatDate(value: string): string {
 }
 
 async function loadOrders(): Promise<void> {
-  // “刷新订单”只请求当前用户的数据；取消上次请求，避免旧响应覆盖最新状态。
+  // 页码留在 URL；取消旧请求并检查取消状态，避免慢响应覆盖新页面。
   controller?.abort()
   const currentController = new AbortController()
   controller = currentController
   loading.value = true
   loginRequired.value = false
   errorMessage.value = ''
+  orderPage.value = null
+  if (currentPage.value === null) {
+    errorMessage.value = '页码无效，请返回第一页。'
+    loading.value = false
+    return
+  }
   try {
-    orders.value = await fetchOrders(currentController.signal)
+    const result = await fetchOrders(currentPage.value, currentController.signal)
+    if (!currentController.signal.aborted) orderPage.value = result
   } catch (error) {
     if (currentController.signal.aborted) return
     loginRequired.value = error instanceof OrderApiError && error.status === 403
     errorMessage.value = loginRequired.value
       ? '请先登录，再查看自己的订单。'
-      : error instanceof Error && error.message
-        ? error.message
-        : '订单暂时无法加载，请稍后重试。'
+      : error instanceof OrderApiError && error.status === 404
+        ? '这一页不存在，请返回第一页。'
+        : error instanceof Error && error.message
+          ? error.message
+          : '订单暂时无法加载，请稍后重试。'
   } finally {
     if (!currentController.signal.aborted) loading.value = false
   }
 }
 
-onMounted(() => void loadOrders())
+function goToPage(page: number): void {
+  void router.push({
+    name: 'orders',
+    query: { ...route.query, page: String(page) },
+  })
+}
+
+watch(() => route.query.page, () => void loadOrders(), { immediate: true })
 onBeforeUnmount(() => controller?.abort())
 </script>
 
@@ -78,7 +110,7 @@ onBeforeUnmount(() => controller?.abort())
     <div v-else-if="loginRequired" class="state-panel order-list-state error-panel" role="alert">
       <h2>需要登录</h2>
       <p>{{ errorMessage }}</p>
-      <RouterLink class="primary-button" :to="{ name: 'login', query: { redirect: '/orders' } }">
+      <RouterLink class="primary-button" :to="{ name: 'login', query: { redirect: route.fullPath } }">
         前往登录
       </RouterLink>
     </div>
@@ -87,6 +119,9 @@ onBeforeUnmount(() => controller?.abort())
       <h2>订单暂时无法加载</h2>
       <p>{{ errorMessage }}</p>
       <button class="primary-button" type="button" @click="loadOrders">重新加载</button>
+      <button v-if="currentPage !== 1" class="secondary-button" type="button" @click="goToPage(1)">
+        返回第一页
+      </button>
     </div>
 
     <div v-else-if="orders.length === 0" class="state-panel order-list-state">
@@ -97,26 +132,47 @@ onBeforeUnmount(() => controller?.abort())
       </RouterLink>
     </div>
 
-    <div v-else class="order-list">
-      <article v-for="order in orders" :key="order.public_id" class="order-list-card">
-        <div class="order-list-heading">
-          <div>
-            <p class="sku-code">{{ formatDate(order.created_at) }}</p>
-            <h2>订单 {{ order.public_id }}</h2>
+    <template v-else-if="orderPage">
+      <div class="order-list">
+        <article v-for="order in orders" :key="order.public_id" class="order-list-card">
+          <div class="order-list-heading">
+            <div>
+              <p class="sku-code">{{ formatDate(order.created_at) }}</p>
+              <h2>订单 {{ order.public_id }}</h2>
+            </div>
+            <span class="stock-badge">{{ statusLabels[order.status] ?? order.status }}</span>
           </div>
-          <span class="stock-badge">{{ statusLabels[order.status] ?? order.status }}</span>
-        </div>
-        <p class="muted">{{ order.items.length }} 种商品 · 收货人 {{ order.address.recipient_name }}</p>
-        <div class="order-list-footer">
-          <strong>应付 ¥{{ order.total }}</strong>
-          <RouterLink
-            class="primary-button"
-            :to="{ name: 'order-detail', params: { publicId: order.public_id } }"
-          >
-            查看详情
-          </RouterLink>
-        </div>
-      </article>
-    </div>
+          <p class="muted">{{ order.items.length }} 种商品 · 收货人 {{ order.address.recipient_name }}</p>
+          <div class="order-list-footer">
+            <strong>应付 ¥{{ order.total }}</strong>
+            <RouterLink
+              class="primary-button"
+              :to="{ name: 'order-detail', params: { publicId: order.public_id } }"
+            >
+              查看详情
+            </RouterLink>
+          </div>
+        </article>
+      </div>
+      <nav v-if="orderPage.count > PAGE_SIZE" class="pagination" aria-label="订单分页">
+        <button
+          class="secondary-button"
+          type="button"
+          :disabled="orderPage.previous === null"
+          @click="goToPage((currentPage ?? 1) - 1)"
+        >
+          上一页
+        </button>
+        <span>第 {{ currentPage }} / {{ totalPages }} 页 · 共 {{ orderPage.count }} 笔</span>
+        <button
+          class="secondary-button"
+          type="button"
+          :disabled="orderPage.next === null"
+          @click="goToPage((currentPage ?? 1) + 1)"
+        >
+          下一页
+        </button>
+      </nav>
+    </template>
   </section>
 </template>

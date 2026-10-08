@@ -333,7 +333,8 @@ class FlashSaleAPITests(FlashSaleCheckoutFixture):
         own_list = self.client.get(reverse("orders:order-list"))
         own_detail = self.client.get(detail_url)
         self.assertEqual(own_list.status_code, status.HTTP_200_OK)
-        self.assertEqual([order["public_id"] for order in own_list.json()], [public_id])
+        self.assertEqual(own_list.json()["count"], 1)
+        self.assertEqual([order["public_id"] for order in own_list.json()["results"]], [public_id])
         self.assertEqual(own_detail.status_code, status.HTTP_200_OK)
         self.assertEqual(own_detail.json(), created.json())
 
@@ -341,7 +342,10 @@ class FlashSaleAPITests(FlashSaleCheckoutFixture):
         other_list = self.client.get(reverse("orders:order-list"))
         other_detail = self.client.get(detail_url)
         self.assertEqual(other_list.status_code, status.HTTP_200_OK)
-        self.assertEqual(other_list.json(), [])
+        self.assertEqual(
+            other_list.json(),
+            {"count": 0, "next": None, "previous": None, "results": []},
+        )
         self.assertEqual(other_detail.status_code, status.HTTP_404_NOT_FOUND)
         self._assert_complete_flash_sale_order(key="flash-sale-order-owner")
 

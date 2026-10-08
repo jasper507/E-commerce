@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -151,13 +152,20 @@ def orders_for(user):
     )
 
 
+class OrderPagination(PageNumberPagination):
+    page_size = 20
+    last_page_strings = ()
+
+
 class OrderCollectionView(APIView):
     """列出本人订单；创建时由 Service 完成金额、预占和幂等检查。"""
 
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        return Response(OrderSerializer(orders_for(request.user), many=True).data)
+        paginator = OrderPagination()
+        page = paginator.paginate_queryset(orders_for(request.user), request, view=self)
+        return paginator.get_paginated_response(OrderSerializer(page, many=True).data)
 
     def post(self, request):
         serializer = CreateOrderSerializer(data=request.data)

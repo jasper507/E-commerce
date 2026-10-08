@@ -287,5 +287,8 @@ class OrderAPITests(APITestCase):
         )
 
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(list_response.json(), [])
+        self.assertEqual(
+            list_response.json(),
+            {"count": 0, "next": None, "previous": None, "results": []},
+        )
         self.assertEqual(detail_response.status_code, status.HTTP_404_NOT_FOUND)

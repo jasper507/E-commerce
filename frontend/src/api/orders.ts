@@ -1,4 +1,5 @@
 import { ensureCsrfCookie } from './auth'
+import type { PaginatedResponse } from '../types/catalog'
 import type { Order } from '../types/order'
 
 const ORDER_API_BASE = '/api/orders'
@@ -61,8 +62,12 @@ export async function createOrder(
   return (await response.json()) as Order
 }
 
-export async function fetchOrders(signal?: AbortSignal): Promise<Order[]> {
-  const response = await fetch(`${ORDER_API_BASE}/`, {
+export async function fetchOrders(
+  page = 1,
+  signal?: AbortSignal,
+): Promise<PaginatedResponse<Order>> {
+  const searchParams = new URLSearchParams({ page: String(page) })
+  const response = await fetch(`${ORDER_API_BASE}/?${searchParams}`, {
     credentials: 'same-origin',
     headers: { Accept: 'application/json' },
     signal,
@@ -71,7 +76,7 @@ export async function fetchOrders(signal?: AbortSignal): Promise<Order[]> {
     const details = await errorDetails(response)
     throw new OrderApiError(response.status, details.message, details.code)
   }
-  return (await response.json()) as Order[]
+  return (await response.json()) as PaginatedResponse<Order>
 }
 
 export async function fetchOrder(
