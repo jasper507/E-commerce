@@ -3,6 +3,10 @@ from rest_framework import serializers
 from apps.catalog.models import Category, Product, SKU
 
 
+class ProductSearchQuerySerializer(serializers.Serializer):
+    q = serializers.CharField(required=False, default="", allow_blank=True, max_length=80)
+
+
 def sku_is_in_stock(sku):
     """目录页只展示是否有货；下单仍要重新读取并锁定权威库存。"""
 

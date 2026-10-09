@@ -3,6 +3,21 @@
 Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
+Product-search baseline (2026-10-09): the public product list accepts optional
+`q` for whole-keyword inclusion in name or description (trimmed, max 80), while
+preserving visibility, category intersection, 20-item pages and product summaries.
+The customer page has a search form and keeps `q` in its URL. Isolated MySQL
+targets passed 9 tests; related checks passed 24 tests / 6 subtests with the
+explicit experiment skipped, and the frontend build passed. With 5,000 visible
+synthetic products, the three complete API requests returned 500/0/250 matches
+and executed 2/1/2 SQL statements; their COUNT and list plans are preserved.
+This is a functional and query-plan baseline, not a slow-SQL or ES performance
+improvement claim. No ES service/dependency or development database change was
+made; frontend runtime/browser behavior remains unverified in this slice.
+See the [verification](docs/verification/phase-7a-search-baseline.md) and
+[study guide](docs/learning/phase-7a-product-search-baseline-study-guide.md).
+The proposed next slice is an isolated, rebuildable Elasticsearch search prototype.
+
 Flash-sale Lua admission (2026-10-09): a default-off, local/test-only shared
 attempt counter runs before the HTTP lock-wait adapter and MySQL checkout.
 Full windows return 429, including original-Key confirmation; unknown Redis
@@ -15,8 +30,8 @@ Final checks passed 53 tests / 325 subtests. These are isolated correctness and
 protection observations, not production throughput or an in-flight limit.
 See the [verification](docs/verification/phase-6f-flash-sale-admission.md) and
 [study guide](docs/learning/phase-6f-flash-sale-admission-study-guide.md).
-Development data/configuration is unchanged; the next proposed slice is the
-product-search baseline before the confirmed Elasticsearch work.
+Development runtime data/configuration is unchanged; that stage handed off to
+the product-search baseline before the confirmed Elasticsearch work.
 
 Order-list index implementation (2026-10-09): the verified
 `(user_id, created_at, id)` index is declared in the model and migration 0005.

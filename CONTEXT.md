@@ -1462,3 +1462,12 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 坏状态值/类型和PEXPIRETIME未改；真实非监听端口连接失败实际TimeoutError，旧Key/新Key均503，无新增效果，恢复旧Key200同单。真实EVAL后注入丢失响应：计数增1但应用只执行一次脚本、503、无下单，恢复原Key只建一单。原Key满额同参/异参先429，窗口恢复200同单/409冲突，业务效果一次；自然到期、业务拒绝不退次数、认证/CSRF/格式不消耗、默认关闭不创建client均通过。
 - 首轮测试使用不存在sold_stock、factory patch影响fixture清理，12fail/2pass/1error19.67秒保留initial raw；修正后14passed13.49秒。复审补PEXPIRETIME及旧Key503恢复Oracle，最终目标+相关API/HTTP等待/checkout/生命周期53passed325子场景61.45秒。check0、makemigrations dry-run无变化。新docs/verification/phase-6f-flash-sale-admission.md与JSON/三个raw、docs/learning/phase-6f-flash-sale-admission-study-guide.md互链；指南100行、两处关键Lua片段，无图/源码导览/末尾题。
 - 使用已有redis-test6381、随机单Key精确清理，没FLUSHDB；测试schema销毁、可见连接0，开发schema仍30表，隔离Redis结束后停止。未改实际.env、开发缓存/数据库，没有浏览器/MQ重跑。429/503前端意图保留仅静态核对，未展示倒计时；Redis重启/驱逐/主从、真实慢网络、公平性和生产阈值未测。Lua首片已收束，下一片建议商品搜索基线及ES可重建派生索引，ES仍未实现，开发索引迁移/启用准入和个人独立理解待单独处理。
+
+## 64. 商品关键词搜索与MySQL完整查询基线（2026-10-09）
+
+- 用户选旧基线“正式落地订单列表联合索引”要求下一片；核对main/远端36dc6d1一致，索引59b54b9与Lua36dc6d1均已完成，继续当前尚未完成的搜索方向；拥有者明确选择商品名称＋描述。Supporting/Pair，以功能规则与实际COUNT/列表计划形成后续ES可比较基线；停止于一个规模三个查询，不扩索引/负载矩阵。
+- catalog新q QuerySerializer可选空词、trim/max80/NUL拒绝；View名称OR描述icontains，与原有效商品/分类、分类筛选AND。原name/id、固定20页、缺货/无SKU可见、有效SKU最低价及布尔库存提示保留，详情/缓存/库存/订单/支付/Lua不改。前端增加q/API传参/搜索框/URL状态，改词或分类重置页码、翻页保留q、取消旧请求；空结果取消分类按钮准确写“查看全部分类”。
+- 新功能8项＋显式完整查询实验1项真实MySQL9passed12.84秒；公开目录/模型/Admin/新功能相关24passed6子场景1默认skip10.99秒；最终vue-tsc/Vite build通过。check0、makemigrations dry-run无变化。无真实/模拟浏览器运行验收，前端URL流程仅静态核对，构建不是端到端证据。
+- 合成5000可见＋2隐藏Product、10004SKU/Inventory，名称统一前缀四位编号，描述明确成员集独立Oracle。关键词500/无匹配0/关键词加分类250，总SQL2/1/2；捕获真实API完整COUNT/list SQL参数、四表索引/collation、EXPLAIN及ANALYZE。全局商品FK步骤约2500rows×2loops（平均/舍入不能称精确5000读取），分类限定2501×1；匹配500/250后聚合/排序再LIMIT20，COUNT仍联表/分组，分类COUNT的Exists投影250loops。keyword为包含LIKE、无词序/分词/相关性；不是慢SQL优化/ES性能对照或生产容量。
+- 显式实验collection限制test环境/隔离库且不同默认库，连接再断言MySQL/autocommit；报告存在拒绝覆盖。pytest前后test schema0/可见连接0，开发schema仍30表，没开发migrate/业务写入；没新增依赖、索引、ES/Redis服务或部署配置，原Phase6E指南改动保留。一次中断后确认文件完整再测试；读取报告的控制台编码错误用Python-Xutf8修正，不影响测试/JSON。
+- 双交付docs/verification/phase-7a-search-baseline.md及JSON/target/regression/frontend raw、docs/learning/phase-7a-product-search-baseline-study-guide.md互链；指南聚焦规则、完整查询成本、替代方案/代价/证据缺口，少量关键代码，无图/源码清单/末尾题。当前搜索基线收束，下一片建议隔离ES可重建商品搜索原型；字段/中文分析/排序与MySQL事实回读、索引同步及故障分片确认。ES、个人独立理解和开发运行不冒称完成。

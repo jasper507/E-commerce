@@ -1,0 +1,7 @@
+2026-10-09 16:44:03,280 WARNING django.request Bad Request: /api/catalog/products/
+2026-10-09 16:44:03,281 WARNING django.request Bad Request: /api/catalog/products/
+........search_query_baseline {"scenario": "keyword", "count": 500, "sql_count": 2}
+search_query_baseline {"scenario": "missing", "count": 0, "sql_count": 1}
+search_query_baseline {"scenario": "keyword_category", "count": 250, "sql_count": 2}
+.
+9 passed in 12.84s

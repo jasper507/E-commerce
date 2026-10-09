@@ -1,0 +1,54 @@
+2026-10-09 16:45:32,024 WARNING django.request Not Found: /api/catalog/products/hidden-mouse/
+2026-10-09 16:45:32,027 WARNING django.request Not Found: /api/catalog/products/hidden-category-product/
+2026-10-09 16:45:32,028 WARNING django.request Not Found: /api/catalog/products/does-not-exist/
+2026-10-09 16:45:32,483 WARNING django.request Method Not Allowed: /api/catalog/products/
+2026-10-09 16:45:32,620 WARNING django.request Method Not Allowed: /api/catalog/categories/
+2026-10-09 16:45:32,621 WARNING django.request Method Not Allowed: /api/catalog/products/
+2026-10-09 16:45:32,622 WARNING django.request Method Not Allowed: /api/catalog/products/wireless-mouse-m1/
+2026-10-09 16:45:33,136 WARNING django.request Forbidden (Permission denied): /admin/catalog/sku/add/
+Traceback (most recent call last):
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\contrib\admin\options.py", line 720, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\contrib\admin\sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\contrib\admin\options.py", line 1985, in add_view
+    return self.changeform_view(request, None, form_url, extra_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\contrib\admin\options.py", line 1841, in changeform_view
+    return self._changeform_view(request, object_id, form_url, extra_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\project-one-ecommerce\.venv\Lib\site-packages\django\contrib\admin\options.py", line 1860, in _changeform_view
+    raise PermissionDenied
+django.core.exceptions.PermissionDenied
+2026-10-09 16:45:33,823 WARNING django.request Bad Request: /api/catalog/products/
+2026-10-09 16:45:33,824 WARNING django.request Bad Request: /api/catalog/products/
+.uuu........uuu...............s
+=========================== short test summary info ===========================
+SKIPPED [1] backend\apps\catalog\tests\test_search_query_baseline.py:56: explicit product-search experiment only
+24 passed, 1 skipped, 6 subtests passed in 10.99s

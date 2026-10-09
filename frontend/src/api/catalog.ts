@@ -52,6 +52,7 @@ export function fetchCategories(signal?: AbortSignal): Promise<Category[]> {
 }
 
 export interface ProductListParams {
+  q?: string
   category?: string
   page?: number
 }
@@ -62,6 +63,9 @@ export function fetchProducts(
 ): Promise<PaginatedResponse<ProductSummary>> {
   const searchParams = new URLSearchParams()
 
+  if (params.q) {
+    searchParams.set('q', params.q)
+  }
   if (params.category) {
     searchParams.set('category', params.category)
   }

@@ -1,0 +1,1376 @@
+{
+  "date": "2026-10-09",
+  "mysql_version": "8.4.10",
+  "fixture": {
+    "visible_products": 5000,
+    "hidden_products": 2,
+    "skus": 10004,
+    "inventory": 10004
+  },
+  "metadata": {
+    "catalog_category": {
+      "indexes": [
+        {
+          "Table": "catalog_category",
+          "Non_unique": 0,
+          "Key_name": "PRIMARY",
+          "Seq_in_index": 1,
+          "Column_name": "id",
+          "Collation": "A",
+          "Cardinality": 3,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        },
+        {
+          "Table": "catalog_category",
+          "Non_unique": 0,
+          "Key_name": "name",
+          "Seq_in_index": 1,
+          "Column_name": "name",
+          "Collation": "A",
+          "Cardinality": 3,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        },
+        {
+          "Table": "catalog_category",
+          "Non_unique": 0,
+          "Key_name": "slug",
+          "Seq_in_index": 1,
+          "Column_name": "slug",
+          "Collation": "A",
+          "Cardinality": 3,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        }
+      ],
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "bigint",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "name",
+          "Type": "varchar(80)",
+          "Collation": "utf8mb4_0900_ai_ci",
+          "Null": "NO",
+          "Key": "UNI",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "slug",
+          "Type": "varchar(80)",
+          "Collation": "utf8mb4_0900_ai_ci",
+          "Null": "NO",
+          "Key": "UNI",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "is_active",
+          "Type": "tinyint(1)",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        }
+      ]
+    },
+    "catalog_product": {
+      "indexes": [
+        {
+          "Table": "catalog_product",
+          "Non_unique": 0,
+          "Key_name": "PRIMARY",
+          "Seq_in_index": 1,
+          "Column_name": "id",
+          "Collation": "A",
+          "Cardinality": 5076,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        },
+        {
+          "Table": "catalog_product",
+          "Non_unique": 0,
+          "Key_name": "slug",
+          "Seq_in_index": 1,
+          "Column_name": "slug",
+          "Collation": "A",
+          "Cardinality": 5002,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        },
+        {
+          "Table": "catalog_product",
+          "Non_unique": 1,
+          "Key_name": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+          "Seq_in_index": 1,
+          "Column_name": "category_id",
+          "Collation": "A",
+          "Cardinality": 3,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        }
+      ],
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "bigint",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "name",
+          "Type": "varchar(160)",
+          "Collation": "utf8mb4_0900_ai_ci",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "slug",
+          "Type": "varchar(180)",
+          "Collation": "utf8mb4_0900_ai_ci",
+          "Null": "NO",
+          "Key": "UNI",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "description",
+          "Type": "longtext",
+          "Collation": "utf8mb4_0900_ai_ci",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "is_active",
+          "Type": "tinyint(1)",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "category_id",
+          "Type": "bigint",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        }
+      ]
+    },
+    "catalog_sku": {
+      "indexes": [
+        {
+          "Table": "catalog_sku",
+          "Non_unique": 0,
+          "Key_name": "PRIMARY",
+          "Seq_in_index": 1,
+          "Column_name": "id",
+          "Collation": "A",
+          "Cardinality": 9769,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        },
+        {
+          "Table": "catalog_sku",
+          "Non_unique": 0,
+          "Key_name": "code",
+          "Seq_in_index": 1,
+          "Column_name": "code",
+          "Collation": "A",
+          "Cardinality": 9760,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        },
+        {
+          "Table": "catalog_sku",
+          "Non_unique": 1,
+          "Key_name": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+          "Seq_in_index": 1,
+          "Column_name": "product_id",
+          "Collation": "A",
+          "Cardinality": 5002,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        }
+      ],
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "bigint",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "code",
+          "Type": "varchar(64)",
+          "Collation": "utf8mb4_0900_ai_ci",
+          "Null": "NO",
+          "Key": "UNI",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "color",
+          "Type": "varchar(50)",
+          "Collation": "utf8mb4_0900_ai_ci",
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "attributes",
+          "Type": "json",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "price",
+          "Type": "decimal(12,2)",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "is_active",
+          "Type": "tinyint(1)",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "product_id",
+          "Type": "bigint",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "MUL",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        }
+      ]
+    },
+    "inventory_inventory": {
+      "indexes": [
+        {
+          "Table": "inventory_inventory",
+          "Non_unique": 0,
+          "Key_name": "PRIMARY",
+          "Seq_in_index": 1,
+          "Column_name": "id",
+          "Collation": "A",
+          "Cardinality": 10093,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        },
+        {
+          "Table": "inventory_inventory",
+          "Non_unique": 0,
+          "Key_name": "sku_id",
+          "Seq_in_index": 1,
+          "Column_name": "sku_id",
+          "Collation": "A",
+          "Cardinality": 10004,
+          "Sub_part": null,
+          "Packed": null,
+          "Null": "",
+          "Index_type": "BTREE",
+          "Comment": "",
+          "Index_comment": "",
+          "Visible": "YES",
+          "Expression": null
+        }
+      ],
+      "columns": [
+        {
+          "Field": "id",
+          "Type": "bigint",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "PRI",
+          "Default": null,
+          "Extra": "auto_increment",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "available_stock",
+          "Type": "int unsigned",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "reserved_stock",
+          "Type": "int unsigned",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        },
+        {
+          "Field": "sku_id",
+          "Type": "bigint",
+          "Collation": null,
+          "Null": "NO",
+          "Key": "UNI",
+          "Default": null,
+          "Extra": "",
+          "Privileges": "select,insert,update,references",
+          "Comment": ""
+        }
+      ]
+    }
+  },
+  "observations": [
+    {
+      "scenario": "keyword",
+      "params": {
+        "q": "无线鼠标"
+      },
+      "count": 500,
+      "response": {
+        "count": 500,
+        "next": "http://testserver/api/catalog/products/?page=2&q=%E6%97%A0%E7%BA%BF%E9%BC%A0%E6%A0%87",
+        "previous": null,
+        "results": [
+          {
+            "slug": "search-product-0000",
+            "name": "搜索商品 0000",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0010",
+            "name": "搜索商品 0010",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0020",
+            "name": "搜索商品 0020",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0030",
+            "name": "搜索商品 0030",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0040",
+            "name": "搜索商品 0040",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0050",
+            "name": "搜索商品 0050",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0060",
+            "name": "搜索商品 0060",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0070",
+            "name": "搜索商品 0070",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0080",
+            "name": "搜索商品 0080",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0090",
+            "name": "搜索商品 0090",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0100",
+            "name": "搜索商品 0100",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0110",
+            "name": "搜索商品 0110",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0120",
+            "name": "搜索商品 0120",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0130",
+            "name": "搜索商品 0130",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0140",
+            "name": "搜索商品 0140",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0150",
+            "name": "搜索商品 0150",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0160",
+            "name": "搜索商品 0160",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0170",
+            "name": "搜索商品 0170",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          },
+          {
+            "slug": "search-product-0180",
+            "name": "搜索商品 0180",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0190",
+            "name": "搜索商品 0190",
+            "category": {
+              "slug": "search-b",
+              "name": "搜索分类B"
+            },
+            "lowest_price": "129.00",
+            "in_stock": false
+          }
+        ]
+      },
+      "plans": [
+        {
+          "sql": "SELECT COUNT(*) FROM (SELECT EXISTS(SELECT %s AS `a` FROM `inventory_inventory` U0 INNER JOIN `catalog_sku` U1 ON (U0.`sku_id` = U1.`id`) WHERE (U0.`available_stock` > %s AND U1.`is_active` = %s AND U1.`product_id` = (`catalog_product`.`id`)) LIMIT 1) AS `in_stock` FROM `catalog_product` INNER JOIN `catalog_category` ON (`catalog_product`.`category_id` = `catalog_category`.`id`) LEFT OUTER JOIN `catalog_sku` ON (`catalog_product`.`id` = `catalog_sku`.`product_id`) WHERE (`catalog_category`.`is_active` = %s AND `catalog_product`.`is_active` = %s AND (`catalog_product`.`name` LIKE %s OR `catalog_product`.`description` LIKE %s)) GROUP BY `catalog_product`.`id` ORDER BY NULL) subquery",
+          "params": [
+            1,
+            0,
+            true,
+            true,
+            true,
+            "%无线鼠标%",
+            "%无线鼠标%"
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "<derived2>",
+              "partitions": null,
+              "type": "ALL",
+              "possible_keys": null,
+              "key": null,
+              "key_len": null,
+              "ref": null,
+              "rows": 69,
+              "filtered": 100.0,
+              "Extra": null
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_category",
+              "partitions": null,
+              "type": "ALL",
+              "possible_keys": "PRIMARY",
+              "key": null,
+              "key_len": null,
+              "ref": null,
+              "rows": 3,
+              "filtered": 33.33,
+              "Extra": "Using where; Using temporary"
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_product",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,slug,catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_category.id",
+              "rows": 1692,
+              "filtered": 2.1,
+              "Extra": "Using where"
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_sku",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_product.id",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": "Using index"
+            },
+            {
+              "id": 3,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U1",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "func",
+              "rows": 1,
+              "filtered": 10.0,
+              "Extra": "Using where"
+            },
+            {
+              "id": 3,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U0",
+              "partitions": null,
+              "type": "eq_ref",
+              "possible_keys": "sku_id",
+              "key": "sku_id",
+              "key_len": "8",
+              "ref": "test_project_one.U1.id",
+              "rows": 1,
+              "filtered": 33.33,
+              "Extra": "Using where"
+            }
+          ],
+          "actual_tree": "-> Aggregate: count(0)  (cost=237..237 rows=1) (actual time=13.1..13.1 rows=1 loops=1)\n    -> Table scan on subquery  (cost=227..230 rows=69.3) (actual time=13..13 rows=500 loops=1)\n        -> Materialize  (cost=227..227 rows=69.3) (actual time=13..13 rows=500 loops=1)\n            -> Table scan on <temporary>  (cost=217..220 rows=69.3) (actual time=13..13 rows=500 loops=1)\n                -> Temporary table with deduplication  (cost=217..217 rows=69.3) (actual time=13..13 rows=500 loops=1)\n                    -> Nested loop left join  (cost=210 rows=69.3) (actual time=0.0353..8.46 rows=1000 loops=1)\n                        -> Nested loop inner join  (cost=194 rows=35.5) (actual time=0.0259..7.79 rows=500 loops=1)\n                            -> Filter: (catalog_category.is_active = 1)  (cost=0.55 rows=1) (actual time=0.0101..0.0133 rows=2 loops=1)\n                                -> Table scan on catalog_category  (cost=0.55 rows=3) (actual time=0.00867..0.011 rows=3 loops=1)\n                            -> Filter: ((catalog_product.is_active = 1) and ((catalog_product.`name` like '%无线鼠标%') or (catalog_product.`description` like '%无线鼠标%')))  (cost=27.6 rows=35.5) (actual time=0.00982..3.88 rows=250 loops=2)\n                                -> Index lookup on catalog_product using catalog_product_category_id_35bf920b_fk_catalog_category_id (category_id=catalog_category.id)  (cost=27.6 rows=1692) (actual time=0.00638..1.59 rows=2500 loops=2)\n                        -> Covering index lookup on catalog_sku using catalog_sku_product_id_6332277c_fk_catalog_product_id (product_id=catalog_product.id)  (cost=0.256 rows=1.95) (actual time=910e-6..0.00114 rows=2 loops=500)\n"
+        },
+        {
+          "sql": "SELECT `catalog_product`.`id`, `catalog_product`.`category_id`, `catalog_product`.`name`, `catalog_product`.`slug`, `catalog_product`.`description`, `catalog_product`.`is_active`, MIN(CASE WHEN `catalog_sku`.`is_active` = %s THEN `catalog_sku`.`price` ELSE NULL END) AS `lowest_price`, EXISTS(SELECT %s AS `a` FROM `inventory_inventory` U0 INNER JOIN `catalog_sku` U1 ON (U0.`sku_id` = U1.`id`) WHERE (U0.`available_stock` > %s AND U1.`is_active` = %s AND U1.`product_id` = (`catalog_product`.`id`)) LIMIT 1) AS `in_stock`, `catalog_category`.`id`, `catalog_category`.`name`, `catalog_category`.`slug`, `catalog_category`.`is_active` FROM `catalog_product` INNER JOIN `catalog_category` ON (`catalog_product`.`category_id` = `catalog_category`.`id`) LEFT OUTER JOIN `catalog_sku` ON (`catalog_product`.`id` = `catalog_sku`.`product_id`) WHERE (`catalog_category`.`is_active` = %s AND `catalog_product`.`is_active` = %s AND (`catalog_product`.`name` LIKE %s OR `catalog_product`.`description` LIKE %s)) GROUP BY `catalog_product`.`id`, `catalog_category`.`id` ORDER BY `catalog_product`.`name` ASC, `catalog_product`.`id` ASC LIMIT 20",
+          "params": [
+            true,
+            1,
+            0,
+            true,
+            true,
+            true,
+            "%无线鼠标%",
+            "%无线鼠标%"
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "catalog_category",
+              "partitions": null,
+              "type": "ALL",
+              "possible_keys": "PRIMARY",
+              "key": null,
+              "key_len": null,
+              "ref": null,
+              "rows": 3,
+              "filtered": 33.33,
+              "Extra": "Using where; Using temporary; Using filesort"
+            },
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "catalog_product",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_category.id",
+              "rows": 1692,
+              "filtered": 2.1,
+              "Extra": "Using where"
+            },
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "catalog_sku",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_product.id",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": null
+            },
+            {
+              "id": 2,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U1",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "func",
+              "rows": 1,
+              "filtered": 10.0,
+              "Extra": "Using where"
+            },
+            {
+              "id": 2,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U0",
+              "partitions": null,
+              "type": "eq_ref",
+              "possible_keys": "sku_id",
+              "key": "sku_id",
+              "key_len": "8",
+              "ref": "test_project_one.U1.id",
+              "rows": 1,
+              "filtered": 33.33,
+              "Extra": "Using where"
+            }
+          ],
+          "actual_tree": "-> Limit: 20 row(s)  (actual time=8.15..8.15 rows=20 loops=1)\n    -> Sort row IDs: catalog_product.`name`, catalog_product.id, limit input to 20 row(s) per chunk  (actual time=8.15..8.15 rows=20 loops=1)\n        -> Table scan on <temporary>  (actual time=8.03..8.08 rows=500 loops=1)\n            -> Aggregate using temporary table  (actual time=8.03..8.03 rows=500 loops=1)\n                -> Nested loop left join  (cost=218 rows=69.3) (actual time=0.0234..5.16 rows=1000 loops=1)\n                    -> Nested loop inner join  (cost=194 rows=35.5) (actual time=0.0172..3.85 rows=500 loops=1)\n                        -> Filter: (catalog_category.is_active = 1)  (cost=0.55 rows=1) (actual time=0.00787..0.0102 rows=2 loops=1)\n                            -> Table scan on catalog_category  (cost=0.55 rows=3) (actual time=0.00726..0.00925 rows=3 loops=1)\n                        -> Filter: ((catalog_product.is_active = 1) and ((catalog_product.`name` like '%无线鼠标%') or (catalog_product.`description` like '%无线鼠标%')))  (cost=27.6 rows=35.5) (actual time=0.00734..1.91 rows=250 loops=2)\n                            -> Index lookup on catalog_product using catalog_product_category_id_35bf920b_fk_catalog_category_id (category_id=catalog_category.id)  (cost=27.6 rows=1692) (actual time=0.00489..1.54 rows=2500 loops=2)\n                    -> Index lookup on catalog_sku using catalog_sku_product_id_6332277c_fk_catalog_product_id (product_id=catalog_product.id)  (cost=0.494 rows=1.95) (actual time=0.00214..0.00239 rows=2 loops=500)\n"
+        }
+      ]
+    },
+    {
+      "scenario": "missing",
+      "params": {
+        "q": "不可能匹配的测试词"
+      },
+      "count": 0,
+      "response": {
+        "count": 0,
+        "next": null,
+        "previous": null,
+        "results": []
+      },
+      "plans": [
+        {
+          "sql": "SELECT COUNT(*) FROM (SELECT EXISTS(SELECT %s AS `a` FROM `inventory_inventory` U0 INNER JOIN `catalog_sku` U1 ON (U0.`sku_id` = U1.`id`) WHERE (U0.`available_stock` > %s AND U1.`is_active` = %s AND U1.`product_id` = (`catalog_product`.`id`)) LIMIT 1) AS `in_stock` FROM `catalog_product` INNER JOIN `catalog_category` ON (`catalog_product`.`category_id` = `catalog_category`.`id`) LEFT OUTER JOIN `catalog_sku` ON (`catalog_product`.`id` = `catalog_sku`.`product_id`) WHERE (`catalog_category`.`is_active` = %s AND `catalog_product`.`is_active` = %s AND (`catalog_product`.`name` LIKE %s OR `catalog_product`.`description` LIKE %s)) GROUP BY `catalog_product`.`id` ORDER BY NULL) subquery",
+          "params": [
+            1,
+            0,
+            true,
+            true,
+            true,
+            "%不可能匹配的测试词%",
+            "%不可能匹配的测试词%"
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "<derived2>",
+              "partitions": null,
+              "type": "ALL",
+              "possible_keys": null,
+              "key": null,
+              "key_len": null,
+              "ref": null,
+              "rows": 69,
+              "filtered": 100.0,
+              "Extra": null
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_category",
+              "partitions": null,
+              "type": "ALL",
+              "possible_keys": "PRIMARY",
+              "key": null,
+              "key_len": null,
+              "ref": null,
+              "rows": 3,
+              "filtered": 33.33,
+              "Extra": "Using where; Using temporary"
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_product",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,slug,catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_category.id",
+              "rows": 1692,
+              "filtered": 2.1,
+              "Extra": "Using where"
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_sku",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_product.id",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": "Using index"
+            },
+            {
+              "id": 3,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U1",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "func",
+              "rows": 1,
+              "filtered": 10.0,
+              "Extra": "Using where"
+            },
+            {
+              "id": 3,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U0",
+              "partitions": null,
+              "type": "eq_ref",
+              "possible_keys": "sku_id",
+              "key": "sku_id",
+              "key_len": "8",
+              "ref": "test_project_one.U1.id",
+              "rows": 1,
+              "filtered": 33.33,
+              "Extra": "Using where"
+            }
+          ],
+          "actual_tree": "-> Aggregate: count(0)  (cost=237..237 rows=1) (actual time=3.51..3.51 rows=1 loops=1)\n    -> Table scan on subquery  (cost=227..230 rows=69.3) (actual time=3.51..3.51 rows=0 loops=1)\n        -> Materialize  (cost=227..227 rows=69.3) (actual time=3.51..3.51 rows=0 loops=1)\n            -> Table scan on <temporary>  (cost=217..220 rows=69.3) (actual time=3.5..3.5 rows=0 loops=1)\n                -> Temporary table with deduplication  (cost=217..217 rows=69.3) (actual time=3.5..3.5 rows=0 loops=1)\n                    -> Nested loop left join  (cost=210 rows=69.3) (actual time=3.5..3.5 rows=0 loops=1)\n                        -> Nested loop inner join  (cost=194 rows=35.5) (actual time=3.5..3.5 rows=0 loops=1)\n                            -> Filter: (catalog_category.is_active = 1)  (cost=0.55 rows=1) (actual time=0.00605..0.00791 rows=2 loops=1)\n                                -> Table scan on catalog_category  (cost=0.55 rows=3) (actual time=0.00547..0.00696 rows=3 loops=1)\n                            -> Filter: ((catalog_product.is_active = 1) and ((catalog_product.`name` like '%不可能匹配的测试词%') or (catalog_product.`description` like '%不可能匹配的测试词%')))  (cost=27.6 rows=35.5) (actual time=1.74..1.74 rows=0 loops=2)\n                                -> Index lookup on catalog_product using catalog_product_category_id_35bf920b_fk_catalog_category_id (category_id=catalog_category.id)  (cost=27.6 rows=1692) (actual time=0.00474..1.41 rows=2500 loops=2)\n                        -> Covering index lookup on catalog_sku using catalog_sku_product_id_6332277c_fk_catalog_product_id (product_id=catalog_product.id)  (cost=0.256 rows=1.95) (never executed)\n"
+        }
+      ]
+    },
+    {
+      "scenario": "keyword_category",
+      "params": {
+        "q": "无线鼠标",
+        "category": "search-a"
+      },
+      "count": 250,
+      "response": {
+        "count": 250,
+        "next": "http://testserver/api/catalog/products/?category=search-a&page=2&q=%E6%97%A0%E7%BA%BF%E9%BC%A0%E6%A0%87",
+        "previous": null,
+        "results": [
+          {
+            "slug": "search-product-0000",
+            "name": "搜索商品 0000",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0020",
+            "name": "搜索商品 0020",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0040",
+            "name": "搜索商品 0040",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0060",
+            "name": "搜索商品 0060",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0080",
+            "name": "搜索商品 0080",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0100",
+            "name": "搜索商品 0100",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0120",
+            "name": "搜索商品 0120",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0140",
+            "name": "搜索商品 0140",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0160",
+            "name": "搜索商品 0160",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0180",
+            "name": "搜索商品 0180",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0200",
+            "name": "搜索商品 0200",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0220",
+            "name": "搜索商品 0220",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0240",
+            "name": "搜索商品 0240",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0260",
+            "name": "搜索商品 0260",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0280",
+            "name": "搜索商品 0280",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0300",
+            "name": "搜索商品 0300",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0320",
+            "name": "搜索商品 0320",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0340",
+            "name": "搜索商品 0340",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0360",
+            "name": "搜索商品 0360",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "search-product-0380",
+            "name": "搜索商品 0380",
+            "category": {
+              "slug": "search-a",
+              "name": "搜索分类A"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          }
+        ]
+      },
+      "plans": [
+        {
+          "sql": "SELECT COUNT(*) FROM (SELECT EXISTS(SELECT %s AS `a` FROM `inventory_inventory` U0 INNER JOIN `catalog_sku` U1 ON (U0.`sku_id` = U1.`id`) WHERE (U0.`available_stock` > %s AND U1.`is_active` = %s AND U1.`product_id` = (`catalog_product`.`id`)) LIMIT 1) AS `in_stock` FROM `catalog_product` INNER JOIN `catalog_category` ON (`catalog_product`.`category_id` = `catalog_category`.`id`) LEFT OUTER JOIN `catalog_sku` ON (`catalog_product`.`id` = `catalog_sku`.`product_id`) WHERE (`catalog_category`.`is_active` = %s AND `catalog_product`.`is_active` = %s AND `catalog_category`.`slug` = %s AND (`catalog_product`.`name` LIKE %s OR `catalog_product`.`description` LIKE %s)) GROUP BY `catalog_product`.`id` ORDER BY NULL) subquery",
+          "params": [
+            1,
+            0,
+            true,
+            true,
+            true,
+            "search-a",
+            "%无线鼠标%",
+            "%无线鼠标%"
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "<derived2>",
+              "partitions": null,
+              "type": "ALL",
+              "possible_keys": null,
+              "key": null,
+              "key_len": null,
+              "ref": null,
+              "rows": 102,
+              "filtered": 100.0,
+              "Extra": null
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_category",
+              "partitions": null,
+              "type": "const",
+              "possible_keys": "PRIMARY,slug",
+              "key": "slug",
+              "key_len": "322",
+              "ref": "const",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": null
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_product",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,slug,catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key_len": "8",
+              "ref": "const",
+              "rows": 2501,
+              "filtered": 2.1,
+              "Extra": "Using where"
+            },
+            {
+              "id": 2,
+              "select_type": "DERIVED",
+              "table": "catalog_sku",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_product.id",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": "Using index"
+            },
+            {
+              "id": 3,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U1",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "func",
+              "rows": 1,
+              "filtered": 10.0,
+              "Extra": "Using where"
+            },
+            {
+              "id": 3,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U0",
+              "partitions": null,
+              "type": "eq_ref",
+              "possible_keys": "sku_id",
+              "key": "sku_id",
+              "key_len": "8",
+              "ref": "test_project_one.U1.id",
+              "rows": 1,
+              "filtered": 33.33,
+              "Extra": "Using where"
+            }
+          ],
+          "actual_tree": "-> Aggregate: count(0)  (cost=87.2..87.2 rows=1) (actual time=3.64..3.64 rows=1 loops=1)\n    -> Table scan on subquery  (cost=73.2..76.9 rows=103) (actual time=3.62..3.64 rows=250 loops=1)\n        -> Materialize  (cost=73.1..73.1 rows=103) (actual time=3.62..3.62 rows=250 loops=1)\n            -> Group (no aggregates)  (cost=62.9 rows=103) (actual time=0.0217..2.51 rows=250 loops=1)\n                -> Nested loop left join  (cost=52.6 rows=103) (actual time=0.00909..2.44 rows=500 loops=1)\n                    -> Filter: ((catalog_product.is_active = 1) and ((catalog_product.`name` like '%无线鼠标%') or (catalog_product.`description` like '%无线鼠标%')))  (cost=29.2 rows=52.5) (actual time=0.00482..2.12 rows=250 loops=1)\n                        -> Index lookup on catalog_product using catalog_product_category_id_35bf920b_fk_catalog_category_id (category_id='25')  (cost=29.2 rows=2501) (actual time=0.00313..1.77 rows=2501 loops=1)\n                    -> Covering index lookup on catalog_sku using catalog_sku_product_id_6332277c_fk_catalog_product_id (product_id=catalog_product.id)  (cost=0.254 rows=1.95) (actual time=863e-6..0.00108 rows=2 loops=250)\n            -> Select #3 (subquery in projection; dependent)\n                -> Limit: 1 row(s)  (cost=0.576 rows=0.0651) (actual time=0.00409..0.00411 rows=1 loops=250)\n                    -> Nested loop inner join  (cost=0.576 rows=0.0651) (actual time=0.004..0.004 rows=1 loops=250)\n                        -> Filter: (U1.is_active = 1)  (cost=0.508 rows=0.195) (actual time=0.0022..0.0022 rows=1 loops=250)\n                            -> Index lookup on U1 using catalog_sku_product_id_6332277c_fk_catalog_product_id (product_id=catalog_product.id)  (cost=0.508 rows=1.95) (actual time=0.00209..0.00209 rows=1 loops=250)\n                        -> Filter: (U0.available_stock > 0)  (cost=0.421 rows=0.333) (actual time=0.00166..0.00166 rows=1 loops=250)\n                            -> Single-row index lookup on U0 using sku_id (sku_id=U1.id)  (cost=0.421 rows=1) (actual time=0.00155..0.00155 rows=1 loops=250)\n"
+        },
+        {
+          "sql": "SELECT `catalog_product`.`id`, `catalog_product`.`category_id`, `catalog_product`.`name`, `catalog_product`.`slug`, `catalog_product`.`description`, `catalog_product`.`is_active`, MIN(CASE WHEN `catalog_sku`.`is_active` = %s THEN `catalog_sku`.`price` ELSE NULL END) AS `lowest_price`, EXISTS(SELECT %s AS `a` FROM `inventory_inventory` U0 INNER JOIN `catalog_sku` U1 ON (U0.`sku_id` = U1.`id`) WHERE (U0.`available_stock` > %s AND U1.`is_active` = %s AND U1.`product_id` = (`catalog_product`.`id`)) LIMIT 1) AS `in_stock`, `catalog_category`.`id`, `catalog_category`.`name`, `catalog_category`.`slug`, `catalog_category`.`is_active` FROM `catalog_product` INNER JOIN `catalog_category` ON (`catalog_product`.`category_id` = `catalog_category`.`id`) LEFT OUTER JOIN `catalog_sku` ON (`catalog_product`.`id` = `catalog_sku`.`product_id`) WHERE (`catalog_category`.`is_active` = %s AND `catalog_product`.`is_active` = %s AND `catalog_category`.`slug` = %s AND (`catalog_product`.`name` LIKE %s OR `catalog_product`.`description` LIKE %s)) GROUP BY `catalog_product`.`id`, `catalog_category`.`id` ORDER BY `catalog_product`.`name` ASC, `catalog_product`.`id` ASC LIMIT 20",
+          "params": [
+            true,
+            1,
+            0,
+            true,
+            true,
+            true,
+            "search-a",
+            "%无线鼠标%",
+            "%无线鼠标%"
+          ],
+          "estimated": [
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "catalog_category",
+              "partitions": null,
+              "type": "const",
+              "possible_keys": "PRIMARY,slug",
+              "key": "slug",
+              "key_len": "322",
+              "ref": "const",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": "Using temporary; Using filesort"
+            },
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "catalog_product",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key": "catalog_product_category_id_35bf920b_fk_catalog_category_id",
+              "key_len": "8",
+              "ref": "const",
+              "rows": 2501,
+              "filtered": 2.1,
+              "Extra": "Using where"
+            },
+            {
+              "id": 1,
+              "select_type": "PRIMARY",
+              "table": "catalog_sku",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "test_project_one.catalog_product.id",
+              "rows": 1,
+              "filtered": 100.0,
+              "Extra": null
+            },
+            {
+              "id": 2,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U1",
+              "partitions": null,
+              "type": "ref",
+              "possible_keys": "PRIMARY,catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key": "catalog_sku_product_id_6332277c_fk_catalog_product_id",
+              "key_len": "8",
+              "ref": "func",
+              "rows": 1,
+              "filtered": 10.0,
+              "Extra": "Using where"
+            },
+            {
+              "id": 2,
+              "select_type": "DEPENDENT SUBQUERY",
+              "table": "U0",
+              "partitions": null,
+              "type": "eq_ref",
+              "possible_keys": "sku_id",
+              "key": "sku_id",
+              "key_len": "8",
+              "ref": "test_project_one.U1.id",
+              "rows": 1,
+              "filtered": 33.33,
+              "Extra": "Using where"
+            }
+          ],
+          "actual_tree": "-> Limit: 20 row(s)  (actual time=4.17..4.17 rows=20 loops=1)\n    -> Sort row IDs: catalog_product.`name`, catalog_product.id, limit input to 20 row(s) per chunk  (actual time=4.17..4.17 rows=20 loops=1)\n        -> Table scan on <temporary>  (cost=85.7..89.4 rows=103) (actual time=4.11..4.13 rows=250 loops=1)\n            -> Temporary table  (cost=85.6..85.6 rows=103) (actual time=4.11..4.11 rows=250 loops=1)\n                -> Group aggregate: min((case when (catalog_sku.is_active = 1) then catalog_sku.price else NULL end))  (cost=75.4 rows=103) (actual time=0.0264..2.68 rows=250 loops=1)\n                    -> Nested loop left join  (cost=65.1 rows=103) (actual time=0.0102..2.57 rows=500 loops=1)\n                        -> Filter: ((catalog_product.is_active = 1) and ((catalog_product.`name` like '%无线鼠标%') or (catalog_product.`description` like '%无线鼠标%')))  (cost=29.2 rows=52.5) (actual time=0.00447..1.89 rows=250 loops=1)\n                            -> Index lookup on catalog_product using catalog_product_category_id_35bf920b_fk_catalog_category_id (category_id='25')  (cost=29.2 rows=2501) (actual time=0.00353..1.51 rows=2501 loops=1)\n                        -> Index lookup on catalog_sku using catalog_sku_product_id_6332277c_fk_catalog_product_id (product_id=catalog_product.id)  (cost=0.492 rows=1.95) (actual time=0.00222..0.00253 rows=2 loops=250)\n"
+        }
+      ]
+    }
+  ],
+  "boundary": "Current complete API SQL; one local plan per query; no latency or production-capacity benchmark."
+}

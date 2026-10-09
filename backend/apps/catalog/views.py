@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from apps.catalog.cache import ProductDetailCache
 from apps.catalog.models import Category, Product, SKU
 from apps.catalog.serializers import (
+    ProductSearchQuerySerializer,
     PublicCategorySerializer,
     PublicProductDetailSerializer,
     PublicProductListSerializer,
@@ -38,6 +39,8 @@ class PublicProductListView(generics.ListAPIView):
     pagination_class = ProductPagination
 
     def get_queryset(self):
+        query = ProductSearchQuerySerializer(data=self.request.query_params)
+        query.is_valid(raise_exception=True)
         # 聚合与 Exists 在数据库执行，避免列表页为每个商品逐个查 SKU/库存。
         # lowest_price 排除下架 SKU；in_stock 只是浏览提示，不是库存承诺。
         queryset = (
@@ -64,6 +67,11 @@ class PublicProductListView(generics.ListAPIView):
         category_slug = self.request.query_params.get("category")
         if category_slug:
             queryset = queryset.filter(category__slug=category_slug)
+
+        keyword = query.validated_data["q"]
+        if keyword:
+            # 完整关键词包含匹配；ORM负责转义LIKE通配符，不做分词或相关性排名。
+            queryset = queryset.filter(Q(name__icontains=keyword) | Q(description__icontains=keyword))
 
         return queryset
 

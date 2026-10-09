@@ -21,6 +21,7 @@ const categoryError = ref('')
 const productPage = ref<PaginatedResponse<ProductSummary> | null>(null)
 const productLoading = ref(true)
 const productError = ref('')
+const keywordDraft = ref('')
 
 let categoryController: AbortController | undefined
 let productController: AbortController | undefined
@@ -28,6 +29,8 @@ let productController: AbortController | undefined
 const selectedCategory = computed(() => {
   return typeof route.query.category === 'string' ? route.query.category : ''
 })
+
+const keyword = computed(() => typeof route.query.q === 'string' ? route.query.q.trim() : '')
 
 const currentPage = computed(() => {
   const rawPage = typeof route.query.page === 'string' ? route.query.page : '1'
@@ -43,6 +46,7 @@ const totalPages = computed(() => {
 })
 
 const emptyMessage = computed(() => {
+  if (keyword.value) return '没有找到匹配的已上架商品，请更换关键词或分类。'
   return selectedCategory.value
     ? '该分类暂时没有已上架商品。'
     : '目前还没有可公开浏览的商品。'
@@ -81,7 +85,7 @@ async function loadCategories(): Promise<void> {
 }
 
 async function loadProducts(): Promise<void> {
-  // 分类或页码变化先终止旧请求；否则慢返回的旧页面可能覆盖新的筛选结果。
+  // 搜索、分类或页码变化先终止旧请求，避免旧结果覆盖新的筛选结果。
   productController?.abort()
   const controller = new AbortController()
   productController = controller
@@ -91,6 +95,7 @@ async function loadProducts(): Promise<void> {
   try {
     const result = await fetchProducts(
       {
+        q: keyword.value || undefined,
         category: selectedCategory.value || undefined,
         page: currentPage.value,
       },
@@ -113,12 +118,13 @@ function selectCategory(category: string): void {
   // 分类写入 URL，刷新和返回列表时仍能恢复筛选；换分类从第一页开始。
   void router.push({
     name: 'catalog-products',
-    query: category ? { category } : {},
+    query: { ...(category ? { category } : {}), ...(keyword.value ? { q: keyword.value } : {}) },
   })
 }
 
 function goToPage(page: number): void {
   const query: Record<string, string> = {}
+  if (keyword.value) query.q = keyword.value
   if (selectedCategory.value) {
     query.category = selectedCategory.value
   }
@@ -129,11 +135,26 @@ function goToPage(page: number): void {
   void router.push({ name: 'catalog-products', query })
 }
 
+function submitSearch(): void {
+  const q = keywordDraft.value.trim()
+  void router.push({
+    name: 'catalog-products',
+    query: { ...(selectedCategory.value ? { category: selectedCategory.value } : {}), ...(q ? { q } : {}) },
+  })
+}
+
+function clearSearch(): void {
+  keywordDraft.value = ''
+  submitSearch()
+}
+
 onMounted(() => {
   void loadCategories()
 })
 
-watch([selectedCategory, currentPage], () => void loadProducts(), {
+watch(keyword, (value) => { keywordDraft.value = value }, { immediate: true })
+
+watch([selectedCategory, currentPage, keyword], () => void loadProducts(), {
   immediate: true,
 })
 
@@ -155,6 +176,15 @@ onBeforeUnmount(() => {
         共 {{ productPage.count }} 件商品
       </p>
     </div>
+
+    <form class="filter-panel stack-form" role="search" @submit.prevent="submitSearch">
+      <label for="catalog-keyword">搜索商品名称或描述</label>
+      <input id="catalog-keyword" v-model="keywordDraft" type="search" maxlength="80" placeholder="例如：无线鼠标" />
+      <div>
+        <button class="primary-button" type="submit">搜索</button>
+        <button v-if="keyword" class="text-button" type="button" @click="clearSearch">清除关键词</button>
+      </div>
+    </form>
 
     <section class="filter-panel" aria-labelledby="category-heading">
       <div class="filter-heading">
@@ -231,7 +261,7 @@ onBeforeUnmount(() => {
         type="button"
         @click="selectCategory('')"
       >
-        查看全部商品
+        查看全部分类
       </button>
     </div>
 
