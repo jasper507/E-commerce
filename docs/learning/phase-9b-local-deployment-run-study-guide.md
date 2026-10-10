@@ -2,6 +2,8 @@
 
 2026-10-11。[学习导航](README.md) · [验证记录](../verification/phase-9b-local-deployment-run.md) · [前片：部署候选与完整操作步骤](phase-9a-local-deployment-study-guide.md)。
 
+后续：[9C登录/CSRF与运维指南](phase-9c-session-csrf-operations-study-guide.md)已补真实HTTP登录证据及更新/停机/备份参考；本页保留首次运行时尚未登录的历史边界。
+
 ## 本片前后变化
 
 - **开始前：** 9A已有独立部署配置和操作顺序，但镜像构建、容器运行与HTTP链路尚未验证。

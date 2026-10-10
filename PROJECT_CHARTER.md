@@ -1,10 +1,10 @@
-# Project One — Project Charter v1.15
+# Project One — Project Charter v1.16
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase9B获准完成本机独立部署首次运行，Linux镜像、新库36迁移、154静态文件、三服务健康、14项HTTP及只读浏览器空页通过；Session/CSRF、交易与中间件启用未验收。随后收束部署流程再整体复习；不要求面试现场展示网站。
-- 文档版本：v1.15
+- 当前阶段：Phase9C获准完成代理入口Session/CSRF真实HTTP验收15项、临时账号/会话精确清理；更新/停机/备份恢复手册及语法/选项核对完成，运维未演练。9B基础运行证据保留；交易、中间件启用、公网HTTPS未验收，进入整体梳理与复习前按收益决定是否补一次恢复演练。
+- 文档版本：v1.16
 - 路线图进度更新：2026-10-11
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
@@ -1214,6 +1214,8 @@ LEARNING_LOG.md          个人理解、错误与复盘
 ---
 
 ## 20. Immediate Next Step（下一步）
+
+登录与流程收尾（2026-10-11，v1.16）：拥有者明确批准只新部署库创建1随机普通账号、登录/退出及精确清理。通过回环8080的15项真实HTTP验证Session保持、CSRF轮换、三种拒绝退出仍保留会话及正确退出；最终用户/Session/商品/订单0。使用独立CookieJar，不是浏览器UI登录。业务、依赖、配置及四开关不改；更新/停机/备份恢复只整理可审阅手册，9段PowerShell与Shell语法/7个mysqldump选项核对不冒称运维实测。见[9C指南](docs/learning/phase-9c-session-csrf-operations-study-guide.md)、[验收](docs/verification/phase-9c-session-csrf-operations.md)与[操作参考](docs/deployment/local-operations-runbook.md)。当前基础部署/认证最小证据足够，先整体梳理与复习；是否补一次独立备份恢复按收益决定且影响另行确认，不自动扩公网、中间件或展示数据。下面9B/9A/7D段保留历史。
 
 首次运行（2026-10-11，v1.15）：拥有者理解影响后明确恢复执行。独立环境文件/随机凭据仅Git外保存，镜像构建、只迁移新库、collectstatic、db/web/nginx启动完成；实际SELECT DATABASE为project_one_deployment_local，36迁移且待迁移0、154静态文件。14项HTTP检查及真实浏览器空目录/深路由刷新/Admin资源通过，用户/Session/商品/订单均0。当前仍development、DEBUG=false、本机HTTP，四可选模块显式关闭。见[指南](docs/learning/phase-9b-local-deployment-run-study-guide.md)与[运行验收](docs/verification/phase-9b-local-deployment-run.md)。最小后续建议是独立学习账号的Session/CSRF边界，再整理更新/停机/备份与公网部署流程；不自动扩商品演示、中间件启用或故障矩阵。原开发库未访问或修改，没有业务闭环、生产安全、重启恢复或个人掌握证据。以下9A与7D段保留历史。
 

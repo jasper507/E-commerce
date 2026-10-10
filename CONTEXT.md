@@ -1523,3 +1523,13 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 双交付docs/verification/phase-9b-local-deployment-run.md、docs/learning/phase-9b-local-deployment-run-study-guide.md及build/db/source/migrate/static/start raw和runtime/http/browser JSON互链；HTTP JSON保留浏览器之前的false，browser JSON另证实Vue执行。9A只补后续链接不改历史边界，导航39、Charterv1.15同步；文档静态/秘密检查不冒称业务测试。
 - 未访问/写入开发库或缓存、未迁移旧库，没有旧库整表指纹核验；原业务/Compose/settings根.env未改。没有业务pytest、登录Session/CSRF、交易、中间件启用、生产HTTPS、容量、重启/更新/备份恢复或个人掌握验收；两个新卷和三个部署容器保留运行。Node/Nginx可移动标签与传递依赖未全锁，记录当次digest而不承诺逐字节重现。
 - 当前最小基础部署证据已足够，停止自动加数据/中间件/故障矩阵。下一片建议只获准创建独立学习账号并验Session/CSRF成功/拒绝；随后整理更新/停机/备份/公网部署流程，再按用户安排整体复习。部署前面试无展示要求继续保留。
+
+## 70. 代理入口Session/CSRF验收与运维参考（2026-10-11）
+
+- 用户选中9B下一片要求开始，Supporting/Pair目标是解释Nginx后身份、Origin端口与CSRF拒绝，最小闭环至正确退出，不加商品或交易演示。生成前main/远端4673b9f一致，未知项目总览候选与6E用户修改保留；本轮另有知识库聊天修改，均不混入本片提交。
+- 新scripts/verify_local_session_csrf.py只固定独立Compose和127.0.0.1:8080；stdin传随机密码/具体Session Key、禁环境代理和重定向、actualDATABASE/user/host/port/env/UID核对。AST与只读preflight通过，新库四计数0。创建响应未知保留核查，清理匹配具体Key/auth用户及随机账号ID/名，锁内再查角色，有未知关联数据拒绝，不flush/全表清会话；这些失败guard为静态复核，未故障注入。
+- 用户明确回答允许仅新库执行清理后，真实脚本退出0/15HTTP passed：匿名me403、csrf204、缺Header登录CSRF403/Session0；同源正确登录200、Session1/last_login、CSRF轮换；me与公开页面导航后me同一身份；缺Header/旧Header(当前Cookie)/错Origin localhost退出各403，后me200/Session1；当前Header退出204、me403/Session0。Cookie属性与用户名/ID核对在内存，不保存密码/Cookie/Token/Session Key。
+- 成功退出已删Session，最终精确删随机普通账号，残留Session删除数0，用户/Session/商品/订单全部0；不倒退自增或宣称数据库字节回滚。仅新部署库发生获准写入，开发库/缓存未访问、商品订单支付业务/配置/依赖/四开关未改，3服务继续运行。实际为独立CookieJar HTTP，不是浏览器UI/SameSite浏览器执行/重启会话证据。
+- 双交付docs/learning/phase-9c-session-csrf-operations-study-guide.md与docs/verification/phase-9c-session-csrf-operations.md互链，含preflight/http/static JSON和脚本；docs/deployment/local-operations-runbook.md补更新/保卷停机/备份/独立空卷恢复，PowerShell7参考，无秘密argv/PowerShell转码SQL/覆盖旧库/清卷。9个PS块AST、sh-n语法/实际mysqldump帮助7选项通过，没执行任何运维正文/SQL备份/恢复或重启。
+- 9B只补后续不改历史；README/Charterv1.16更新。临时数据许可与结果分开记录，15项是HTTP状态检查，不是15条业务或性能实验；没有旧pytest/Redis/MQ/ES/浏览器矩阵重跑，也没有生产HTTPS/容量/零停机/自动回滚/PITR或个人掌握证据。
+- 当前部署基础与认证证据足够，先按用户安排整体梳理与复习；可按收益另选一次明确批准的隔离备份恢复，不自动加公网/中间件/商品演示或故障矩阵。

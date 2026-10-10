@@ -1,0 +1,172 @@
+{
+  "origin": "http://127.0.0.1:8080",
+  "browser_ui_verified": false,
+  "checks": [
+    {
+      "label": "anonymous me",
+      "method": "GET",
+      "path": "/api/auth/me/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "label": "fetch csrf",
+      "method": "GET",
+      "path": "/api/auth/csrf/",
+      "status": 204,
+      "expected": 204
+    },
+    {
+      "label": "login without csrf",
+      "method": "POST",
+      "path": "/api/auth/login/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "label": "same-origin login",
+      "method": "POST",
+      "path": "/api/auth/login/",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "label": "authenticated me",
+      "method": "GET",
+      "path": "/api/auth/me/",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "label": "navigate public page",
+      "method": "GET",
+      "path": "/products",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "label": "me after navigation",
+      "method": "GET",
+      "path": "/api/auth/me/",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "label": "logout missing csrf",
+      "method": "POST",
+      "path": "/api/auth/logout/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "label": "logout missing csrf preserves me",
+      "method": "GET",
+      "path": "/api/auth/me/",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "label": "logout old csrf header",
+      "method": "POST",
+      "path": "/api/auth/logout/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "label": "logout old csrf header preserves me",
+      "method": "GET",
+      "path": "/api/auth/me/",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "label": "logout wrong origin",
+      "method": "POST",
+      "path": "/api/auth/logout/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "label": "logout wrong origin preserves me",
+      "method": "GET",
+      "path": "/api/auth/me/",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "label": "valid logout",
+      "method": "POST",
+      "path": "/api/auth/logout/",
+      "status": 204,
+      "expected": 204
+    },
+    {
+      "label": "me after logout",
+      "method": "GET",
+      "path": "/api/auth/me/",
+      "status": 403,
+      "expected": 403
+    }
+  ],
+  "preflight": {
+    "database": "project_one_deployment_local",
+    "row_counts": {
+      "users": 0,
+      "sessions": 0,
+      "products": 0,
+      "orders": 0
+    }
+  },
+  "status": "passed",
+  "run_username": "deploy9c_8b7e10c7f474",
+  "database_writes": true,
+  "create_attempted": true,
+  "user_id": 1,
+  "cookie_attributes": {
+    "csrftoken": {
+      "httponly": false,
+      "samesite": "Lax",
+      "secure": false
+    },
+    "sessionid": {
+      "httponly": true,
+      "samesite": "Lax",
+      "secure": false
+    }
+  },
+  "login_rotated_csrf": true,
+  "login_state": {
+    "database": "project_one_deployment_local",
+    "row_counts": {
+      "users": 1,
+      "sessions": 1,
+      "products": 0,
+      "orders": 0
+    },
+    "owned_sessions": 1,
+    "last_login_set": true
+  },
+  "logout_state": {
+    "database": "project_one_deployment_local",
+    "row_counts": {
+      "users": 1,
+      "sessions": 0,
+      "products": 0,
+      "orders": 0
+    },
+    "owned_sessions": 0,
+    "last_login_set": true
+  },
+  "cleanup": {
+    "database": "project_one_deployment_local",
+    "row_counts": {
+      "users": 0,
+      "sessions": 0,
+      "products": 0,
+      "orders": 0
+    },
+    "account_deleted": true,
+    "residual_owned_sessions_deleted": 0
+  },
+  "secrets_or_session_keys_recorded": false
+}

@@ -1,6 +1,6 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-11。本页收录41份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。前轮整理见[文档验证记录](../verification/learning-guide-change-overviews.md)，ES原型、读入口与手动切换见搜索专题，本机部署准备与首次运行见部署专题。
+更新：2026-10-11。本页收录42份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。前轮整理见[文档验证记录](../verification/learning-guide-change-overviews.md)，ES原型、读入口与手动切换见搜索专题，本机部署准备与首次运行见部署专题。
 
 先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易，再读[支付当前总览](payment-current-overview-study-guide.md)理解付款、库存和故障恢复。两篇按本轮最新要求配图并加入各自的重做选择；[本轮归档核对](../verification/project-payment-overview-knowledge-base-update.md)只记录文档检查，不代表重跑应用。
 
@@ -107,9 +107,10 @@ ACK是Worker向队列确认消息已处理；业务成功仍以MySQL提交的支
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |
 | [9A 本机部署准备](phase-9a-local-deployment-study-guide.md) | 只运行依赖 → 独立Web部署候选与启动步骤 | Nginx/Gunicorn职责、容器地址、静态文件和独立数据卷；记录准备阶段 |
-| [9B 首次部署运行](phase-9b-local-deployment-run-study-guide.md) | 候选配置 → 真实镜像、新库初始化与8080入口 | 36迁移、154静态文件、14项HTTP和只读浏览器；登录/交易与中间件启用待验收 |
+| [9B 首次部署运行](phase-9b-local-deployment-run-study-guide.md) | 候选配置 → 真实镜像、新库初始化与8080入口 | 36迁移、154静态文件、14项HTTP和只读浏览器；记录当时登录/交易与中间件未验收 |
+| [9C 登录/CSRF与运维流程](phase-9c-session-csrf-operations-study-guide.md) | 公开读取通过 → 身份/写请求保护15项HTTP验收 | Session保持、CSRF轮换/拒绝与精确清理；更新/停机/备份参考未演练 |
 
-拥有者确认先部署与版本收尾、后整体复习，不要求面试时展示网站。9A记录准备，9B记录获准后的首次实际运行；现已完成基础本机HTTP链与浏览器空商品页，不等于登录交易、生产安全或中间件均已部署。缓存/Lua/MQ/ES和公网HTTPS分别评估，不按功能数量自动扩展。
+拥有者确认先部署与版本收尾、后整体复习，不要求面试时展示网站。9A记录准备，9B记录首次基础运行，9C补真实HTTP登录/CSRF与运维参考；后者不是浏览器UI或备份恢复实测。部署基础证据够用后先整体梳理，是否追加恢复演练按收益决定；缓存/Lua/MQ/ES和公网HTTPS不按功能数量自动扩展。
 
 ## 其他辅助材料建议：按实际困惑再补
 

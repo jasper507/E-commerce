@@ -1,0 +1,16 @@
+{
+  "origin": "http://127.0.0.1:8080",
+  "browser_ui_verified": false,
+  "checks": [],
+  "preflight": {
+    "database": "project_one_deployment_local",
+    "row_counts": {
+      "users": 0,
+      "sessions": 0,
+      "products": 0,
+      "orders": 0
+    }
+  },
+  "status": "preflight_passed",
+  "database_writes": false
+}

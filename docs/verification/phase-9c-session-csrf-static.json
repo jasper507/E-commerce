@@ -1,0 +1,29 @@
+{
+  "host_python_syntax": "passed",
+  "embedded_python_syntax": "passed",
+  "operations_powershell_blocks": 9,
+  "operations_powershell_parser": "passed",
+  "operations_shell_snippets_syntax": "passed",
+  "mysqldump_cli_options_available": [
+    "--single-transaction",
+    "--routines",
+    "--triggers",
+    "--events",
+    "--no-tablespaces",
+    "--set-gtid-purged",
+    "--result-file"
+  ],
+  "operations_commands_executed": false,
+  "real_dump_or_restore_executed": false,
+  "date": "2026-10-11",
+  "baseline": "4673b9f",
+  "powershell_version": "7.6.5",
+  "native_argument_mode": "Windows",
+  "local_links_checked": 153,
+  "reciprocal_deliverables": true,
+  "secret_scan_files": 12,
+  "deployment_secret_matches": 0,
+  "http_checks_consistent": 15,
+  "scoped_diff_check_exit": 0,
+  "unknown_create_cleanup_guards": "code review only; no injected failure"
+}

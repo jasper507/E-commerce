@@ -21,6 +21,15 @@ HTTPS were not verified. Follow the
 earlier [step-by-step procedure](docs/learning/phase-9a-local-deployment-study-guide.md).
 Do not merge this standalone Compose file with the development stack.
 
+Local authentication follow-up (2026-10-11): 15 real HTTP checks through port
+8080 verified Session identity, CSRF rotation, rejected logout requests preserving
+the session, and valid logout. The approved temporary account was removed; user,
+Session, product and order counts returned to zero. This used a separate CookieJar,
+not the browser login UI. The [9C guide](docs/learning/phase-9c-session-csrf-operations-study-guide.md)
+and [evidence](docs/verification/phase-9c-session-csrf-operations.md) distinguish
+executed authentication from the [operations reference](docs/deployment/local-operations-runbook.md);
+updates, stops, backup/restore and public HTTPS were not exercised.
+
 Manual search-index switch (2026-10-10): rebuild a new completed candidate, then
 update a single-target read alias and read back the actual target. Failed builds
 leave the old entry untouched; a lost update response is reconciled as switched,
