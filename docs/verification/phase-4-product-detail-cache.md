@@ -1,5 +1,7 @@
 # Track B / Phase 4A：商品详情 Cache-Aside 基线
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/phase-4-product-detail-cache-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 > 本文件保留 Phase 4A 删除式失效基线及当时证据。当前代码已在 Phase 4B
 > 改为分代 Key，后续请求不再读取成功换代前的旧代；当前方案及复现见
 > [Phase 4B 验证记录](phase-4b-cache-generations.md)。

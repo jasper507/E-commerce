@@ -1,5 +1,7 @@
 # Phase 5C-2：支付事件有界后台重试验证
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/phase-5c2-payment-mq-retry-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 本文件保留C2历史条件与结果；2026-10-05新增人工发布补漏及真实Broker
 停机恢复，见[C3验证](phase-5c3-payment-publication-recovery.md)。历史JSON未覆盖。
 

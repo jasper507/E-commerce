@@ -1,5 +1,7 @@
 # MVP-2 Minimum Address — 自动验证记录
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/mvp-2-minimum-address-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 日期：2026-09-18（Asia/Shanghai）。基于 `88f408c` 实现并完成验证，随后已提交并快进到本地 `main`；尚未 push。
 
 ## 1. 实现范围

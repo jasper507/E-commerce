@@ -1,5 +1,15 @@
 # MVP-3 Order + Inventory Reservation 学习指南
 
+## 本片前后变化
+
+[学习导航](README.md) · [本片验证记录](../verification/mvp-3-order-inventory.md)。以下是2026-09-18完成本片时的状态，正文代码与约束按该阶段理解。
+
+- **开始前：** 购物车和地址都是当前资料；没有正式订单，也没有为待支付交易预留库存。
+- **本片改变：** 同一MySQL事务保存订单与快照、预占库存、写流水并清购物车；同Key同参数重放返回原单，异参数拒绝。
+- **完成后与边界：** “准备购买 → 创建待支付订单”接通；失败整体回滚。这里使用行锁基线，尚未接支付核销/释放，也没有热点性能胜负结论。
+
+**后续衔接：** [MVP-4 Mock支付](mvp-4-mock-payment-study-guide.md)补支付与履约；后来[秒杀条件UPDATE](phase-6c5-flash-sale-inventory-failures-study-guide.md)只改变单活动SKU路径，不能倒推成此时已实现。原下单幂等约束后来加入了入口范围，见[正式订单索引指南](phase-3-order-list-index-study-guide.md)。
+
 ## 1. 先记住结论
 
 MVP-3 是 Project One 第一次进入真正的交易核心。MVP-1 的 Cart 只是“购买意向”，MVP-2 的 Address 只是“当前可修改资料”；MVP-3 才把这些临时数据转换成不可随意改变的交易事实：

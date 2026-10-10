@@ -1,5 +1,7 @@
 # MVP-4 Mock Payment + Completion — 自动验证记录
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/mvp-4-mock-payment-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 最后更新：2026-09-24（Asia/Shanghai）。
 
 > 当前状态：MVP-4 源代码已落地。进程内 SQLite `:memory:` 支付专项烟测和全项目非并发回归已经通过，Django 静态检查、前端类型检查/构建和 `git diff --check` 也已通过；真实 MySQL 专属约束/锁/并发测试、真实 MySQL 全项目回归和浏览器验收尚未完成。SQLite 结果不能替代 MySQL 证据。

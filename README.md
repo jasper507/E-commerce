@@ -3,6 +3,12 @@
 Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
+Learning documents: the [module reading guide](docs/learning/README.md) links all
+33 local study guides. Each now begins with the previous state, the slice's
+change, and its resulting limits, with historical stages kept distinct from
+current progress. This documentation-only pass is recorded in the
+[verification](docs/verification/learning-guide-change-overviews.md).
+
 Product-search baseline (2026-10-09): the public product list accepts optional
 `q` for whole-keyword inclusion in name or description (trimmed, max 80), while
 preserving visibility, category intersection, 20-item pages and product summaries.

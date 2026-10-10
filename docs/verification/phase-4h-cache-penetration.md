@@ -1,5 +1,7 @@
 # Phase 4H：先核对面试主线，再复现缓存穿透
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/phase-4h-cache-penetration-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 2026-09-27 的真实基线与候选记录保留如下；2026-09-30 的最小实现和复测
 追加在文末。本段属于 Track B / Depth / Learning Mode。
 

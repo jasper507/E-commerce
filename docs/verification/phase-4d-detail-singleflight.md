@@ -1,5 +1,7 @@
 # Phase 4D：商品详情进程内请求合并
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/phase-4d-detail-singleflight-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 本页保留 Phase 4D 历史实现与180请求测量。Phase 4E 新增故障回源名额、
 允许满员503；现在复现目录测试使用新规则，故障结果不再要求全部200。
 增量证据见 [Phase 4E](phase-4e-fallback-admission.md)，历史JSON不覆盖。

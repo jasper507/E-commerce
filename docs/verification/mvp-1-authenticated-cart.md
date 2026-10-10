@@ -1,5 +1,7 @@
 # MVP-1 Authenticated Cart — 自动验证记录
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/mvp-1-cart-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 日期：2026-09-18（Asia/Shanghai）。本地 `main` 工作区实现，尚未 commit/push。
 
 ## 1. 实现范围

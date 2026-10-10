@@ -1,5 +1,7 @@
 # Phase 4F：慢故障、慢加载与恢复边界
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/phase-4f-slow-faults-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 2026-09-27，Track B / Depth / Learning Mode。第一段只增加实验和证据，
 保留 Phase 4B/4D/4E 的业务实现，不接入熔断、不改变拒绝规则。
 

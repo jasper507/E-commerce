@@ -1,5 +1,7 @@
 # Phase 4E：Redis 故障时的公开详情回源名额
 
+阅读入口（2026-10-10补链）：[本片学习指南](../learning/phase-4e-fallback-admission-study-guide.md)。仅增加导航，以下日期、结果与限制保留原实验记录。
+
 ## 已确认规则与范围
 
 2026-09-27，Track B / Depth / Learning Mode。项目拥有者明确选择：

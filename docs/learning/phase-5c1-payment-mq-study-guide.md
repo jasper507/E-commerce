@@ -9,6 +9,14 @@
 [5B 持久重试预算](phase-5b-payment-event-retry-study-guide.md) 后面，
 目标是建立真实 RabbitMQ 与 Celery Worker 的正常支付和重复任务基线。
 
+## 本片前后变化
+
+- **开始前：** 已有 Inbox、持久预算和人工恢复，通知处理仍主要占用当前 HTTP 请求，没有独立后台执行通道。
+- **本片改变：** 原文先提交，RabbitMQ 只传内部 ID，由独立 Linux Celery Worker 复用原处理器；顾客读取 MySQL 业务状态确认结果。
+- **完成后与边界：** 真实正常、重复及无效通知链路已验证，重复消息不重复核销；异步默认关闭，当时没有自动重试排程、发布补漏或 Worker 中断接管，202 仅表示入箱。
+
+**后续衔接：** [C2 有界后台重试已完成](phase-5c2-payment-mq-retry-study-guide.md)。[学习导航](README.md)
+
 ## 解决什么业务问题
 
 同步基线是“保存通知，再在当前 HTTP 请求中处理订单与库存”。规则正确，
