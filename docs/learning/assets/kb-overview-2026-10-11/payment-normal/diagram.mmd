@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant U as 顾客浏览器
+    participant A as 支付HTTP服务
+    participant D as MySQL
+    participant G as Mock网关
+    Note over U,G: 当前默认同步；订单189元，可售19、预占1
+    U->>A: 本人订单＋支付幂等键
+    A->>D: 短事务：检查原Key，保存付款尝试
+    D-->>A: 提交Attempt；同Key复用原记录
+    A->>G: 事务外创建原付款（仅新Attempt）
+    alt 超时或连接结果未知
+        A->>D: 短事务：尚未确认时标UNKNOWN
+        A-->>U: 结果未知，保留原付款
+        U->>A: 显式查询原付款
+        A->>G: 事务外查询供应商原Attempt
+        G-->>A: 可信查询结果也进入同一事件入口
+    else 返回签名事件
+        G-->>A: 原交易结果与签名
+    end
+    Note over A,D: 以下展开可信成功；查询仍未确认则继续等待，不进入成功提交
+    A->>D: T0：事件原文去重入箱并提交
+    A->>D: T1：锁Event，提交次数、PROCESSING与租约
+    A->>D: T2：Event→Order→Attempt→资格→预占→库存
+    Note over A,D: 成功：Attempt成功＋Order PAID＋预占核销＋Event终态一起提交
+    Note over D: 可售仍19；预占1→0；唯一COMMIT流水
+    A-->>U: 返回处理后的数据库事实
+    Note over A,D: T2异常先回滚，T3再留存；失败/未确认/迟到成功按正文分支处理

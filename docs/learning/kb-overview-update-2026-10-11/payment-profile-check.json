@@ -1,0 +1,76 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "assessment": {
+      "status": "passed"
+    },
+    "profile": {
+      "word_count": 2170,
+      "char_count": 3386,
+      "block_count": 57,
+      "blocks": [
+        {
+          "type": "p",
+          "count": 26,
+          "ratio": 0.45614
+        },
+        {
+          "type": "li",
+          "count": 9,
+          "ratio": 0.157895
+        },
+        {
+          "type": "h1",
+          "count": 6,
+          "ratio": 0.105263
+        },
+        {
+          "type": "tr",
+          "count": 6,
+          "ratio": 0.105263
+        },
+        {
+          "type": "pre",
+          "count": 2,
+          "ratio": 0.035088
+        },
+        {
+          "type": "whiteboard",
+          "count": 2,
+          "ratio": 0.035088
+        },
+        {
+          "type": "ol",
+          "count": 1,
+          "ratio": 0.017544
+        },
+        {
+          "type": "table",
+          "count": 1,
+          "ratio": 0.017544
+        },
+        {
+          "type": "tbody",
+          "count": 1,
+          "ratio": 0.017544
+        },
+        {
+          "type": "thead",
+          "count": 1,
+          "ratio": 0.017544
+        },
+        {
+          "type": "title",
+          "count": 1,
+          "ratio": 0.017544
+        },
+        {
+          "type": "ul",
+          "count": 1,
+          "ratio": 0.017544
+        }
+      ]
+    }
+  }
+}

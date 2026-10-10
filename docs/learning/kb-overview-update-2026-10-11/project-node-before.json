@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "creator": "[redacted-account-id]",
+    "has_child": true,
+    "node_create_time": "1791278731",
+    "node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "node_type": "origin",
+    "obj_create_time": "1791278731",
+    "obj_edit_time": "1791663809",
+    "obj_token": "P0LPd9AkmoAhq8xCgOdcqEL2nag",
+    "obj_type": "docx",
+    "origin_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "owner": "[redacted-account-id]",
+    "parent_node_token": "",
+    "space_id": "7693476782908935142",
+    "title": "电商项目",
+    "updated_at": "2026-10-10T20:23:29Z"
+  }
+}

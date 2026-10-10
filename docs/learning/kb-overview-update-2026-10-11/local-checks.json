@@ -1,0 +1,8 @@
+{
+  "local_relative_links_checked": 109,
+  "three_source_code_excerpts_match_snapshot": true,
+  "xml_parse": true,
+  "source_commit": "4673b9f8ea95664ce4ab886e1a9e791e6ffbd42e",
+  "business_tests_run": false,
+  "independent_review": "corrected shipment actor and terminal-state non-regression before board publication"
+}

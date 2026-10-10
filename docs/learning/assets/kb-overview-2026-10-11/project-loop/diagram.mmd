@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant U as 顾客
+    participant A as 电商应用
+    participant D as MySQL交易事实
+    participant M as 管理员
+    U->>A: 浏览商品、登录、购物车、本人地址
+    A->>D: 当前商品与本人资料
+    Note over U,A: 购物车不预占；展示价不决定成交价
+    U->>A: 普通或秒杀下单＋原购买幂等键
+    A->>D: 同事务：订单快照、库存预占、流水
+    Note over A,D: 提交：可售20→19；预占0→1；待支付
+    A-->>U: 原订单；响应丢失则原Key确认
+    U->>A: 原订单发起Mock付款
+    Note over A: 先提交付款尝试，再调用网关；不持锁等网络
+    alt 原付款结果尚不明确
+        A-->>U: 保留原尝试，查单确认；不重复付款
+        Note over A,D: 未确认付款阻止关闭，预占可能超过到期时间
+    else 可信成功事件
+        A->>D: 先提交Inbox，再处理原事件
+        A->>D: 同事务：付款成功、订单PAID、预占核销、Event终态
+        Note over A,D: 可售仍19；预占1→0；重复处理不重复效果
+        A-->>U: 本地订单事实已更新
+        M->>A: 有权限的管理员模拟发货
+        A->>D: 提交Shipment和PAID→SHIPPED
+        U->>A: 本人确认收货
+        A->>D: 提交SHIPPED→COMPLETED
+    end
+    Note over U,D: 可取消或到期关闭时一次释放；关闭后迟到成功走模拟退款

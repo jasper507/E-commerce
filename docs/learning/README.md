@@ -1,6 +1,8 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-11。本页收录39份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。前轮整理见[文档验证记录](../verification/learning-guide-change-overviews.md)，ES原型、读入口与手动切换见搜索专题，本机部署准备与首次运行见部署专题。
+更新：2026-10-11。本页收录41份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。前轮整理见[文档验证记录](../verification/learning-guide-change-overviews.md)，ES原型、读入口与手动切换见搜索专题，本机部署准备与首次运行见部署专题。
+
+先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易，再读[支付当前总览](payment-current-overview-study-guide.md)理解付款、库存和故障恢复。两篇按本轮最新要求配图并加入各自的重做选择；[本轮归档核对](../verification/project-payment-overview-knowledge-base-update.md)只记录文档检查，不代表重跑应用。
 
 这次整理帮助你脱离源码讲清：原来有什么问题、改变哪一步、为什么有效、证据到哪里为止。先读每页新增的“本片前后变化”，再读关键机制、取舍与证据；不用一次背完全部资料。能独立解释一个正常例子、一个失败例子及剩余代价，就先整理理解，避免自动追加实验。
 
@@ -57,7 +59,7 @@
 
 ## 4. 支付与MQ：每一步解决不同的故障窗口
 
-先用[支付专题复盘](payment-learning-and-interview-guide.md)理解189元订单；它是横向整理，不是又增加了一套支付实现。专题旧正文依据2026-10-06快照，开头已补当前边界。
+先用[支付当前总览](payment-current-overview-study-guide.md)理解189元订单；它是横向整理，不是又增加了一套支付实现。[旧支付详版](payment-learning-and-interview-guide.md)保留2026-10-06快照及历史图文，当前入口按4673b9f核对。
 
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |

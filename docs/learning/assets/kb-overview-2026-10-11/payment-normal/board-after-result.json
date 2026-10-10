@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "output_path": "board-after.json"
+  }
+}

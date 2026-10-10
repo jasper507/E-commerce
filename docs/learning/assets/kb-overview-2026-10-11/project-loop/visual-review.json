@@ -1,0 +1,17 @@
+{
+  "board_token": "SDuuwOD4dhwiy6bzOgocuEuPn2b",
+  "idempotent_token": "kb20261011-project-loop-v1",
+  "empty_before": true,
+  "write_ok": true,
+  "remote_node_count": 25,
+  "source_node_count": 25,
+  "node_type_counts_equal": true,
+  "non_fragment_node_text_multiset_equal": true,
+  "fragment_label_preserved_in_nested_nodes": true,
+  "readback_normalization": "Server reorders nodes and stores the alt-fragment heading in nested nodes rather than the top-level text field.",
+  "preview_export_ok": true,
+  "preview_file": "remote-preview.jpg",
+  "remote_preview_viewed": true,
+  "visual_review": "Actual remote preview viewed: all four participants, transaction commits, uncertain-payment branch, PAID to SHIPPED and SHIPPED to COMPLETED are visible; Chinese labels readable; no missing diagram or material overlap observed.",
+  "scope": "One newly created blank board only; incremental write without overwrite; application and data tests not run."
+}

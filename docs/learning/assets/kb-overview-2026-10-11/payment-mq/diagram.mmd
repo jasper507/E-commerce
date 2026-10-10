@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant H as HTTP入口
+    participant D as MySQL Inbox及业务
+    participant Q as RabbitMQ
+    participant W as Worker
+    participant R as 人工恢复
+
+    Note over H,D: 支付MQ时序：仅可选异步模式，项目默认同步
+    H->>D: T0：保存原始通知与去重键
+    D-->>H: T0已提交，取得内部Inbox ID
+    alt 消息发布成功
+        H-->>Q: 事务外发布内部ID
+        Note over H,Q: HTTP只确认已收件，不宣称已经付款成功
+    else Broker失败，或提交后进程中断未发布
+        H-xQ: 发布失败或根本没有发布
+        Note over D,R: 原通知仍在MySQL；中断的HTTP也可能没有响应
+        R->>D: 人工扫描未完成且可处理的事件
+        D-->>R: 返回符合门槛的原ID
+        R-->>Q: 补投原ID，不创建新付款
+    end
+
+    Q-->>W: 投递内部ID
+    W->>D: T1：锁内领取，次数加1，记租约
+    D-->>W: T1提交持久领取事实
+    Note over D,W: 已领取后卡住：到期后人工修复资格，再补投；无周期接管
+    W->>D: T2：验通知，推进支付、订单、秒杀资格与库存
+    D-->>W: T2一次提交业务效果与Event结果
+    Note over D,W: 仅合法成功且订单待付才核销；无效通知拒绝，关闭后成功走退款模拟
+
+    alt 任务正常结束
+        W-->>Q: 业务提交后ACK
+    else T2已提交，但ACK前Worker崩溃
+        W-xQ: 未ACK，连接断开
+        Q-->>W: 重启后重新投递原消息
+        W->>D: 读取同一Event的终态
+        D-->>W: 返回已处理结果，不重复核销或退款
+        W-->>Q: ACK，消息收尾
+    end
+    Note over Q,W: ACK仅确认消息；付款状态以MySQL为准

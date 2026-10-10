@@ -1,5 +1,7 @@
 # 支付与 MQ：从189元订单理解数据、事务和故障恢复
 
+2026-10-11维护提示：当前业务流程、图、核心代码与重做选择请先读[支付当前总览](payment-current-overview-study-guide.md)，归档核对见[本轮记录](../verification/project-payment-overview-knowledge-base-update.md)。以下保留2026-10-06详版及当时Git说明；“尚未发布”等表述只描述当时状态，不代表今天的Wiki入口。
+
 核对日期：2026-10-06。对象：Project One 当前工作区源码及已经保存的实验记录。
 这是支付资料的统一阅读入口，属于支付 Depth 主线的学习整理；不改变业务设计。
 当前 main 基点为 `2dacc9a`，C4/5D 实现与证据仍含未提交增量，仅检出该提交不足以复现全文。

@@ -1,0 +1,19 @@
+{
+  "source_commit": "4673b9f8ea95664ce4ab886e1a9e791e6ffbd42e",
+  "verified_paths": [
+    "PROJECT_CHARTER.md",
+    "backend/apps/ordering/services.py",
+    "backend/apps/payments/services.py",
+    "docs/learning/README.md",
+    "docs/learning/mvp-3-order-inventory-study-guide.md",
+    "docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md",
+    "docs/learning/project-rebuild-retrospective-study-guide.md",
+    "docs/verification/phase-4f-slow-faults-and-recovery.md",
+    "docs/verification/phase-5c2-payment-mq-retry.md",
+    "docs/verification/phase-5c3-payment-publication-recovery.md",
+    "docs/verification/phase-5c4-payment-worker-recovery.md",
+    "docs/verification/phase-5d-payment-expiration-concurrency.md",
+    "docs/verification/phase-7b-test-isolation-incident.md",
+    "docs/verification/phase-9b-local-deployment-run.md"
+  ]
+}

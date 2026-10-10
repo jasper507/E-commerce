@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "document": {
+      "new_blocks": [
+        {
+          "block_id": "doxcnJ3duJoorqGbqCxHipNRZYf",
+          "block_token": "Cee6wMjj5hbDqRb2AHVc1uqunbh",
+          "block_type": "whiteboard"
+        },
+        {
+          "block_id": "doxcnRI1j5apuLoZD23dOal6jQb",
+          "block_token": "VuDgwuZZNh0gYCb4vRCc5haDnph",
+          "block_type": "whiteboard"
+        }
+      ],
+      "revision_id": 5,
+      "url": "https://ocnbkcx1ug58.feishu.cn/docx/T6O0deWUnowaBsxM6LgcJfuynjb"
+    },
+    "result": "success",
+    "warnings": []
+  }
+}

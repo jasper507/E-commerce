@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "creator": "[redacted-account-id]",
+    "has_child": true,
+    "node_create_time": "1791277193",
+    "node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+    "node_type": "origin",
+    "obj_create_time": "1791277193",
+    "obj_edit_time": "1791279391",
+    "obj_token": "T6O0deWUnowaBsxM6LgcJfuynjb",
+    "obj_type": "docx",
+    "origin_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+    "owner": "[redacted-account-id]",
+    "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "space_id": "7693476782908935142",
+    "title": "支付",
+    "updated_at": "2026-10-06T09:36:31Z"
+  }
+}

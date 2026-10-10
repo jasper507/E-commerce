@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-11",
+  "status": "published_verified",
+  "source_commit": "4673b9f8ea95664ce4ab886e1a9e791e6ffbd42e",
+  "source_charter": "v1.15",
+  "project_url": "https://ocnbkcx1ug58.feishu.cn/wiki/WN1jwXDj0iPXm7kwLyHcmneenlb",
+  "payment_url": "https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh",
+  "project_revision": 7,
+  "payment_revision": 9,
+  "new_board_nodes": {
+    "project-loop": 25,
+    "payment-normal": 24,
+    "payment-mq": 31
+  },
+  "original_payment_board_preserved": true,
+  "wiki_children_preserved": true,
+  "remote_previews_visually_checked": true,
+  "initial_direct_mermaid_result": "partial_success 2107; text/code/links verified; repaired via new empty boards plus raw nodes",
+  "business_tests_run": false,
+  "account_metadata_redacted": true,
+  "candidate_sha256": {
+    "project-body.xml": "48b3acccf54bbaca71cae656269dba393d2380435528b09b0793e26ab12a19e8",
+    "payment-body.xml": "693e233c73923b3aa11512e9fb67f1f32c95b1671ef80c948c63b6bfd7799f5a",
+    "payment-wire.xml": "43e9545d18a69a802311552e1f23b84011cd17b27b269257964008b1a58be148"
+  }
+}
