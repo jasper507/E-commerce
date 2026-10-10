@@ -4,10 +4,21 @@ Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
 Learning documents: the [module reading guide](docs/learning/README.md) links all
-35 local study guides. Each now begins with the previous state, the slice's
+36 local study guides. Each now begins with the previous state, the slice's
 change, and its resulting limits, with historical stages kept distinct from
 current progress. The earlier documentation-only pass is recorded in the
 [verification](docs/verification/learning-guide-change-overviews.md).
+
+Manual search-index switch (2026-10-10): rebuild a new completed candidate, then
+update a single-target read alias and read back the actual target. Failed builds
+leave the old entry untouched; a lost update response is reconciled as switched,
+unchanged or unknown. Retained old indices allow a request that already resolved
+the old target to finish. Five new isolated cases plus 7B/7C regression passed
+18 tests; offline read regression passed 1 and catalog regression 24 / 6 subtests.
+This remains default-off, test-only and limited to one builder session/operator.
+No automatic synchronization, development enablement or frontend switch is added.
+See the [guide](docs/learning/phase-7d-search-index-switch-study-guide.md) and
+[verification](docs/verification/phase-7d-search-index-switch.md).
 
 Search read API (2026-10-10): the separate default-off
 `GET /api/catalog/search/` reads an ES candidate page, then confirms current
@@ -15,8 +26,8 @@ MySQL visibility/category and returns current price/stock summaries in ES order.
 The response uses `candidate_count` and candidate page numbers; filtered pages
 may be short or empty. ES failure returns 503 without MySQL search fallback.
 This slice only accepts the isolated test source; the existing list and frontend
-still use MySQL. Development enablement, index switching and synchronization
-remain pending. See the [guide](docs/learning/phase-7c-search-read-api-study-guide.md)
+still use MySQL. Development enablement and synchronization remain pending;
+7D above adds isolated manual switching. See the [guide](docs/learning/phase-7c-search-read-api-study-guide.md)
 and [verification](docs/verification/phase-7c-search-read-api.md).
 
 Rebuildable search prototype (2026-10-10): an isolated Elasticsearch 8.19.23
@@ -47,8 +58,8 @@ improvement claim. No ES service/dependency or development database change was
 made; frontend runtime/browser behavior remains unverified in this slice.
 See the [verification](docs/verification/phase-7a-search-baseline.md) and
 [study guide](docs/learning/phase-7a-product-search-baseline-study-guide.md).
-That stage handed off to the prototype and read API above; the next search slice
-will address manual rebuilding and safe read-index switching.
+That stage handed off to the prototype, read API and manual switching above.
+The next step is to consolidate understanding and assess demonstration/closeout gaps.
 
 Flash-sale Lua admission (2026-10-09): a default-off, local/test-only shared
 attempt counter runs before the HTTP lock-wait adapter and MySQL checkout.

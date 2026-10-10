@@ -1,0 +1,468 @@
+{
+  "date": "2026-10-10",
+  "observations": [
+    {
+      "scenario": "successful_rebuild_and_old_index_retention",
+      "old": {
+        "index": "project-one-test-search-7da4c39a6b9c4b6eb921c6bc674234cc",
+        "documents": 2
+      },
+      "switch": {
+        "candidate": "project-one-test-search-02395b01fb1e4d7d869b0575d0ba0d03",
+        "previous_index": "project-one-test-search-7da4c39a6b9c4b6eb921c6bc674234cc",
+        "current_index": "project-one-test-search-02395b01fb1e4d7d869b0575d0ba0d03",
+        "state": "switched",
+        "response": {
+          "acknowledged": true,
+          "errors": false
+        },
+        "response_ok": true,
+        "request_error": null,
+        "readback_error": null
+      },
+      "independent_alias": {
+        "project-one-test-search-02395b01fb1e4d7d869b0575d0ba0d03": {
+          "aliases": {
+            "project-one-test-search-read-45c53ccee4ee4967a1e7bb9444608395": {}
+          }
+        }
+      },
+      "new_keyword_before": {
+        "candidate_count": 0,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": []
+      },
+      "new_keyword_after": {
+        "candidate_count": 2,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "changing-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "added-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "old_exact_candidates": {
+        "took": 3,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 1,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-7da4c39a6b9c4b6eb921c6bc674234cc",
+              "_id": "1",
+              "_score": 6.2383246,
+              "_source": {
+                "product_id": 1,
+                "slug": "changing-product",
+                "category_slug": "switch-catalog",
+                "name": "旧款键盘",
+                "description": "耐用外壳"
+              },
+              "sort": [
+                6.2383246,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "old_exact_api_response": {
+        "candidate_count": 1,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "changing-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "oracle_new_slugs": [
+        "changing-product",
+        "added-product"
+      ],
+      "added_product_id": 3
+    },
+    {
+      "scenario": "real_bulk_failure_keeps_old_pointer",
+      "failed_candidate": "project-one-test-search-38e653ec85f5492f92a6aba4b6e8b60d",
+      "failed_candidate_documents": 1,
+      "bulk_errors": [
+        {
+          "index": {
+            "_index": "project-one-test-search-38e653ec85f5492f92a6aba4b6e8b60d",
+            "_id": "invalid",
+            "status": 400,
+            "error": {
+              "type": "document_parsing_exception",
+              "reason": "[1:15] failed to parse field [product_id] of type [long] in document with id 'invalid'. Preview of field's value: 'invalid'",
+              "caused_by": {
+                "type": "illegal_argument_exception",
+                "reason": "For input string: \"invalid\""
+              }
+            },
+            "data": {
+              "product_id": "invalid",
+              "slug": "invalid-document",
+              "category_slug": "switch-catalog",
+              "name": "旧款键盘",
+              "description": "耐用外壳"
+            }
+          }
+        }
+      ],
+      "alias_update_calls": 0,
+      "independent_alias": {
+        "project-one-test-search-5d7667c667ec4470823b6cdb038c27b7": {
+          "aliases": {
+            "project-one-test-search-read-dbc83203f174488b84fd3bb3bf0b4149": {}
+          }
+        }
+      },
+      "old_api_response": {
+        "candidate_count": 1,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "changing-product",
+            "name": "旧款键盘",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "inflight_resolved_old_index",
+      "switch": {
+        "candidate": "project-one-test-search-d653c4d9277244aa9c7c9003aadbb7bb",
+        "previous_index": "project-one-test-search-2a92474622ab4f78bf2781c65fc5cc1b",
+        "current_index": "project-one-test-search-d653c4d9277244aa9c7c9003aadbb7bb",
+        "state": "switched",
+        "response": {
+          "acknowledged": true,
+          "errors": false
+        },
+        "response_ok": true,
+        "request_error": null,
+        "readback_error": null
+      },
+      "events": [
+        "resolved_old",
+        "switched_new",
+        "searched_old_exact",
+        "old_response_complete"
+      ],
+      "resolved_search_indices": [
+        "project-one-test-search-2a92474622ab4f78bf2781c65fc5cc1b"
+      ],
+      "inflight_old_response": {
+        "status": 200,
+        "response": {
+          "candidate_count": 1,
+          "next_candidate_page": null,
+          "previous_candidate_page": null,
+          "results": [
+            {
+              "slug": "changing-product",
+              "name": "新款音箱",
+              "category": {
+                "slug": "switch-catalog",
+                "name": "手动切换"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            }
+          ]
+        }
+      },
+      "later_new_response": {
+        "candidate_count": 2,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "changing-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "added-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "later_old_keyword_response": {
+        "candidate_count": 0,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": []
+      }
+    },
+    {
+      "scenario": "real_alias_post_then_response_loss",
+      "attempts": [
+        {
+          "injection": "response_lost_readback_succeeds",
+          "publisher_outcome": {
+            "candidate": "project-one-test-search-486445e1a68f4568bb6e53f7c3105d15",
+            "previous_index": "project-one-test-search-56028fb4e7fa48e692c52e8d204a633f",
+            "current_index": "project-one-test-search-486445e1a68f4568bb6e53f7c3105d15",
+            "state": "switched",
+            "response": null,
+            "response_ok": false,
+            "request_error": "ConnectionTimeout",
+            "readback_error": null
+          },
+          "actual_post_response": {
+            "acknowledged": true,
+            "errors": false
+          },
+          "alias_update_calls": 1,
+          "readback_failures": 0,
+          "independent_alias": {
+            "project-one-test-search-486445e1a68f4568bb6e53f7c3105d15": {
+              "aliases": {
+                "project-one-test-search-read-63f9e727322c46b183adfddab063165e": {}
+              }
+            }
+          }
+        },
+        {
+          "injection": "response_and_readback_lost",
+          "publisher_outcome": {
+            "candidate": "project-one-test-search-5b60ca7dbe9f43448ee9517a1fb2c9e5",
+            "previous_index": "project-one-test-search-486445e1a68f4568bb6e53f7c3105d15",
+            "current_index": null,
+            "state": "unknown",
+            "response": null,
+            "response_ok": false,
+            "request_error": "ConnectionTimeout",
+            "readback_error": "ConnectionTimeout"
+          },
+          "actual_post_response": {
+            "acknowledged": true,
+            "errors": false
+          },
+          "alias_update_calls": 1,
+          "readback_failures": 1,
+          "independent_alias": {
+            "project-one-test-search-5b60ca7dbe9f43448ee9517a1fb2c9e5": {
+              "aliases": {
+                "project-one-test-search-read-63f9e727322c46b183adfddab063165e": {}
+              }
+            }
+          }
+        }
+      ],
+      "final_api_response": {
+        "candidate_count": 2,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "changing-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "added-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "all_candidates_retained": [
+        "project-one-test-search-486445e1a68f4568bb6e53f7c3105d15",
+        "project-one-test-search-56028fb4e7fa48e692c52e8d204a633f",
+        "project-one-test-search-5b60ca7dbe9f43448ee9517a1fb2c9e5"
+      ]
+    },
+    {
+      "scenario": "unfinished_candidate_and_invalid_pointer",
+      "incomplete_publish_rejected": true,
+      "stale_expected_rejected": true,
+      "abnormal_alias_rejections": [
+        {
+          "pointer": "multiple_targets",
+          "actual_alias": {
+            "project-one-test-search-ff11a131a88f42c5b56f76c435181b86": {
+              "aliases": {
+                "project-one-test-search-read-016ab23b1eca4b45b46fc1881d6c7a30": {}
+              }
+            },
+            "project-one-test-search-ba731719718845f6a81f8a1723babec5": {
+              "aliases": {
+                "project-one-test-search-read-016ab23b1eca4b45b46fc1881d6c7a30": {}
+              }
+            }
+          },
+          "api_status": 503
+        },
+        {
+          "pointer": "filtered_alias",
+          "actual_alias": {
+            "project-one-test-search-ff11a131a88f42c5b56f76c435181b86": {
+              "aliases": {
+                "project-one-test-search-read-016ab23b1eca4b45b46fc1881d6c7a30": {
+                  "filter": {
+                    "term": {
+                      "product_id": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "api_status": 503
+        },
+        {
+          "pointer": "routed_alias",
+          "actual_alias": {
+            "project-one-test-search-ff11a131a88f42c5b56f76c435181b86": {
+              "aliases": {
+                "project-one-test-search-read-016ab23b1eca4b45b46fc1881d6c7a30": {
+                  "index_routing": "isolated-routing",
+                  "search_routing": "isolated-routing"
+                }
+              }
+            }
+          },
+          "api_status": 503
+        }
+      ],
+      "restored_api_response": {
+        "candidate_count": 1,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "changing-product",
+            "name": "旧款键盘",
+            "category": {
+              "slug": "switch-catalog",
+              "name": "手动切换"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      }
+    }
+  ],
+  "cleanup": [
+    {
+      "owned_indices": [
+        "project-one-test-search-02395b01fb1e4d7d869b0575d0ba0d03",
+        "project-one-test-search-7da4c39a6b9c4b6eb921c6bc674234cc"
+      ],
+      "remaining": [],
+      "alias": "project-one-test-search-read-45c53ccee4ee4967a1e7bb9444608395",
+      "alias_missing": true
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-38e653ec85f5492f92a6aba4b6e8b60d",
+        "project-one-test-search-5d7667c667ec4470823b6cdb038c27b7"
+      ],
+      "remaining": [],
+      "alias": "project-one-test-search-read-dbc83203f174488b84fd3bb3bf0b4149",
+      "alias_missing": true
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-2a92474622ab4f78bf2781c65fc5cc1b",
+        "project-one-test-search-d653c4d9277244aa9c7c9003aadbb7bb"
+      ],
+      "remaining": [],
+      "alias": "project-one-test-search-read-742107ac61df4596bd49ef4acb262d2a",
+      "alias_missing": true
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-486445e1a68f4568bb6e53f7c3105d15",
+        "project-one-test-search-56028fb4e7fa48e692c52e8d204a633f",
+        "project-one-test-search-5b60ca7dbe9f43448ee9517a1fb2c9e5"
+      ],
+      "remaining": [],
+      "alias": "project-one-test-search-read-63f9e727322c46b183adfddab063165e",
+      "alias_missing": true
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-ba731719718845f6a81f8a1723babec5",
+        "project-one-test-search-ff11a131a88f42c5b56f76c435181b86"
+      ],
+      "remaining": [],
+      "alias": "project-one-test-search-read-016ab23b1eca4b45b46fc1881d6c7a30",
+      "alias_missing": true
+    }
+  ],
+  "elasticsearch": {
+    "cluster": "project-one-search-index-test",
+    "version": "8.19.23"
+  },
+  "outcome": "passed",
+  "boundary": "Real isolated ES alias operations and MySQL/APIClient; response-loss/readback-loss are injected after real operations. One controlled reader and one publisher, not distributed publication coordination, production performance or automatic synchronization."
+}

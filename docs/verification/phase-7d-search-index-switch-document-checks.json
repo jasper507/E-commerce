@@ -1,0 +1,10 @@
+{
+  "local_links_checked": 108,
+  "two_core_excerpts_ast_match_source": true,
+  "ast_passed": true,
+  "owned_indices_removed": 21,
+  "read_aliases_removed": 5,
+  "single_update_per_injected_attempt": true,
+  "dev_unchanged": true,
+  "raw_normalization": "line endings and trailing whitespace only"
+}

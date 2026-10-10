@@ -135,6 +135,7 @@ PAYMENT_MAX_ATTEMPTS = env_int("PAYMENT_MAX_ATTEMPTS", 3)
 CATALOG_SEARCH_ENABLED = env_bool("CATALOG_SEARCH_ENABLED", False)
 CATALOG_SEARCH_URL = env_value("CATALOG_SEARCH_URL", "http://127.0.0.1:9201")
 CATALOG_SEARCH_INDEX = env_value("CATALOG_SEARCH_INDEX", "")
+CATALOG_SEARCH_ALIAS = env_value("CATALOG_SEARCH_ALIAS", "")
 if CATALOG_SEARCH_ENABLED and ENVIRONMENT != "test":
     raise ImproperlyConfigured("Catalog search currently requires an isolated test environment.")
 

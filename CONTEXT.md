@@ -1493,3 +1493,14 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 前后开发30表整表只读摘要相同（用户Session各1、权限104、内容类型26、迁移35），只公开counts/unchanged，摘要Git外；测试schema/连接0。所有DBpytest串行，fixture前后实际SELECT DATABASE；共15个确认自建索引逐个精确清理，独立client确认无剩余；最后独立Compose down --volumes，仅MySQL继续，Redis/MQ未启动。本轮无开发写入/迁移/实际.env修改。
 - 双交付docs/verification/phase-7c-search-read-api.md及raw/JSON、docs/learning/phase-7c-search-read-api-study-guide.md互链；指南只1处核心代码，无图/目录/末尾题。导航35篇、README/7B后续/Charter v1.12同步；未改库存订单支付Lua逻辑、详情缓存、模型迁移、前端或部署配置。两秒是每个串行ES请求等待，不是总HTTP期限；无连接复用、alias/PIT/自动同步/前端启用/容量或个人掌握证据。
 - 下一片建议手动重建成功后安全切换读入口，失败保留旧索引；在隔离环境证明边界即止，不自动扩MQ或部署。开发来源建索引及启用需要后续单独说明和确认。
+
+## 67. ES手动重建与安全别名切换（2026-10-10）
+
+- 用户选中7C下一步要求开始。面试价值为可重建副本、发布结果不确定、保留在途旧读；Supporting/Pair＋Depth解释。开始前main/远端14b59f3一致，已有6E指南改动保留。限于隔离test、单操作者和同一构建会话/数据库生命周期，不启用开发环境或自动同步。
+- 新search_alias.py SearchIndexPublisher复用builder，新候选逐项Bulk/refresh/count/meta完成后才一次精确remove旧must_existTrue＋add新。expected实际指针与owned ready不符写前拒绝；更新正常/异常均精确回读state switched/unchanged/unknown，ack/errors/peraction另记response_ok。未知不重发/逆切/删候选，构建异常尚未提交alias切换。publisher失败不调用builder.close。
+- CATALOG_SEARCH_ALIAS默认空，与INDEX只填一个，沿用defaultoff/test-source guard；读API先info校验集群，再每请求resolve一次唯一空配置alias并查exact index，meta后MySQL摘要仍当前。多目标/filter/routing拒绝503。source guard提取require_test_source(db_connection)与完成标记/name检查共用，只patch模块替身，无实际NAME变更。
+- 在线新5项＋7C8/7B5共18passed2skip19.82秒。旧2文档→新3，新词0→2；Bulk HTTP200实际一项400，候选仅1且未complete，alias更新0/旧入口200；有序暂停已resolveold→主切new→旧exact read200，后新请求读new，线程核验实际testDB并close，未退出禁止cleanup。两轮实际alias POST后注入timeout/readbacktimeout，分别switched/unknown，control都确认actualnew，各更新1次/所有候选保留。注入不是实际网络/多节点故障；ackFalse/actionfailed/unchanged返回分支仅静态检查。
+- 停隔离ES后7C真实离线1passed8deselected10.54秒，ConnectionTimeout约2.007秒，503/1来源SQL/0摘要SQL，旧browse200；目录24passed6subtests8.67秒。静态compile/check0/nodrift/pipcheck/Composeconfig通过，无Redis/MQ/浏览器/性能矩阵重跑。
+- 开发30表前后只读整表摘要相同（用户Session各1、104权限/26contenttype/35migration），hashGit外无真实行值。测试schema/可见conn0；共21确认自建索引（新11＋回归10）精确删/独立核验0剩余，5alias全部404，standalone down --volumes，只MySQL运行。无开发写入/索引/迁移/实际.env或部署配置更改。
+- 双交付docs/verification/phase-7d-search-index-switch.md及raw/JSON与docs/learning/phase-7d-search-index-switch-study-guide.md互链；指南2个重点摘录，无图/源码目录/末尾题。导航36、README/7C衔接/Charterv1.13同步。旧索引保留带来空间/人工清理；alias读多1GET，各2秒不总2秒。发布器单builder ready不能跨进程沿用，没有独立管理命令/开发运行入口；source meta无epoch、非CAS/跨页快照/自动同步/生产零停机证据。
+- 本片证据足以解释建好再发布、未知和在途旧读，停止追加同步/发布锁/故障矩阵。下一步整理个人理解，再评估启用环境、完整前后端演示与项目收尾最小缺口，开发数据操作需单独确认；不能把工程通过当个人掌握或项目全部完成。

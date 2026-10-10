@@ -1,0 +1,977 @@
+{
+  "date": "2026-10-10",
+  "observations": [
+    {
+      "scenario": "candidate_order_and_summaries",
+      "build": {
+        "index": "project-one-test-search-2f2a49738d0f4ed38df30392db2d4662",
+        "documents": 7
+      },
+      "actual_candidates": {
+        "took": 4,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 2,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-2f2a49738d0f4ed38df30392db2d4662",
+              "_id": "15",
+              "_score": 15.065788,
+              "_source": {
+                "product_id": 15,
+                "slug": "name-hit",
+                "category_slug": "read-mice",
+                "name": "无线鼠标",
+                "description": "轻巧便携"
+              },
+              "sort": [
+                15.065788,
+                15
+              ]
+            },
+            {
+              "_index": "project-one-test-search-2f2a49738d0f4ed38df30392db2d4662",
+              "_id": "14",
+              "_score": 5.0219293,
+              "_source": {
+                "product_id": 14,
+                "slug": "description-hit",
+                "category_slug": "read-mice",
+                "name": "轻巧便携",
+                "description": "无线鼠标"
+              },
+              "sort": [
+                5.0219293,
+                14
+              ]
+            }
+          ]
+        }
+      },
+      "response": {
+        "candidate_count": 2,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "name-hit",
+            "name": "无线鼠标",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "description-hit",
+            "name": "轻巧便携",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "request_sql_count": 2,
+      "oracle_slugs": [
+        "name-hit",
+        "description-hit"
+      ],
+      "reversed_terms_response": {
+        "candidate_count": 2,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "name-hit",
+            "name": "无线鼠标",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "description-hit",
+            "name": "轻巧便携",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "old_mysql_keyword_response": {
+        "count": 0,
+        "next": null,
+        "previous": null,
+        "results": []
+      }
+    },
+    {
+      "scenario": "stale_candidates_and_current_mysql",
+      "original_candidates": {
+        "took": 1,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 5,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-da925fac2dd14caf8dcfcc15767fd04b",
+              "_id": "25",
+              "_score": 3.3722413,
+              "_source": {
+                "product_id": 25,
+                "slug": "stale-product",
+                "category_slug": "read-mice",
+                "name": "陈旧键盘",
+                "description": "原始描述"
+              },
+              "sort": [
+                3.3722413,
+                25
+              ]
+            },
+            {
+              "_index": "project-one-test-search-da925fac2dd14caf8dcfcc15767fd04b",
+              "_id": "26",
+              "_score": 3.3722413,
+              "_source": {
+                "product_id": 26,
+                "slug": "stale-category",
+                "category_slug": "read-later-hidden",
+                "name": "陈旧键盘",
+                "description": "原始描述"
+              },
+              "sort": [
+                3.3722413,
+                26
+              ]
+            },
+            {
+              "_index": "project-one-test-search-da925fac2dd14caf8dcfcc15767fd04b",
+              "_id": "27",
+              "_score": 3.3722413,
+              "_source": {
+                "product_id": 27,
+                "slug": "moved-product",
+                "category_slug": "read-mice",
+                "name": "陈旧键盘",
+                "description": "原始描述"
+              },
+              "sort": [
+                3.3722413,
+                27
+              ]
+            },
+            {
+              "_index": "project-one-test-search-da925fac2dd14caf8dcfcc15767fd04b",
+              "_id": "28",
+              "_score": 3.3722413,
+              "_source": {
+                "product_id": 28,
+                "slug": "renamed-product",
+                "category_slug": "read-mice",
+                "name": "陈旧键盘",
+                "description": "原始描述"
+              },
+              "sort": [
+                3.3722413,
+                28
+              ]
+            },
+            {
+              "_index": "project-one-test-search-da925fac2dd14caf8dcfcc15767fd04b",
+              "_id": "29",
+              "_score": 3.3722413,
+              "_source": {
+                "product_id": 29,
+                "slug": "no-sku",
+                "category_slug": "read-mice",
+                "name": "陈旧键盘",
+                "description": "原始描述"
+              },
+              "sort": [
+                3.3722413,
+                29
+              ]
+            }
+          ]
+        }
+      },
+      "unfiltered_response": {
+        "candidate_count": 5,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "moved-product",
+            "name": "陈旧键盘",
+            "category": {
+              "slug": "read-accessories",
+              "name": "回读配件"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "renamed-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": "89.00",
+            "in_stock": true
+          },
+          {
+            "slug": "no-sku",
+            "name": "陈旧键盘",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "selected_category_response": {
+        "candidate_count": 4,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "renamed-product",
+            "name": "新款音箱",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": "89.00",
+            "in_stock": true
+          },
+          {
+            "slug": "no-sku",
+            "name": "陈旧键盘",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "new_keyword_response": {
+        "candidate_count": 0,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": []
+      },
+      "new_category_response": {
+        "candidate_count": 0,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": []
+      },
+      "new_unindexed_product_response": {
+        "candidate_count": 0,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": []
+      },
+      "oracle_visible_slugs": [
+        "moved-product",
+        "renamed-product",
+        "no-sku"
+      ]
+    },
+    {
+      "scenario": "short_and_empty_candidate_page",
+      "build": {
+        "index": "project-one-test-search-e8458c6b0755410fba1d235c49836922",
+        "documents": 21
+      },
+      "original_page": {
+        "candidate_count": 21,
+        "next_candidate_page": 2,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "candidate-00",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-01",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-02",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-03",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-04",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-05",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-06",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-07",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-08",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-09",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-10",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-11",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-12",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-13",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-14",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-15",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-16",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-17",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-18",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-19",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "short_page": {
+        "candidate_count": 21,
+        "next_candidate_page": 2,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "candidate-01",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-02",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-03",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-04",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-05",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-06",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-07",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-08",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-09",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-10",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-11",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-12",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-13",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-14",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-15",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-16",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-17",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-18",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          },
+          {
+            "slug": "candidate-19",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "empty_page": {
+        "candidate_count": 21,
+        "next_candidate_page": 2,
+        "previous_candidate_page": null,
+        "results": []
+      },
+      "second_page": {
+        "candidate_count": 21,
+        "next_candidate_page": null,
+        "previous_candidate_page": 1,
+        "results": [
+          {
+            "slug": "candidate-20",
+            "name": "分页键盘",
+            "category": {
+              "slug": "read-pages",
+              "name": "候选分页"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "oracle_second_page_slug": "candidate-20"
+    },
+    {
+      "scenario": "zero_candidates_and_tail",
+      "first_empty_page": {
+        "candidate_count": 0,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": []
+      },
+      "tail_rejections": [
+        {
+          "params": {
+            "q": "绝不匹配测试词",
+            "page": 2
+          },
+          "status": 404,
+          "response": {
+            "detail": "候选页不存在。"
+          }
+        },
+        {
+          "params": {
+            "q": "无线鼠标",
+            "page": 2
+          },
+          "status": 404,
+          "response": {
+            "detail": "候选页不存在。"
+          }
+        },
+        {
+          "params": {
+            "q": "无线鼠标",
+            "page": 500
+          },
+          "status": 404,
+          "response": {
+            "detail": "候选页不存在。"
+          }
+        }
+      ]
+    },
+    {
+      "scenario": "unfinished_or_wrong_source_index",
+      "build": {
+        "index": "project-one-test-search-065697192b6e4de28f2ba6ac80faa0f0",
+        "documents": 7
+      },
+      "metadata_rejections": [
+        {
+          "injected_metadata": {
+            "search_schema": 1,
+            "source_database": "test_project_one",
+            "build_complete": false
+          },
+          "status": 503,
+          "response": {
+            "detail": "商品搜索暂不可用，请稍后重试；仍可使用普通商品浏览。"
+          }
+        },
+        {
+          "injected_metadata": {
+            "search_schema": 1,
+            "source_database": "project_one",
+            "build_complete": true
+          },
+          "status": 503,
+          "response": {
+            "detail": "商品搜索暂不可用，请稍后重试；仍可使用普通商品浏览。"
+          }
+        },
+        {
+          "injected_metadata": {
+            "search_schema": true,
+            "source_database": "test_project_one",
+            "build_complete": true
+          },
+          "status": 503,
+          "response": {
+            "detail": "商品搜索暂不可用，请稍后重试；仍可使用普通商品浏览。"
+          }
+        },
+        {
+          "injected_metadata": {
+            "search_schema": 1,
+            "source_database": "test_project_one",
+            "build_complete": 1
+          },
+          "status": 503,
+          "response": {
+            "detail": "商品搜索暂不可用，请稍后重试；仍可使用普通商品浏览。"
+          }
+        }
+      ],
+      "restored_response": {
+        "candidate_count": 2,
+        "next_candidate_page": null,
+        "previous_candidate_page": null,
+        "results": [
+          {
+            "slug": "name-hit",
+            "name": "无线鼠标",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": "129.00",
+            "in_stock": true
+          },
+          {
+            "slug": "description-hit",
+            "name": "轻巧便携",
+            "category": {
+              "slug": "read-mice",
+              "name": "回读鼠标"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "missing_index_status": 503,
+      "missing_index_created": false
+    },
+    {
+      "scenario": "pre_reader_rejections",
+      "disabled_status": 503,
+      "invalid_statuses": [
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400
+      ],
+      "post_status": 405,
+      "reader_constructions": 0,
+      "database_fixture": false
+    },
+    {
+      "scenario": "candidate_window_guard_injected",
+      "injected_candidate_count": 10001,
+      "status": 400,
+      "response": {
+        "q": "候选超过10000条，请缩小关键词或分类范围。"
+      },
+      "reader_calls": [
+        {
+          "keyword": "无线鼠标",
+          "category": null,
+          "page": 1
+        }
+      ],
+      "real_es": false,
+      "database_fixture": false
+    },
+    {
+      "scenario": "incomplete_or_malformed_response_injected",
+      "results": [
+        {
+          "injection": "timed_out",
+          "status": 503
+        },
+        {
+          "injection": "failed_shard",
+          "status": 503
+        },
+        {
+          "injection": "approximate_total",
+          "status": 503
+        },
+        {
+          "injection": "malformed_empty_id",
+          "status": 503
+        },
+        {
+          "injection": "boolean_id",
+          "status": 503
+        }
+      ],
+      "real_es": false,
+      "database_fixture": false
+    }
+  ],
+  "cleanup": [
+    {
+      "owned_indices": [
+        "project-one-test-search-2f2a49738d0f4ed38df30392db2d4662"
+      ],
+      "remaining": []
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-da925fac2dd14caf8dcfcc15767fd04b"
+      ],
+      "remaining": []
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-e8458c6b0755410fba1d235c49836922"
+      ],
+      "remaining": []
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-7716f784764e43a087ad53a5c66c9267"
+      ],
+      "remaining": []
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-065697192b6e4de28f2ba6ac80faa0f0"
+      ],
+      "remaining": []
+    }
+  ],
+  "elasticsearch": {
+    "cluster": "project-one-search-index-test",
+    "version": "8.19.23"
+  },
+  "outcome": "passed",
+  "boundary": "Isolated APIClient and real services for designated integration scenarios; injected reader/client/connection cases cover the candidate window and malformed response guards. No browser, automatic synchronization, or capacity evidence."
+}

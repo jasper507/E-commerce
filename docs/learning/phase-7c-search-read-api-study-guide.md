@@ -2,6 +2,8 @@
 
 2026-10-10。[学习导航](README.md) · [验证记录](../verification/phase-7c-search-read-api.md) · [前片：可重建搜索原型](phase-7b-search-index-prototype-study-guide.md)。
 
+后续衔接：[7D手动重建与别名切换](phase-7d-search-index-switch-study-guide.md)已验证成功、构建失败和结果未知边界，仍默认关闭、只接测试来源；下文保留7C当时的证据与下一步。
+
 ## 本片前后变化
 
 - **开始前：** ES只能在隔离原型内查询；公开商品列表仍使用MySQL完整包含匹配。

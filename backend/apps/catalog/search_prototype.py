@@ -1,7 +1,8 @@
 """隔离搜索索引构建器：不允许操作开发索引，没有自动同步。"""
 
-from uuid import uuid4
+import re
 from urllib.parse import urlsplit
+from uuid import uuid4
 
 from django.conf import settings
 from django.db import connection
@@ -31,20 +32,34 @@ def build_metadata(complete):
     return {"search_schema": 1, "source_database": SOURCE_DATABASE, "build_complete": complete}
 
 
-def product_documents():
+def is_candidate_index(index):
+    return isinstance(index, str) and bool(re.fullmatch(re.escape(INDEX_PREFIX) + r"[0-9a-f]{32}", index))
+
+
+def is_completed_metadata(meta):
+    return (
+        isinstance(meta, dict) and meta == build_metadata(True)
+        and meta.get("build_complete") is True and type(meta.get("search_schema")) is int
+    )
+
+
+def require_test_source(db_connection):
     if (
         settings.ENVIRONMENT != "test"
-        or connection.vendor != "mysql"
-        or connection.settings_dict["NAME"] != "test_project_one"
+        or db_connection.vendor != "mysql"
+        or db_connection.settings_dict["NAME"] != SOURCE_DATABASE
     ):
         raise RuntimeError("Search prototype requires isolated MySQL test_project_one.")
-    if not connection.get_autocommit() or connection.in_atomic_block:
+    if not db_connection.get_autocommit() or db_connection.in_atomic_block:
         raise RuntimeError("Do not hold a MySQL transaction while building a search index.")
-    with connection.cursor() as cursor:
+    with db_connection.cursor() as cursor:
         cursor.execute("SELECT DATABASE()")
-        if cursor.fetchone()[0] != "test_project_one":
+        if cursor.fetchone()[0] != SOURCE_DATABASE:
             raise RuntimeError("Search prototype requires the actual isolated MySQL database.")
 
+
+def product_documents():
+    require_test_source(connection)
     # 先物化单条SELECT的结果，再等待ES；不是跨存储的一致快照或增量同步。
     rows = Product.objects.filter(is_active=True, category__is_active=True).order_by("id").values(
         "id", "slug", "category__slug", "name", "description",
