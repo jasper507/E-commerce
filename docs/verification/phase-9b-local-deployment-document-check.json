@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-11",
+  "kind": "static documentation and secret hygiene, not business tests",
+  "compose_config_quiet_exit": 0,
+  "independent_env_ignored": true,
+  "independent_credentials_unique": true,
+  "secret_values_printed": false,
+  "exact_secret_scan_files": 18,
+  "secret_matches": 0,
+  "local_links_checked": 146,
+  "reciprocal_deliverable_links": true,
+  "navigation_unique_guides": 39,
+  "migration_raw_and_runtime_count": 36,
+  "http_check_count": 14,
+  "scoped_git_diff_check_exit": 0,
+  "raw_logs_normalised": "UTF-8, line endings/trailing whitespace only; results retained"
+}

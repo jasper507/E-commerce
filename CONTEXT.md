@@ -1513,3 +1513,13 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - Compose quiet与进程内公开占位渲染结构断言通过，空凭据拒绝；实际独立.env未创建。宿主npm build/typecheck通过56modules；pip dry-run退出0/Would installgunicorn26.2.0，未安装。官方PyPI确认版本存在/Python>=3.10，不称最新。记录见docs/verification/phase-9a-local-deployment.md/static.json/frontend-build.txt；双交付指南phase-9a-local-deployment-study-guide.md，导航37、Charterv1.14。
 - 没有pull/build镜像、启动/停容器、建新卷、迁移、collectstatic、账号/商品创建、HTTP/Session或旧数据库回归。本轮无开发数据访问/修改；准备前后只有原MySQL容器健康，8080无监听。Node/Nginx标签可移动，Docker/Linux构建语法、挂载权限和实际请求待验证，不能把hostbuild冒充镜像运行。
 - 首次运行需按聊天AGENTS安全边界确认下载/镜像空间、独立网络卷及新库迁移，之后逐步执行并收集证据。down保留卷，默认不删除卷；中间件适配/HTTPS/运维分片，不放宽现有保护或自动补演示功能。原compose/settings/业务/base依赖/开发.env不改。
+
+## 69. 本机部署首次运行与公开入口验收（2026-10-11）
+
+- 用户理解部署前后变化后要求开始，后续“继续”；首次下载/镜像构建、独立凭据/网络/卷、新库迁移与回环8080启动已有具体影响授权，无重复许可。Supporting/Pair，目标是独立解释源码→镜像→进程/代理/静态资源→指定数据库，不是扩展示站。开始main/远端2722c98一致；文档收尾前另一聊天5495e44已推送，沿当前HEAD续写，未知/6E用户修改不纳入。
+- 独立.env排他创建随机凭据、Git忽略、quiet config退出0，不打印值或完整环境。真实Linux web/nginx镜像构建通过，Vite8.3.0/56模块；新db健康后实际SELECT DATABASE/CURRENT_USER先核对project_one_deployment_local/project_one_deployment@%和db:3306，再一次性迁移36项、collectstatic154文件；db/web/nginx全部healthy。
+- 实际Python3.11.16/Django5.2.17/Gunicorn26.2.0/MySQL8.4.10/Nginx1.30.5；Gunicorn master＋2worker、UID10001，静态卷web可写/nginx只读，无源码bind/后端镜像.env。DB/Web无hostport，仅127.0.0.1:8080；环境development/DEBUGfalse，缓存/Lua/MQ/ES四开关false，原guard不变。新库待迁移0，用户/Session/商品/订单0；Django系统权限资料由迁移生成。
+- 14项HTTP含预期403/404通过，health数据库ok、商品/分类空、Admin和CSS200、错误API/静态不被SPA吞。后续独立Playwright只读实际Vue空页、深路由刷新、两个API200、目录0错误/0警告、Admin所有已请求资源200；没有登录提交或创建数据。首次CLI help尾部Windows Node断言退出1，后续专用会话各命令退出0且已关闭，不修改依赖/全局安装。
+- 双交付docs/verification/phase-9b-local-deployment-run.md、docs/learning/phase-9b-local-deployment-run-study-guide.md及build/db/source/migrate/static/start raw和runtime/http/browser JSON互链；HTTP JSON保留浏览器之前的false，browser JSON另证实Vue执行。9A只补后续链接不改历史边界，导航39、Charterv1.15同步；文档静态/秘密检查不冒称业务测试。
+- 未访问/写入开发库或缓存、未迁移旧库，没有旧库整表指纹核验；原业务/Compose/settings根.env未改。没有业务pytest、登录Session/CSRF、交易、中间件启用、生产HTTPS、容量、重启/更新/备份恢复或个人掌握验收；两个新卷和三个部署容器保留运行。Node/Nginx可移动标签与传递依赖未全锁，记录当次digest而不承诺逐字节重现。
+- 当前最小基础部署证据已足够，停止自动加数据/中间件/故障矩阵。下一片建议只获准创建独立学习账号并验Session/CSRF成功/拒绝；随后整理更新/停机/备份/公网部署流程，再按用户安排整体复习。部署前面试无展示要求继续保留。

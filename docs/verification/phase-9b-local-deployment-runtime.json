@@ -1,0 +1,166 @@
+{
+  "date": "2026-10-11",
+  "baseline": "2722c98",
+  "web": {
+    "database": "project_one_deployment_local",
+    "database_user": "project_one_deployment@%",
+    "mysql_version": "8.4.10",
+    "database_host": "db:3306",
+    "python_version": "3.11.16",
+    "django_version": "5.2.17",
+    "gunicorn_version": "26.2.0",
+    "uid": 10001,
+    "environment": "development",
+    "debug": false,
+    "optional_modules": {
+      "CATALOG_CACHE_ENABLED": false,
+      "FLASH_SALE_ADMISSION_ENABLED": false,
+      "PAYMENT_EVENTS_ASYNC": false,
+      "CATALOG_SEARCH_ENABLED": false
+    },
+    "applied_migrations": 36,
+    "pending_migrations": 0,
+    "business_row_counts": {
+      "users": 0,
+      "sessions": 0,
+      "products": 0,
+      "orders": 0
+    },
+    "static_owner_uid": 10001,
+    "static_writable_by_web": true,
+    "static_admin_css_exists": true,
+    "env_file_in_backend_image": false
+  },
+  "checks": [
+    {
+      "service": "web",
+      "command": "python manage.py check",
+      "exit_code": 0,
+      "stdout": "System check identified no issues (0 silenced).",
+      "stderr": ""
+    },
+    {
+      "service": "web",
+      "command": "python manage.py migrate --check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "service": "web",
+      "command": "python -m pip check",
+      "exit_code": 0,
+      "stdout": "No broken requirements found.",
+      "stderr": ""
+    },
+    {
+      "service": "nginx",
+      "command": "nginx -t",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful"
+    },
+    {
+      "service": "nginx",
+      "command": "nginx -v",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "nginx version: nginx/1.30.5"
+    }
+  ],
+  "containers": [
+    {
+      "service": "db",
+      "name": "project-one-deployment-local-db-1",
+      "state": "running",
+      "health": "healthy",
+      "restart_count": 0,
+      "image_id": "sha256:8dbcf531a03aade657e181b9cf2f1d1803ce621a1d55610cb44cb531ab7d7db6",
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "project-one-deployment-local_mysql_data",
+          "destination": "/var/lib/mysql",
+          "writable": true
+        }
+      ],
+      "ports": {
+        "3306/tcp": null,
+        "33060/tcp": null
+      }
+    },
+    {
+      "service": "web",
+      "name": "project-one-deployment-local-web-1",
+      "state": "running",
+      "health": "healthy",
+      "restart_count": 0,
+      "image_id": "sha256:843f0f3cc0a499eff8945baebd51f502074cedd0e2cc16a7314f636cd544e625",
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "project-one-deployment-local_django_static",
+          "destination": "/app/staticfiles",
+          "writable": true
+        }
+      ],
+      "ports": {
+        "8000/tcp": null
+      }
+    },
+    {
+      "service": "nginx",
+      "name": "project-one-deployment-local-nginx-1",
+      "state": "running",
+      "health": "healthy",
+      "restart_count": 0,
+      "image_id": "sha256:1b660f464adac2089eeab74c75871cef0c3686fdc481e9383cb5883904d460ee",
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "project-one-deployment-local_django_static",
+          "destination": "/usr/share/nginx/django-static",
+          "writable": false
+        }
+      ],
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8080"
+          }
+        ]
+      }
+    }
+  ],
+  "gunicorn_processes": "PID                 PPID                COMMAND\n31787               31764               /usr/local/bin/python3.11 /usr/local/bin/gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile - --error-logfile -\n31811               31787               /usr/local/bin/python3.11 /usr/local/bin/gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile - --error-logfile -\n31812               31787               /usr/local/bin/python3.11 /usr/local/bin/gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 60 --access-logfile - --error-logfile -",
+  "images": [
+    {
+      "name": "project-one-deployment-web:local",
+      "id": "sha256:843f0f3cc0a499eff8945baebd51f502074cedd0e2cc16a7314f636cd544e625",
+      "repo_digests": [
+        "project-one-deployment-web@sha256:843f0f3cc0a499eff8945baebd51f502074cedd0e2cc16a7314f636cd544e625"
+      ],
+      "os": "linux",
+      "architecture": "amd64"
+    },
+    {
+      "name": "project-one-deployment-nginx:local",
+      "id": "sha256:1b660f464adac2089eeab74c75871cef0c3686fdc481e9383cb5883904d460ee",
+      "repo_digests": [
+        "project-one-deployment-nginx@sha256:1b660f464adac2089eeab74c75871cef0c3686fdc481e9383cb5883904d460ee"
+      ],
+      "os": "linux",
+      "architecture": "amd64"
+    },
+    {
+      "name": "mysql:8.4.10",
+      "id": "sha256:8dbcf531a03aade657e181b9cf2f1d1803ce621a1d55610cb44cb531ab7d7db6",
+      "repo_digests": [
+        "mysql@sha256:8dbcf531a03aade657e181b9cf2f1d1803ce621a1d55610cb44cb531ab7d7db6"
+      ],
+      "os": "linux",
+      "architecture": "amd64"
+    }
+  ]
+}

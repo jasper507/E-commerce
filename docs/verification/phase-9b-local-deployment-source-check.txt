@@ -1,0 +1,7 @@
+ Volume project-one-deployment-local_django_static Creating
+ Volume project-one-deployment-local_django_static Creating
+ Volume project-one-deployment-local_django_static Created
+ Volume project-one-deployment-local_django_static Created
+ Container project-one-deployment-local-web-run-164f54a02ce2 Creating
+ Container project-one-deployment-local-web-run-164f54a02ce2 Created
+{"database": "project_one_deployment_local", "database_user": "project_one_deployment@%", "database_host": "db:3306", "uid": 10001, "development_database_accessed": false}

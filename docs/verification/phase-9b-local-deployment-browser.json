@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-11",
+  "baseline": "2722c98",
+  "browser_session": "phase9b",
+  "scope": "read-only real browser; public Vue empty catalog after deep-route reload and Django Admin login/CSS",
+  "checks": {
+    "vue_rendered_empty_catalog": true,
+    "products_and_categories_api_200": true,
+    "deep_route_reload_rendered": true,
+    "catalog_console_errors": 0,
+    "catalog_console_warnings": 0,
+    "admin_css_network_200": true
+  },
+  "commands": [
+    {
+      "command": "playwright-cli -s=phase9b snapshot",
+      "exit_code": 0,
+      "output": "### Page\n- Page URL: http://127.0.0.1:8080/products\n- Page Title: Project One 商品目录\n### Snapshot\n```yaml\n- generic [ref=f1e3]:\n  - banner [ref=f1e4]:\n    - link \"Project One Interview Core 商店\" [ref=f1e5] [cursor=pointer]:\n      - /url: /products\n      - generic [aria-hidden] [ref=f1e6]: P1\n      - generic [ref=f1e7]:\n        - strong [ref=f1e8]: Project One\n        - generic [ref=f1e9]: Interview Core 商店\n    - navigation \"主导航\" [ref=f1e10]:\n      - link \"浏览商品\" [ref=f1e11] [cursor=pointer]:\n        - /url: /products\n      - link \"限时秒杀\" [ref=f1e12] [cursor=pointer]:\n        - /url: /flash-sales\n      - link \"购物车\" [ref=f1e13] [cursor=pointer]:\n        - /url: /cart\n      - link \"结账\" [ref=f1e14] [cursor=pointer]:\n        - /url: /checkout\n      - link \"我的订单\" [ref=f1e15] [cursor=pointer]:\n        - /url: /orders\n      - link \"收货地址\" [ref=f1e16] [cursor=pointer]:\n        - /url: /addresses\n      - link \"登录\" [ref=f1e17] [cursor=pointer]:\n        - /url: /login\n  - main [ref=f1e18]:\n    - region [ref=f1e19]:\n      - generic [ref=f1e20]:\n        - generic [ref=f1e21]:\n          - paragraph [ref=f1e22]: Guest Catalog Browse\n          - heading \"浏览商品\" [level=1] [ref=f1e23]\n          - paragraph [ref=f1e24]: 查看已上架商品、价格范围与当前库存提示。\n        - paragraph [ref=f1e25]: 共 0 件商品\n      - search [ref=f1e26]:\n        - generic [ref=f1e27]: 搜索商品名称或描述\n        - searchbox \"搜索商品名称或描述\" [ref=f1e28]\n        - button \"搜索\" [ref=f1e30] [cursor=pointer]\n      - region [ref=f1e31]:\n        - heading \"商品分类\" [level=2] [ref=f1e33]\n        - generic \"按分类筛选\" [ref=f1e34]:\n          - button \"全部商品\" [pressed] [ref=f1e35] [cursor=pointer]\n      - generic [ref=f1e36]:\n        - paragraph [ref=f1e37]: Empty\n        - heading \"没有找到商品\" [level=2] [ref=f1e38]\n        - paragraph [ref=f1e39]: 目前还没有可公开浏览的商品。\n  - contentinfo [ref=f1e40]:\n    - paragraph [ref=f1e41]: 目录中的价格与库存状态仅供浏览，下单时以后端重新校验为准。\n```"
+    },
+    {
+      "command": "playwright-cli -s=phase9b requests --static",
+      "exit_code": 0,
+      "output": "### Result\n1. [GET] http://127.0.0.1:8080/products => [200] OK\n2. [GET] http://127.0.0.1:8080/assets/index-CIQVkCs8.js => [200] OK\n3. [GET] http://127.0.0.1:8080/assets/index-BdA7hJHS.css => [200] OK\n4. [GET] http://127.0.0.1:8080/api/catalog/products/ => [200] OK\n5. [GET] http://127.0.0.1:8080/api/catalog/categories/ => [200] OK\n6. [GET] http://127.0.0.1:8080/products => [200] OK\n7. [GET] http://127.0.0.1:8080/assets/index-CIQVkCs8.js => [200] OK\n8. [GET] http://127.0.0.1:8080/assets/index-BdA7hJHS.css => [200] OK\n9. [GET] http://127.0.0.1:8080/api/catalog/products/ => [200] OK\n10. [GET] http://127.0.0.1:8080/api/catalog/categories/ => [200] OK"
+    },
+    {
+      "command": "playwright-cli -s=phase9b console warning",
+      "exit_code": 0,
+      "output": "### Result\nTotal messages: 0 (Errors: 0, Warnings: 0)"
+    },
+    {
+      "command": "playwright-cli -s=phase9b goto http://127.0.0.1:8080/admin/login/",
+      "exit_code": 0,
+      "output": "### Ran Playwright code\n```js\nawait page.goto('http://127.0.0.1:8080/admin/login/');\n```\n### Page\n- Page URL: http://127.0.0.1:8080/admin/login/\n- Page Title: 登录 | Django 站点管理员\n### Snapshot\n- [Snapshot](.playwright-cli\\page-2026-10-10T20-24-53-032Z.yml)"
+    },
+    {
+      "command": "playwright-cli -s=phase9b snapshot",
+      "exit_code": 0,
+      "output": "### Page\n- Page URL: http://127.0.0.1:8080/admin/login/\n- Page Title: 登录 | Django 站点管理员\n### Snapshot\n```yaml\n- generic [ref=f2e1]:\n  - link \"跳到主要内容\" [ref=f2e2] [cursor=pointer]:\n    - /url: \"#content-start\"\n  - generic [ref=f2e3]:\n    - banner [ref=f2e4]:\n      - generic [ref=f2e5]:\n        - link \"Django 管理\" [ref=f2e7] [cursor=pointer]:\n          - /url: /admin/\n        - button \"切换主题（当前主题：自动）\" [ref=f2e8] [cursor=pointer]\n    - main [ref=f2e13]:\n      - generic [ref=f2e16]:\n        - generic [ref=f2e17]:\n          - generic [ref=f2e18]: \"用户名:\"\n          - textbox \"用户名:\" [active] [ref=f2e19]\n        - generic [ref=f2e20]:\n          - generic [ref=f2e21]: \"密码:\"\n          - textbox \"密码:\" [ref=f2e22]\n        - button \"登录\" [ref=f2e24] [cursor=pointer]\n    - contentinfo\n```"
+    },
+    {
+      "command": "playwright-cli -s=phase9b requests --static",
+      "exit_code": 0,
+      "output": "### Result\n1. [GET] http://127.0.0.1:8080/admin/login/ => [200] OK\n2. [GET] http://127.0.0.1:8080/static/admin/css/base.css => [200] OK\n3. [GET] http://127.0.0.1:8080/static/admin/css/dark_mode.css => [200] OK\n4. [GET] http://127.0.0.1:8080/static/admin/js/theme.js => [200] OK\n5. [GET] http://127.0.0.1:8080/static/admin/css/nav_sidebar.css => [200] OK\n6. [GET] http://127.0.0.1:8080/static/admin/js/nav_sidebar.js => [200] OK\n7. [GET] http://127.0.0.1:8080/static/admin/css/login.css => [200] OK\n8. [GET] http://127.0.0.1:8080/static/admin/css/responsive.css => [200] OK"
+    }
+  ],
+  "account_or_product_created": false,
+  "login_or_csrf_post_verified": false,
+  "cookies_or_tokens_recorded": false
+}

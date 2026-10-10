@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-11",
+  "baseline": "2722c98",
+  "scope": "real HTTP through loopback Nginx to Gunicorn/Django and independent empty MySQL",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 585
+    },
+    {
+      "path": "/assets/index-CIQVkCs8.js",
+      "status": 200,
+      "content_type": "application/javascript",
+      "bytes": 149906
+    },
+    {
+      "path": "/assets/index-BdA7hJHS.css",
+      "status": 200,
+      "content_type": "text/css",
+      "bytes": 11413
+    },
+    {
+      "path": "/products",
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 585
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 585
+    },
+    {
+      "path": "/health/",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 34,
+      "payload": {
+        "status": "ok",
+        "database": "ok"
+      }
+    },
+    {
+      "path": "/api/catalog/products/",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 52,
+      "payload": {
+        "count": 0,
+        "next": null,
+        "previous": null,
+        "results": []
+      }
+    },
+    {
+      "path": "/api/catalog/categories/",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 2
+    },
+    {
+      "path": "/admin/login/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 4173
+    },
+    {
+      "path": "/static/admin/css/base.css",
+      "status": 200,
+      "content_type": "text/css",
+      "bytes": 22120
+    },
+    {
+      "path": "/api/not-a-real-endpoint/",
+      "status": 404,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 179
+    },
+    {
+      "path": "/assets/not-a-real-file.js",
+      "status": 404,
+      "content_type": "text/html",
+      "bytes": 153
+    },
+    {
+      "path": "/static/not-a-real-file.css",
+      "status": 404,
+      "content_type": "text/html",
+      "bytes": 153
+    },
+    {
+      "path": "/api/auth/me/",
+      "status": 403,
+      "content_type": "application/json",
+      "bytes": 43
+    }
+  ],
+  "passed": 14,
+  "cookie_or_csrf_token_saved": false,
+  "account_or_product_created": false,
+  "browser_javascript_execution_verified": false
+}

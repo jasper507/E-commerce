@@ -1,10 +1,10 @@
-# Project One — Project Charter v1.14
+# Project One — Project Charter v1.15
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase9A本机独立部署候选与逐步指南已准备，Compose与宿主前端构建通过；镜像构建、新库迁移和HTTP运行待首次确认。核心业务/中间件沿用既有证据，部署之后再整体复习；不要求面试现场展示网站。
-- 文档版本：v1.14
+- 当前阶段：Phase9B获准完成本机独立部署首次运行，Linux镜像、新库36迁移、154静态文件、三服务健康、14项HTTP及只读浏览器空页通过；Session/CSRF、交易与中间件启用未验收。随后收束部署流程再整体复习；不要求面试现场展示网站。
+- 文档版本：v1.15
 - 路线图进度更新：2026-10-11
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
@@ -1214,6 +1214,8 @@ LEARNING_LOG.md          个人理解、错误与复盘
 ---
 
 ## 20. Immediate Next Step（下一步）
+
+首次运行（2026-10-11，v1.15）：拥有者理解影响后明确恢复执行。独立环境文件/随机凭据仅Git外保存，镜像构建、只迁移新库、collectstatic、db/web/nginx启动完成；实际SELECT DATABASE为project_one_deployment_local，36迁移且待迁移0、154静态文件。14项HTTP检查及真实浏览器空目录/深路由刷新/Admin资源通过，用户/Session/商品/订单均0。当前仍development、DEBUG=false、本机HTTP，四可选模块显式关闭。见[指南](docs/learning/phase-9b-local-deployment-run-study-guide.md)与[运行验收](docs/verification/phase-9b-local-deployment-run.md)。最小后续建议是独立学习账号的Session/CSRF边界，再整理更新/停机/备份与公网部署流程；不自动扩商品演示、中间件启用或故障矩阵。原开发库未访问或修改，没有业务闭环、生产安全、重启恢复或个人掌握证据。以下9A与7D段保留历史。
 
 部署准备（2026-10-11，v1.14）：拥有者确认下一篇进入部署，采用完整指南加逐步操作，复习在后，不要求建设面试展示站。Phase9A新增独立本机HTTP候选，只包含Vue/Nginx、Gunicorn/Django与独立MySQL；固定回环8080、新库与项目卷，不使用原开发Compose或根.env。development加DEBUG=false，缓存/Lua/MQ/ES关闭，不放宽现有生产与模块保护。Compose结构/缺值拒绝检查、宿主前端构建及部署依赖dry-run通过；镜像、迁移、HTTP/Session与持久化尚未运行。见[指南](docs/learning/phase-9a-local-deployment-study-guide.md)与[验证](docs/verification/phase-9a-local-deployment.md)。先获准创建独立运行环境，再分步构建、迁移与启动；中间件适配和公网HTTPS各自后续，不把候选当成完整部署成功。下段保留7D阶段历史。
 

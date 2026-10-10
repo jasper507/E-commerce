@@ -4,19 +4,21 @@ Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
 Learning documents: the [module reading guide](docs/learning/README.md) links all
-37 local study guides. Each now begins with the previous state, the slice's
+the local study guides. Each begins with the previous state, the slice's
 change, and its resulting limits, with historical stages kept distinct from
 current progress. The earlier documentation-only pass is recorded in the
 [verification](docs/verification/learning-guide-change-overviews.md).
 
-Local deployment preparation (2026-10-11): a standalone candidate connects
+First local deployment (2026-10-11): the authorized standalone stack now runs
 Vue build output, Nginx, Gunicorn/Django and an independent MySQL database.
-Only loopback port 8080 is published; cache, Lua admission, async payments and
-ES remain disabled in this first local HTTP stage. Compose validation and the
-host frontend build passed. Images, migrations and HTTP have not been run;
-first startup needs the owner's confirmation. Follow the
-[step-by-step guide](docs/learning/phase-9a-local-deployment-study-guide.md) and
-[verification boundaries](docs/verification/phase-9a-local-deployment.md).
+Linux image builds, 36 migrations, 154 static files and 14 HTTP checks passed;
+a real browser rendered the empty catalog after a deep-route reload and loaded
+Admin assets. Only loopback port 8080 is published; cache, Lua admission, async
+payments and ES remain disabled. Login/CSRF, transactions, restarts and public
+HTTPS were not verified. Follow the
+[run study guide](docs/learning/phase-9b-local-deployment-run-study-guide.md),
+[runtime evidence](docs/verification/phase-9b-local-deployment-run.md) and the
+earlier [step-by-step procedure](docs/learning/phase-9a-local-deployment-study-guide.md).
 Do not merge this standalone Compose file with the development stack.
 
 Manual search-index switch (2026-10-10): rebuild a new completed candidate, then

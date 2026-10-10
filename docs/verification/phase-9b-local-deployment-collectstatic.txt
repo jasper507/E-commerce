@@ -1,0 +1,4 @@
+ Container project-one-deployment-local-web-run-b2e22b9149e1 Creating
+ Container project-one-deployment-local-web-run-b2e22b9149e1 Created
+
+154 static files copied to '/app/staticfiles'.

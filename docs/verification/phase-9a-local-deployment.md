@@ -2,6 +2,8 @@
 
 日期：2026-10-11，Asia/Shanghai。应用基线 `6a159ee`。Supporting / Pair；[学习指南](../learning/phase-9a-local-deployment-study-guide.md)。**本片完成配置准备，不代表已经部署运行。** 项目拥有者授权按“完整指南＋逐步操作”开始；首次启动尚待具体影响确认。
 
+后续首次运行已在[9B验收记录](phase-9b-local-deployment-run.md)完成；本页中的“尚未运行”保留为9A当时状态，不覆盖9B的实际运行结果。
+
 ## 要解决的问题与停止条件
 
 已有 Docker 主要提供数据库、缓存、队列和 Worker，尚未组成 Vue/Nginx/Gunicorn/Django 的 Web 运行链。本片准备独立候选，支持解释前端构建、反向代理、应用进程、容器网络及持久数据的责任。停止于配置、依赖及材料核对；镜像构建、迁移、账号准备和实际请求留到获准后的运行片，不自动推进所有中间件。
