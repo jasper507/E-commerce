@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-11",
+  "baseline": "6a159ee",
+  "scope": "candidate configuration only; no image build, container startup or database write",
+  "compose_valid": true,
+  "missing_credentials_refused": true,
+  "services": [
+    "db",
+    "nginx",
+    "web"
+  ],
+  "published_entry": "127.0.0.1:8080 -> nginx:80",
+  "database": "project_one_deployment_local",
+  "database_host": "db:3306",
+  "volumes": [
+    "project-one-deployment-local_mysql_data",
+    "project-one-deployment-local_django_static"
+  ],
+  "four_optional_modules_disabled": true,
+  "source_bind_mounts": false,
+  "static_volume_nginx_read_only": true,
+  "runtime_env_created": false,
+  "unverified": [
+    "Linux image builds",
+    "nginx -t",
+    "Gunicorn boot",
+    "migration",
+    "collectstatic",
+    "HTTP and Session/CSRF",
+    "data persistence and restart"
+  ],
+  "local_document_links_checked": 7,
+  "selected_config_excerpts_match": true,
+  "existing_compose_ignore_base_settings_unchanged": true,
+  "runtime_env_ignored_and_template_trackable": true,
+  "ignore_allowlists_manually_reviewed_not_engine_validated": true,
+  "host_frontend_build": {
+    "exit_code": 0,
+    "modules": 56
+  },
+  "dependency_dry_run": {
+    "exit_code": 0,
+    "would_install": "gunicorn==26.2.0",
+    "installed": false
+  }
+}

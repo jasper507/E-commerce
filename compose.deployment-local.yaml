@@ -1,0 +1,86 @@
+# Standalone local learning stack. Do not merge this with compose.yaml.
+name: project-one-deployment-local
+
+services:
+  db:
+    image: mysql:8.4.10
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: project_one_deployment_local
+      MYSQL_USER: project_one_deployment
+      MYSQL_PASSWORD: ${DEPLOY_MYSQL_PASSWORD:?Set a separate deployment database password}
+      MYSQL_ROOT_PASSWORD: ${DEPLOY_MYSQL_ROOT_PASSWORD:?Set a separate deployment root password}
+      TZ: UTC
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+00:00
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [CMD-SHELL, 'mysqladmin ping --host=127.0.0.1 --user=root --password=$$MYSQL_ROOT_PASSWORD --silent']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  web:
+    image: project-one-deployment-web:local
+    build:
+      context: .
+      dockerfile: docker/deployment/web.Dockerfile
+    restart: unless-stopped
+    environment:
+      # HTTP loopback practice only; staging/production keep their HTTPS guard.
+      DJANGO_ENV: development
+      DJANGO_DEBUG: "false"
+      DJANGO_SECRET_KEY: ${DEPLOY_DJANGO_SECRET_KEY:?Set a separate deployment Django secret}
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      MYSQL_DATABASE: project_one_deployment_local
+      MYSQL_TEST_DATABASE: test_project_one_deployment_local
+      MYSQL_USER: project_one_deployment
+      MYSQL_PASSWORD: ${DEPLOY_MYSQL_PASSWORD:?Set a separate deployment database password}
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      CATALOG_CACHE_ENABLED: "false"
+      FLASH_SALE_ADMISSION_ENABLED: "false"
+      PAYMENT_EVENTS_ASYNC: "false"
+      CATALOG_SEARCH_ENABLED: "false"
+    volumes:
+      - django_static:/app/staticfiles
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/', timeout=2).read()"
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  nginx:
+    image: project-one-deployment-nginx:local
+    build:
+      context: .
+      dockerfile: docker/deployment/frontend.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - django_static:/usr/share/nginx/django-static:ro
+    depends_on:
+      web:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  mysql_data:
+  django_static:

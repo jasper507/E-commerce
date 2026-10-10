@@ -4,10 +4,20 @@ Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
 Learning documents: the [module reading guide](docs/learning/README.md) links all
-36 local study guides. Each now begins with the previous state, the slice's
+37 local study guides. Each now begins with the previous state, the slice's
 change, and its resulting limits, with historical stages kept distinct from
 current progress. The earlier documentation-only pass is recorded in the
 [verification](docs/verification/learning-guide-change-overviews.md).
+
+Local deployment preparation (2026-10-11): a standalone candidate connects
+Vue build output, Nginx, Gunicorn/Django and an independent MySQL database.
+Only loopback port 8080 is published; cache, Lua admission, async payments and
+ES remain disabled in this first local HTTP stage. Compose validation and the
+host frontend build passed. Images, migrations and HTTP have not been run;
+first startup needs the owner's confirmation. Follow the
+[step-by-step guide](docs/learning/phase-9a-local-deployment-study-guide.md) and
+[verification boundaries](docs/verification/phase-9a-local-deployment.md).
+Do not merge this standalone Compose file with the development stack.
 
 Manual search-index switch (2026-10-10): rebuild a new completed candidate, then
 update a single-target read alias and read back the actual target. Failed builds

@@ -1,0 +1,4 @@
+-r base.txt
+
+# Installed inside the Linux Web image; the existing worker uses base.txt.
+gunicorn==26.2.0

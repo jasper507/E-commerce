@@ -1,11 +1,11 @@
-# Project One — Project Charter v1.13
+# Project One — Project Charter v1.14
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase7D手动重建与别名切换已隔离验证，构建失败保留旧入口、切换后回读分类；ES默认关闭仅测试来源，原列表/前端仍MySQL，开发启用/自动同步待做；个人理解与项目演示收尾待验收
-- 文档版本：v1.13
-- 路线图进度更新：2026-10-10
+- 当前阶段：Phase9A本机独立部署候选与逐步指南已准备，Compose与宿主前端构建通过；镜像构建、新库迁移和HTTP运行待首次确认。核心业务/中间件沿用既有证据，部署之后再整体复习；不要求面试现场展示网站。
+- 文档版本：v1.14
+- 路线图进度更新：2026-10-11
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
@@ -1214,6 +1214,8 @@ LEARNING_LOG.md          个人理解、错误与复盘
 ---
 
 ## 20. Immediate Next Step（下一步）
+
+部署准备（2026-10-11，v1.14）：拥有者确认下一篇进入部署，采用完整指南加逐步操作，复习在后，不要求建设面试展示站。Phase9A新增独立本机HTTP候选，只包含Vue/Nginx、Gunicorn/Django与独立MySQL；固定回环8080、新库与项目卷，不使用原开发Compose或根.env。development加DEBUG=false，缓存/Lua/MQ/ES关闭，不放宽现有生产与模块保护。Compose结构/缺值拒绝检查、宿主前端构建及部署依赖dry-run通过；镜像、迁移、HTTP/Session与持久化尚未运行。见[指南](docs/learning/phase-9a-local-deployment-study-guide.md)与[验证](docs/verification/phase-9a-local-deployment.md)。先获准创建独立运行环境，再分步构建、迁移与启动；中间件适配和公网HTTPS各自后续，不把候选当成完整部署成功。下段保留7D阶段历史。
 
 搜索手动切换（2026-10-10，v1.13）：同一隔离构建会话先新建完整候选，再一次remove旧关系must_exist=True/add新关系，随后回读别名确认switched/unchanged/unknown。构建失败尚未提交切换，旧入口保留；更新响应丢失不自动认定旧保留，不重发/逆切/删候选。读API只解析一次并查精确目标，旧索引保留支持在途请求，摘要仍来自MySQL。新5项与7B/7C回归合计18项、真实离线1项、目录24项/6子场景通过；21个候选/5个别名精确清理，开发30表摘要未变。元数据无数据代次，单操作者/同测试库生命周期仍有限制；无独立管理命令、开发启用、自动同步或生产零停机声明。见[验证](docs/verification/phase-7d-search-index-switch.md)与[指南](docs/learning/phase-7d-search-index-switch-study-guide.md)。
 

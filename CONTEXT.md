@@ -1504,3 +1504,12 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 开发30表前后只读整表摘要相同（用户Session各1、104权限/26contenttype/35migration），hashGit外无真实行值。测试schema/可见conn0；共21确认自建索引（新11＋回归10）精确删/独立核验0剩余，5alias全部404，standalone down --volumes，只MySQL运行。无开发写入/索引/迁移/实际.env或部署配置更改。
 - 双交付docs/verification/phase-7d-search-index-switch.md及raw/JSON与docs/learning/phase-7d-search-index-switch-study-guide.md互链；指南2个重点摘录，无图/源码目录/末尾题。导航36、README/7C衔接/Charterv1.13同步。旧索引保留带来空间/人工清理；alias读多1GET，各2秒不总2秒。发布器单builder ready不能跨进程沿用，没有独立管理命令/开发运行入口；source meta无epoch、非CAS/跨页快照/自动同步/生产零停机证据。
 - 本片证据足以解释建好再发布、未知和在途旧读，停止追加同步/发布锁/故障矩阵。下一步整理个人理解，再评估启用环境、完整前后端演示与项目收尾最小缺口，开发数据操作需单独确认；不能把工程通过当个人掌握或项目全部完成。
+
+## 68. 本机部署候选与逐步指南（2026-10-11）
+
+- 拥有者确认项目准备收尾，下一步部署，复习随后；不要求面试时打开项目或专门建设展示网站。采用完整指南＋逐步执行、解释命令与结果。9A为Supporting/Pair候选准备，不是已部署；本轮开始时main与远端6a159ee相同，6E指南用户修改保留。
+- 新compose.deployment-local.yaml独立project-one-deployment-local，只db/web/nginx；新库project_one_deployment_local、独立用户/卷，无开发init脚本/源码bind。Nginx仅127.0.0.1:8080，DB/Web无hostport；四可选模块显式关闭。development加DEBUGfalse用于本机HTTP，既有staging/production Secure Cookie和模块guard不变。
+- Web非root Linux镜像安装base＋Gunicorn26.2.0，2workers/60秒/stdout，包含源码/迁移/管理命令/Lua资源；独立ignore不改Worker根context。前端Node24构建→Nginx仅dist/conf；Host保留端口，API/Admin/health路径不截断，SPA回退不吞assets/API错误。Django collectstatic经独立卷供Nginx只读。
+- Compose quiet与进程内公开占位渲染结构断言通过，空凭据拒绝；实际独立.env未创建。宿主npm build/typecheck通过56modules；pip dry-run退出0/Would installgunicorn26.2.0，未安装。官方PyPI确认版本存在/Python>=3.10，不称最新。记录见docs/verification/phase-9a-local-deployment.md/static.json/frontend-build.txt；双交付指南phase-9a-local-deployment-study-guide.md，导航37、Charterv1.14。
+- 没有pull/build镜像、启动/停容器、建新卷、迁移、collectstatic、账号/商品创建、HTTP/Session或旧数据库回归。本轮无开发数据访问/修改；准备前后只有原MySQL容器健康，8080无监听。Node/Nginx标签可移动，Docker/Linux构建语法、挂载权限和实际请求待验证，不能把hostbuild冒充镜像运行。
+- 首次运行需按聊天AGENTS安全边界确认下载/镜像空间、独立网络卷及新库迁移，之后逐步执行并收集证据。down保留卷，默认不删除卷；中间件适配/HTTPS/运维分片，不放宽现有保护或自动补演示功能。原compose/settings/业务/base依赖/开发.env不改。
