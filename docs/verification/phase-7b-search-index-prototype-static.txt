@@ -1,0 +1,13 @@
+command: C:\project-one-ecommerce\.venv\Scripts\python.exe -m pip check
+No broken requirements found.
+exit_code: 0
+command: docker compose -f compose.search-index-test.yaml config --quiet
+exit_code: 0
+command: C:\project-one-ecommerce\.venv\Scripts\python.exe -X utf8 -m compileall -q backend/apps/catalog/search_prototype.py backend/apps/catalog/tests/test_search_index_prototype.py
+exit_code: 0
+command: C:\project-one-ecommerce\.venv\Scripts\python.exe backend/manage.py check
+System check identified no issues (0 silenced).
+exit_code: 0
+command: C:\project-one-ecommerce\.venv\Scripts\python.exe backend/manage.py makemigrations --check --dry-run
+No changes detected
+exit_code: 0

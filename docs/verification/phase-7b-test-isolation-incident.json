@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-10",
+  "incident": "initial guard modified actual Django connection target; pytest teardown flushed development tables",
+  "deleted_counts": {
+    "django_session": 1,
+    "auth_permission": 104,
+    "accounts_user": 1,
+    "django_content_type": 26
+  },
+  "binlog": "binlog.000025",
+  "binlog_checksum_decode": "passed",
+  "before_image": "FULL",
+  "isolated_candidate_validation": {
+    "isolated_restore": "passed",
+    "all_fields_match_before_images": true,
+    "row_counts": {
+      "django_content_type": 26,
+      "auth_permission": 104,
+      "accounts_user": 1,
+      "django_session": 1
+    },
+    "development_snapshot_unchanged_during_validation": true
+  },
+  "isolated_hardened_validation": {
+    "isolated_restore": "passed",
+    "all_fields_match_before_images": true,
+    "row_counts": {
+      "django_content_type": 26,
+      "auth_permission": 104,
+      "accounts_user": 1,
+      "django_session": 1
+    },
+    "development_snapshot_unchanged_during_validation": true
+  },
+  "owner_approval": "explicitly approved verified four-table restoration",
+  "development_restore": {
+    "development_restore": "passed",
+    "all_fields_match_before_images": true,
+    "row_counts": {
+      "django_content_type": 26,
+      "auth_permission": 104,
+      "accounts_user": 1,
+      "django_session": 1
+    }
+  },
+  "independent_committed_readback": {
+    "committed_full_field_readback": "passed",
+    "restored_counts": {
+      "django_content_type": 26,
+      "auth_permission": 104,
+      "accounts_user": 1,
+      "django_session": 1
+    },
+    "stored_session_user_resolves": true,
+    "test_schema_after": 0
+  },
+  "private_data_committed": false,
+  "boundary": "Row fields restored; auto-increment counters not decreased; no browser login test."
+}

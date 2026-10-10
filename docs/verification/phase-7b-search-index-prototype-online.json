@@ -1,0 +1,1600 @@
+{
+  "date": "2026-10-10",
+  "observations": [
+    {
+      "scenario": "analyzers_and_search",
+      "build": {
+        "index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+        "documents": 10
+      },
+      "mapping": {
+        "project-one-test-search-2481a6db96b7481d943b50fa2326370c": {
+          "mappings": {
+            "dynamic": "strict",
+            "properties": {
+              "category_slug": {
+                "type": "keyword"
+              },
+              "description": {
+                "type": "text",
+                "analyzer": "catalog_cjk"
+              },
+              "name": {
+                "type": "text",
+                "analyzer": "catalog_cjk"
+              },
+              "product_id": {
+                "type": "long"
+              },
+              "slug": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "analyze": {
+        "catalog_cjk:无线鼠标": {
+          "tokens": [
+            {
+              "token": "无线",
+              "start_offset": 0,
+              "end_offset": 2,
+              "type": "<DOUBLE>",
+              "position": 0
+            },
+            {
+              "token": "线鼠",
+              "start_offset": 1,
+              "end_offset": 3,
+              "type": "<DOUBLE>",
+              "position": 1
+            },
+            {
+              "token": "鼠标",
+              "start_offset": 2,
+              "end_offset": 4,
+              "type": "<DOUBLE>",
+              "position": 2
+            }
+          ]
+        },
+        "catalog_cjk:无线 鼠标": {
+          "tokens": [
+            {
+              "token": "无线",
+              "start_offset": 0,
+              "end_offset": 2,
+              "type": "<DOUBLE>",
+              "position": 0
+            },
+            {
+              "token": "鼠标",
+              "start_offset": 3,
+              "end_offset": 5,
+              "type": "<DOUBLE>",
+              "position": 1
+            }
+          ]
+        },
+        "catalog_cjk:标": {
+          "tokens": [
+            {
+              "token": "标",
+              "start_offset": 0,
+              "end_offset": 1,
+              "type": "<SINGLE>",
+              "position": 0
+            }
+          ]
+        },
+        "catalog_cjk:M1": {
+          "tokens": [
+            {
+              "token": "m1",
+              "start_offset": 0,
+              "end_offset": 2,
+              "type": "<ALPHANUM>",
+              "position": 0
+            }
+          ]
+        },
+        "standard:无线鼠标": {
+          "tokens": [
+            {
+              "token": "无",
+              "start_offset": 0,
+              "end_offset": 1,
+              "type": "<IDEOGRAPHIC>",
+              "position": 0
+            },
+            {
+              "token": "线",
+              "start_offset": 1,
+              "end_offset": 2,
+              "type": "<IDEOGRAPHIC>",
+              "position": 1
+            },
+            {
+              "token": "鼠",
+              "start_offset": 2,
+              "end_offset": 3,
+              "type": "<IDEOGRAPHIC>",
+              "position": 2
+            },
+            {
+              "token": "标",
+              "start_offset": 3,
+              "end_offset": 4,
+              "type": "<IDEOGRAPHIC>",
+              "position": 3
+            }
+          ]
+        },
+        "standard:无线 鼠标": {
+          "tokens": [
+            {
+              "token": "无",
+              "start_offset": 0,
+              "end_offset": 1,
+              "type": "<IDEOGRAPHIC>",
+              "position": 0
+            },
+            {
+              "token": "线",
+              "start_offset": 1,
+              "end_offset": 2,
+              "type": "<IDEOGRAPHIC>",
+              "position": 1
+            },
+            {
+              "token": "鼠",
+              "start_offset": 3,
+              "end_offset": 4,
+              "type": "<IDEOGRAPHIC>",
+              "position": 2
+            },
+            {
+              "token": "标",
+              "start_offset": 4,
+              "end_offset": 5,
+              "type": "<IDEOGRAPHIC>",
+              "position": 3
+            }
+          ]
+        },
+        "standard:标": {
+          "tokens": [
+            {
+              "token": "标",
+              "start_offset": 0,
+              "end_offset": 1,
+              "type": "<IDEOGRAPHIC>",
+              "position": 0
+            }
+          ]
+        },
+        "standard:M1": {
+          "tokens": [
+            {
+              "token": "m1",
+              "start_offset": 0,
+              "end_offset": 2,
+              "type": "<ALPHANUM>",
+              "position": 0
+            }
+          ]
+        }
+      },
+      "searches": {
+        "whole_keyword": {
+          "took": 39,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 5,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "1",
+                "_score": 6.5429316,
+                "_source": {
+                  "product_id": 1,
+                  "slug": "name-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "轻巧便携"
+                },
+                "sort": [
+                  6.5429316,
+                  1
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "3",
+                "_score": 6.5429316,
+                "_source": {
+                  "product_id": 3,
+                  "slug": "other-category",
+                  "category_slug": "prototype-accessories",
+                  "name": "无线鼠标",
+                  "description": "其他配件"
+                },
+                "sort": [
+                  6.5429316,
+                  3
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "4",
+                "_score": 6.5429316,
+                "_source": {
+                  "product_id": 4,
+                  "slug": "no-sku",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "尚无规格"
+                },
+                "sort": [
+                  6.5429316,
+                  4
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "2",
+                "_score": 5.8075876,
+                "_source": {
+                  "product_id": 2,
+                  "slug": "description-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "轻巧便携",
+                  "description": "无线鼠标"
+                },
+                "sort": [
+                  5.8075876,
+                  2
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "9",
+                "_score": 5.714712,
+                "_source": {
+                  "product_id": 9,
+                  "slug": "ascii-model",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标 M1",
+                  "description": "英文型号"
+                },
+                "sort": [
+                  5.714712,
+                  9
+                ]
+              }
+            ]
+          }
+        },
+        "separated_terms": {
+          "took": 3,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 6,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "10",
+                "_score": 4.652311,
+                "_source": {
+                  "product_id": 10,
+                  "slug": "spaced-name",
+                  "category_slug": "prototype-mice",
+                  "name": "无线 鼠标",
+                  "description": "空格分隔"
+                },
+                "sort": [
+                  4.652311,
+                  10
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "1",
+                "_score": 3.9780626,
+                "_source": {
+                  "product_id": 1,
+                  "slug": "name-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "轻巧便携"
+                },
+                "sort": [
+                  3.9780626,
+                  1
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "3",
+                "_score": 3.9780626,
+                "_source": {
+                  "product_id": 3,
+                  "slug": "other-category",
+                  "category_slug": "prototype-accessories",
+                  "name": "无线鼠标",
+                  "description": "其他配件"
+                },
+                "sort": [
+                  3.9780626,
+                  3
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "4",
+                "_score": 3.9780626,
+                "_source": {
+                  "product_id": 4,
+                  "slug": "no-sku",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "尚无规格"
+                },
+                "sort": [
+                  3.9780626,
+                  4
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "2",
+                "_score": 3.871725,
+                "_source": {
+                  "product_id": 2,
+                  "slug": "description-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "轻巧便携",
+                  "description": "无线鼠标"
+                },
+                "sort": [
+                  3.871725,
+                  2
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "9",
+                "_score": 3.4745102,
+                "_source": {
+                  "product_id": 9,
+                  "slug": "ascii-model",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标 M1",
+                  "description": "英文型号"
+                },
+                "sort": [
+                  3.4745102,
+                  9
+                ]
+              }
+            ]
+          }
+        },
+        "reordered_terms": {
+          "took": 2,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 6,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "10",
+                "_score": 4.652311,
+                "_source": {
+                  "product_id": 10,
+                  "slug": "spaced-name",
+                  "category_slug": "prototype-mice",
+                  "name": "无线 鼠标",
+                  "description": "空格分隔"
+                },
+                "sort": [
+                  4.652311,
+                  10
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "1",
+                "_score": 3.9780626,
+                "_source": {
+                  "product_id": 1,
+                  "slug": "name-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "轻巧便携"
+                },
+                "sort": [
+                  3.9780626,
+                  1
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "3",
+                "_score": 3.9780626,
+                "_source": {
+                  "product_id": 3,
+                  "slug": "other-category",
+                  "category_slug": "prototype-accessories",
+                  "name": "无线鼠标",
+                  "description": "其他配件"
+                },
+                "sort": [
+                  3.9780626,
+                  3
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "4",
+                "_score": 3.9780626,
+                "_source": {
+                  "product_id": 4,
+                  "slug": "no-sku",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "尚无规格"
+                },
+                "sort": [
+                  3.9780626,
+                  4
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "2",
+                "_score": 3.871725,
+                "_source": {
+                  "product_id": 2,
+                  "slug": "description-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "轻巧便携",
+                  "description": "无线鼠标"
+                },
+                "sort": [
+                  3.871725,
+                  2
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "9",
+                "_score": 3.4745102,
+                "_source": {
+                  "product_id": 9,
+                  "slug": "ascii-model",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标 M1",
+                  "description": "英文型号"
+                },
+                "sort": [
+                  3.4745102,
+                  9
+                ]
+              }
+            ]
+          }
+        },
+        "category": {
+          "took": 4,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 4,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "1",
+                "_score": 6.5429316,
+                "_source": {
+                  "product_id": 1,
+                  "slug": "name-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "轻巧便携"
+                },
+                "sort": [
+                  6.5429316,
+                  1
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "4",
+                "_score": 6.5429316,
+                "_source": {
+                  "product_id": 4,
+                  "slug": "no-sku",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "尚无规格"
+                },
+                "sort": [
+                  6.5429316,
+                  4
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "2",
+                "_score": 5.8075876,
+                "_source": {
+                  "product_id": 2,
+                  "slug": "description-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "轻巧便携",
+                  "description": "无线鼠标"
+                },
+                "sort": [
+                  5.8075876,
+                  2
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "9",
+                "_score": 5.714712,
+                "_source": {
+                  "product_id": 9,
+                  "slug": "ascii-model",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标 M1",
+                  "description": "英文型号"
+                },
+                "sort": [
+                  5.714712,
+                  9
+                ]
+              }
+            ]
+          }
+        },
+        "hidden_category": {
+          "took": 2,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 0,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": []
+          }
+        },
+        "cross_field_and": {
+          "took": 2,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 1,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "12",
+                "_score": 11.658627,
+                "_source": {
+                  "product_id": 12,
+                  "slug": "same-field",
+                  "category_slug": "prototype-mice",
+                  "name": "蓝牙 耳机",
+                  "description": "音频配件"
+                },
+                "sort": [
+                  11.658627,
+                  12
+                ]
+              }
+            ]
+          }
+        },
+        "tie": {
+          "took": 1,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 2,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "7",
+                "_score": 4.2515616,
+                "_source": {
+                  "product_id": 7,
+                  "slug": "tie-first",
+                  "category_slug": "prototype-mice",
+                  "name": "同款键盘",
+                  "description": "耐用外壳"
+                },
+                "sort": [
+                  4.2515616,
+                  7
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "8",
+                "_score": 4.2515616,
+                "_source": {
+                  "product_id": 8,
+                  "slug": "tie-second",
+                  "category_slug": "prototype-mice",
+                  "name": "同款键盘",
+                  "description": "耐用外壳"
+                },
+                "sort": [
+                  4.2515616,
+                  8
+                ]
+              }
+            ]
+          }
+        },
+        "ascii": {
+          "took": 2,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 1,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "9",
+                "_score": 4.9936857,
+                "_source": {
+                  "product_id": 9,
+                  "slug": "ascii-model",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标 M1",
+                  "description": "英文型号"
+                },
+                "sort": [
+                  4.9936857,
+                  9
+                ]
+              }
+            ]
+          }
+        },
+        "single_character": {
+          "took": 1,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 0,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": []
+          }
+        },
+        "missing": {
+          "took": 2,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 0,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": []
+          }
+        },
+        "empty": {
+          "took": 2,
+          "timed_out": false,
+          "_shards": {
+            "total": 1,
+            "successful": 1,
+            "skipped": 0,
+            "failed": 0
+          },
+          "hits": {
+            "total": {
+              "value": 10,
+              "relation": "eq"
+            },
+            "max_score": null,
+            "hits": [
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "1",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 1,
+                  "slug": "name-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "轻巧便携"
+                },
+                "sort": [
+                  1.0,
+                  1
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "2",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 2,
+                  "slug": "description-hit",
+                  "category_slug": "prototype-mice",
+                  "name": "轻巧便携",
+                  "description": "无线鼠标"
+                },
+                "sort": [
+                  1.0,
+                  2
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "3",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 3,
+                  "slug": "other-category",
+                  "category_slug": "prototype-accessories",
+                  "name": "无线鼠标",
+                  "description": "其他配件"
+                },
+                "sort": [
+                  1.0,
+                  3
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "4",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 4,
+                  "slug": "no-sku",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标",
+                  "description": "尚无规格"
+                },
+                "sort": [
+                  1.0,
+                  4
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "7",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 7,
+                  "slug": "tie-first",
+                  "category_slug": "prototype-mice",
+                  "name": "同款键盘",
+                  "description": "耐用外壳"
+                },
+                "sort": [
+                  1.0,
+                  7
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "8",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 8,
+                  "slug": "tie-second",
+                  "category_slug": "prototype-mice",
+                  "name": "同款键盘",
+                  "description": "耐用外壳"
+                },
+                "sort": [
+                  1.0,
+                  8
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "9",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 9,
+                  "slug": "ascii-model",
+                  "category_slug": "prototype-mice",
+                  "name": "无线鼠标 M1",
+                  "description": "英文型号"
+                },
+                "sort": [
+                  1.0,
+                  9
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "10",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 10,
+                  "slug": "spaced-name",
+                  "category_slug": "prototype-mice",
+                  "name": "无线 鼠标",
+                  "description": "空格分隔"
+                },
+                "sort": [
+                  1.0,
+                  10
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "11",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 11,
+                  "slug": "cross-field",
+                  "category_slug": "prototype-mice",
+                  "name": "蓝牙",
+                  "description": "耳机"
+                },
+                "sort": [
+                  1.0,
+                  11
+                ]
+              },
+              {
+                "_index": "project-one-test-search-2481a6db96b7481d943b50fa2326370c",
+                "_id": "12",
+                "_score": 1.0,
+                "_source": {
+                  "product_id": 12,
+                  "slug": "same-field",
+                  "category_slug": "prototype-mice",
+                  "name": "蓝牙 耳机",
+                  "description": "音频配件"
+                },
+                "sort": [
+                  1.0,
+                  12
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "mysql_api": {
+        "无线鼠标": {
+          "count": 5,
+          "next": null,
+          "previous": null,
+          "results": [
+            {
+              "slug": "name-hit",
+              "name": "无线鼠标",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "other-category",
+              "name": "无线鼠标",
+              "category": {
+                "slug": "prototype-accessories",
+                "name": "原型配件"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "no-sku",
+              "name": "无线鼠标",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "ascii-model",
+              "name": "无线鼠标 M1",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "description-hit",
+              "name": "轻巧便携",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            }
+          ]
+        },
+        "无线 鼠标": {
+          "count": 1,
+          "next": null,
+          "previous": null,
+          "results": [
+            {
+              "slug": "spaced-name",
+              "name": "无线 鼠标",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            }
+          ]
+        },
+        "鼠标 无线": {
+          "count": 0,
+          "next": null,
+          "previous": null,
+          "results": []
+        },
+        "标": {
+          "count": 6,
+          "next": null,
+          "previous": null,
+          "results": [
+            {
+              "slug": "spaced-name",
+              "name": "无线 鼠标",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "name-hit",
+              "name": "无线鼠标",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "other-category",
+              "name": "无线鼠标",
+              "category": {
+                "slug": "prototype-accessories",
+                "name": "原型配件"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "no-sku",
+              "name": "无线鼠标",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "ascii-model",
+              "name": "无线鼠标 M1",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            },
+            {
+              "slug": "description-hit",
+              "name": "轻巧便携",
+              "category": {
+                "slug": "prototype-mice",
+                "name": "原型鼠标"
+              },
+              "lowest_price": null,
+              "in_stock": false
+            }
+          ]
+        }
+      },
+      "score_pair": {
+        "name-hit": 6.5429316,
+        "description-hit": 5.8075876
+      }
+    },
+    {
+      "scenario": "rebuild_and_stale_index",
+      "before": {
+        "index": "project-one-test-search-95e0f6e81ba342068d764546fb871a39",
+        "documents": 10
+      },
+      "after": {
+        "index": "project-one-test-search-33c44c934585447d9b1b191980a12aa0",
+        "documents": 9
+      },
+      "old_result": {
+        "took": 4,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 5,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-95e0f6e81ba342068d764546fb871a39",
+              "_id": "13",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 13,
+                "slug": "name-hit",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": "轻巧便携"
+              },
+              "sort": [
+                6.5429316,
+                13
+              ]
+            },
+            {
+              "_index": "project-one-test-search-95e0f6e81ba342068d764546fb871a39",
+              "_id": "15",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 15,
+                "slug": "other-category",
+                "category_slug": "prototype-accessories",
+                "name": "无线鼠标",
+                "description": "其他配件"
+              },
+              "sort": [
+                6.5429316,
+                15
+              ]
+            },
+            {
+              "_index": "project-one-test-search-95e0f6e81ba342068d764546fb871a39",
+              "_id": "16",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 16,
+                "slug": "no-sku",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": "尚无规格"
+              },
+              "sort": [
+                6.5429316,
+                16
+              ]
+            },
+            {
+              "_index": "project-one-test-search-95e0f6e81ba342068d764546fb871a39",
+              "_id": "14",
+              "_score": 5.8075876,
+              "_source": {
+                "product_id": 14,
+                "slug": "description-hit",
+                "category_slug": "prototype-mice",
+                "name": "轻巧便携",
+                "description": "无线鼠标"
+              },
+              "sort": [
+                5.8075876,
+                14
+              ]
+            },
+            {
+              "_index": "project-one-test-search-95e0f6e81ba342068d764546fb871a39",
+              "_id": "21",
+              "_score": 5.714712,
+              "_source": {
+                "product_id": 21,
+                "slug": "ascii-model",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标 M1",
+                "description": "英文型号"
+              },
+              "sort": [
+                5.714712,
+                21
+              ]
+            }
+          ]
+        }
+      },
+      "new_result": {
+        "took": 2,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 3,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-33c44c934585447d9b1b191980a12aa0",
+              "_id": "16",
+              "_score": 7.554218,
+              "_source": {
+                "product_id": 16,
+                "slug": "no-sku",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": "尚无规格"
+              },
+              "sort": [
+                7.554218,
+                16
+              ]
+            },
+            {
+              "_index": "project-one-test-search-33c44c934585447d9b1b191980a12aa0",
+              "_id": "25",
+              "_score": 7.554218,
+              "_source": {
+                "product_id": 25,
+                "slug": "new-after-build",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": ""
+              },
+              "sort": [
+                7.554218,
+                25
+              ]
+            },
+            {
+              "_index": "project-one-test-search-33c44c934585447d9b1b191980a12aa0",
+              "_id": "21",
+              "_score": 6.5921235,
+              "_source": {
+                "product_id": 21,
+                "slug": "ascii-model",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标 M1",
+                "description": "英文型号"
+              },
+              "sort": [
+                6.5921235,
+                21
+              ]
+            }
+          ]
+        }
+      },
+      "renamed_result": {
+        "took": 2,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 1,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-33c44c934585447d9b1b191980a12aa0",
+              "_id": "13",
+              "_score": 13.825215,
+              "_source": {
+                "product_id": 13,
+                "slug": "name-hit",
+                "category_slug": "prototype-mice",
+                "name": "有线键盘",
+                "description": "轻巧便携"
+              },
+              "sort": [
+                13.825215,
+                13
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "real_bulk_partial_failure",
+      "completed": {
+        "index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+        "documents": 10
+      },
+      "failed_index": "project-one-test-search-f8fd11bae3c347349224312a99b21e29",
+      "failed_index_documents": 1,
+      "bulk_errors": [
+        {
+          "index": {
+            "_index": "project-one-test-search-f8fd11bae3c347349224312a99b21e29",
+            "_id": "invalid",
+            "status": 400,
+            "error": {
+              "type": "document_parsing_exception",
+              "reason": "[1:15] failed to parse field [product_id] of type [long] in document with id 'invalid'. Preview of field's value: 'invalid'",
+              "caused_by": {
+                "type": "illegal_argument_exception",
+                "reason": "For input string: \"invalid\""
+              }
+            },
+            "data": {
+              "product_id": "invalid",
+              "slug": "invalid-bulk-document",
+              "category_slug": "prototype-mice",
+              "name": "无线鼠标",
+              "description": "轻巧便携"
+            }
+          }
+        }
+      ],
+      "completed_search_before": {
+        "took": 2,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 5,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "26",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 26,
+                "slug": "name-hit",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": "轻巧便携"
+              },
+              "sort": [
+                6.5429316,
+                26
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "28",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 28,
+                "slug": "other-category",
+                "category_slug": "prototype-accessories",
+                "name": "无线鼠标",
+                "description": "其他配件"
+              },
+              "sort": [
+                6.5429316,
+                28
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "29",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 29,
+                "slug": "no-sku",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": "尚无规格"
+              },
+              "sort": [
+                6.5429316,
+                29
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "27",
+              "_score": 5.8075876,
+              "_source": {
+                "product_id": 27,
+                "slug": "description-hit",
+                "category_slug": "prototype-mice",
+                "name": "轻巧便携",
+                "description": "无线鼠标"
+              },
+              "sort": [
+                5.8075876,
+                27
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "34",
+              "_score": 5.714712,
+              "_source": {
+                "product_id": 34,
+                "slug": "ascii-model",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标 M1",
+                "description": "英文型号"
+              },
+              "sort": [
+                5.714712,
+                34
+              ]
+            }
+          ]
+        }
+      },
+      "completed_search_after": {
+        "took": 2,
+        "timed_out": false,
+        "_shards": {
+          "total": 1,
+          "successful": 1,
+          "skipped": 0,
+          "failed": 0
+        },
+        "hits": {
+          "total": {
+            "value": 5,
+            "relation": "eq"
+          },
+          "max_score": null,
+          "hits": [
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "26",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 26,
+                "slug": "name-hit",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": "轻巧便携"
+              },
+              "sort": [
+                6.5429316,
+                26
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "28",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 28,
+                "slug": "other-category",
+                "category_slug": "prototype-accessories",
+                "name": "无线鼠标",
+                "description": "其他配件"
+              },
+              "sort": [
+                6.5429316,
+                28
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "29",
+              "_score": 6.5429316,
+              "_source": {
+                "product_id": 29,
+                "slug": "no-sku",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标",
+                "description": "尚无规格"
+              },
+              "sort": [
+                6.5429316,
+                29
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "27",
+              "_score": 5.8075876,
+              "_source": {
+                "product_id": 27,
+                "slug": "description-hit",
+                "category_slug": "prototype-mice",
+                "name": "轻巧便携",
+                "description": "无线鼠标"
+              },
+              "sort": [
+                5.8075876,
+                27
+              ]
+            },
+            {
+              "_index": "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+              "_id": "34",
+              "_score": 5.714712,
+              "_source": {
+                "product_id": 34,
+                "slug": "ascii-model",
+                "category_slug": "prototype-mice",
+                "name": "无线鼠标 M1",
+                "description": "英文型号"
+              },
+              "sort": [
+                5.714712,
+                34
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "source_configuration_guards",
+      "rejected_source": "project_one",
+      "rejected_outer_atomic": true,
+      "product_sql_in_each_rejection": 0
+    },
+    {
+      "scenario": "connection_configuration_guards",
+      "rejected_urls": [
+        "http://127.0.0.1:9200",
+        "http://localhost:9201",
+        "http://example.com:9201",
+        "http://127.0.0.1:9201/development",
+        "http://127.0.0.1:9201?target=development"
+      ],
+      "rejected_environment": "development"
+    }
+  ],
+  "cleanup": [
+    {
+      "owned_indices": [
+        "project-one-test-search-2481a6db96b7481d943b50fa2326370c"
+      ],
+      "remaining": []
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-33c44c934585447d9b1b191980a12aa0",
+        "project-one-test-search-95e0f6e81ba342068d764546fb871a39"
+      ],
+      "remaining": []
+    },
+    {
+      "owned_indices": [
+        "project-one-test-search-77805cef78dd4714aab6e110166a6595",
+        "project-one-test-search-f8fd11bae3c347349224312a99b21e29"
+      ],
+      "remaining": []
+    }
+  ],
+  "elasticsearch": {
+    "cluster": "project-one-search-index-test",
+    "version": "8.19.23"
+  },
+  "outcome": "passed",
+  "boundary": "Local controlled documents and real ES requests; no public API switch, automatic synchronization, production capacity, or general relevance benchmark."
+}

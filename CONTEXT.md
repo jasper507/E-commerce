@@ -1471,3 +1471,14 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 合成5000可见＋2隐藏Product、10004SKU/Inventory，名称统一前缀四位编号，描述明确成员集独立Oracle。关键词500/无匹配0/关键词加分类250，总SQL2/1/2；捕获真实API完整COUNT/list SQL参数、四表索引/collation、EXPLAIN及ANALYZE。全局商品FK步骤约2500rows×2loops（平均/舍入不能称精确5000读取），分类限定2501×1；匹配500/250后聚合/排序再LIMIT20，COUNT仍联表/分组，分类COUNT的Exists投影250loops。keyword为包含LIKE、无词序/分词/相关性；不是慢SQL优化/ES性能对照或生产容量。
 - 显式实验collection限制test环境/隔离库且不同默认库，连接再断言MySQL/autocommit；报告存在拒绝覆盖。pytest前后test schema0/可见连接0，开发schema仍30表，没开发migrate/业务写入；没新增依赖、索引、ES/Redis服务或部署配置，原Phase6E指南改动保留。一次中断后确认文件完整再测试；读取报告的控制台编码错误用Python-Xutf8修正，不影响测试/JSON。
 - 双交付docs/verification/phase-7a-search-baseline.md及JSON/target/regression/frontend raw、docs/learning/phase-7a-product-search-baseline-study-guide.md互链；指南聚焦规则、完整查询成本、替代方案/代价/证据缺口，少量关键代码，无图/源码清单/末尾题。当前搜索基线收束，下一片建议隔离ES可重建商品搜索原型；字段/中文分析/排序与MySQL事实回读、索引同步及故障分片确认。ES、个人独立理解和开发运行不冒称完成。
+
+## 65. ES可重建商品索引原型及测试隔离事故（2026-10-10）
+
+- 用户选中“ES可重建商品搜索索引原型”要求开始。Supporting/Pair实现＋Depth机制解释；面试价值为事实来源、文本语义与重建失败边界，止于隔离原型，不自动接全API/同步。main与远端b0d58a5在生成前一致，Phase6E指南原用户改动保留。
+- 新独立compose.search-index-test.yaml使用ES8.19.23/9201、单节点0副本、512MB堆/2GB上限；官方客户端8.19.3加入依赖，pip check与Compose config通过。原型限制test环境、本地端口/集群/版本和配置及实际test_project_one/autocommit；物化可见Product/Category最小5字段，无价格库存，无外层事务等待ES。
+- 内置CJK/strict mapping、name^3/description best_fields AND、精确分类、score/ID、最多20条；每次新随机候选，Bulk逐项/refresh/count通过才标ready。12件人工商品10件可见，完整/分开/反向词ES5/6/6，旧MySQL5/1/0；单字标ES0/MySQL6，保存桥接词漏匹配，不冒充中文词典质量或性能。固定名称/描述对6.543/5.808仅该对观察。
+- 改名/下架/隐藏分类/新增后重建10→9，关键词旧5/新3；旧索引陈旧保留。真实Bulk注入错误long类型：HTTP200但一项400、失败候选仅1文档且不可查、旧完整10不变。最终在线5passed1skip10.69秒、相关24passed6子场景7默认skip9.70秒；独立离线首轮只接受ConnectionError而实际ConnectionTimeout失败，修正Oracle后1passed2.18秒，2秒单请求不是全重建期限。5个自建索引精确清理全部404，独立服务down --volumes完成。
+- 首轮在线虽5passed/1skip，但错误guard改真实connection.NAME再CaptureQueriesContext，活连接开发库且pytest flush误清4表。binlog.000025 FULL确认1用户/1Session/104权限/26内容类型删除，其他业务表无该次删除行事件。暂停后只读备份/核查，guard改为模块connection替身，增加实际DATABASE核验；修正后测试与两次隔离恢复演练开发快照不变。
+- 拥有者明确授权后，以列/主键/InnoDB/当前快照门槛、SERIALIZABLE事务锁后复核、精确捕获主键删除和参数化插入恢复139条；提交后新连接逐字段相同、Session解析原用户。原始binlog/行值/恢复候选在Git外私密目录，无秘密提交；4表自增计数未倒退。不称本轮开发数据未触碰，事故详见docs/verification/phase-7b-test-isolation-incident.md与脱敏JSON。
+- 双交付docs/verification/phase-7b-search-index-prototype.md及最终/首轮raw+JSON、docs/learning/phase-7b-search-index-prototype-study-guide.md互链；学习导航34篇、前片后续/README/Charter v1.11同步。指南仅两处重点代码、无图/源码清单/末尾题，保留反例与代价。
+- 公开API/前端/模型迁移/库存支付Lua业务未改，实际.env和部署配置未改，Redis/MQ/浏览器/性能矩阵未重跑。当前无API回读、增量版本/同步、alias切换、副本/重建并发/崩溃孤儿清理；创建成功ACK丢失孤儿窗口已明示。下一片仅ES候选ID→MySQL当前可见性与摘要，先明确陈旧项/分页/故障合同，不加MQ搜索任务；个人掌握和项目整体收尾另行验收。

@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-10",
+  "observations": [
+    {
+      "scenario": "real_offline_connection",
+      "error_type": "ConnectionTimeout",
+      "database_fixture": false
+    }
+  ],
+  "cleanup": [],
+  "outcome": "passed",
+  "boundary": "Local controlled documents and real ES requests; no public API switch, automatic synchronization, production capacity, or general relevance benchmark."
+}

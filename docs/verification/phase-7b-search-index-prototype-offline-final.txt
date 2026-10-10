@@ -1,0 +1,5 @@
+2026-10-10 15:29:04,163 INFO elastic_transport.transport GET http://127.0.0.1:9201/ [status:N/A duration:2.002s]
+2026-10-10 15:29:04,163 WARNING elastic_transport.node_pool Node <Urllib3HttpNode(http://127.0.0.1:9201)> has failed for 1 times in a row, putting on 1 second timeout
+search_index_prototype {"scenario": "real_offline_connection", "error_type": "ConnectionTimeout", "database_fixture": false}
+.
+1 passed in 2.18s

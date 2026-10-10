@@ -1,15 +1,15 @@
-# Project One — Project Charter v1.10
+# Project One — Project Charter v1.11
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：订单索引及默认关闭Lua首片已完成；Phase7A关键词搜索与真实MySQL查询基线完成，前端构建通过、浏览器待验收；Elasticsearch已确认计划、尚未实现；开发库订单索引未应用，个人独立讲述待验收
-- 文档版本：v1.10
-- 路线图进度更新：2026-10-09
+- 当前阶段：Phase7B可重建ES隔离原型已验证，公开搜索仍MySQL，API接入/同步待做；首轮测试隔离事故经确认恢复139条记录；订单索引/默认关闭Lua首片完成，开发库索引未应用，个人独立讲述待验收
+- 文档版本：v1.11
+- 路线图进度更新：2026-10-10
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
-- 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过；Phase 6B新增资格生命周期目标11项、promotions/ordering/payments回归171项通过；Phase 6C-1补当前NOWAIT完整秒杀双顾客竞争；6C-2同完整事务候选正确性通过；6C-3完成8worker/24顾客、两库存/预算/策略各3轮共24批次的时延/重试/连接成本，全部有效且默认未换策略，见docs/verification/phase-6c3-flash-sale-inventory-load.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；未执行开发库恢复、迁移或浏览器验收。
+- 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过；Phase 6B新增资格生命周期目标11项、promotions/ordering/payments回归171项通过；Phase 6C-1补当前NOWAIT完整秒杀双顾客竞争；6C-2同完整事务候选正确性通过；6C-3完成8worker/24顾客、两库存/预算/策略各3轮共24批次的时延/重试/连接成本，全部有效且默认未换策略，见docs/verification/phase-6c3-flash-sale-inventory-load.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；该段所记前序阶段未执行开发库恢复、迁移或浏览器验收；Phase7B恢复事实见本文件最新记录。
 
 前序状态（2026-10-08）：单活动 SKU 条件 UPDATE 已在 Phase 6C-5 正式落地，见 [ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md) 和 [验证记录](docs/verification/phase-6c5-flash-sale-inventory-failures.md)。当时拥有者选择沿用现有会话上限，本机观察 50 秒；库存 UPDATE 的 1205/1213 返回繁忙并退出整单事务，未知错误上抛，无自动重试。目标9项/198子场景、相关回归183项/403子场景通过；普通多 SKU、Redis Lua 范围不变。上段及阶段条目中“默认未换策略”描述各片当时状态。
 
@@ -32,6 +32,8 @@ Lua准入首片（2026-10-09，v1.9）：拥有者确认Redis无法确认名额�
 本文件是项目范围、目标和完成标准的当前可信来源。发生重大变更时，应先更新本文件或新增 ADR，再开始实现。
 
 商品搜索首片（2026-10-09，v1.10）：拥有者选中旧订单索引指南要求下一片，核对59b54b9及36dc6d1已完成后，继续当前搜索方向；明确选择关键词匹配名称＋描述。新增公开列表q完整包含匹配、trim/max80，沿用可见性/分类AND、name/id排序、20分页及有效SKU摘要；前端增加搜索框与URL状态。真实隔离MySQL目标9项通过，相关24项/6子场景/1默认skip，前端build通过；5000可见＋2隐藏商品、10004 SKU/库存，关键词/无匹配/关键词加分类命中500/0/250、完整API为2/1/2 SQL，COUNT与列表实际聚合/过滤/排序计划保留。见[验证](docs/verification/phase-7a-search-baseline.md)和[指南](docs/learning/phase-7a-product-search-baseline-study-guide.md)。不称慢SQL已优化、ES更快或生产容量；没有ES依赖/服务、索引/迁移或开发数据修改，浏览器未验收。下一片建议隔离ES可重建商品搜索原型，逐步确定中文分析、字段/排序、可见性与同步边界。
+
+ES原型首片（2026-10-10，v1.11）：隔离ES8.19.23与官方Python客户端8.19.3，从MySQL当前可见商品导出最小文档，价格/库存不进索引；每次新候选、Bulk逐项检查与refresh/count后才可查询。内置CJK带来词序匹配，也保留单字/空格桥接漏匹配；不作通用质量或速度结论。修正后在线5项、离线1项、目录24项/6子场景通过；独立服务已销毁。公开API、增量同步与alias切换未接。首轮错误测试guard误清开发4表，拥有者确认后从FULL日志恢复139条记录，提交后逐字段核验，事故/敏感资料边界见[验证](docs/verification/phase-7b-search-index-prototype.md)与[事故记录](docs/verification/phase-7b-test-isolation-incident.md)。下一片仅候选ID→MySQL可见性与当前摘要，先确定分页及故障规则。
 
 本 Charter 的 `Final` 表示当前项目范围和设计方向已经确认，可以分切片进入实现；它不表示所有实现都已经完成或通过测试。v1.1 将执行策略收窄为 Interview Core MVP + 三条深度主线，并加入 CRUD Fast Track；v1.2 按项目拥有者决定将 RabbitMQ + Celery 支付异步链路升级为必做，第三方 Sandbox 本期 No-Go。标为“实验候选”的技术方案仍必须经过真实基线、失败复现和比较后，才能在 ADR 中成为最终实现结论。后续重大变化按照第 19 节记录。
 
@@ -1211,9 +1213,9 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
-Redis缓存方向暂时收束，支付/MQ保留人工兜底。秒杀、订单查询及索引、Phase6F准入与Phase7A搜索/MySQL基线已有隔离验证；当前进度见CONTEXT第64节。
+Redis缓存方向暂时收束，支付/MQ保留人工兜底。秒杀、订单查询及索引、Phase6F准入、Phase7A基线与Phase7B ES原型已有隔离验证；当前进度见CONTEXT第65节。
 
 1. 选型 ADR 已完成；继续练习独立解释影响行数 0/1、完整事务回滚、限购/幂等各自职责与证据边界，不把一次正确预测当成全部学习验收。
-2. 下一片建议隔离ES商品搜索原型：确定可重建文档字段/中文分析/排序和可见性，复用Phase7A业务例子比较；同步与故障按小片推进，不一次生成整个模块。Lua及MySQL搜索基线均收束，个人独立讲述另行验收。
+2. 下一片建议最小ES读入口：ES候选ID回读MySQL当前可见性/价格/库存摘要；先确定陈旧候选、分页数量与ES故障合同，不自动加入增量同步/MQ搜索任务。原型及事故恢复已收束，个人独立讲述另行验收。
 3. 支付MQ继续保留本期人工兜底，不横向新增异步功能或周期接管；既有MQ/Worker证据不能当成本轮已重跑。
 4. 开发库迁移、启用准入和演示数据操作仍须另行说明与确认。默认关闭的Lua首片完成不表示开发运行已启用；不进入第三方Sandbox或外部账号，也不把工程证据当作个人理解或整个项目已收尾。

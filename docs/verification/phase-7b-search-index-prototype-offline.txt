@@ -1,0 +1,287 @@
+2026-10-10 15:28:08,754 INFO elastic_transport.transport GET http://127.0.0.1:9201/ [status:N/A duration:2.015s]
+2026-10-10 15:28:08,754 WARNING elastic_transport.node_pool Node <Urllib3HttpNode(http://127.0.0.1:9201)> has failed for 1 times in a row, putting on 1 second timeout
+F
+================================== FAILURES ===================================
+_____________ test_real_offline_connection_fails_without_database _____________
+
+self = <HTTPConnection(host='127.0.0.1', port=9201) at 0x254a4cd9ad0>
+
+    def _new_conn(self) -> socket.socket:
+        """Establish a socket connection and set nodelay settings on it.
+
+        :return: New socket connection.
+        """
+        try:
+>           sock = connection.create_connection(
+                (self._dns_host, self.port),
+                self.timeout,
+                source_address=self.source_address,
+                socket_options=self.socket_options,
+            )
+
+.venv\Lib\site-packages\urllib3\connection.py:239:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\urllib3\util\connection.py:85: in create_connection
+    raise err
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+address = ('127.0.0.1', 9201), timeout = 2, source_address = None
+socket_options = [(6, 1, 1)]
+
+    def create_connection(
+        address: tuple[str, int],
+        timeout: _TYPE_TIMEOUT = _DEFAULT_TIMEOUT,
+        source_address: tuple[str, int] | None = None,
+        socket_options: _TYPE_SOCKET_OPTIONS | None = None,
+    ) -> socket.socket:
+        """Connect to *address* and return the socket object.
+
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`socket.getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        An host of '' or port 0 tells the OS to use the default.
+        """
+
+        host, port = address
+        if host.startswith("["):
+            host = host.strip("[]")
+        err = None
+
+        # Using the value from allowed_gai_family() in the context of getaddrinfo lets
+        # us select whether to work with IPv4 DNS records, IPv6 records, or both.
+        # The original create_connection function always returns all records.
+        family = allowed_gai_family()
+
+        try:
+            host.encode("idna")
+        except UnicodeError:
+            raise LocationParseError(f"'{host}', label empty or too long") from None
+
+        for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket.socket(af, socktype, proto)
+
+                # If provided, set socket level options before connecting.
+                _set_socket_options(sock, socket_options)
+
+                if timeout is not _DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               TimeoutError: timed out
+
+.venv\Lib\site-packages\urllib3\util\connection.py:73: TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+self = <Urllib3HttpNode(http://127.0.0.1:9201)>, method = 'GET', target = '/'
+body = None
+headers = {'accept': 'application/vnd.elasticsearch+json; compatible-with=8', 'x-elastic-client-meta': 'es=8.19.3,py=3.11.9,t=8.19.0,ur=2.8.0'}
+request_timeout = 2
+
+    def perform_request(
+        self,
+        method: str,
+        target: str,
+        body: Optional[bytes] = None,
+        headers: Optional[HttpHeaders] = None,
+        request_timeout: Union[DefaultType, Optional[float]] = DEFAULT,
+    ) -> NodeApiResponse:
+        if self.path_prefix:
+            target = f"{self.path_prefix}{target}"
+
+        start = time.time()
+        try:
+            kw = {}
+            if request_timeout is not DEFAULT:
+                kw["timeout"] = request_timeout
+
+            request_headers = self._headers.copy()
+            if headers:
+                request_headers.update(headers)
+
+            body_to_send: Optional[bytes]
+            if body:
+                if self._http_compress:
+                    body_to_send = gzip.compress(body)
+                    request_headers["content-encoding"] = "gzip"
+                else:
+                    body_to_send = body
+            else:
+                body_to_send = None
+
+>           response = self.pool.urlopen(
+                method,
+                target,
+                body=body_to_send,
+                retries=Retry(False),
+                headers=request_headers,
+                **kw,  # type: ignore[arg-type]
+            )
+
+.venv\Lib\site-packages\elastic_transport\_node\_http_urllib3.py:167:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\urllib3\connectionpool.py:847: in urlopen
+    retries = retries.increment(
+.venv\Lib\site-packages\urllib3\util\retry.py:485: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\urllib3\util\util.py:39: in reraise
+    raise value
+.venv\Lib\site-packages\urllib3\connectionpool.py:793: in urlopen
+    response = self._make_request(
+.venv\Lib\site-packages\urllib3\connectionpool.py:499: in _make_request
+    conn.request(
+.venv\Lib\site-packages\urllib3\connection.py:567: in request
+    self.endheaders()
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1298: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\http\client.py:1058: in _send_output
+    self.send(msg)
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\http\client.py:996: in send
+    self.connect()
+.venv\Lib\site-packages\urllib3\connection.py:398: in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <HTTPConnection(host='127.0.0.1', port=9201) at 0x254a4cd9ad0>
+
+    def _new_conn(self) -> socket.socket:
+        """Establish a socket connection and set nodelay settings on it.
+
+        :return: New socket connection.
+        """
+        try:
+            sock = connection.create_connection(
+                (self._dns_host, self.port),
+                self.timeout,
+                source_address=self.source_address,
+                socket_options=self.socket_options,
+            )
+        except socket.gaierror as e:
+            raise NameResolutionError(self.host, self, e) from e
+        except SocketTimeout as e:
+>           raise ConnectTimeoutError(
+                self,
+                f"Connection to {self.host} timed out. (connect timeout={self.timeout})",
+            ) from e
+E           urllib3.exceptions.ConnectTimeoutError: (<HTTPConnection(host='127.0.0.1', port=9201) at 0x254a4cd9ad0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)')
+
+.venv\Lib\site-packages\urllib3\connection.py:248: ConnectTimeoutError
+
+The above exception was the direct cause of the following exception:
+
+evidence = {'date': '2026-10-10', 'observations': [], 'cleanup': []}
+
+    @pytest.mark.skipif(not OFFLINE, reason="explicit offline flag; stop isolated ES before this separate run")
+    def test_real_offline_connection_fails_without_database(evidence):
+        with pytest.raises(ConnectionError) as error:
+>           SearchIndexPrototype("http://127.0.0.1:9201")
+
+backend\apps\catalog\tests\test_search_index_prototype.py:314:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend\apps\catalog\search_prototype.py:79: in __init__
+    info = self.client.info()
+           ^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\elasticsearch\_sync\client\utils.py:458: in wrapped
+    return api(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\elasticsearch\_sync\client\__init__.py:3080: in info
+    return self.perform_request(  # type: ignore[return-value]
+.venv\Lib\site-packages\elasticsearch\_sync\client\_base.py:271: in perform_request
+    response = self._perform_request(
+.venv\Lib\site-packages\elasticsearch\_sync\client\_base.py:315: in _perform_request
+    meta, resp_body = self.transport.perform_request(
+.venv\Lib\site-packages\elastic_transport\_transport.py:342: in perform_request
+    resp = node.perform_request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Urllib3HttpNode(http://127.0.0.1:9201)>, method = 'GET', target = '/'
+body = None
+headers = {'accept': 'application/vnd.elasticsearch+json; compatible-with=8', 'x-elastic-client-meta': 'es=8.19.3,py=3.11.9,t=8.19.0,ur=2.8.0'}
+request_timeout = 2
+
+    def perform_request(
+        self,
+        method: str,
+        target: str,
+        body: Optional[bytes] = None,
+        headers: Optional[HttpHeaders] = None,
+        request_timeout: Union[DefaultType, Optional[float]] = DEFAULT,
+    ) -> NodeApiResponse:
+        if self.path_prefix:
+            target = f"{self.path_prefix}{target}"
+
+        start = time.time()
+        try:
+            kw = {}
+            if request_timeout is not DEFAULT:
+                kw["timeout"] = request_timeout
+
+            request_headers = self._headers.copy()
+            if headers:
+                request_headers.update(headers)
+
+            body_to_send: Optional[bytes]
+            if body:
+                if self._http_compress:
+                    body_to_send = gzip.compress(body)
+                    request_headers["content-encoding"] = "gzip"
+                else:
+                    body_to_send = body
+            else:
+                body_to_send = None
+
+            response = self.pool.urlopen(
+                method,
+                target,
+                body=body_to_send,
+                retries=Retry(False),
+                headers=request_headers,
+                **kw,  # type: ignore[arg-type]
+            )
+            response_headers = HttpHeaders(response.headers)
+            data = response.data
+            duration = time.time() - start
+
+        except RERAISE_EXCEPTIONS:
+            raise
+        except Exception as e:
+            err: Exception
+            if isinstance(e, NewConnectionError):
+                err = ConnectionError(str(e), errors=(e,))
+            elif isinstance(e, (ConnectTimeoutError, ReadTimeoutError)):
+                err = ConnectionTimeout(
+                    "Connection timed out during request", errors=(e,)
+                )
+            elif isinstance(e, (ssl.SSLError, urllib3.exceptions.SSLError)):
+                err = TlsError(str(e), errors=(e,))
+            elif isinstance(e, BUILTIN_EXCEPTIONS):
+                raise
+            else:
+                err = ConnectionError(str(e), errors=(e,))
+            self._log_request(
+                method=method,
+                target=target,
+                headers=request_headers,
+                body=body,
+                exception=err,
+            )
+>           raise err from e
+E           elastic_transport.ConnectionTimeout: Connection timed out
+
+.venv\Lib\site-packages\elastic_transport\_node\_http_urllib3.py:202: ConnectionTimeout
+------------------------------ Captured log call ------------------------------
+INFO     elastic_transport.transport:_transport.py:372 GET http://127.0.0.1:9201/ [status:N/A duration:2.015s]
+WARNING  elastic_transport.node_pool:_node_pool.py:249 Node <Urllib3HttpNode(http://127.0.0.1:9201)> has failed for 1 times in a row, putting on 1 second timeout
+=========================== short test summary info ===========================
+FAILED backend/apps/catalog/tests/test_search_index_prototype.py::test_real_offline_connection_fails_without_database
+1 failed in 2.53s

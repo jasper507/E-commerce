@@ -4,10 +4,24 @@ Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
 Learning documents: the [module reading guide](docs/learning/README.md) links all
-33 local study guides. Each now begins with the previous state, the slice's
+34 local study guides. Each now begins with the previous state, the slice's
 change, and its resulting limits, with historical stages kept distinct from
-current progress. This documentation-only pass is recorded in the
+current progress. The earlier documentation-only pass is recorded in the
 [verification](docs/verification/learning-guide-change-overviews.md).
+
+Rebuildable search prototype (2026-10-10): an isolated Elasticsearch 8.19.23
+service indexes visible MySQL products without price or inventory. Real analysis,
+search, rebuild and partial Bulk failure checks passed 5 online tests; a separate
+offline test passed, and catalog regression passed 24 tests / 6 subtests.
+CJK changed term/word-order matching and also missed the tested single character;
+this is a semantics observation, not a speed or general relevance claim.
+The public API remains on MySQL; API integration and synchronization are pending.
+See the [guide](docs/learning/phase-7b-search-index-prototype-study-guide.md) and
+[verification](docs/verification/phase-7b-search-index-prototype.md).
+The initial test guard erroneously reached the development database. After
+owner approval, all 139 affected row records were restored and independently
+checked; see the [incident](docs/verification/phase-7b-test-isolation-incident.md).
+Sensitive recovery data is outside Git. The isolated ES service was removed.
 
 Product-search baseline (2026-10-09): the public product list accepts optional
 `q` for whole-keyword inclusion in name or description (trimmed, max 80), while
@@ -22,7 +36,8 @@ improvement claim. No ES service/dependency or development database change was
 made; frontend runtime/browser behavior remains unverified in this slice.
 See the [verification](docs/verification/phase-7a-search-baseline.md) and
 [study guide](docs/learning/phase-7a-product-search-baseline-study-guide.md).
-The proposed next slice is an isolated, rebuildable Elasticsearch search prototype.
+That stage handed off to the isolated prototype above; the next search slice
+will return ES candidate IDs and re-read current MySQL visibility and summaries.
 
 Flash-sale Lua admission (2026-10-09): a default-off, local/test-only shared
 attempt counter runs before the HTTP lock-wait adapter and MySQL checkout.

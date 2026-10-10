@@ -1,0 +1,13 @@
+{
+  "test_schema_after": 0,
+  "visible_test_connections_after": 0,
+  "development_tables_after": 30,
+  "development_users_after": 1,
+  "development_sessions_after": 1,
+  "stored_session_identity_matches": true,
+  "stored_session_auth_hash_matches": true,
+  "local_links_checked": 122,
+  "local_links_missing": 0,
+  "code_excerpt_check": "two Python excerpts match current query and completion logic",
+  "scope": "No browser, performance, Redis or MQ rerun; row fields restored after approved incident recovery."
+}
