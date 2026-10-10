@@ -2,6 +2,8 @@
 
 2026-10-10。[学习导航](README.md) · [验证记录](../verification/phase-7b-search-index-prototype.md)。原型已在真实隔离MySQL与ES中验证；公开商品API仍使用7A的MySQL搜索。
 
+后续衔接：[7C独立读入口](phase-7c-search-read-api-study-guide.md)已将候选ID交给MySQL回读当前摘要，默认关闭、只允许测试来源；旧列表与前端仍保持7A规则。下文保留7B当时的证据与缺口。
+
 ## 本片前后变化
 
 - **开始前：** 名称或描述只能包含匹配完整关键词，没有独立搜索副本或中文分析证据。

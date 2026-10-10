@@ -1,0 +1,12 @@
+{
+  "local_links_checked": 108,
+  "core_excerpt_matches_source_omitting_comments": true,
+  "ast_passed": true,
+  "exact_owned_indices_removed": 15,
+  "final_sql_counts": [
+    2,
+    1
+  ],
+  "dev_unchanged": true,
+  "raw_normalization": "line endings and trailing whitespace only"
+}

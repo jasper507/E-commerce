@@ -131,6 +131,13 @@ MYSQL_PORT = env_int("MYSQL_PORT", 3307)
 MYSQL_TEST_DATABASE = env_value("MYSQL_TEST_DATABASE", "test_project_one")
 PAYMENT_MAX_ATTEMPTS = env_int("PAYMENT_MAX_ATTEMPTS", 3)
 
+# 首个搜索读入口只连接隔离测试来源，开发/部署保持原MySQL浏览。
+CATALOG_SEARCH_ENABLED = env_bool("CATALOG_SEARCH_ENABLED", False)
+CATALOG_SEARCH_URL = env_value("CATALOG_SEARCH_URL", "http://127.0.0.1:9201")
+CATALOG_SEARCH_INDEX = env_value("CATALOG_SEARCH_INDEX", "")
+if CATALOG_SEARCH_ENABLED and ENVIRONMENT != "test":
+    raise ImproperlyConfigured("Catalog search currently requires an isolated test environment.")
+
 # 默认保留同步基线；本期异步运行仅允许本地/隔离测试，不自动迁移开发库。
 PAYMENT_EVENTS_ASYNC = env_bool("PAYMENT_EVENTS_ASYNC", False)
 PAYMENT_EVENT_PROCESSING_LEASE_SECONDS = env_int("PAYMENT_EVENT_PROCESSING_LEASE_SECONDS", 60)

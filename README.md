@@ -4,10 +4,20 @@ Project One is a backend-heavy Django/DRF modular monolith for building and
 demonstrating reproducible engineering evidence.
 
 Learning documents: the [module reading guide](docs/learning/README.md) links all
-34 local study guides. Each now begins with the previous state, the slice's
+35 local study guides. Each now begins with the previous state, the slice's
 change, and its resulting limits, with historical stages kept distinct from
 current progress. The earlier documentation-only pass is recorded in the
 [verification](docs/verification/learning-guide-change-overviews.md).
+
+Search read API (2026-10-10): the separate default-off
+`GET /api/catalog/search/` reads an ES candidate page, then confirms current
+MySQL visibility/category and returns current price/stock summaries in ES order.
+The response uses `candidate_count` and candidate page numbers; filtered pages
+may be short or empty. ES failure returns 503 without MySQL search fallback.
+This slice only accepts the isolated test source; the existing list and frontend
+still use MySQL. Development enablement, index switching and synchronization
+remain pending. See the [guide](docs/learning/phase-7c-search-read-api-study-guide.md)
+and [verification](docs/verification/phase-7c-search-read-api.md).
 
 Rebuildable search prototype (2026-10-10): an isolated Elasticsearch 8.19.23
 service indexes visible MySQL products without price or inventory. Real analysis,
@@ -15,7 +25,8 @@ search, rebuild and partial Bulk failure checks passed 5 online tests; a separat
 offline test passed, and catalog regression passed 24 tests / 6 subtests.
 CJK changed term/word-order matching and also missed the tested single character;
 this is a semantics observation, not a speed or general relevance claim.
-The public API remains on MySQL; API integration and synchronization are pending.
+At that prototype stage API integration was pending; 7C above adds the separate
+isolated read API. The original product list remains on MySQL.
 See the [guide](docs/learning/phase-7b-search-index-prototype-study-guide.md) and
 [verification](docs/verification/phase-7b-search-index-prototype.md).
 The initial test guard erroneously reached the development database. After
@@ -36,8 +47,8 @@ improvement claim. No ES service/dependency or development database change was
 made; frontend runtime/browser behavior remains unverified in this slice.
 See the [verification](docs/verification/phase-7a-search-baseline.md) and
 [study guide](docs/learning/phase-7a-product-search-baseline-study-guide.md).
-That stage handed off to the isolated prototype above; the next search slice
-will return ES candidate IDs and re-read current MySQL visibility and summaries.
+That stage handed off to the prototype and read API above; the next search slice
+will address manual rebuilding and safe read-index switching.
 
 Flash-sale Lua admission (2026-10-09): a default-off, local/test-only shared
 attempt counter runs before the HTTP lock-wait adapter and MySQL checkout.

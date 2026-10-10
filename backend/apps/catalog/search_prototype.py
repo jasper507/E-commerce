@@ -1,4 +1,4 @@
-"""隔离搜索原型：没有公开API或自动同步，不允许操作开发索引。"""
+"""隔离搜索索引构建器：不允许操作开发索引，没有自动同步。"""
 
 from uuid import uuid4
 from urllib.parse import urlsplit
@@ -13,6 +13,22 @@ from apps.catalog.serializers import ProductSearchQuerySerializer
 
 INDEX_PREFIX = "project-one-test-search-"
 CLUSTER_NAME = "project-one-search-index-test"
+SOURCE_DATABASE = "test_project_one"
+
+
+def search_query(keyword, category=None):
+    text_query = {"multi_match": {
+        "query": keyword, "fields": ["name^3", "description"],
+        "type": "best_fields", "operator": "and", "zero_terms_query": "none",
+    }} if keyword else {"match_all": {}}
+    query = {"bool": {"must": [text_query], "filter": []}}
+    if category:
+        query["bool"]["filter"].append({"term": {"category_slug": category}})
+    return query
+
+
+def build_metadata(complete):
+    return {"search_schema": 1, "source_database": SOURCE_DATABASE, "build_complete": complete}
 
 
 def product_documents():
@@ -51,6 +67,7 @@ def index_definition():
             "analysis": {"analyzer": {"catalog_cjk": {"type": "cjk", "stopwords": []}}},
         },
         "mappings": {
+            "_meta": build_metadata(False),
             "dynamic": "strict",
             "properties": {
                 "product_id": {"type": "long"},
@@ -101,6 +118,7 @@ class SearchIndexPrototype:
         actual = counted["count"]
         if written != len(documents) or actual != len(documents):
             raise RuntimeError("Incomplete search index build.")
+        self.client.indices.put_mapping(index=index, _meta=build_metadata(True))
         self._ready.add(index)
         return {"index": index, "documents": actual}
 
@@ -110,15 +128,8 @@ class SearchIndexPrototype:
         serializer = ProductSearchQuerySerializer(data={"q": q})
         serializer.is_valid(raise_exception=True)
         keyword = serializer.validated_data["q"]
-        text_query = {"multi_match": {
-            "query": keyword, "fields": ["name^3", "description"],
-            "type": "best_fields", "operator": "and", "zero_terms_query": "none",
-        }} if keyword else {"match_all": {}}
-        query = {"bool": {"must": [text_query], "filter": []}}
-        if category:
-            query["bool"]["filter"].append({"term": {"category_slug": category}})
         return dict(self.client.search(
-            index=index, query=query, size=20, track_total_hits=True,
+            index=index, query=search_query(keyword, category), size=20, track_total_hits=True,
             sort=[{"_score": "desc"}, {"product_id": "asc"}],
             allow_partial_search_results=False,
         ))

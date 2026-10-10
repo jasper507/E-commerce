@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-10",
+  "observations": [
+    {
+      "scenario": "real_offline_search_mysql_browse",
+      "search_status": 503,
+      "search_response": {
+        "detail": "商品搜索暂不可用，请稍后重试；仍可使用普通商品浏览。"
+      },
+      "browse_response": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "slug": "offline-product",
+            "name": "无线鼠标",
+            "category": {
+              "slug": "read-offline",
+              "name": "故障浏览"
+            },
+            "lowest_price": null,
+            "in_stock": false
+          }
+        ]
+      },
+      "built_index": false,
+      "real_transport_failure": {
+        "error_type": "ConnectionTimeout",
+        "elapsed_seconds": 2.0167165999882855
+      },
+      "search_sql_count": 1,
+      "product_summary_sql": 0
+    }
+  ],
+  "cleanup": [],
+  "outcome": "passed",
+  "boundary": "Isolated APIClient and real services for designated integration scenarios; injected reader/client/connection cases cover the candidate window and malformed response guards. No browser, automatic synchronization, or capacity evidence."
+}

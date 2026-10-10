@@ -1,0 +1,6 @@
+2026-10-10 16:17:08,948 INFO elastic_transport.transport GET http://127.0.0.1:9201/ [status:N/A duration:2.018s]
+2026-10-10 16:17:08,948 WARNING elastic_transport.node_pool Node <Urllib3HttpNode(http://127.0.0.1:9201)> has failed for 1 times in a row, putting on 1 second timeout
+2026-10-10 16:17:08,949 ERROR django.request Service Unavailable: /api/catalog/search/
+search_read_api {"scenario": "real_offline_search_mysql_browse", "search_status": 503, "search_response": {"detail": "商品搜索暂不可用，请稍后重试；仍可使用普通商品浏览。"}, "browse_response": {"count": 1, "next": null, "previous": null, "results": [{"slug": "offline-product", "name": "无线鼠标", "category": {"slug": "read-offline", "name": "故障浏览"}, "lowest_price": null, "in_stock": false}]}, "built_index": false, "real_transport_failure": {"error_type": "ConnectionTimeout", "elapsed_seconds": 2.0201308999967296}, "search_sql_count": 0, "product_summary_sql": 0}
+.
+1 passed, 8 deselected in 12.52s

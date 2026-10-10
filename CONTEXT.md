@@ -1482,3 +1482,14 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 拥有者明确授权后，以列/主键/InnoDB/当前快照门槛、SERIALIZABLE事务锁后复核、精确捕获主键删除和参数化插入恢复139条；提交后新连接逐字段相同、Session解析原用户。原始binlog/行值/恢复候选在Git外私密目录，无秘密提交；4表自增计数未倒退。不称本轮开发数据未触碰，事故详见docs/verification/phase-7b-test-isolation-incident.md与脱敏JSON。
 - 双交付docs/verification/phase-7b-search-index-prototype.md及最终/首轮raw+JSON、docs/learning/phase-7b-search-index-prototype-study-guide.md互链；学习导航34篇、前片后续/README/Charter v1.11同步。指南仅两处重点代码、无图/源码清单/末尾题，保留反例与代价。
 - 公开API/前端/模型迁移/库存支付Lua业务未改，实际.env和部署配置未改，Redis/MQ/浏览器/性能矩阵未重跑。当前无API回读、增量版本/同步、alias切换、副本/重建并发/崩溃孤儿清理；创建成功ACK丢失孤儿窗口已明示。下一片仅ES候选ID→MySQL当前可见性与摘要，先明确陈旧项/分页/故障合同，不加MQ搜索任务；个人掌握和项目整体收尾另行验收。
+
+## 66. ES候选读入口与MySQL当前摘要（2026-10-10）
+
+- 用户选中“ES候选ID回读MySQL可见性和当前价格库存摘要”要求开始，确认独立接口/允许短页与ES故障503不回退。Supporting/Pair实现＋Depth分页与副本边界解释。开始前main/远端04df68f一致，已有6E指南用户改动保留。
+- 新GET /api/catalog/search/ q必填非空trim/max80、category可选max80、page1..500；candidate_count与整数next/previous_candidate_page独立于当前results。每页20候选，MySQL重查商品/分类可见性和当前类属、共用旧有效SKU最低价/有货摘要，按ES ID顺序组装、不再LIKE/不补页。无命中首屏200，合法窗口越尾404，超过10000候选400缩小范围。默认关或ES故障503；旧products接口和前端仍MySQL。
+- 读client仅test实际test_project_one、无外层事务、固定loopback9201/测试集群/8.19族/精确随机index。builder从未完成到逐项Bulk/refresh/count成功后写_meta完成/来源标记，读API自身不写索引；标记只有库名无epoch，测试库重建后旧index失效，必须同fixture lifecycle。未松绑7Bguard，module connection替身不改真实NAME。
+- 最终新在线8passed1skip12.37秒（5真ES/MySQL＋3unit/injection），离线1passed8deselected12.22秒；旧共享原型另5项通过，catalog原目录24passed6subtests10.47秒。词序新ES2/旧MySQL0；陈旧5候选当前3，旧分类4候选当前2，改名价89/有货来自MySQL，新增和新词/新分类漏召回保留；21候选页20→19→0仍next2，二页唯一candidate-20。真实离线ConnectionTimeout约2.017秒，503且仅1来源SQL/0摘要SQL，普通browse200。超量与不完整响应为注入，未冒充真实多节点故障。
+- 首轮新/旧联合13passed2skip14.84秒，离线1passed12.52秒，但JSON过晚读取CaptureQueriesContext在下次request清空后错误记录SQL0；断言时实际2/1。root固化list(queries)后补跑新在线/离线，初始和最终raw/JSON都保留，最终记录SQL2/1。控制台编码报错以-Xutf8重读，不当测试失败。
+- 前后开发30表整表只读摘要相同（用户Session各1、权限104、内容类型26、迁移35），只公开counts/unchanged，摘要Git外；测试schema/连接0。所有DBpytest串行，fixture前后实际SELECT DATABASE；共15个确认自建索引逐个精确清理，独立client确认无剩余；最后独立Compose down --volumes，仅MySQL继续，Redis/MQ未启动。本轮无开发写入/迁移/实际.env修改。
+- 双交付docs/verification/phase-7c-search-read-api.md及raw/JSON、docs/learning/phase-7c-search-read-api-study-guide.md互链；指南只1处核心代码，无图/目录/末尾题。导航35篇、README/7B后续/Charter v1.12同步；未改库存订单支付Lua逻辑、详情缓存、模型迁移、前端或部署配置。两秒是每个串行ES请求等待，不是总HTTP期限；无连接复用、alias/PIT/自动同步/前端启用/容量或个人掌握证据。
+- 下一片建议手动重建成功后安全切换读入口，失败保留旧索引；在隔离环境证明边界即止，不自动扩MQ或部署。开发来源建索引及启用需要后续单独说明和确认。
