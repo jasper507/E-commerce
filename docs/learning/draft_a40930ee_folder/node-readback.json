@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "creator": "ou_ec431efc09979788500cb74a6286cfe2",
+    "has_child": false,
+    "node_create_time": "1791663544",
+    "node_token": "PZoSwW7C7iJ9PlkWxwkcN0Bnn7d",
+    "node_type": "origin",
+    "obj_create_time": "1791663544",
+    "obj_edit_time": "1791663612",
+    "obj_token": "NaVAdr4oDoyaDqxiTf3cupAznpc",
+    "obj_type": "docx",
+    "origin_node_token": "PZoSwW7C7iJ9PlkWxwkcN0Bnn7d",
+    "owner": "ou_ec431efc09979788500cb74a6286cfe2",
+    "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "space_id": "7693476782908935142",
+    "title": "项目复盘与重做选择",
+    "updated_at": "2026-10-10T20:20:12Z"
+  }
+}

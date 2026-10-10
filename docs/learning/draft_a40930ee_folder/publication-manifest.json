@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-11",
+  "title": "项目复盘与重做选择",
+  "source_commit": "2722c98c0469a1fe876fac27e4a31d5950cb5601",
+  "source_paths": [
+    "docs/verification/phase-4f-slow-faults-and-recovery.md",
+    "docs/learning/phase-3-order-query-baseline-study-guide.md",
+    "docs/learning/phase-3-order-list-index-study-guide.md",
+    "docs/verification/phase-7b-test-isolation-incident.md"
+  ],
+  "approved_parent": "https://ocnbkcx1ug58.feishu.cn/wiki/WN1jwXDj0iPXm7kwLyHcmneenlb",
+  "space_id": "7693476782908935142",
+  "status": "published_verified",
+  "application_tests_run_this_turn": false,
+  "draft_sha256": "3e636969a8c4a1f30e06c945ad8dd8d8e1fd0991be4ccbfe0bf148124f5ec214",
+  "document_id": "NaVAdr4oDoyaDqxiTf3cupAznpc",
+  "node_token": "PZoSwW7C7iJ9PlkWxwkcN0Bnn7d",
+  "url": "https://ocnbkcx1ug58.feishu.cn/wiki/PZoSwW7C7iJ9PlkWxwkcN0Bnn7d",
+  "source_snapshot_paths_verified": true,
+  "independent_content_review": "passed; corrected newly-added verification link before body publication",
+  "body_readback_text_verified": true,
+  "body_readback_links_verified": true,
+  "verified_body_revision_id": 2,
+  "parent_verified": true,
+  "root_navigation_verified": true,
+  "existing_children_preserved": true,
+  "new_node_title_count": 1,
+  "local_markdown_links_verified": true
+}

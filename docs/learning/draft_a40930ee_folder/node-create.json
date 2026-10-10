@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": false,
+    "node_token": "PZoSwW7C7iJ9PlkWxwkcN0Bnn7d",
+    "node_type": "origin",
+    "obj_token": "NaVAdr4oDoyaDqxiTf3cupAznpc",
+    "obj_type": "docx",
+    "origin_node_token": "PZoSwW7C7iJ9PlkWxwkcN0Bnn7d",
+    "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "resolved_by": "explicit_space_id",
+    "resolved_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "title": "项目复盘与重做选择",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/PZoSwW7C7iJ9PlkWxwkcN0Bnn7d"
+  }
+}

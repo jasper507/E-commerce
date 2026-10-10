@@ -1,0 +1,10 @@
+{
+  "body_text_and_8_links_equal": true,
+  "correct_wiki_parent": true,
+  "root_before_plus_append_equal": true,
+  "all_previous_children_preserved": true,
+  "new_node_title_count": 1,
+  "local_markdown_links_exist": true,
+  "xml_profile_status": "passed",
+  "application_tests_run": false
+}
