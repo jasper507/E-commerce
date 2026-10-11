@@ -1,0 +1,47 @@
+sequenceDiagram
+    participant T as 测试控制线程
+    participant H as 先手业务线程<br/>独立连接H
+    participant C as 后手业务线程<br/>独立连接C
+    participant O as 只读诊断连接<br/>Docker内MySQL客户端
+    participant M as 隔离MySQL<br/>test_project_one
+    Note over T,M: 历史Phase 5D验证方法（2026-10-05），本轮没有运行实验<br/>2种先手 × Attempt的CREATED / PENDING / UNKNOWN，共6场景<br/>已提交合法成功Inbox；预占已到期；待支付；库存available=19 / reserved=1
+    alt 支付先拿Order锁：H=payment，C=expiration
+        T->>H: 启动process_stored_payment_event
+        H->>M: 领取Event并独立提交；业务事务锁Event→Order
+        M-->>H: 原SELECT FOR UPDATE返回，Order锁真实取得
+        H-->>T: locked.set；execute_wrapper暂停在原事务中
+        T->>C: 确认locked后启动expire_pending_order
+        C->>M: 原Order锁SQL发起，等待H持有的记录锁
+    else 到期先拿Order锁：H=expiration，C=payment
+        T->>H: 启动expire_pending_order
+        H->>M: 原事务执行Order SELECT FOR UPDATE
+        M-->>H: 原SELECT FOR UPDATE返回，Order锁真实取得
+        H-->>T: locked.set；execute_wrapper暂停在原事务中
+        T->>C: 确认locked后启动process_stored_payment_event
+        C->>M: 领取Event提交后，业务事务的Order锁SQL等待H
+    end
+    Note over H,C: 两线程各用自己的连接；先手锁保留到事务提交或回滚<br/>只暂停原SQL窗口，不替换处理器、SQL结果或业务判断
+    T->>O: 后手已发起锁SQL；带两连接ID与订单主键观察
+    O->>M: 查data_lock_waits / threads / data_locks
+    M-->>O: 同一服务器；Order PRIMARY RECORD<br/>后手WAITING；先手GRANTED；同一订单主键
+    O-->>T: 匹配等待关系；未观察到或线程超时就失败
+    T->>M: 控制线程另行读订单与库存
+    M-->>T: 仍PENDING_PAYMENT；available=19 / reserved=1
+    T->>H: finally中release.set，解除测试暂停
+    alt 支付先手继续
+        H->>M: 原业务继续；订单/支付/核销/事件同事务提交
+        M-->>C: 先手提交释放锁；后手原锁SQL才返回
+        C->>M: 锁内见PAID；到期不修改；结束事务
+        Note over H,C: 支付结果PROCESSED/count=1；到期changed=False，无错误
+    else 到期先手继续
+        H->>M: 锁内见活跃Attempt；payment_unresolved；回滚
+        M-->>C: 先手回滚释放锁；后手原锁SQL才返回
+        C->>M: 原支付业务继续；订单/支付/核销/事件同事务提交
+        Note over H,C: 到期changed=False / payment_unresolved；支付PROCESSED/count=1
+    end
+    T->>T: join两线程；检查都结束、无异常、返回值符合场景
+    T->>M: _paid_snapshot核对数据库终值
+    M-->>T: PAID / SUCCEEDED / PROCESSED；Reservation=COMMITTED<br/>库存19/0；COMMIT流水=1；RELEASE/RESTORE/Refund=0；Attempt=1
+    T->>M: 重放同一成功事件与到期操作；再次读取完整终值
+    M-->>T: 终值不变；事件处理次数仍1；原成功事件记录仍1
+    Note over T,M: 证据：原始JSON保存6次真实等待与业务终值；历史目标6 passed<br/>这里验证真实MySQL服务层交错，不是MQ实验、压测或浏览器E2E<br/>没有运行删锁对照；不能推断所有死锁排列或生产容量

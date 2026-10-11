@@ -1,0 +1,31 @@
+<title>01 测试通过能证明什么：业务终值、验证层级与性能边界</title>
+<p>2026-10-12，源码快照<b>407066c61b6fed59a172320e997e66fa637fc9eb</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/FwCFwuNLniXo19kIH7wcqAoAnxf">专题总览</a> · <a href="https://ocnbkcx1ug58.feishu.cn/wiki/TRrSw6Jmsiyt5Jkiu8Cccki5n7d">并发与故障</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/testing-evidence-knowledge-base-publication.md">本轮核验</a>。以下是历史实测与当前源码核对，本轮不执行应用测试。</p>
+<p><b>测试证明的是指定输入、环境和交错下的断言，不是“以后任何情况都正确”。</b> 项目面试里最值得解释的是Oracle（判断结果正确与否的标准）：业务最终应是什么，哪些副作用不能发生。</p>
+<h1>本专题前后变化：从“passed”走到“守住了什么”</h1>
+<p>189元订单已经预占一件商品，库存从20/0变为19/1。付款通知和到期关闭发生竞争。只看“支付入口没报错”会遗漏：订单是否被错误关闭、预占是否提前释放、核销是否重复、是否创建第二次付款或退款。</p>
+<p>正确行为来自已确认规则：活跃Attempt尚未明确失败，不能仅因预占到期就强行关闭；可信成功最终进入PAID；预占最多核销一次。测试需要跨多个表核对同一笔业务事实。</p>
+<p>5D测试在两个执行者结束后重新从数据库读取Order、Attempt、Event、Reservation与Movement，再判断完整结果。它没有只断言一个接口状态。</p>
+<h1>一段核心断言为什么比“200”有解释力</h1>
+<p>来自<a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/backend/apps/ordering/tests/test_payment_expiration_concurrency.py#L168">真实终值核对</a>：</p>
+<pre lang="python"><code>    assert result == {
+        &quot;order&quot;: &quot;PAID&quot;, &quot;payment&quot;: &quot;SUCCEEDED&quot;, &quot;event&quot;: &quot;PROCESSED&quot;, &quot;event_attempt_count&quot;: 1,
+        &quot;reservation&quot;: &quot;COMMITTED&quot;, &quot;inventory&quot;: [19, 0], &quot;reserve_count&quot;: 1, &quot;commit_count&quot;: 1,
+        &quot;release_count&quot;: 0, &quot;restore_count&quot;: 0, &quot;refund_count&quot;: 0, &quot;attempt_count&quot;: 1,
+        &quot;amount&quot;: &quot;189.00&quot;, &quot;currency&quot;: &quot;CNY&quot;,
+    }</code></pre>
+<p>代码前面已经<b>refresh_from_db()</b>并按这张订单的预占关系统计流水。<b>19/0</b>表示可用库存仍19，预占已归零；<b>COMMIT1</b>说明这件商品核销一次；<b>RELEASE0</b>排除到期路径错误释放；<b>attempt_count=1</b>排除重新发起付款。随后还重放原成功事件与到期操作，再核对终值不变。</p>
+<p>这支持5D所选两种锁顺序、三种活跃Attempt状态下的结果。它不能独自说明所有多订单死锁排列、真实资金到账或网络吞吐。期望字典来自业务规则；如果规则变化，必须先讨论正确行为，再改断言，不能为了让实现通过而直接改期望。</p>
+<h1>用什么验证层级，取决于你要声称什么</h1>
+<table><thead><tr><th><p>方式</p></th><th><p>适合支持的结论</p></th><th><p>本项目中需要额外说明的边界</p></th></tr></thead><tbody><tr><td><p>纯规则测试、Mock或异常注入</p></td><td><p>金额/状态/分类规则、指定异常分支、回滚和错误映射</p></td><td><p>不证明真实依赖产生该故障、网络断连或进程重投</p></td></tr><tr><td><p>隔离真实MySQL</p></td><td><p>SQL、事务、约束、锁竞争及持久终值</p></td><td><p>需实际控制和观察竞争；APIClient不等于真实HTTP部署</p></td></tr><tr><td><p>隔离真实Redis/RabbitMQ/ES</p></td><td><p>Lua原子调用、故障连接、Broker重投、索引切换等指定语义</p></td><td><p>实验配置、进程数、故障窗口与合成数据仍有限</p></td></tr><tr><td><p>真实HTTP客户端经8080入口</p></td><td><p>Nginx代理、Django接口、Session/CSRF往返</p></td><td><p>不证明浏览器Cookie策略、页面JavaScript或登录UI</p></td></tr><tr><td><p>浏览器执行页面</p></td><td><p>页面状态、路由、资源加载及实际发请求</p></td><td><p>若响应被拦截替换，必须标模拟；仍需后端终值证明业务效果</p></td></tr><tr><td><p>文档/静态检查</p></td><td><p>摘录、链接、配置语法、图文和回读一致</p></td><td><p>不替代任何业务运行结果</p></td></tr></tbody></table>
+<p>不同方式是针对不同问题的工具，没有一条简单排名可以替代目标判断。替身测试更便宜、可稳定触发罕见分支；真实集成能揭示替身没有模拟的连接、锁或进程行为。关键语义选真实依赖，日常纯规则保留便宜的反馈，两者配合而不是相互冒充。</p>
+<h1>三组容易说错的本项目证据</h1>
+<p><b>订单分页与索引。</b> <a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/docs/verification/phase-3-order-list-pagination.md">分页片</a>先把每次返回条数固定20，页面检查用模拟响应；它不宣称SQL变快。后续<a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/docs/verification/phase-3-order-query-baseline.md">查询基线</a>与<a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/docs/verification/phase-3-order-list-index.md">正式索引</a>观察完整SQL及执行计划，首页排序消失，COUNT仍读本人5000单，OFFSET4000仍经过4020条订单/地址查找。不能把“返回20条”改说成数据库全程只读20行。</p>
+<p><b>Lua准入。</b> <a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/docs/verification/phase-6f-flash-sale-admission.md">6F</a>用8线程处理24个APIClient请求，真实订单事务24→4，20个429在固定认证后没有下单SQL。这支持所选输入下保护下单事务；不等于24个网络请求同时到达、整个Session HTTP零SQL或生产容量提高了固定倍数。</p>
+<p><b>部署与身份。</b> <a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/docs/verification/phase-9b-local-deployment-run.md">9B</a>真实浏览器显示新库空商品页并刷新深路由；<a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/docs/verification/phase-9c-session-csrf-operations.md">9C</a>补15项HTTP客户端身份检查。后者没有做浏览器登录UI或完整交易验收；四开关关闭时不能用隔离MQ测试替部署启用证据。</p>
+<p>性能说法还需要明确相同业务产出。4J冷波SKU查询6→2伴随4个503，后续仍要加载这4个商品；快拒绝不等于每位顾客更快拿到商品。SQL数、返回字节、接口时延、成功吞吐、并发占用与生产容量各是不同指标。测试执行耗时不能冒充接口性能。</p>
+<h1>通过、跳过、失败与历史结果怎样保留</h1>
+<p><b>passed</b>只表示本次被执行且断言通过；<b>skipped</b>表示该组没有执行。项目的真实MQ/ES/部分数据库诊断实验要求显式配置，普通回归跳过它们是已知边界，不能算新增通过。显式配置后依赖不可达而失败，也不能临时改成跳过来制造绿色结果。</p>
+<p>4J保留目标断言失败再改实现；7B首轮原输出虽有通过项，却因隔离事故不能用来支持安全性。保留原日期、代码版本、环境、输入、注入点、原始输出和终值，后来新增证据再补链接，不篡改旧记录让历史看似一直正确。</p>
+<h1>如果重新做，我会改证据呈现方式</h1>
+<p>保留各层测试，把每个关键结论绑定一张简短证据卡：业务判据、实际路径、输入规模、故障位置、持久终值、原始来源和明确限制。它能避免只记“几十项通过”，也能防止旧实验混成当前部署状态。</p>
+<p>候选成本是材料需要随规则维护，人工填写仍可能遗漏，自动采集也要谨防敏感数据和把任务数当业务数。先统一一条支付与一条缓存证据的字段就足够；当前专题只整理已有资料，没有新增采集平台或覆盖率指标。没有实际覆盖率报告就不报覆盖率，没有生产负载就不报生产容量。</p>

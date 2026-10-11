@@ -1,0 +1,291 @@
+{
+  "status": "passed",
+  "source_commit": "407066c61b6fed59a172320e997e66fa637fc9eb",
+  "guides": 5,
+  "local_links": 57,
+  "core_snippets": 5,
+  "links": [
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "README.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "../verification/testing-evidence-knowledge-base-publication.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "flash-sale-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "payment-interview/07-evidence.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "testing-interview/01-evidence.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "testing-interview/02-concurrency.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "testing-interview/03-diagnosis.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "testing-interview/04-isolation.md"
+    },
+    {
+      "guide": "testing-current-overview-study-guide.md",
+      "target": "deployment-request-chain-study-guide.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../testing-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "02-concurrency.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../../verification/testing-evidence-knowledge-base-publication.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../../verification/phase-3-order-list-pagination.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../../verification/phase-3-order-query-baseline.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../../verification/phase-3-order-list-index.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../../verification/phase-6f-flash-sale-admission.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../../verification/phase-9b-local-deployment-run.md"
+    },
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "target": "../../verification/phase-9c-session-csrf-operations.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../testing-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "01-evidence.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "04-isolation.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/testing-evidence-knowledge-base-publication.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../assets/testing-evidence-2026-10-12/concurrency-sequence/diagram.png"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../assets/testing-evidence-2026-10-12/concurrency-sequence/diagram.mmd"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency-data.json"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-6c5-flash-sale-inventory-failures.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-6f-flash-sale-admission.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-6e-flash-sale-browser.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery-data.json"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../payment-interview/05-mq-recovery.md"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "target": "../../verification/phase-4j-refill-admission.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../testing-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "04-isolation.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../../verification/testing-evidence-knowledge-base-publication.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../deployment-request-chain-study-guide.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../auth-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../../verification/phase-6e-flash-sale-browser.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../../verification/phase-4f-slow-faults-and-recovery.md"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "target": "../redis-interview/04-failure-recovery.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../testing-current-overview-study-guide.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "02-concurrency.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/testing-evidence-knowledge-base-publication.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-7b-test-isolation-incident.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-7b-search-index-prototype.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-7b-test-isolation-incident.json"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "02-concurrency.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-6f-flash-sale-admission.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-7c-search-read-api.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-7d-search-index-switch.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "target": "../../verification/phase-7c-search-read-api.md"
+    }
+  ],
+  "source_excerpts": [
+    {
+      "guide": "testing-interview/01-evidence.md",
+      "language": "python",
+      "source": "backend/apps/ordering/tests/test_payment_expiration_concurrency.py",
+      "commit": "407066c61b6fed59a172320e997e66fa637fc9eb"
+    },
+    {
+      "guide": "testing-interview/02-concurrency.md",
+      "language": "python",
+      "source": "backend/apps/ordering/tests/test_payment_expiration_concurrency.py",
+      "commit": "407066c61b6fed59a172320e997e66fa637fc9eb"
+    },
+    {
+      "guide": "testing-interview/03-diagnosis.md",
+      "language": "python",
+      "source": "backend/apps/payments/services.py",
+      "commit": "407066c61b6fed59a172320e997e66fa637fc9eb"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "language": "python",
+      "source": "backend/apps/catalog/search_prototype.py",
+      "commit": "407066c61b6fed59a172320e997e66fa637fc9eb"
+    },
+    {
+      "guide": "testing-interview/04-isolation.md",
+      "language": "python",
+      "source": "backend/apps/catalog/tests/test_search_index_prototype.py",
+      "commit": "407066c61b6fed59a172320e997e66fa637fc9eb"
+    }
+  ],
+  "fixed_snapshot_paths": [
+    "docs/learning/README.md",
+    "docs/verification/phase-3-order-list-index.md",
+    "docs/verification/phase-3-order-list-pagination.md",
+    "docs/verification/phase-3-order-query-baseline.md",
+    "docs/verification/phase-4f-slow-faults-and-recovery.md",
+    "docs/verification/phase-4j-refill-admission.md",
+    "docs/verification/phase-5c4-payment-worker-recovery-data.json",
+    "docs/verification/phase-5c4-payment-worker-recovery.md",
+    "docs/verification/phase-5d-payment-expiration-concurrency-data.json",
+    "docs/verification/phase-5d-payment-expiration-concurrency.md",
+    "docs/verification/phase-6c5-flash-sale-inventory-failures.md",
+    "docs/verification/phase-6e-flash-sale-browser.md",
+    "docs/verification/phase-6f-flash-sale-admission.md",
+    "docs/verification/phase-7b-search-index-prototype.md",
+    "docs/verification/phase-7b-test-isolation-incident.json",
+    "docs/verification/phase-7b-test-isolation-incident.md",
+    "docs/verification/phase-7c-search-read-api.md",
+    "docs/verification/phase-7d-search-index-switch.md",
+    "docs/verification/phase-9b-local-deployment-run.md",
+    "docs/verification/phase-9c-session-csrf-operations.md"
+  ]
+}

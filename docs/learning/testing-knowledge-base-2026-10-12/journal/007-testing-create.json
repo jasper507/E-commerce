@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": false,
+    "node_token": "FwCFwuNLniXo19kIH7wcqAoAnxf",
+    "node_type": "origin",
+    "obj_token": "YgpddeG2ZoTowZxcBZFcjzfrnBf",
+    "obj_type": "docx",
+    "origin_node_token": "FwCFwuNLniXo19kIH7wcqAoAnxf",
+    "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+    "resolved_by": "explicit_space_id",
+    "resolved_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "title": "测试证据与故障排查：怎样证明项目正确，失败后怎样定位",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/FwCFwuNLniXo19kIH7wcqAoAnxf"
+  }
+}

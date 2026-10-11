@@ -1,0 +1,15 @@
+{
+  "key": "testing-02",
+  "status": "passed",
+  "revision": 2,
+  "headings": 7,
+  "links": 16,
+  "core_snippets": 1,
+  "boards": [
+    {
+      "block_id": "doxcnzMMg6MMJycLTtFbRCOe1hf",
+      "token": "Xpitw46RChwro2b9DmFcdmUxnW8",
+      "diagram": "concurrency-sequence"
+    }
+  ]
+}

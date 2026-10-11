@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": false,
+    "node_token": "AEpJwKY7Hi2bsyk2x7kcwnHynhf",
+    "node_type": "origin",
+    "obj_token": "YgpzdpN8joJTqmxavz8cBBTmnah",
+    "obj_type": "docx",
+    "origin_node_token": "AEpJwKY7Hi2bsyk2x7kcwnHynhf",
+    "parent_node_token": "FwCFwuNLniXo19kIH7wcqAoAnxf",
+    "resolved_by": "explicit_space_id",
+    "resolved_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "title": "04 怎样安全复现：真实连接、测试隔离与事故教训",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/AEpJwKY7Hi2bsyk2x7kcwnHynhf"
+  }
+}

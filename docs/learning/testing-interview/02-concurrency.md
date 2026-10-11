@@ -1,0 +1,74 @@
+# 02 怎样验证并发与故障：控制交错、真实依赖与持久终值
+
+2026-10-12，源码快照`407066c61b6fed59a172320e997e66fa637fc9eb`。[专题总览](../testing-current-overview-study-guide.md) · [终值与层级](01-evidence.md) · [安全复现](04-isolation.md) · [本轮核验](../../verification/testing-evidence-knowledge-base-publication.md)。本页解释历史实验的方法，本轮只核对资料。
+
+**并发测试要证明关键交错确实发生；故障测试要交代故障落在提交前还是提交后。** 多线程数量、运行次数和等待几秒都不能替代中间事实。
+
+## 本专题前后变化：从同时起跑到观察数据库等待
+
+支付与到期关闭各使用独立连接操作同一个订单。如果只有Barrier（让线程同时开始的同步点），操作仍可能在数据库里一前一后完成，根本没有锁竞争。5D要回答的是两种实际获锁顺序下是否都守住业务规则，因此它控制原SQL返回后的窗口，再直接观察MySQL锁等待。
+
+这里用Event（线程间发送已到达/允许继续信号的对象）控制时机；它不替换查询结果，也不把真实服务换成简化处理器。固定订单189元、原库存20、预占1，到期已满足；原Attempt分别为CREATED/PENDING/UNKNOWN，两种先手共六场景。
+
+## 图：验证方法怎样对应真实过程
+
+<!-- BOARD:CONCURRENCY -->
+
+图中的测试控制和诊断连接只用于5D隔离实验，不是业务运行时新增的服务。它显示两个原业务连接与真实Order锁竞争，最后检查持久终值和重放。图资产：[预览](../assets/testing-evidence-2026-10-12/concurrency-sequence/diagram.png) · [可编辑Mermaid](../assets/testing-evidence-2026-10-12/concurrency-sequence/diagram.mmd)。
+
+等价文字按实际顺序是：先启动holder（先持锁的一方）→等原Order锁查询真实返回→启动contender（竞争者）→等它发出原锁SQL→观察同一MySQL服务器报告WAITING/GRANTED关系→检查等待期间仍待付、库存19/1→在finally释放holder→等两个流程结束→核对业务终值→重放原事件与到期操作。
+
+## 核心代码：信号为什么必须放在execute之后
+
+来源：[原SQL执行窗口](https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/backend/apps/ordering/tests/test_payment_expiration_concurrency.py#L207)。
+
+```python
+            def trace(execute, sql, params, many, context):
+                order_lock = "FOR UPDATE" in sql and "FROM `ordering_order`" in sql and order.pk in (params or ())
+                if role == contender and order_lock:
+                    contender_started.set()
+                result = execute(sql, params, many, context)
+                if role == first and order_lock:
+                    assert context["connection"].in_atomic_block
+                    locked.set()
+                    if not release.wait(timeout=30):
+                        raise TimeoutError("Controlled lock holder was not released.")
+                return result
+```
+
+holder只有在真实SELECT FOR UPDATE返回后才报告`locked`，并确认原事务仍在。因此它持有锁时等待，不是靠“线程启动了”猜测已持锁。contender在execute之前报告已发起，execute会真正进入数据库等待。超时是实验失败，不是用sleep猜测成功；finally负责释放和收线程，避免故障测试本身留下挂起工作。
+
+**已发起还不足以证明在等锁。** 诊断连接关联`data_lock_waits`、`threads`和`data_locks`，核对不同requesting/blocking连接、同一服务器、测试库、ordering_order、PRIMARY、RECORD、同一订单主键、WAITING/GRANTED。没有观察到就失败，不能改成“应该在等”。原记录还说明普通应用账号1142拒绝诊断读取，后来使用已有管理连接只读观察，未新增GRANT。
+
+支付先获锁：成功业务提交后，到期者获锁见PAID，不再关闭。到期先获锁：见活跃Attempt，返回`payment_unresolved`并回滚释放锁，支付者继续成功。六例最终Order PAID、Attempt SUCCEEDED、Event PROCESSED/count1、库存19/0、COMMIT1、RELEASE0；原事件重放后相同。完整来源见[5D记录](../../verification/phase-5d-payment-expiration-concurrency.md)与[六场景JSON](../../verification/phase-5d-payment-expiration-concurrency-data.json)。这是服务层同步MySQL证据，未启动MQ或浏览器。
+
+## 故障注入要按真实位置解释
+
+| 已有案例 | 实际制造的条件 | 可以证明与不能证明 |
+| --- | --- | --- |
+| [6C5库存错误](../../verification/phase-6c5-flash-sale-inventory-failures.md) | 真实连接持库存锁造成1205；库存UPDATE的1213/2006为异常注入 | 支持指定回滚与错误政策；不能把注入1213说成该片实际死锁 |
+| [6F Lua响应丢失](../../verification/phase-6f-flash-sale-admission.md) | 真实EVAL先增加计数，再注入TimeoutError | 支持执行成功但客户端未知时503且不下单；不冒称真实网络丢包 |
+| [6E浏览器丢响应](../../verification/phase-6e-flash-sale-browser.md) | 真实POST201返回后，脚本abort交给页面的响应 | 支持刷新后原意图恢复同单；不是把数据库提交状态变成未知的网络实验 |
+| [5C4Worker中断](../../verification/phase-5c4-payment-worker-recovery.md) | 专用真实Worker在指定窗口SIGKILL，真实RabbitMQ原UUID重投 | 支持该配置、窗口和恢复入口；不支持所有崩溃窗口或自动恢复SLA |
+
+注入分支仍有价值：容易稳定触发罕见路径并检查回滚。但若你要声称真实锁、Broker或进程语义，就必须使用对应真实依赖和观察。只有patch函数抛异常，没有杀进程，不能叫“Worker崩溃恢复已验证”。
+
+## 为什么5C4必须分别看提交前与ACK前
+
+T1先持久领取原Inbox，保存PROCESSING与次数；T2才处理付款、订单、库存和Event终态。T1后Worker消失会留下PROCESSING，消息重投并不自动获得应用资格，需租约到期后人工修复再补投。实验把默认60秒租约覆盖为8秒，是该场景的测试值。
+
+T2提交前中断：未提交业务回滚，后来处理原Event可以完成。T2成功提交后、ACK前中断：MySQL事实已经成功，即使原消息重投，终态门槛仍跳过副作用，核销仍一次。迟到成功退款场景检查模拟退款1、RELEASE1、COMMIT0；不是实际资金退款。
+
+这就是为什么要同时记录消息身份、故障窗口、中间状态和业务终值。ACK/任务次数只说明消费链的部分过程。恢复的实际人工边界与原JSON见[5C4四场景](../../verification/phase-5c4-payment-worker-recovery-data.json)，机制复用[支付恢复页](../payment-interview/05-mq-recovery.md)。
+
+## 一个真正先失败、再改进的例子：4J多Key重建
+
+4J新增目标时，生产实现仍只限制Redis故障降级，六个不同冷Key在健康Redis下都进入加载，峰值6，目标“峰值2”实际失败。随后把真实重建共用现有名额，受控三轮都峰值2，首轮两个200、四个503；后续顺序请求补齐四份加载，热读不再加载SKU。
+
+这个例子说明失败断言确实暴露了当前设计缺口。5D则没有“删锁后先失败”的实验，不应为了故事好听虚构一个红→绿对照。4J保护的是进程内并行重建，六件必需商品工作没有凭空消失；原基线及当前结果见[4J记录](../../verification/phase-4j-refill-admission.md)。
+
+## 如果重新做，我会改实验控制与失败留存
+
+保留原服务、真实连接和终值核对，把重复的窗口控制、专用线程清理与“观察失败即失败”整理为小型测试工具，减少每个实验重复编写同步代码。候选成本是包装器可能改变执行时机、工具本身也需验证，过度抽象会隐藏哪条锁SQL被控制。
+
+先复用一个5D型实验，再用“观察器不可用必须失败、holder异常必须释放、目标行不匹配必须拒绝”验证工具即可。本轮没有新增工具、扩大故障矩阵或重复压力实验。

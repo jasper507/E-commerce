@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "assessment": {
+      "status": "passed"
+    },
+    "profile": {
+      "word_count": 1897,
+      "char_count": 2151,
+      "block_count": 65,
+      "blocks": [
+        {
+          "type": "p",
+          "count": 42,
+          "ratio": 0.646154
+        },
+        {
+          "type": "tr",
+          "count": 11,
+          "ratio": 0.169231
+        },
+        {
+          "type": "h1",
+          "count": 5,
+          "ratio": 0.076923
+        },
+        {
+          "type": "table",
+          "count": 2,
+          "ratio": 0.030769
+        },
+        {
+          "type": "tbody",
+          "count": 2,
+          "ratio": 0.030769
+        },
+        {
+          "type": "thead",
+          "count": 2,
+          "ratio": 0.030769
+        },
+        {
+          "type": "title",
+          "count": 1,
+          "ratio": 0.015385
+        }
+      ]
+    }
+  }
+}

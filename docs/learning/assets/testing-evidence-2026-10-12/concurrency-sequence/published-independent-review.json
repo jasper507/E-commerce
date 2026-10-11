@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "date": "2026-10-12",
+  "whiteboard_token": "Xpitw46RChwro2b9DmFcdmUxnW8",
+  "native_nodes": 42,
+  "node_types": {
+    "connector": 30,
+    "combined_fragment": 2,
+    "composite_shape": 5,
+    "life_line": 5
+  },
+  "visible_text_and_node_type_signatures": "matched",
+  "connectors_checked": 30,
+  "connector_captions_shapes_and_arrow_styles": "matched",
+  "endpoint_coordinate_tolerance_pixels": 0.02,
+  "observed_maximum_coordinate_delta_pixels": 0.00012109375029467628,
+  "actual_preview_dimensions": [
+    2560,
+    2560
+  ],
+  "actual_preview_visually_reviewed": true,
+  "visual_review": "All five participants, both role-order branches, shared real-lock observer, commit versus rollback branch, final state and duplicate effects are visible. Native board supports zoom; exported preview is fit into a square canvas.",
+  "source_export_message": "no code blocks found in whiteboard",
+  "editable_source": "diagram.mmd",
+  "idempotent_token": "testing-20261012-concurrency-sequence-publish-1",
+  "database_access": false,
+  "application_tests_run": false,
+  "new_diagrams_created": false,
+  "new_documents_created": false,
+  "business_code_modified": false
+}

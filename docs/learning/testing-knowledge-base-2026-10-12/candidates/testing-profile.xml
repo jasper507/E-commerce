@@ -1,0 +1,23 @@
+<title>测试证据与故障排查：怎样证明项目正确，失败后怎样定位</title>
+<p>2026-10-12。固定源码<b>407066c61b6fed59a172320e997e66fa637fc9eb</b>。<a href="https://github.com/jasper507/E-commerce/blob/407066c61b6fed59a172320e997e66fa637fc9eb/docs/learning/README.md">学习导航</a> · <a href="https://ocnbkcx1ug58.feishu.cn/wiki/WN1jwXDj0iPXm7kwLyHcmneenlb">项目总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/testing-evidence-knowledge-base-publication.md">本轮核验记录</a>。本轮整理已有源码和历史证据，没有重跑数据库、Redis、MQ、ES或浏览器实验。</p>
+<p><b>这个专题最重要的能力是：先说业务必须守住什么，再说明怎样制造关键条件、观察中间过程、核对持久终值，最后说清证据覆盖到哪里。</b> 测试通过数、请求成功数和技术名词不能独立回答“为什么你相信没有重复扣库存”。</p>
+<p>它属于Supporting（支撑主业务的工程能力），服务项目面试中的两类追问：“你怎么测试并发、依赖故障和恢复？”以及“如果出错，你从哪里查起？”只用现有材料建立可追溯的解释，不因整理自动增加实验。掌握仍需你独立解释，文档完成不代表你已经掌握。</p>
+<h1>本专题前后变化</h1>
+<p>之前每个阶段都有验证记录，证据分散在支付、缓存、秒杀、搜索和部署中。本专题增加一条横向阅读路径：从业务判据选择证据，区分故障发生的位置，再用原状态和连接身份定位问题。原实现、原测试、原始失败和历史日期保持原样。</p>
+<table><thead><tr><th><p>过去容易混淆的说法</p></th><th><p>本专题建立的区分</p></th></tr></thead><tbody><tr><td><p>“很多测试通过，所以项目可靠”</p></td><td><p>哪个输入与交错下，哪个业务不变量被实际核对</p></td></tr><tr><td><p>“两个线程启动了，所以测过并发”</p></td><td><p>是否用了不同连接，是否真实竞争同一行，是否观察到等待</p></td></tr><tr><td><p>“接口超时，所以订单失败”</p></td><td><p>客户端没收到响应、服务未提交、服务已提交是不同事实</p></td></tr><tr><td><p>“降级能返回，所以一致性没问题”</p></td><td><p>依赖故障期间可读，与恢复后读到新值要分别验证</p></td></tr><tr><td><p>“配置写test，所以操作安全”</p></td><td><p>配置目标与活连接的实际数据库身份必须一致</p></td></tr></tbody></table>
+<h1>先从三条业务故事选择证明目标</h1>
+<p><b>库存故事：最后一件商品只能被合法预占一次。</b> 不能只看一个201；要看其他请求的业务结果、Order/Reservation/Purchase、库存与流水。原Key重放仍返回同单，同Key改参数被拒绝，失败事务不留下半张订单。秒杀规则和等待政策看<a href="https://ocnbkcx1ug58.feishu.cn/wiki/B49NwtiePiCqqFkz61kc4ac9n79">秒杀总览</a>。</p>
+<p><b>缓存故事：旧请求不能污染新代号，故障回源不能无限同时涌入。</b> 要分别核对响应字段、SKU加载次数、同时占用名额，以及恢复后实际读值。4J限制的是一个进程内重建作用域的峰值，不是全站连接数；4F换代失败后的旧值恢复边界仍要如实讲。机制看<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf">Redis总览</a>。</p>
+<p><b>支付故事：同一原付款通知重复投递，业务效果仍只发生一次。</b> 要核对原Attempt/Event身份、Order状态、Reservation、COMMIT/RELEASE和模拟退款终值。MQ ACK、task ID与支付成功不等价。机制和各期故障矩阵看<a href="https://ocnbkcx1ug58.feishu.cn/wiki/KsqfwyvRZiYtsnkB09HcBsQWnpe">支付证据页</a>。</p>
+<p>这些目标由业务规则定义。测试只是把目标变成可观察断言；不能因为实现产生了某个结果，就把那个结果自动当作“正确行为”。</p>
+<h1>四个问题页怎样读</h1>
+<table><thead><tr><th><p>问题页</p></th><th><p>要独立讲清的内容</p></th><th><p>最小可信依据</p></th></tr></thead><tbody><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/MyEBwaSUAiZG80k7uxhco5c8nzh">01 测试通过能证明什么</a></p></td><td><p>终值判据、测试层级、skip、性能与部署边界</p></td><td><p>5D完整业务终值、分页/索引与9B/C的不同验证范围</p></td></tr><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/TRrSw6Jmsiyt5Jkiu8Cccki5n7d">02 怎样验证并发与故障</a></p></td><td><p>控制真实交错、观察等待、区分注入与实际依赖故障</p></td><td><p>5D一张时序图、5C4真实SIGKILL、4J先红后绿</p></td></tr><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/DWAHwAOPcigpRAkxg7WcMCl4nPe">03 请求失败后怎样排查</a></p></td><td><p>从症状到事务、持久状态、依赖，再定位第一错误</p></td><td><p>6E响应丢失、5C4PROCESSING卡住、4F恢复旧价</p></td></tr><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/AEpJwKY7Hi2bsyk2x7kcwnHynhf">04 怎样安全复现</a></p></td><td><p>实际连接身份、专用资源、teardown风险与失败留存</p></td><td><p>7B事故、已修守卫与集成测试启用边界</p></td></tr></tbody></table>
+<p>只有02新增一张图，其他页面用表格和具体过程解释。阅读问题页后回到原验证记录找输入、环境、原始JSON与终值；不需要背阶段编号，也不把原始输出数量作为项目含金量。</p>
+<h1>面试时最应避免的证据跳步</h1>
+<p>Mock（可控替身）可以检验签名/金额等规则，不能证明真实Broker会怎样重投。APIClient（在测试进程内访问Django接口的客户端）能覆盖接口和真实数据库，却没有穿过浏览器、Nginx和真实网络。真实浏览器也可能接收被脚本替换的响应，要说清替换发生在哪一步。</p>
+<p>当前独立部署的四个开关关闭；历史隔离Redis/Lua/MQ/ES实测不能写成这套部署已启用。9B基础运行、9C身份HTTP与完整交易验收分别看<a href="https://ocnbkcx1ug58.feishu.cn/wiki/LlbLwU9mSi2CoIkYi5tcELbKn4e">部署请求链</a>。早期SQLite烟测、后来MySQL实验和本轮文档检查也要保留各自身份。</p>
+<p>没有观察过的场景可以作为候选，不能当结论。没有必要为了讲一次具体故障，再补所有可能故障的组合；证据已经足够解释目标，就先巩固语言、数据库、网络和算法基础。</p>
+<h1>如果重新做，我会优先改哪里</h1>
+<p>我会保留已经验证的业务规则、状态机、固定版本证据和故障窗口，而优先把<b>测试资源身份与证据记录方式统一</b>。7B已经证明只靠环境名和“0条业务SQL”会遗漏连接初始化及清理风险；已有局部修正正确，但当前仍是多个模块各自守卫。</p>
+<p>候选改进是在获准的新切片里集中管理可销毁库、专用依赖、子进程配置与清理边界，并让关键实验记录“目标身份、前值、注入点、中间事实、终值、范围”。它会减少重复代码与审查遗漏，也会增加测试基础设施维护、不同实验兼容和资源调度成本。必须先用一个拒绝错误目标、一个正常集成和一个清理失败场景验证；本轮没有实现这个框架，也没有新建监控或自动恢复。</p>
+<p>停止条件是能把一个正常流程、一个真实故障和一个证据限制连起来解释；本专题不自动生成题库、背诵答案或个人掌握打勾表。</p>

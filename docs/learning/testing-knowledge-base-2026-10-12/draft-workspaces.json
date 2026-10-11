@@ -1,0 +1,47 @@
+[
+  {
+    "key": "testing",
+    "guide": "testing-current-overview-study-guide.md",
+    "board": null,
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\testing-knowledge-base-2026-10-12",
+    "workspace": "draft_dbfbfeab_folder",
+    "draft_path": "draft_dbfbfeab_folder\\draft.xml",
+    "title": "测试证据与故障排查：怎样证明项目正确，失败后怎样定位"
+  },
+  {
+    "key": "testing-01",
+    "guide": "testing-interview/01-evidence.md",
+    "board": null,
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\testing-knowledge-base-2026-10-12",
+    "workspace": "draft_eeaa5787_folder",
+    "draft_path": "draft_eeaa5787_folder\\draft.xml",
+    "title": "01 测试通过能证明什么：业务终值、验证层级与性能边界"
+  },
+  {
+    "key": "testing-02",
+    "guide": "testing-interview/02-concurrency.md",
+    "board": "concurrency-sequence",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\testing-knowledge-base-2026-10-12",
+    "workspace": "draft_5ffe863a_folder",
+    "draft_path": "draft_5ffe863a_folder\\draft.xml",
+    "title": "02 怎样验证并发与故障：控制交错、真实依赖与持久终值"
+  },
+  {
+    "key": "testing-03",
+    "guide": "testing-interview/03-diagnosis.md",
+    "board": null,
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\testing-knowledge-base-2026-10-12",
+    "workspace": "draft_88dba744_folder",
+    "draft_path": "draft_88dba744_folder\\draft.xml",
+    "title": "03 请求失败后怎样排查：症状、状态与三个真实反例"
+  },
+  {
+    "key": "testing-04",
+    "guide": "testing-interview/04-isolation.md",
+    "board": null,
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\testing-knowledge-base-2026-10-12",
+    "workspace": "draft_5b073da8_folder",
+    "draft_path": "draft_5b073da8_folder\\draft.xml",
+    "title": "04 怎样安全复现：真实连接、测试隔离与事故教训"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": false,
+    "node_token": "TRrSw6Jmsiyt5Jkiu8Cccki5n7d",
+    "node_type": "origin",
+    "obj_token": "QR4SdnUZbopr1mxECVRcbi9gn3b",
+    "obj_type": "docx",
+    "origin_node_token": "TRrSw6Jmsiyt5Jkiu8Cccki5n7d",
+    "parent_node_token": "FwCFwuNLniXo19kIH7wcqAoAnxf",
+    "resolved_by": "explicit_space_id",
+    "resolved_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "title": "02 怎样验证并发与故障：控制交错、真实依赖与持久终值",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/TRrSw6Jmsiyt5Jkiu8Cccki5n7d"
+  }
+}

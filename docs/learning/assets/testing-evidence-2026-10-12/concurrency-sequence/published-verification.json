@@ -1,0 +1,21 @@
+{
+  "diagram": "concurrency-sequence",
+  "status": "passed",
+  "native_nodes": 42,
+  "node_types": {
+    "connector": 30,
+    "combined_fragment": 2,
+    "composite_shape": 5,
+    "life_line": 5
+  },
+  "visible_text_node_types_and_arrow_directions": "matched",
+  "connector_coordinate_tolerance_pixels": 0.02,
+  "actual_preview_dimensions": [
+    2560,
+    2560
+  ],
+  "local_and_remote_previews_visually_reviewed": true,
+  "idempotent_token": "testing-20261012-concurrency-sequence-publish-1",
+  "source_export_message": "no code blocks found in whiteboard",
+  "editable_mermaid": "diagram.mmd"
+}
