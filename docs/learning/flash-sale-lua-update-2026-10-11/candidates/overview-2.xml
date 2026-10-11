@@ -1,0 +1,1 @@
+<p>下图保留2026-10-08原交易画板，仍解释当前Lua默认关闭、Mock支付默认同步的MySQL路径。启用Lua时，准入发生在进入下单HTTP适配与MySQL事务之前；完整启用时序见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/YEZhw0ya7iQZUGkLHAMcOkFfnQf">07 Lua原子准入</a>。支付可启用既有MQ模式，仍共用业务处理器；89元与一件库存是教学例子。</p>

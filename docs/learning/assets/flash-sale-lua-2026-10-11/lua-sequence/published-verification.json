@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "native_nodes": 48,
+  "node_types": {
+    "composite_shape": 10,
+    "connector": 31,
+    "life_line": 4,
+    "combined_fragment": 3
+  },
+  "visible_text_and_node_types": "matched",
+  "connector_endpoints_and_arrow_directions": "matched",
+  "preview_size": [
+    2560,
+    2560
+  ],
+  "preview_visually_reviewed": true,
+  "write_client_token": "flash-sale-lua-20261011-publish-1",
+  "source_export_message": "no code blocks found in whiteboard",
+  "editable_mermaid": "diagram.mmd"
+}

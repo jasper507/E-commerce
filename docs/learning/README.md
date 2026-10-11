@@ -1,6 +1,6 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-11。本页收录67份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索与MySQL专题各新增总览及五问题页。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)、[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)、[MySQL知识库记录](../verification/mysql-interview-knowledge-base-publication.md)只记录文档检查与发布，服务历史验证仍见各专题。
+更新：2026-10-11。本页收录69份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索与MySQL专题各新增总览及五问题页，秒杀再补当前总览与Lua问题页。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)、[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)、[MySQL知识库记录](../verification/mysql-interview-knowledge-base-publication.md)、[秒杀/Lua更新](../verification/flash-sale-lua-knowledge-base-update.md)只记录文档检查与发布，服务历史验证仍见各专题。
 
 先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易和三条技术故事，再读[支付当前总览](payment-current-overview-study-guide.md)、[Redis当前总览](redis-current-overview-study-guide.md)及其问题页。以面试为最高优先级：讲清业务流程、失败交错、设计理由、替代与代价、核心代码、真实证据和“如果重做”。原图与历史资料继续保留。
 
@@ -79,6 +79,8 @@
 ACK是Worker向队列确认消息已处理；业务成功仍以MySQL提交的支付、订单与库存事实为准。本期恢复仍有人工触发与调查成本；真实资金、周期自动补漏和生产容量不属于已验证成果。
 
 ## 5. 秒杀与Lua：先正确建单，再限制进入事务的尝试
+
+当前复习入口是[秒杀总览](flash-sale-current-overview-study-guide.md)及[07 Lua原子准入](flash-sale-interview/07-lua-admission.md)。飞书原六页与六张旧图保留；当前入口区分MySQL内幂等顺序与启用Lua后的前置预算。原Key也可能先429/503，恢复放行后再确认原单；预算不是库存或严格在途槽。以下切片继续保留各自日期。
 
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |

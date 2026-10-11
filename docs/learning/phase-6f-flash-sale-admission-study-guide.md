@@ -8,7 +8,7 @@
 - **本片改变：** 在订单处理前用 Redis Lua 原子申请窗口预算；满额 429、结果无法确认 503，原 Key 确认也等待恢复。隔离对照中 24 次订单事务减为 4 次。
 - **完成后与边界：** 实现默认关闭、仅限本地或测试；限制的是尝试速率，不能保证严格在途上限。MySQL 仍是库存事实来源，没有 Redis 库存预扣，阈值也不是生产容量结论。
 
-**后续衔接：** [7A 已完成商品搜索与 MySQL 查询基线](phase-7a-product-search-baseline-study-guide.md)；Elasticsearch 仍待实现。[学习导航](README.md)
+**后续衔接（2026-10-11）：** [商品搜索专题](search-current-overview-study-guide.md)已推进到ES候选回读与手动别名切换，默认关闭、仅测试来源，没有自动同步；“ES待实现”只属于本片2026-10-09的时点。[当前秒杀总览](flash-sale-current-overview-study-guide.md)和[Lua准入问题页](flash-sale-interview/07-lua-admission.md)补齐现在的知识库口径，以下原实验日期和结果保留。[学习导航](README.md)
 
 ## 1. 这片形成的业务闭环
 

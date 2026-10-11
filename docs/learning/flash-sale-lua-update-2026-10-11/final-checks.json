@@ -1,0 +1,36 @@
+{
+  "status": "passed",
+  "source_commit": "96904bcc47562c51a1e4b9cc731f8ed5d40fdb75",
+  "new_guides": 2,
+  "local_document_links_checked": 36,
+  "core_snippets": 4,
+  "existing_pages_checked": 7,
+  "existing_pages_changed": 6,
+  "patch_operations": 27,
+  "original_boards_preserved": 6,
+  "old_code_and_resource_identifiers_preserved": true,
+  "unchanged_payment_lifecycle_page": true,
+  "new_question_pages": 1,
+  "seckill_children": 7,
+  "new_native_board": {
+    "status": "passed",
+    "native_nodes": 48,
+    "node_types": {
+      "composite_shape": 10,
+      "connector": 31,
+      "life_line": 4,
+      "combined_fragment": 3
+    },
+    "visible_text_and_node_types": "matched",
+    "connector_endpoints_and_arrow_directions": "matched",
+    "preview_size": [
+      2560,
+      2560
+    ],
+    "preview_visually_reviewed": true,
+    "write_client_token": "flash-sale-lua-20261011-publish-1",
+    "source_export_message": "no code blocks found in whiteboard",
+    "editable_mermaid": "diagram.mmd"
+  },
+  "application_tests_run": false
+}

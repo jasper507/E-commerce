@@ -1,0 +1,1 @@
+<p>当前衔接（2026-10-11）：本页解释已进入MySQL事务后的幂等与限购。Lua默认关闭；若启用，HTTP先申请共享预算，原Key也可能429/503，恢复放行后才执行这里的原单识别。详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/YEZhw0ya7iQZUGkLHAMcOkFfnQf">07准入流程</a>。</p>

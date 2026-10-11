@@ -1,0 +1,100 @@
+{
+  "status": "passed",
+  "source_commit": "96904bcc47562c51a1e4b9cc731f8ed5d40fdb75",
+  "guides": 2,
+  "local_links": 16,
+  "core_snippets": [
+    {
+      "language": "python",
+      "source": "backend/apps/promotions/views.py",
+      "commit": "96904bcc47562c51a1e4b9cc731f8ed5d40fdb75"
+    },
+    {
+      "language": "lua",
+      "source": "backend/apps/promotions/admission.lua",
+      "commit": "96904bcc47562c51a1e4b9cc731f8ed5d40fdb75"
+    },
+    {
+      "language": "python",
+      "source": "backend/apps/promotions/admission.py",
+      "commit": "96904bcc47562c51a1e4b9cc731f8ed5d40fdb75"
+    },
+    {
+      "language": "python",
+      "source": "backend/apps/promotions/services.py",
+      "commit": "96904bcc47562c51a1e4b9cc731f8ed5d40fdb75"
+    }
+  ],
+  "links": [
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../flash-sale-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../README.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../../verification/flash-sale-lua-knowledge-base-update.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../../verification/phase-6f-flash-sale-admission.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../assets/flash-sale-lua-2026-10-11/lua-sequence/diagram.png"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../assets/flash-sale-lua-2026-10-11/lua-sequence/diagram.mmd"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../../verification/phase-6f-flash-sale-admission.json"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-interview\\07-lua-admission.md",
+      "target": "../../verification/phase-6f-flash-sale-admission-regression.raw.txt"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "../verification/flash-sale-lua-knowledge-base-update.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "flash-sale-interview/07-lua-admission.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "search-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "flash-sale-interview/07-lua-admission.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "assets/flash-sale-lua-2026-10-11/lua-sequence/diagram.mmd"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs\\learning\\flash-sale-current-overview-study-guide.md",
+      "target": "../verification/phase-6f-flash-sale-admission.md"
+    }
+  ],
+  "fixed_snapshot_paths": [
+    "docs/learning/README.md",
+    "docs/verification/phase-6f-flash-sale-admission-regression.raw.txt",
+    "docs/verification/phase-6f-flash-sale-admission.json",
+    "docs/verification/phase-6f-flash-sale-admission.md"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_more":  false,
+                 "nodes":  [
+                               {
+                                   "has_child":  false,
+                                   "node_token":  "LoLFwPMLvi8WADkTsQDc3qfdnMd",
+                                   "node_type":  "origin",
+                                   "obj_token":  "SANldx7z2osqJyxYQTPc4Yv3nrQ",
+                                   "obj_type":  "docx",
+                                   "parent_node_token":  "B49NwtiePiCqqFkz61kc4ac9n79",
+                                   "space_id":  "7693476782908935142",
+                                   "title":  "01 重复下单：幂等与限购为什么分开"
+                               },
+                               {
+                                   "has_child":  false,
+                                   "node_token":  "PTjLwPhoAizQfWkHJdDcHXJFnK0",
+                                   "node_type":  "origin",
+                                   "obj_token":  "YBvnd8GNJovOCyxO8oVcVtVvnzX",
+                                   "obj_type":  "docx",
+                                   "parent_node_token":  "B49NwtiePiCqqFkz61kc4ac9n79",
+                                   "space_id":  "7693476782908935142",
+                                   "title":  "02 抢最后一件：为什么选择条件 UPDATE"
+                               },
+                               {
+                                   "has_child":  false,
+                                   "node_token":  "AOvlwoTENiyvgok63ivct7xGnWe",
+                                   "node_type":  "origin",
+                                   "obj_token":  "JRKodKDfCotBDPx1acucZpsXnQg",
+                                   "obj_type":  "docx",
+                                   "parent_node_token":  "B49NwtiePiCqqFkz61kc4ac9n79",
+                                   "space_id":  "7693476782908935142",
+                                   "title":  "03 下单失败：为什么整单回滚与等待 5 秒"
+                               },
+                               {
+                                   "has_child":  false,
+                                   "node_token":  "HDK7wuA36iLRG3k511lca7rInvb",
+                                   "node_type":  "origin",
+                                   "obj_token":  "T5Asd41r4oDZWaxmxJIcJSNQnq4",
+                                   "obj_type":  "docx",
+                                   "parent_node_token":  "B49NwtiePiCqqFkz61kc4ac9n79",
+                                   "space_id":  "7693476782908935142",
+                                   "title":  "04 从付款到关闭：资格生命周期与 MQ 的业务价值"
+                               },
+                               {
+                                   "has_child":  false,
+                                   "node_token":  "R1Duwgh8bimIyQkdUrWcDpNAnze",
+                                   "node_type":  "origin",
+                                   "obj_token":  "SWHAdsblMo3gYOx6f8AcimY5n2g",
+                                   "obj_type":  "docx",
+                                   "parent_node_token":  "B49NwtiePiCqqFkz61kc4ac9n79",
+                                   "space_id":  "7693476782908935142",
+                                   "title":  "05 响应丢失：为什么保留原购买意图"
+                               },
+                               {
+                                   "has_child":  false,
+                                   "node_token":  "LaqzwVXSHiZsjzkPTuccYlt4n5g",
+                                   "node_type":  "origin",
+                                   "obj_token":  "Gm0Bdx3eLokjdpxtMqKcILw3n4f",
+                                   "obj_type":  "docx",
+                                   "parent_node_token":  "B49NwtiePiCqqFkz61kc4ac9n79",
+                                   "space_id":  "7693476782908935142",
+                                   "title":  "06 证据与演进：哪些结论可以向面试官讲"
+                               },
+                               {
+                                   "has_child":  false,
+                                   "node_token":  "YEZhw0ya7iQZUGkLHAMcOkFfnQf",
+                                   "node_type":  "origin",
+                                   "obj_token":  "UDVndI0VYoKokIxqN9JcGkghn1d",
+                                   "obj_type":  "docx",
+                                   "parent_node_token":  "B49NwtiePiCqqFkz61kc4ac9n79",
+                                   "space_id":  "7693476782908935142",
+                                   "title":  "07 Lua原子准入：为什么先保护进入事务的尝试"
+                               }
+                           ],
+                 "page_token":  ""
+             },
+    "meta":  {
+                 "count":  7
+             }
+}

@@ -1,0 +1,44 @@
+[
+    {
+        "title":  "秒杀与库存并发",
+        "key":  "overview",
+        "node":  "B49NwtiePiCqqFkz61kc4ac9n79",
+        "doc":  "MVBrdxZAPoDcPzxQnTPctXXgn3g"
+    },
+    {
+        "title":  "01 重复下单：幂等与限购为什么分开",
+        "key":  "existing-01",
+        "node":  "LoLFwPMLvi8WADkTsQDc3qfdnMd",
+        "doc":  "SANldx7z2osqJyxYQTPc4Yv3nrQ"
+    },
+    {
+        "title":  "02 抢最后一件：为什么选择条件 UPDATE",
+        "key":  "existing-02",
+        "node":  "PTjLwPhoAizQfWkHJdDcHXJFnK0",
+        "doc":  "YBvnd8GNJovOCyxO8oVcVtVvnzX"
+    },
+    {
+        "title":  "03 下单失败：为什么整单回滚与等待 5 秒",
+        "key":  "existing-03",
+        "node":  "AOvlwoTENiyvgok63ivct7xGnWe",
+        "doc":  "JRKodKDfCotBDPx1acucZpsXnQg"
+    },
+    {
+        "title":  "04 从付款到关闭：资格生命周期与 MQ 的业务价值",
+        "key":  "existing-04",
+        "node":  "HDK7wuA36iLRG3k511lca7rInvb",
+        "doc":  "T5Asd41r4oDZWaxmxJIcJSNQnq4"
+    },
+    {
+        "title":  "05 响应丢失：为什么保留原购买意图",
+        "key":  "existing-05",
+        "node":  "R1Duwgh8bimIyQkdUrWcDpNAnze",
+        "doc":  "SWHAdsblMo3gYOx6f8AcimY5n2g"
+    },
+    {
+        "title":  "06 证据与演进：哪些结论可以向面试官讲",
+        "key":  "existing-06",
+        "node":  "LaqzwVXSHiZsjzkPTuccYlt4n5g",
+        "doc":  "Gm0Bdx3eLokjdpxtMqKcILw3n4f"
+    }
+]

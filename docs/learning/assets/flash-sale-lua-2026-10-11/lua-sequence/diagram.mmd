@@ -1,0 +1,60 @@
+sequenceDiagram
+    participant U as 顾客 / 浏览器
+    participant A as 秒杀 API
+    participant R as Redis
+    participant M as MySQL
+
+    Note over U,M: 本图启用 Lua 准入；默认关闭时跳过 Redis，沿用原 MySQL 下单路径
+    U->>A: POST 秒杀：活动项 + 地址 + 原 Idempotency-Key
+    A->>A: Session / CSRF → 参数 → Key 格式校验
+    Note over U,A: 所有通过校验的 POST 都先准入，已提交订单的原 Key 确认也一样
+    A->>R: 一次 EVAL：申请全秒杀入口共享预算
+    Note over A,R: 首次 SET 计数 1 + PX；随后判断额度并 INCR<br/>固定窗口不续期，满额不递增；预算是尝试，不是库存或购买资格
+
+    alt 明确获准进入订单处理
+        R-->>A: admitted=1，计数与 TTL 合法
+        A->>M: 事务外读取原会话值，临时设置锁等待 5 秒
+        Note over A,M: 设置失败则丢弃连接，不继续下单；下方展示设置成功后的事务
+        A->>M: BEGIN；User FOR UPDATE → 查本用户、范围、Key
+        alt 已有订单且请求指纹相同
+            M-->>A: 已提交的原订单与快照
+            A->>M: COMMIT：不再占资格或库存
+            A->>A: 保留原订单结果，准备返回 200
+        else 原 Key 已用于不同活动项或地址
+            A->>M: ROLLBACK，释放锁
+            A->>A: 保留 409 idempotency_conflict
+        else 全新购买意图
+            Note over A,M: 任何业务步骤失败立即回滚，后续步骤不执行
+            A->>M: Address FOR UPDATE；校验归属、活动与上架、一人一单
+            A->>M: 写订单与快照 → 先取得购买资格（唯一约束）
+            A->>M: 条件 UPDATE：仅 available_stock ≥ 1 才预占<br/>可售 -1，预留 +1
+            alt 条件更新成功且其余写入成功
+                A->>M: 写 Reservation 与 RESERVE 流水
+                A->>M: COMMIT：订单、资格、预占、流水一起生效
+                A->>A: 保留新订单结果，准备返回 201
+            else 库存不足、锁竞争或其他业务步骤失败
+                A->>M: ROLLBACK：本次全部写入撤销
+                A->>A: 保留对应错误；已知锁竞争映射 409 busy
+            end
+        end
+        A->>M: 事务外恢复同一物理连接的原会话值
+        Note over A,M: 恢复失败则丢弃连接，不掩盖已提交订单；5 秒不是总 HTTP 期限<br/>业务失败也不退准入次数；支付与最终核销仍走既有支付流程
+        A-->>U: 返回 200 原单 / 201 新单 / 对应错误
+    else 窗口额度已满
+        R-->>A: admitted=0，计数不增加，原期限不改变
+        A-->>U: 429 + Retry-After：保留原购买意图
+    else Redis 失败、损坏状态或返回结果无法确认
+        R-xA: 超时 / 不可解释结果
+        A-->>U: 503 + Retry-After：保留原购买意图
+        Note over A,R: EVAL 可能已成功消耗预算而响应丢失<br/>应用不重试 EVAL，不退还未知预算
+    end
+
+    Note over A,M: 429 / 准入 503 均不进入等待适配与下单事务<br/>Session 认证仍可能访问数据库，不能称整个 HTTP 请求零 SQL
+    Note over U,M: 429 / 503 不证明旧订单不存在；201 响应丢失也不证明提交失败
+    U->>A: 窗口 / 依赖恢复后，原用户 + 原 Key + 原活动项与地址重试
+    A->>R: 再次申请准入（旧 Key 没有绕过通道）
+    R-->>A: 只有明确放行才继续；否则仍返回 429 / 503
+    A->>M: 获准后再次执行上方 MySQL 事务，按 Key 与指纹确认
+    M-->>A: 已有同意图返回原单；尚未建单则执行全部新单规则
+    A-->>U: 已提交原单 200；合法新单 201；业务失败返回对应错误
+    Note over U,M: 始终保留原意图，不为消除未知结果创建新 Key；Redis 不扣库存

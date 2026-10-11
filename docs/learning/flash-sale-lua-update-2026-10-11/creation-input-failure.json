@@ -1,0 +1,8 @@
+{
+  "stage": "first node-create argument parsing",
+  "result": "failed before execution",
+  "message": "positional arguments are not supported (got user); pass values via flags",
+  "cause": "PowerShell XML adapter exposed plain title as a string, so its InnerText property was empty",
+  "repair": "SelectSingleNode('/doc/title').InnerText and explicit nonempty title guard",
+  "side_effect_check": "create mode re-reads children and compares all original node identities before any new creation"
+}

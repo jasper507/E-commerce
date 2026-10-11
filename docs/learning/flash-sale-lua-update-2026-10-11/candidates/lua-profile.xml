@@ -1,0 +1,122 @@
+<title>07 Lua原子准入：为什么先保护进入事务的尝试</title>
+<p>2026-10-11整理。本文服务于项目面试：能够从“库存正确但数据库仍被大量尝试占用”推导入口保护，解释原子计数、响应未知和原订单确认之间的取舍。适用源码快照为<b>96904bcc47562c51a1e4b9cc731f8ed5d40fdb75</b>；业务实测来自2026-10-09的Phase 6F，本轮只整理文档与图。</p>
+<p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/B49NwtiePiCqqFkz61kc4ac9n79">秒杀当前总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/docs/learning/README.md">学习导航</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/flash-sale-lua-knowledge-base-update.md">本轮文档验证</a> · <a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/docs/verification/phase-6f-flash-sale-admission.md">6F历史业务验证</a></p>
+<h1>本专题前后变化</h1>
+<p><b>开始前：</b> MySQL已用事务、条件UPDATE、限购资格与幂等保护订单和库存；浏览器也能保存原购买意图。但一个格式正确的秒杀POST仍可能进入会话等待设置、用户行锁、订单查询和后续事务。</p>
+<p><b>这次增加：</b> 在这些下单操作之前，Redis Lua原子申请一个入口共享窗口的尝试预算。明确放行才继续MySQL；额度用完返回429，结果不能确认返回503。所有有效POST都经过该门槛，包括已经提交过订单的原Key确认。</p>
+<p><b>当前边界：</b> 实现默认关闭，只允许本地开发或测试环境启用。它没有预扣Redis库存，也没有替代MySQL业务事务；隔离测试证明拒绝能减少进入订单事务的次数，没有证明生产安全容量、严格并发上限或购买速度提升。ES已另外完成商品搜索隔离原型、读入口和索引切换，不能继续把历史6F指南中的“ES尚未实现”当作项目现状。</p>
+<h1>从一次抢购失败看两个不同的问题</h1>
+<p>假设活动商品售价89元，MySQL还有24件可售库存，24名顾客都想买一件。条件UPDATE能保证库存不足时无法继续预占，数据库约束和事务还能防止重复订单、重复资格和半套业务事实。这些机制回答的是：<b>进入数据库的尝试，是否会把事实写错？</b></p>
+<p>它们没有回答：<b>是否应该让每个尝试都进入数据库？</b> 一次最终没买成的请求，也可能已经建立数据库连接、设置会话值、等待用户行锁、查询旧订单，甚至创建若干将在回滚时撤销的记录。库存最后保持正确，不代表这些工作没有成本。</p>
+<p>因此，本项目把两种职责分开。MySQL是Source of Truth（事实来源），负责是否存在订单、库存能否预占、付款后是否核销；Lua Admission（准入）负责这段时间允许多少次尝试到达下单处理。通过准入只意味着“允许继续检查”，并不意味着买到了商品。</p>
+<p>例如允许4次尝试、库存24件：本窗口可以只让4人进入MySQL，另外20人暂时收到429。4个放行者也可能遇到地址不存在、活动结束、库存不足或限购冲突。这里的“名额”是计算资源预算，与购买资格、库存数量都是不同的状态。</p>
+<h1>启用后，一次请求完整怎样运行</h1>
+<p>先区分运行模式：默认关闭时，准入函数直接返回，不创建Redis客户端，继续原MySQL下单链路。下面的顺序只描述<b>已在允许环境显式启用准入</b>的情况，不表示当前部署已开启。</p>
+<ol><li>浏览器先保存完整购买意图：登录用户、活动项ID、地址ID、<b>Idempotency-Key</b>。幂等键用来在重试时确认同一次购买，不能因一次429、503或响应丢失就换掉。</li><li>请求到达<b>POST /api/flash-sales/orders/</b>，通过Session身份、CSRF安全校验。CSRF用于防止其他网站借登录状态伪造修改请求。随后验证请求字段及Key格式；这些校验失败不会消耗准入预算。</li><li>入口调用Lua申请预算。全入口共用同一个Redis Key；目前不会为每个顾客或活动项分配独立额度。</li><li>收到可解释的放行结果后，才调用HTTP等待适配器。它在业务事务外临时把当前MySQL连接的锁等待设为5秒，然后调用原秒杀事务。</li><li>原事务锁用户行，先查同用户、秒杀作用域、同Key的已有订单。同参直接确认原订单；异参409。没有旧单才继续锁本人地址、验证活动与商品、检查限购、保存快照和资格、条件UPDATE预占库存、保存预占与流水。全部共同提交或回滚。</li><li>新建订单返回201，确认旧订单返回200；业务失败按原规则返回。事务结束后恢复同一物理连接的等待设置，恢复失败则丢弃连接并保留原业务结果。后续Mock支付仍由既有支付模块处理，Lua不参与付款或库存核销。</li></ol>
+<p>若第3步返回429或503，第4、5步都不会发生。准入时尚未取得用户行锁或库存行锁，应用也不会持着这些业务锁等待Redis。5秒是数据库锁等待政策，不是HTTP总期限；Lua预算同样不是总请求期限。</p>
+<whiteboard type="blank"></whiteboard>
+<p><a href="https://github.com/jasper507/E-commerce/blob/main/docs/learning/assets/flash-sale-lua-2026-10-11/lua-sequence/diagram.mmd">可编辑时序图源码</a>。图中的429/503分支止于准入，放行分支才进入MySQL；默认关闭的请求直接复用原下单流程。等价文字即上述六步。</p>
+<p>入口这段代码的意义在于<b>先后位置</b>，不是新建了另一份下单业务：</p>
+<pre lang="python"><code>        try:
+            admit_flash_sale_attempt()
+            order, created = create_flash_sale_order_for_http(
+                user=request.user,
+                idempotency_key=idempotency_key,
+                **serializer.validated_data,
+            )
+        except FlashSaleAdmissionError as error:
+            return Response(
+                {&quot;code&quot;: error.code, &quot;detail&quot;: error.detail},
+                status=error.http_status,
+                headers={&quot;Retry-After&quot;: str(error.retry_after)},
+            )</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/backend/apps/promotions/views.py#L66-L78">固定源码：入口准入与异常响应</a>。摘录之前已完成安全和输入校验；之后仍有业务异常响应，以及201/200订单序列化。把准入挪到业务事务内部，会让拒绝者也付出取锁等成本；挪到身份与格式校验之前，又会让无效输入消耗当前业务预算。</p>
+<h1>Lua怎样守住共享额度和窗口期限</h1>
+<p>Fixed Window（固定时长窗口）在这里指从首个请求建立Key开始计时，经过设定时长后过期；不是按自然整秒切段。TTL是Key剩余存活时间。本项目默认示例为20次/1000毫秒，历史对照测试改为4次/10000毫秒，以保证整批请求处在同一窗口。</p>
+<p>假设限额4、窗口1000毫秒，首个请求在12:00:00.200建立Key，则窗口在约12:00:01.200到期。前4次依次得到计数1、2、3、4，第5次看到4就拒绝。它不会把计数加成5，也不会把期限重新延长到“第5次到来后再等一秒”。</p>
+<p>关键脚本如下，前面还有对<b>limit</b>与<b>window_ms</b>的正整数及范围校验：</p>
+<pre lang="lua"><code>local raw = redis.call(&#x27;GET&#x27;, KEYS[1])
+if not raw then
+    redis.call(&#x27;SET&#x27;, KEYS[1], &#x27;1&#x27;, &#x27;PX&#x27;, window_ms)
+    return {1, 1, window_ms}
+end
+
+local current = tonumber(raw)
+local ttl = redis.call(&#x27;PTTL&#x27;, KEYS[1])
+-- Refuse corrupt/persistent counters; do not silently reset their budget.
+if not current or current &lt; 1 or current &gt; 2147483647 or current % 1 ~= 0
+    or tostring(current) ~= raw or ttl &lt; 0 then
+    return {-1, 0, 0}
+end
+if current &gt;= limit then
+    return {0, current, ttl}
+end
+
+current = redis.call(&#x27;INCR&#x27;, KEYS[1])
+return {1, current, ttl}</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/backend/apps/promotions/admission.lua#L9-L27">固定源码：读取、校验、首次SET和后续INCR</a>。返回值依次表示放行标记、当前计数、剩余毫秒；例如<b>{1, 3, 600}</b>表示成功使用第三个尝试名额，本窗口还剩约600毫秒。</p>
+<p><b>为什么不能在Python里分别GET、判断、INCR？</b> 假设计数已经是3，A和B都先GET得到3，各自判断“3小于4”，随后都INCR并放行，就进入了5次尝试。每条Redis命令自身执行不会被拆开，并不意味着三条命令组合起来没有交错。Lua把读取、条件判断和写入放进一次服务端执行；脚本运行期间其他命令不能插入这组操作，因此B只能看见A执行后的4，并被拒绝。<a href="https://redis.io/docs/latest/develop/programmability/eval-intro/">Redis官方脚本原子执行说明</a></p>
+<p><b>为什么首次SET一定带PX？</b> 如果分两条命令先保存计数，再设置期限，客户端可能在两步之间中断，留下一个永不过期的计数。<b>SET ... PX</b>一次创建数值与期限。后续<b>INCR</b>改变值并保留期限；拒绝分支不执行续期命令。因此持续的拒绝不会把下一轮无限推迟。<a href="https://redis.io/docs/latest/commands/expire/">Redis官方过期语义</a></p>
+<p>损坏状态也不能自行“归零继续”：计数不是合法正整数、没有期限、Key类型错误或返回结构无法解释时，应用选择503。重置会凭空扩大当期预算，掩盖需要调查的状态。脚本的原子执行表示其他请求不能插入，并不等同于数据库事务报错时自动撤销此前全部写入；这里先校验再做短写入，不依赖Lua错误回滚。</p>
+<p>全部实例还必须指向同一Redis URL和Key前缀。只共享同一个脚本文件，却使用不同Key或不同Redis，各自都能放行4次，入口总量仍会放大。当前全入口Key也覆盖格式合法但实际不存在的活动项ID：无需先查MySQL确定活动才做准入；这些业务无效尝试获准后仍会消耗预算。</p>
+<h1>为什么旧订单确认也可能先收到429或503</h1>
+<p>本项目把幂等查询留在MySQL业务事务里，没有在Lua之前新增“先查旧订单”的分支。这是拥有者明确选择的政策：<b>所有有效POST先申请预算</b>。HTTP结果如下：</p>
+<table><thead><tr><th><p>准入或业务结果</p></th><th><p>后端行为</p></th><th><p>顾客应怎样继续</p></th></tr></thead><tbody><tr><td><p>明确放行、新Key新订单</p></td><td><p>按原事务提交，返回201</p></td><td><p>进入既有付款流程</p></td></tr><tr><td><p>明确放行、原Key同参</p></td><td><p>确认已提交原订单，返回200</p></td><td><p>继续该订单，不再创建一次</p></td></tr><tr><td><p>明确放行、原Key异参</p></td><td><p>幂等冲突409</p></td><td><p>核对原购买意图</p></td></tr><tr><td><p>窗口满额</p></td><td><p>429，不进入HTTP等待适配和订单事务</p></td><td><p>等待后用原Key、原参数确认</p></td></tr><tr><td><p>Redis异常或结果无法确认</p></td><td><p>503，不进入下单处理</p></td><td><p>保留原意图，恢复后再确认</p></td></tr></tbody></table>
+<p>例如顾客A已经提交订单#1001，但201响应在返回浏览器途中丢失。浏览器仍保留Key K1、活动项I1、地址A1。A再点“确认原购买”，恰好窗口满额：先收到429。<b>429没有查过旧订单，不能证明订单#1001不存在。</b> 窗口恢复后继续K1/I1/A1，MySQL发现旧事实并返回同一订单200，库存不会再次预占。</p>
+<p>若A把地址换成A2但仍使用K1，满额时也先429；恢复后才得到<b>idempotency_conflict</b>。这说明当前入口拒绝优先于旧单判断；它没有改变旧单的幂等规则，只推迟了到达该规则的时间。</p>
+<p>“原Key先查MySQL，找到就绕过限流”是有意义的替代方案。它改善订单确认体验，但每次确认仍访问数据库，攻击者还能不断发送Key触发查询；需额外设计读取预算和权限。本项目优先截住所有被拒请求的下单处理，接受原单确认暂时等待，不能把这个取舍说成幂等失效。</p>
+<h1>Redis响应未知，为什么不立即重试或退还</h1>
+<p>准入客户端按进程缓存，连接和读取响应超时各为0.1秒，该客户端连接池最多16个连接，自动重试为0；16不是所有实例共享的业务并发上限，这些设置也不是整个HTTP请求100毫秒结束的承诺。应用只接受结构、整数类型、计数和期限都能解释的返回。</p>
+<pre lang="python"><code>def admit_flash_sale_attempt():
+    if not settings.FLASH_SALE_ADMISSION_ENABLED:
+        return
+
+    limit = settings.FLASH_SALE_ADMISSION_LIMIT
+    window_ms = settings.FLASH_SALE_ADMISSION_WINDOW_MS
+    try:
+        result = get_admission_redis_client().eval(
+            ADMISSION_SCRIPT, 1, admission_key(), limit, window_ms,
+        )
+    except RedisError as error:
+        # A timeout may follow a consumed permit; do not retry or refund an unknown result.
+        logger.warning(&quot;Flash-sale admission failed: %s&quot;, type(error).__name__)
+        raise _unavailable() from error</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/backend/apps/promotions/admission.py#L52-L65">固定源码：关闭直接返回，以及EVAL异常处理</a>。后续校验放行标记、计数和TTL；只有<b>admitted == 1</b>且计数在额度内才继续。满额429的<b>Retry-After</b>按剩余毫秒向上取整为秒，最小1秒；未知503默认同样提示1秒。这是重试提示，不是客户端已经实现倒计时或该时刻一定恢复的保证。</p>
+<p>一个关键交错是：Redis已执行脚本，计数从0变为1，随后响应丢失。应用只看见超时，无法区分“完全没执行”和“执行过但没收到结果”。立即再EVAL可能把同一次尝试记为2；盲目DECR退还则可能扣掉另一请求的预算，还可能作用到已经进入下一窗口的新Key。</p>
+<p>所以当前选择Fail Closed（不能确认就拒绝继续）：本次返回503，不进入MySQL、不自动重试脚本、不退还未知名额。恢复后用户再发原Key，重新申请一次尝试；MySQL决定是否已有原订单。被保守浪费的预算最多等该Key过期清除，代价是这段时间少放行了一些请求。</p>
+<p>业务失败也不退预算。例如地址属于别人，准入后MySQL返回404；那次连接、查询与事务工作确实发生过，算一次尝试。若无效请求都退还，攻击者可以持续用无效地址访问数据库，却永远不耗尽保护预算。</p>
+<p>商品缓存故障时回源MySQL与这里的503并不矛盾：商品缓存是读取加速，回源让读业务继续；准入是下单保护，依赖故障就放行会撤掉保护。是否接受入口不可用，需要按业务目标明确选，而不是统一套“Redis挂了都回源”。</p>
+<h1>放行以后，MySQL怎样继续保证事实正确</h1>
+<p>Lua没有知道库存数、订单号或价格；它也不把“预算4”写成“库存4”。真正的单SKU预占仍在原订单事务内执行：</p>
+<pre lang="python"><code>    try:
+        updated = Inventory.objects.filter(sku=sku, available_stock__gte=1).update(
+            available_stock=F(&quot;available_stock&quot;) - 1,
+            reserved_stock=F(&quot;reserved_stock&quot;) + 1,
+        )
+    except DatabaseError as exc:
+        # 仅将已知库存锁竞争转换为繁忙，不吞掉连接等其他数据库故障。
+        if not exc.args or exc.args[0] not in (1205, 1213):
+            raise
+        raise OrderRuleError(&quot;stock_busy&quot;, &quot;库存正在更新，请重试原请求。&quot;, 409) from exc
+    if updated != 1:
+        raise OrderRuleError(&quot;insufficient_stock&quot;, &quot;活动商品库存不足。&quot;, 409)
+    return Inventory.objects.get(sku=sku)</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/backend/apps/promotions/services.py#L39-L51">固定源码：库存条件UPDATE与失败边界</a>。前面已经在同一事务保存订单、快照和购买资格；后面还要保存预占与RESERVE流水。更新1行才能继续；0行表示未满足库存条件；1205/1213是已知锁竞争，转<b>stock_busy</b>并退出整单事务，其他数据库错误上抛。预算既不能替代这个原子条件，也不能保证一次放行必定提交。</p>
+<p>RedisKey丢失会开启新预算，可能使进入数据库的尝试多于预期，但不能凭此修改MySQL的已有订单、唯一约束和库存事实。这是保护层故障与业务正确性故障的区别；不能从“仍不超卖”推出“Key丢失对数据库负载无影响”。</p>
+<h1>真实证据证明了什么</h1>
+<p>以下都是<b>2026-10-09历史隔离实测</b>，没有在本次知识库更新中重新运行。环境为MySQL8.4.10、Redis8.10.1与Windows本地Python；pytest建立并销毁<b>test_project_one</b>，只操作独立Redis随机测试Key。<a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/docs/verification/phase-6f-flash-sale-admission.json">原始结构化数据</a>与<a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/docs/verification/phase-6f-flash-sale-admission-regression.raw.txt">最终原始输出</a>可相互核对。</p>
+<p>第一组是24个独立Redis客户端用Barrier同时竞争额度4：实际4次放行、20次拒绝，放行计数为1/2/3/4，最终计数4且保留期限。这证明脚本在该真实并发条件下没有多放名额。拒绝不改变绝对过期时间、自然过期后重新开始窗口也已验证。</p>
+<p>第二组是<b>8个工作线程处理24个API请求</b>，不是24个真实HTTP连接同时到达。24名合成顾客拥有独立地址和Key，共用活动SKU、库存24、价格89元；开启组限额4、窗口10秒：</p>
+<table><thead><tr><th><p>观察</p></th><th><p>关闭准入</p></th><th><p>开启准入</p></th></tr></thead><tbody><tr><td><p>实际订单事务BEGIN / 创建订单</p></td><td><p>24 / 24</p></td><td><p>4 / 4</p></td></tr><tr><td><p>429拒绝</p></td><td><p>0</p></td><td><p>20</p></td></tr><tr><td><p>捕获的请求内SQL总数</p></td><td><p>480</p></td><td><p>80</p></td></tr><tr><td><p>最终可售 / 预占库存</p></td><td><p>0 / 24</p></td><td><p>20 / 4</p></td></tr><tr><td><p>订单、明细、地址快照、资格、预占、RESERVE流水</p></td><td><p>各24</p></td><td><p>各4</p></td></tr></tbody></table>
+<p>20个429各为0下单SQL、0 BEGIN，说明保护确实发生在订单处理之前。但测试用<b>force_authenticate</b>固定身份，SQL捕获在连接建立后开始，<b>这不是完整Session HTTP请求零数据库访问的证明</b>。实验没有付款核销，预占数量也不能写成已付款商品数。</p>
+<p>两组成功订单数不同，因此SQL从480到80主要反映20个请求被拒绝；不能把批次耗时297/125毫秒相除，宣称完成相同业务更快或吞吐提高。阈值4与默认20都不是从生产容量得出的安全值。</p>
+<p>故障证据包括损坏计数/无TTL/错误类型503、真实非监听端口连接失败，以及<b>真实EVAL成功后注入TimeoutError</b>。后者确实把计数增加到1，但应用仅执行一次EVAL、未进入MySQL；这是确定性响应丢失注入，不能包装成真实网络迟缓或Redis主从故障。旧Key在429/503后恢复同单200、异参409、无重复库存效果也已验证。</p>
+<p>最终相关回归为53项通过、325个子场景通过。首轮测试夹具错误的失败记录保留，不能算作成功。429/503时浏览器保持原意图仅有当片静态核对，没有为Lua补一次真实浏览器端到端；也尚未显示<b>Retry-After</b>倒计时。</p>
+<h1>如果重新做，会改什么，什么时候值得改</h1>
+<p>我会保留“MySQL最终事实＋事务前保护＋未知不放行”的责任划分，也保留原购买意图。当前方案状态少，能直接用并发额度、BEGIN次数和库存终值解释效果，适合这个本地学习项目；重新做不应仅为多写一个算法名就推翻它。</p>
+<p>真正需要评估的是以下业务代价，均为<b>候选改变，尚未实现或实测</b>：</p>
+<table><thead><tr><th><p>出现的实际痛点</p></th><th><p>候选改变</p></th><th><p>新成本与采用门槛</p></th></tr></thead><tbody><tr><td><p>原单确认频繁被新购买流量挡住</p></td><td><p>为本人原订单确认提供单独受限的读取路径，而非无条件绕过</p></td><td><p>增加权限、查询与独立预算；要证明改善确认体验后数据库查询仍受控</p></td></tr><tr><td><p>窗口边界集中放行两批请求</p></td><td><p>评估令牌桶或滑动窗口</p></td><td><p>规则与状态更复杂；需相同业务产出下测突发、等待和SQL压力，不能预写“更快”</p></td></tr><tr><td><p>少数顾客耗尽全入口额度</p></td><td><p>全局预算之外增加每用户限频</p></td><td><p>更多Key、组合准入和错误处理；需真实公平性需求，不能保证反机器人</p></td></tr><tr><td><p>需要限制仍在处理的事务数量</p></td><td><p>单独设计领取/释放/租约回收的并发槽</p></td><td><p>正常结束要释放，崩溃需回收；固定窗口计数不能改名后冒充严格并发槽</p></td></tr></tbody></table>
+<p>当前窗口末尾放行4次，下一窗口开头又放行4次，短时间内可连着出现两批；若上一批事务还没完成，两批也能同时在途。因此本实现限制的是窗口内的尝试数，不能保证平滑流量或同时最多4个事务。</p>
+<p>进程内计数虽更简单，却只能限制本进程，多进程额度会叠加；Python分开GET/INCR会有交错，加入WATCH重试或其他协调又引入额外冲突流程。当前短Lua让共享判断一次完成，代价是热点Key和Redis依赖。直接EVAL还会每次传输脚本；EVALSHA可减少这部分传输，但须处理脚本缓存失效和加载，本项目没有测出这是瓶颈，不把它排成必做优化。</p>
+<p>Redis库存预扣是另一项更大的设计改变，会让库存状态跨两套存储，需要考虑补偿、过期订单和对账。当前目标只是减少进入MySQL的尝试，既有证据没有要求引入这项复杂度。</p>
+<p>本专题的最小充分证据已经具备：原子额度不多放、被拒请求不进入订单事务、未知结果不自动重试、恢复后原Key不重复业务效果。生产阈值、多进程部署、Key驱逐/重启/主从切换、严格在途和公平性仍未验证；本轮收束在解释和知识库更新，不继续追加算法矩阵。</p>

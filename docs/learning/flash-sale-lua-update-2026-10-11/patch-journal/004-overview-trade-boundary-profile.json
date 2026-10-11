@@ -1,0 +1,41 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "assessment":  {
+                                    "status":  "passed"
+                                },
+                 "profile":  {
+                                 "word_count":  219,
+                                 "char_count":  335,
+                                 "block_count":  38,
+                                 "blocks":  [
+                                                {
+                                                    "type":  "p",
+                                                    "count":  28,
+                                                    "ratio":  0.736842
+                                                },
+                                                {
+                                                    "type":  "tr",
+                                                    "count":  7,
+                                                    "ratio":  0.184211
+                                                },
+                                                {
+                                                    "type":  "table",
+                                                    "count":  1,
+                                                    "ratio":  0.026316
+                                                },
+                                                {
+                                                    "type":  "tbody",
+                                                    "count":  1,
+                                                    "ratio":  0.026316
+                                                },
+                                                {
+                                                    "type":  "thead",
+                                                    "count":  1,
+                                                    "ratio":  0.026316
+                                                }
+                                            ]
+                             }
+             }
+}

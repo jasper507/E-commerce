@@ -1,0 +1,1 @@
+<p>MySQL策略选择所需的历史证据已足够，原对照日期和数据保留。后续6F已经加入默认关闭的Lua前置准入，并在隔离Redis/MySQL验证它限制进入事务的尝试；它不预扣库存、不改变这里的条件UPDATE，也不解决跨存储事务。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/YEZhw0ya7iQZUGkLHAMcOkFfnQf">Lua机制与代价</a>；<a href="https://github.com/jasper507/E-commerce/blob/96904bcc47562c51a1e4b9cc731f8ed5d40fdb75/docs/verification/phase-6f-flash-sale-admission.md">6F证据</a>。</p>

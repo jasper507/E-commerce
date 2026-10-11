@@ -1,0 +1,8 @@
+{
+  "key": "existing-01",
+  "status": "passed",
+  "revision": 4,
+  "boards_preserved": 1,
+  "all_changes_match_plan": true,
+  "old_core_code_preserved": true
+}

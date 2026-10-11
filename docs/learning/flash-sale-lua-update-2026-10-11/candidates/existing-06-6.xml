@@ -1,0 +1,1 @@
+<p>商品搜索已有MySQL名称/描述完整包含基线，ES可重建索引、候选ID回读MySQL当前可见性/摘要，以及手动别名切换与结果未知回读。独立ES接口默认关闭、仅指定测试来源，前端仍使用原MySQL列表；没有自动同步。它服务商品发现，不参与秒杀资格或库存扣减。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/KxWQwuGFsiqO3Wk4m7TcZxXBnih">搜索当前知识库</a>。</p>

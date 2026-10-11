@@ -1,0 +1,263 @@
+[
+  {
+    "title": "秒杀与库存并发",
+    "key": "overview",
+    "node": "B49NwtiePiCqqFkz61kc4ac9n79",
+    "doc": "MVBrdxZAPoDcPzxQnTPctXXgn3g",
+    "base_revision": 3,
+    "operations": [
+      {
+        "command": "block_replace",
+        "block": "doxcnLwRH4E9VCrFQAX0Uz9YWvh",
+        "label": "current-status",
+        "path": "candidates/overview-0.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcn99CuPh15TrUfefDeCtwxIg",
+        "label": "reader",
+        "path": "candidates/overview-1.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnC1Y4cp6PC4wubeyOeRKzTg",
+        "label": "legacy-board-context",
+        "path": "candidates/overview-2.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnGcYtOe7R5dP1dTKnIHLXoe",
+        "label": "trade-boundary",
+        "path": "candidates/overview-3.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnvheeQZNUymlDGzmmj09UOd",
+        "label": "responsibilities",
+        "path": "candidates/overview-4.xml"
+      },
+      {
+        "command": "block_insert_after",
+        "block": "doxcn5gkFM2T7efCOGA22yKzFkb",
+        "label": "lua-flow-and-redesign",
+        "path": "candidates/overview-5.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnEzu4WHMb679XLlq6iw9myb",
+        "label": "cross-links",
+        "path": "candidates/overview-6.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnHzgzGnN2wOFNkISzbrQi3g",
+        "label": "reading-map",
+        "path": "candidates/overview-7.xml"
+      },
+      {
+        "command": "block_insert_after",
+        "block": "doxcnQpYMwalY90Dmvkxrf7H9pd",
+        "label": "navigation-item",
+        "path": "candidates/overview-8.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnhz8TnhHYR13PqqgBzfLOjf",
+        "label": "maintenance",
+        "path": "candidates/overview-9.xml"
+      }
+    ],
+    "protected_boards": [
+      {
+        "id": "doxcnRmlcveXGt77QNl6D0RS0mc",
+        "token": "FvITwj80uhEW9EbMp19ckuurn5d"
+      }
+    ]
+  },
+  {
+    "title": "01 重复下单：幂等与限购为什么分开",
+    "key": "existing-01",
+    "node": "LoLFwPMLvi8WADkTsQDc3qfdnMd",
+    "doc": "SANldx7z2osqJyxYQTPc4Yv3nrQ",
+    "base_revision": 3,
+    "operations": [
+      {
+        "command": "block_insert_after",
+        "block": "doxcnYf0tihwzvqxoXPU3qqVjCg",
+        "label": "outer-admission-context",
+        "path": "candidates/existing-01-0.xml"
+      }
+    ],
+    "protected_boards": [
+      {
+        "id": "doxcn7uSAquMk2RmxBJpxpF7yyb",
+        "token": "CuDVwBUJmhGEx4bnei9cszjdnNg"
+      }
+    ]
+  },
+  {
+    "title": "02 抢最后一件：为什么选择条件 UPDATE",
+    "key": "existing-02",
+    "node": "PTjLwPhoAizQfWkHJdDcHXJFnK0",
+    "doc": "YBvnd8GNJovOCyxO8oVcVtVvnzX",
+    "base_revision": 3,
+    "operations": [
+      {
+        "command": "block_replace",
+        "block": "doxcnZsDhiQcnNkCP9eVePbUldc",
+        "label": "later-lua-evidence",
+        "path": "candidates/existing-02-0.xml"
+      }
+    ],
+    "protected_boards": [
+      {
+        "id": "doxcnXOb6e7X5Z46bnN3wQwgKbg",
+        "token": "NQtBwiN9khOJufb2uiccYRs9nhe"
+      }
+    ]
+  },
+  {
+    "title": "03 下单失败：为什么整单回滚与等待 5 秒",
+    "key": "existing-03",
+    "node": "AOvlwoTENiyvgok63ivct7xGnWe",
+    "doc": "JRKodKDfCotBDPx1acucZpsXnQg",
+    "base_revision": 3,
+    "operations": [
+      {
+        "command": "block_replace",
+        "block": "doxcnn9oeRUEOxpGFnD6uj9Vubb",
+        "label": "wait-current-boundary",
+        "path": "candidates/existing-03-0.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnSJWKi3uWEbBEAhxkWlcgbd",
+        "label": "retry-policy",
+        "path": "candidates/existing-03-1.xml"
+      }
+    ],
+    "protected_boards": [
+      {
+        "id": "doxcnLnnwkrb1tf6mgjmLDx6Xxg",
+        "token": "O1DFwpelTh22uOb98ttcdVkLnye"
+      }
+    ]
+  },
+  {
+    "title": "04 从付款到关闭：资格生命周期与 MQ 的业务价值",
+    "key": "existing-04",
+    "node": "HDK7wuA36iLRG3k511lca7rInvb",
+    "doc": "T5Asd41r4oDZWaxmxJIcJSNQnq4",
+    "base_revision": 3,
+    "operations": [],
+    "protected_boards": [
+      {
+        "id": "doxcn61RlIsGPCa6ZUzWYJ3RUcd",
+        "token": "DmzxwwTfmh47dvbxfa9ceryvnOf"
+      }
+    ]
+  },
+  {
+    "title": "05 响应丢失：为什么保留原购买意图",
+    "key": "existing-05",
+    "node": "R1Duwgh8bimIyQkdUrWcDpNAnze",
+    "doc": "SWHAdsblMo3gYOx6f8AcimY5n2g",
+    "base_revision": 3,
+    "operations": [
+      {
+        "command": "block_replace",
+        "block": "doxcnJJbt7DXmQgJrDmob67AEwc",
+        "label": "replay-vs-admission",
+        "path": "candidates/existing-05-0.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnIOPU6HRzS9K4dWBXxsEVHf",
+        "label": "429-503-intent",
+        "path": "candidates/existing-05-1.xml"
+      },
+      {
+        "command": "block_insert_after",
+        "block": "doxcnYmxCzFqeJQzEPqZqCYb4zf",
+        "label": "browser-evidence-boundary",
+        "path": "candidates/existing-05-2.xml"
+      }
+    ],
+    "protected_boards": [
+      {
+        "id": "doxcnOcBghDfxprEoU8uVFkekXf",
+        "token": "H7Lpwws1IhIJFpbH9QScyTD0nZc"
+      }
+    ]
+  },
+  {
+    "title": "06 证据与演进：哪些结论可以向面试官讲",
+    "key": "existing-06",
+    "node": "LaqzwVXSHiZsjzkPTuccYlt4n5g",
+    "doc": "Gm0Bdx3eLokjdpxtMqKcILw3n4f",
+    "base_revision": 4,
+    "operations": [
+      {
+        "command": "block_replace",
+        "block": "doxcnp2WX44EvRTb5XcRztWakub",
+        "label": "current-status",
+        "path": "candidates/existing-06-0.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnVn1cqk4J7q7oCiPCX9zuth",
+        "label": "6f-evidence-row",
+        "path": "candidates/existing-06-1.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcn1UVQEEZT2l2tlzx1HKZM9e",
+        "label": "lua-heading",
+        "path": "candidates/existing-06-2.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcn3tfEBUxm4tPKuYLTpmfYBc",
+        "label": "lua-implemented",
+        "path": "candidates/existing-06-3.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnKxywPCHD9zSJfVCg0vUhsh",
+        "label": "old-key-policy",
+        "path": "candidates/existing-06-4.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcncsS5Y7v2FZCO9vIRqByRHe",
+        "label": "search-heading",
+        "path": "candidates/existing-06-5.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnTU69bFiYvMLg2oE5DGTjIg",
+        "label": "search-current",
+        "path": "candidates/existing-06-6.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnu9CHyDs2SvzOc5OlWa8Rfh",
+        "label": "search-evidence-boundary",
+        "path": "candidates/existing-06-7.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnoo3rgJHuH9CylplAFvudkc",
+        "label": "complete-flow",
+        "path": "candidates/existing-06-8.xml"
+      },
+      {
+        "command": "block_replace",
+        "block": "doxcnMlH9WsWra719wpl1ZTY8Rg",
+        "label": "maintenance",
+        "path": "candidates/existing-06-9.xml"
+      }
+    ],
+    "protected_boards": []
+  }
+]
