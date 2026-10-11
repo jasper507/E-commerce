@@ -1,0 +1,18 @@
+<p>2026-10-11，源码快照 <b>29b7944860080ccddedb2c0f0c060c0a27658376</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh">支付总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/payment-redis-interview-knowledge-base-restructure.md">本轮核对记录</a>。这页解释资金结果、订单关闭和库存周转之间的取舍，特别是“先拿到锁的人为什么不一定能关闭”；历史MySQL实验未重跑。</p>
+<h1>15分钟到了，为什么库存仍可能19/1</h1>
+<p>189元订单下单时预占一件，库存20/0→19/1，Reservation记录15分钟expires_at。到期时间表示订单可以进入关闭资格检查，不承诺时钟一到自动恢复库存，更不代表供应商付款失败。</p>
+<p>假设付款A还CREATED/PENDING/UNKNOWN：供应商可能正在处理或已经成功但我们没收到。此时强行释放库存，另一位顾客可以买走这件，而原顾客稍后付成功，系统就必须处理退款/缺货。项目选择保守策略：先查清原A，不关闭、不释放。因此15分钟后的库存保留是业务取舍，不是“到期扫描坏了”。代价是未确认付款可能占库存更久，当前没有自动对账或释放时限。</p>
+<p>关闭流程先锁Order，再锁已有Attempt并重查未确认状态。核心检查来自<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/ordering/lifecycle_services.py#L40">订单生命周期40行</a>：</p>
+<pre lang="python"><code>attempts = list(
+    PaymentAttempt.objects.select_for_update()
+    .filter(order=order)
+    .order_by(&quot;id&quot;)
+)
+if any(attempt.status in UNRESOLVED_PAYMENT_STATUSES for attempt in attempts):
+    raise OrderLifecycleError(
+        &quot;payment_unresolved&quot;,
+        &quot;支付结果尚未确认，请先查询原支付结果，再关闭订单。&quot;,
+        409,
+    )</code></pre>
+<p>调用者持Order锁且处在atomic事务中，未确认集合为CREATED/PENDING/UNKNOWN。不能只检查订单待付或最早读到的Attempt状态；也不能在事务外先查好，拿锁后直接相信旧结果。</p>
+<h1>到期与付款两个执行者先后怎样决定结果</h1>

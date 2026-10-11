@@ -1,0 +1,4 @@
+# Complete raw results are consolidated into publication-journal.jsonl.
+journal/
+draft_*_folder/
+__pycache__/

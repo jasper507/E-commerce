@@ -1,0 +1,8 @@
+<p>图：默认同步付款的正常路径与网关超时。事务提交、外部等待和未知结果都有独立边界；当前代码细节以本文和下方问题页为准。</p>
+<h1>三类幂等怎样共同保护交易</h1>
+<table><thead><tr><th><p>重复发生在哪里</p></th><th><p>标识与保护</p></th><th><p>单独使用它还不够的原因</p></th></tr></thead><tbody><tr><td><p>顾客重复提交同一次付款</p></td><td><p><b>(user, idempotency_key)</b>唯一、请求指纹、先查旧Key</p></td><td><p>换Key仍可能重复付款，因此还检查原订单已有未确认Attempt</p></td></tr><tr><td><p>同一供应商通知重复到达</p></td><td><p><b>(provider, event_id)</b>唯一，保存原文</p></td><td><p>两个不同事件号仍可能描述同一笔付款成功</p></td></tr><tr><td><p>两个Worker处理同一交易</p></td><td><p>Order/Attempt锁后重查状态、同一业务事务、流水与退款唯一约束</p></td><td><p>不能仅凭“Broker只送一次”或“我先查到待付”决定执行副作用</p></td></tr></tbody></table>
+<p>不同事件号的两名Worker会各锁自己的Event，但竞争同一Order。第一名提交成功后，第二名获得Order锁，重读Attempt SUCCEEDED，跳过库存核销并将自己的合法通知标为已处理。这是业务幂等，详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/I0a5wc7LUibRArkMkUHct0swnvc">重复、乱序与拒绝</a>。</p>
+<p>创建付款的显式锁顺序为User→Order→已有Attempts→秒杀Purchase；事件T1只锁Event；T2为Event→Order→Attempt→Purchase→Reservation（inventory_id/id）→Inventory（pk）；取消/到期从Order开始，不反向取得Event锁。排序降低互相等待的风险，但JOIN、索引、外键约束还可能引入物理锁，不能宣称完整InnoDB锁清单或所有死锁已消除。</p>
+<h1>为什么加入MQ，具体换来了什么</h1>
+<p>默认同步路径在T0保存原文后直接处理：部署简单、调用链短，但HTTP请求承担业务处理等待；进程中断或处理失败依赖原通知重投、查单或人工恢复。RabbitMQ（保存和投递消息的中间件）与Celery（后台运行任务的Worker框架）的可选路径，在T0提交后只发送Inbox内部整数ID，后台复用同一处理器，使收件和业务执行可以分别推进。</p>
+<p>这解决的是<b>通知已经留存后，后台怎样执行和再次取得执行机会</b>。当前真实隔离证据验证了重复投递、有限重试、Broker停机补投、Worker硬中断恢复；没有测得生产吞吐、HTTP性能提升或自动恢复时限，不能直接说“用了MQ支付就快了”。MQ当前只允许本地开发/测试启用；新独立部署的PAYMENT_EVENTS_ASYNC显式关闭。</p>

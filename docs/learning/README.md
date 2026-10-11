@@ -1,8 +1,8 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-11。本页收录42份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。前轮整理见[文档验证记录](../verification/learning-guide-change-overviews.md)，ES原型、读入口与手动切换见搜索专题，本机部署准备与首次运行见部署专题。
+更新：2026-10-11。本页收录55份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。新增的13份是Redis总览/五问题页与支付七问题页。本轮[知识库重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)仅记录文档检查与发布，ES与部署的历史验证仍见各专题。
 
-先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易，再读[支付当前总览](payment-current-overview-study-guide.md)理解付款、库存和故障恢复。两篇按本轮最新要求配图并加入各自的重做选择；[本轮归档核对](../verification/project-payment-overview-knowledge-base-update.md)只记录文档检查，不代表重跑应用。
+先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易和三条技术故事，再读[支付当前总览](payment-current-overview-study-guide.md)、[Redis当前总览](redis-current-overview-study-guide.md)及其问题页。以面试为最高优先级：讲清业务流程、失败交错、设计理由、替代与代价、核心代码、真实证据和“如果重做”。原图与历史资料继续保留。
 
 这次整理帮助你脱离源码讲清：原来有什么问题、改变哪一步、为什么有效、证据到哪里为止。先读每页新增的“本片前后变化”，再读关键机制、取舍与证据；不用一次背完全部资料。能独立解释一个正常例子、一个失败例子及剩余代价，就先整理理解，避免自动追加实验。
 
@@ -41,6 +41,8 @@
 
 ## 3. Redis缓存：正确性与故障保护分开理解
 
+当前复习入口是[Redis总览](redis-current-overview-study-guide.md)，按五个业务问题深入：[命中为何仍查库](redis-interview/01-read-path.md)、[旧回填与换代](redis-interview/02-consistency.md)、[同Key与多Key并发](redis-interview/03-concurrency.md)、[故障与恢复](redis-interview/04-failure-recovery.md)、[不存在商品的负缓存](redis-interview/05-negative-cache.md)。下面保留历史切片，解释这些机制怎样逐步形成。
+
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |
 | [4A 商品详情缓存](phase-4-product-detail-cache-study-guide.md) | 每次加载SKU → 缓存命中少查一次 | 命中仍检查商品可见性；删除缓存为何挡不住旧回填 |
@@ -59,7 +61,7 @@
 
 ## 4. 支付与MQ：每一步解决不同的故障窗口
 
-先用[支付当前总览](payment-current-overview-study-guide.md)理解189元订单；它是横向整理，不是又增加了一套支付实现。[旧支付详版](payment-learning-and-interview-guide.md)保留2026-10-06快照及历史图文，当前入口按4673b9f核对。
+先用[支付当前总览](payment-current-overview-study-guide.md)理解189元订单，再按问题深入：[模型与状态](payment-interview/01-models.md)、[正常付款与提交](payment-interview/02-normal-payment.md)、[UNKNOWN与查单](payment-interview/03-unknown.md)、[幂等与拒绝](payment-interview/04-idempotency.md)、[MQ重试与恢复](payment-interview/05-mq-recovery.md)、[到期关闭与迟到成功](payment-interview/06-expiration.md)、[证据与面试表达](payment-interview/07-evidence.md)。当前内容按29b7944核对，保留七个原Wiki节点；[旧支付详版](payment-learning-and-interview-guide.md)仍保留2026-10-06历史快照。
 
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |
@@ -122,4 +124,4 @@ ACK是Worker向队列确认消息已处理；业务成功仍以MySQL提交的支
 2. **常见误解：** 每模块保留两三个容易说错的结论及证据边界，例如“有索引就只读20行”“用了MQ就不会漏事件”。能帮助你发现理解跳步。
 3. **个人疑问页：** 由你记录“我能独立解释什么、哪里还讲不清”，再针对这些缺口讨论。AI写了指南、给了答案或测试通过，都不能替你勾选已掌握。
 
-这三项仅为建议，本轮没有生成新的术语库、题库、参考答案或掌握记录。旧版图/练习没有删除，新指南继续遵循[精简写作规范](knowledge-base-authoring-sop.md)。
+这三项仅为建议，本轮没有生成新的术语库、题库、参考答案或掌握记录。旧版图/练习没有删除；[面试优先写作规范](knowledge-base-authoring-sop.md)要求讲透关键机制，必要深度不受旧篇幅惯例限制。

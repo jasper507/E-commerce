@@ -1,0 +1,153 @@
+{
+  "status": "complete",
+  "date": "2026-10-11",
+  "source_commit": "29b7944860080ccddedb2c0f0c060c0a27658376",
+  "existing_pages_updated": 10,
+  "new_redis_pages": 5,
+  "protected_boards_unchanged": 13,
+  "root_children": 4,
+  "payment_children": 7,
+  "redis_children": 5,
+  "node_moves": 0,
+  "permission_changes": 0,
+  "temporary_draft_cleanup": "blocked_by_automatic_review",
+  "checks": [
+    {
+      "key": "payment-01",
+      "revision": 6,
+      "text_characters": 3096,
+      "links": 6,
+      "code_blocks": 1,
+      "protected_boards": 1,
+      "status": "passed"
+    },
+    {
+      "key": "payment-02",
+      "revision": 6,
+      "text_characters": 3401,
+      "links": 9,
+      "code_blocks": 2,
+      "protected_boards": 1,
+      "status": "passed"
+    },
+    {
+      "key": "payment-03",
+      "revision": 6,
+      "text_characters": 2694,
+      "links": 7,
+      "code_blocks": 2,
+      "protected_boards": 1,
+      "status": "passed"
+    },
+    {
+      "key": "payment-04",
+      "revision": 4,
+      "text_characters": 2955,
+      "links": 7,
+      "code_blocks": 1,
+      "protected_boards": 0,
+      "status": "passed"
+    },
+    {
+      "key": "payment-05",
+      "revision": 6,
+      "text_characters": 4418,
+      "links": 11,
+      "code_blocks": 2,
+      "protected_boards": 1,
+      "status": "passed"
+    },
+    {
+      "key": "payment-06",
+      "revision": 6,
+      "text_characters": 3511,
+      "links": 7,
+      "code_blocks": 2,
+      "protected_boards": 1,
+      "status": "passed"
+    },
+    {
+      "key": "payment-07",
+      "revision": 4,
+      "text_characters": 3383,
+      "links": 22,
+      "code_blocks": 0,
+      "protected_boards": 0,
+      "status": "passed"
+    },
+    {
+      "key": "payment",
+      "revision": 17,
+      "text_characters": 4120,
+      "links": 12,
+      "code_blocks": 0,
+      "protected_boards": 3,
+      "status": "passed"
+    },
+    {
+      "key": "project",
+      "revision": 11,
+      "text_characters": 9568,
+      "links": 42,
+      "code_blocks": 3,
+      "protected_boards": 1,
+      "status": "passed"
+    },
+    {
+      "key": "redis-01",
+      "revision": 3,
+      "text_characters": 3369,
+      "links": 11,
+      "code_blocks": 2,
+      "protected_boards": 0,
+      "status": "passed"
+    },
+    {
+      "key": "redis-02",
+      "revision": 3,
+      "text_characters": 3464,
+      "links": 10,
+      "code_blocks": 2,
+      "protected_boards": 0,
+      "status": "passed"
+    },
+    {
+      "key": "redis-03",
+      "revision": 3,
+      "text_characters": 3502,
+      "links": 9,
+      "code_blocks": 2,
+      "protected_boards": 0,
+      "status": "passed"
+    },
+    {
+      "key": "redis-04",
+      "revision": 3,
+      "text_characters": 3618,
+      "links": 9,
+      "code_blocks": 2,
+      "protected_boards": 0,
+      "status": "passed"
+    },
+    {
+      "key": "redis-05",
+      "revision": 3,
+      "text_characters": 3342,
+      "links": 7,
+      "code_blocks": 2,
+      "protected_boards": 0,
+      "status": "passed"
+    },
+    {
+      "key": "redis",
+      "revision": 17,
+      "text_characters": 3690,
+      "links": 15,
+      "code_blocks": 0,
+      "protected_boards": 4,
+      "status": "passed"
+    }
+  ],
+  "journal_entries": 247,
+  "application_tests_run": false
+}

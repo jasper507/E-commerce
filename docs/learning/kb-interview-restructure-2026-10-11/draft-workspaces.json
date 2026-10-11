@@ -1,0 +1,82 @@
+[
+  {
+    "decision": {
+      "presentation_mode": "normal",
+      "genre_contract": "router.knowledge",
+      "reader_task": "结合Project One源码与历史证据解释：为什么缓存命中后仍查MySQL？",
+      "visual_plan": {
+        "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+        "blocks": []
+      },
+      "adapter": null,
+      "audience": "准备中国后端实习面试的初学者项目作者"
+    },
+    "title": "为什么缓存命中后仍查MySQL？",
+    "draft_path": "draft_cd2ad507_folder\\draft.xml",
+    "workspace": "draft_cd2ad507_folder"
+  },
+  {
+    "decision": {
+      "presentation_mode": "normal",
+      "genre_contract": "router.knowledge",
+      "reader_task": "结合Project One源码与历史证据解释：更新后怎样防止旧请求回填旧数据？",
+      "visual_plan": {
+        "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+        "blocks": []
+      },
+      "adapter": null,
+      "audience": "准备中国后端实习面试的初学者项目作者"
+    },
+    "title": "更新后怎样防止旧请求回填旧数据？",
+    "draft_path": "draft_50b1e725_folder\\draft.xml",
+    "workspace": "draft_50b1e725_folder"
+  },
+  {
+    "decision": {
+      "presentation_mode": "normal",
+      "genre_contract": "router.knowledge",
+      "reader_task": "结合Project One源码与历史证据解释：同一个热点与多个冷商品怎样保护数据库？",
+      "visual_plan": {
+        "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+        "blocks": []
+      },
+      "adapter": null,
+      "audience": "准备中国后端实习面试的初学者项目作者"
+    },
+    "title": "同一个热点与多个冷商品怎样保护数据库？",
+    "draft_path": "draft_d509b9ac_folder\\draft.xml",
+    "workspace": "draft_d509b9ac_folder"
+  },
+  {
+    "decision": {
+      "presentation_mode": "normal",
+      "genre_contract": "router.knowledge",
+      "reader_task": "结合Project One源码与历史证据解释：Redis坏了、慢了、恢复了，分别怎么办？",
+      "visual_plan": {
+        "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+        "blocks": []
+      },
+      "adapter": null,
+      "audience": "准备中国后端实习面试的初学者项目作者"
+    },
+    "title": "Redis坏了、慢了、恢复了，分别怎么办？",
+    "draft_path": "draft_ca30fb8b_folder\\draft.xml",
+    "workspace": "draft_ca30fb8b_folder"
+  },
+  {
+    "decision": {
+      "presentation_mode": "normal",
+      "genre_contract": "router.knowledge",
+      "reader_task": "结合Project One源码与历史证据解释：不存在的商品为什么也要缓存？",
+      "visual_plan": {
+        "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+        "blocks": []
+      },
+      "adapter": null,
+      "audience": "准备中国后端实习面试的初学者项目作者"
+    },
+    "title": "不存在的商品为什么也要缓存？",
+    "draft_path": "draft_5deb0f8d_folder\\draft.xml",
+    "workspace": "draft_5deb0f8d_folder"
+  }
+]

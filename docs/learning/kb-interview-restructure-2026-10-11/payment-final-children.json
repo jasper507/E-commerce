@@ -1,0 +1,83 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_more": false,
+    "nodes": [
+      {
+        "has_child": false,
+        "node_token": "N37xwtJ27iZ4XmkYa1uchxswnbc",
+        "node_type": "origin",
+        "obj_token": "Onm2dT0Two29z9xQwi5cdrrAncT",
+        "obj_type": "docx",
+        "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "space_id": "7693476782908935142",
+        "title": "01 数据模型与两个状态机"
+      },
+      {
+        "has_child": false,
+        "node_token": "Dn70wUIlKixYzMk0X4kcCvGsnR3",
+        "node_type": "origin",
+        "obj_token": "Gpgdd1UeAo4fPIx9biBc9gn4nxd",
+        "obj_type": "docx",
+        "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "space_id": "7693476782908935142",
+        "title": "02 正常付款与事务提交"
+      },
+      {
+        "has_child": false,
+        "node_token": "JyJGwzL2CiiFKhkzrLUcx3pgnUb",
+        "node_type": "origin",
+        "obj_token": "Qrgid0JhEo91HcxEjktcVk0fnbe",
+        "obj_type": "docx",
+        "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "space_id": "7693476782908935142",
+        "title": "03 超时、UNKNOWN与原付款查单"
+      },
+      {
+        "has_child": false,
+        "node_token": "I0a5wc7LUibRArkMkUHct0swnvc",
+        "node_type": "origin",
+        "obj_token": "DTCsdol7JoPH8hxKznfcHTAInUc",
+        "obj_type": "docx",
+        "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "space_id": "7693476782908935142",
+        "title": "04 重复、乱序与业务拒绝"
+      },
+      {
+        "has_child": false,
+        "node_token": "CDXkw84eWiDj5ZkzitPcs1PhnIh",
+        "node_type": "origin",
+        "obj_token": "PHvqdJ10bob22mxCHpccJHKgn4b",
+        "obj_type": "docx",
+        "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "space_id": "7693476782908935142",
+        "title": "05 MQ、有界重试与人工恢复"
+      },
+      {
+        "has_child": false,
+        "node_token": "Kc9EwXMzni8ttTkYgk6cxSFknSd",
+        "node_type": "origin",
+        "obj_token": "AU7EdZEQ7oZRHexUSYicaQU5nHe",
+        "obj_type": "docx",
+        "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "space_id": "7693476782908935142",
+        "title": "06 支付与到期关闭、迟到模拟退款"
+      },
+      {
+        "has_child": false,
+        "node_token": "KsqfwyvRZiYtsnkB09HcBsQWnpe",
+        "node_type": "origin",
+        "obj_token": "RMlTdRE77oLPyBxAE9GcuUuTnwh",
+        "obj_type": "docx",
+        "parent_node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "space_id": "7693476782908935142",
+        "title": "07 实验入口与面试证据"
+      }
+    ],
+    "page_token": ""
+  },
+  "meta": {
+    "count": 7
+  }
+}

@@ -1,0 +1,48 @@
+<p>2026-10-11，源码快照 <b>29b7944860080ccddedb2c0f0c060c0a27658376</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh">支付总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/payment-redis-interview-knowledge-base-restructure.md">本轮核对记录</a>。本页重点解释“通知存下来了，为什么还需要MQ、预算和恢复”；真实Broker/Worker实验引用历史记录，本轮不运行服务或恢复命令。</p>
+<h1>先讲业务场景，再讲中间件</h1>
+<p>189元付款的成功通知已经收到，但处理库存时MySQL暂时锁等待超时。如果只依赖当前HTTP请求，下次什么时候再处理？顾客不查单、供应商不重投，订单可能一直待付。MQ（消息队列，保存并投递待执行消息）提供后台执行机会，Celery Worker运行原处理器，使通知收件与业务执行分开推进。</p>
+<p>本项目先实现同步处理+持久Inbox+人工扫描基线，再加入RabbitMQ/Celery。消息只传Inbox内部整数ID，原文、签名、尝试次数、付款事实保存在MySQL；Worker重新读取，不能相信消息自带的金额或状态。同步、MQ、人工恢复使用同一处理资格与业务规则，不另写一套后台支付状态机。</p>
+<p>当前默认PAYMENT_EVENTS_ASYNC=false；MQ只允许development/test开启，新独立部署保持关闭。MQ实验确实使用了隔离RabbitMQ与Linux Worker，但这不表示部署里的MQ已启用，也没有真实第三方付款。后台化改善执行组织与故障恢复路径，没有当前HTTP延迟/QPS对照，不能编造性能提升。</p>
+<h1>T0、T1、T2、T3为什么不能揉成一个事务</h1>
+<table><thead><tr><th><p>事务</p></th><th><p>独立保存什么</p></th><th><p>为什么必须这样分</p></th></tr></thead><tbody><tr><td><p>T0收件</p></td><td><p>原Event原文及签名</p></td><td><p>后续业务失败也保留输入；提交后才能发布ID</p></td></tr><tr><td><p>T1领取</p></td><td><p>count加1、PROCESSING、started/lease</p></td><td><p>处理失败仍消耗预算；不能与业务一起回滚</p></td></tr><tr><td><p>T2业务</p></td><td><p>Attempt/Order/库存/流水/资格/退款及Event终态</p></td><td><p>本地业务效果必须全部提交或全部回滚</p></td></tr><tr><td><p>T3错误留存</p></td><td><p>稳定错误、failure_kind、next_retry_at</p></td><td><p>T2已经回滚后仍能保存失败原因；不能在坏事务中继续写</p></td></tr></tbody></table>
+<p>如果count也在T2里，故障导致事务回滚，count会退回旧值，永久失败可以无限“第一次重试”。如果T0也与T2同事务，处理失败连收件也丢失，就没有可恢复原文。如果持数据库锁发布消息，Broker断线会拖长交易锁等待，但仍没有MySQL与Broker的共同原子提交。</p>
+<p>入口拒绝已经处于外层atomic的调用，保证T1/T3真正独立提交。核心协调代码来自<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/payments/services.py#L531">服务531行</a>：</p>
+<pre lang="python"><code>if connection.in_atomic_block:
+    raise ValueError(&quot;事件处理入口必须在外层事务之外运行。&quot;)
+event, processing_attempt = _claim_event_processing(
+    event_id=event_id, as_of=as_of if as_of is not None else timezone.now()
+)
+if processing_attempt is None:
+    return event
+try:
+    return _process_claimed_payment_event(
+        event_id=event_id, processing_attempt=processing_attempt
+    )
+except Exception as error:
+    _record_event_processing_failure(
+        event_id=event_id,
+        processing_attempt=processing_attempt,
+        error=error,
+        as_of=as_of if as_of is not None else timezone.now(),
+    )
+    raise</code></pre>
+<p>T1锁Event复查资格，只允许首次RECEIVED或已到期TRANSIENT ERROR且未耗尽者领取；T2重新锁Event并核对PROCESSING/count版本。T3也核对同一版本，防止旧处理者写错误覆盖新处理者或已提交终态。<b>processing_attempt</b>是领取时的持久版本，不是Celery task ID。</p>
+<h1>什么时候能重试，什么时候必须停</h1>
+<p>重试条件由MySQL保存，不由“抛了异常就重来”决定。当前只把MySQL OperationalError的1205/1213分类为TRANSIENT；库存/秒杀资格不变量、其他数据库异常、未知程序异常进入BLOCKED。无效签名、金额、币种或状态冲突是REJECTED，不是需要重试的ERROR。</p>
+<p>同一Event最多处理3次，包含首次。暂态失败count1后至少等待5秒，count2后至少等待10秒；count3失败为EXHAUSTED且无next。失败时的业务变化回滚，但T1保存的次数仍在。正常成功只消耗这次次数；终态重复任务不再加次数。</p>
+<p>核心退避来自<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/payments/services.py#L477">T3失败记录477行</a>：</p>
+<pre lang="python"><code>if kind == PaymentEvent.FailureKind.TRANSIENT:
+    if event.processing_attempt_count &gt;= MAX_EVENT_PROCESSING_ATTEMPTS:
+        event.failure_kind = PaymentEvent.FailureKind.EXHAUSTED
+        event.next_retry_at = None
+    else:
+        event.next_retry_at = as_of + timedelta(
+            seconds=EVENT_RETRY_BASE_SECONDS * 2 ** (event.processing_attempt_count - 1)
+        )
+else:
+    event.next_retry_at = None</code></pre>
+<p>付款Attempt默认最多3次是另一条规则：限制同Order新创建付款尝试数量。E处理失败重试仍是原A的通知，不重新调用供应商付款，也不创建B，详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/N37xwtJ27iZ4XmkYa1uchxswnbc">两个预算</a>。</p>
+<h1>Celery为什么不用另一套retry次数</h1>
+<p>Celery任务设置<b>max_retries=0</b>，不让框架为同一逻辑单独计算业务预算。任务处理后重读数据库，只有ERROR/TRANSIENT、count1或2且有next时，才发布原ID的后续消息；ETA为数据库到期与“当前+1秒”的较晚者，避免定时器提前几毫秒唤醒后立即循环。</p>
+<p>早到或重复消息可能没有取得T1资格，也可能再安排一条后续消息。因此<b>消息条数、ACK条数可以大于3，但实际领取处理总次数最多3</b>。仅看Rabbit队列空、ACK增加或Task日志成功，不能说明189元订单已经PAID；业务终值仍看MySQL。</p>
+<p><b>acks_late=True</b>在任务处理后确认，<b>reject_on_worker_lost=True</b>为Worker丢失保留重投机会。Publisher Confirm（Broker接受发布的确认）降低已知发布失败的不确定性，但不确认数据库付款；Worker提交后ACK前中断仍可能重投，要靠<a href="https://ocnbkcx1ug58.feishu.cn/wiki/I0a5wc7LUibRArkMkUHct0swnvc">业务幂等</a>。</p>

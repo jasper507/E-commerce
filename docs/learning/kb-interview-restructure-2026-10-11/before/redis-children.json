@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_more": false,
+    "nodes": [],
+    "page_token": ""
+  },
+  "meta": {}
+}

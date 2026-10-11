@@ -1,0 +1,53 @@
+<p>2026-10-11，源码快照 <b>29b7944860080ccddedb2c0f0c060c0a27658376</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf">Redis总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/payment-redis-interview-knowledge-base-restructure.md">本轮核对</a>。本页引用Phase 4H真实隔离证据，本轮不新增Redis或数据库操作。</p>
+<h1>404也会消耗数据库工作</h1>
+<p>顾客打开一个已不存在的旧商品链接，或有人不断请求拼写错误地址。普通详情缓存只存成功JSON，没有Product就无详情Key，下次同一个地址仍要查询MySQL确认一次。六个同地址顺序404，曾真实观察到六次商品SQL，SKU查询为0。</p>
+<p>Cache Penetration（缓存穿透：没有可用副本的请求反复进入数据库）在这里不是“缓存过期”，而是同一个不存在结果从未保存。Negative Cache（负缓存：短期记住不存在）把确实无Product的slug保存为明确<b>missing</b>标记，五秒有效。当前实现只解决同地址短期重复访问，不能承诺阻断所有随机探测流量。</p>
+<h1>一次404与第二次404怎么运行</h1>
+<p>例子地址 <b>old-mouse-model</b> 在MySQL没有Product。第一个请求先捕获G1，GET <b>missing:v1:G1:old-mouse-model</b>没有标记；随后商品SQL无结果，尽力SET <b>missing</b>并带五秒TTL，仍返回原404。</p>
+<p>第二个请求同样捕获G1，但负标记命中，立即404，不查商品SQL。标记到期后再确认数据库；若仍不存在就重新记五秒。明确标记不是空字符串或任意真值，坏值不能擅自证明商品不存在。</p>
+<table><thead><tr><th><p>顺序访问同一个缺失地址</p></th><th><p>原路径SQL</p></th><th><p>当前路径SQL</p></th></tr></thead><tbody><tr><td><p>第一次</p></td><td><p>1</p></td><td><p>1，并记录标记</p></td></tr><tr><td><p>五秒标记内后五次</p></td><td><p>每次1，共5</p></td><td><p>每次0，共0</p></td></tr><tr><td><p>标记到期后再次访问</p></td><td><p>1</p></td><td><p>1，重新确认</p></td></tr></tbody></table>
+<p>图可以直接看<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf#doxcngJnhy6gZgv6wwmLlUTssVb">原读取时序图</a>。负缓存分支是“在Product SQL前返回404”；已有正常商品的热详情仍保留MySQL检查，两个结论不能混淆。</p>
+<h1>为什么必须区分“不存在”与“已下架”</h1>
+<p>商品真实存在但Product或Category下架时，也返回404，以公开接口隐藏内容。对页面来说都是找不到，但后端知道原因不同。如果把隐藏商品也写成missing，重新上架后可能因为负标记直接拒绝，没有机会检查当前状态。</p>
+<p>当前视图先按slug取得Product并JOIN Category，再显式检查可见性。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/catalog/views.py#L134">关键代码</a>把两种404分开：</p>
+<pre lang="python"><code>try:
+    product = self.get_object()
+except Http404:
+    detail_cache.remember_missing(slug)
+    raise
+if not product.is_active or not product.category.is_active:
+    raise Http404</code></pre>
+<p>只有查询确实无Product的异常分支才写标记；真实下架分支不写。它不是为用户展示两种404原因，公开响应仍隐藏内容；只是后端维护正确缓存语义。</p>
+<h1>为什么负标记也要带generation</h1>
+<p>今天旧地址没有商品，明天管理员用这个slug创建新Product，不能让旧404标记继续挡它。正常save成功提交并切G2后，新请求选择 <b>missing:v1:G2:slug</b>，G1标记即使仍有TTL也不再选。若旧请求在创建前读到不存在、创建后才回填标记，它仍只能写G1。</p>
+<p>因此generation必须在商品SQL之前捕获，回填负标记不能临时取最新代号。这里与正详情的旧回填隔离共用同一规则，详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/TcNMwoTMciVwJakUuKZczXByn8l">一致性页</a>。正常创建且成功换代后的新请求可见，不代表所有创建方式都保证立即可见。</p>
+<p>实际<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/catalog/cache.py#L189">负标记写入</a>尽力执行：</p>
+<pre lang="python"><code>def remember_missing(self, slug):
+    if not self.available:
+        return
+    try:
+        get_redis_client().set(
+            missing_product_key(slug, self.generation),
+            &quot;missing&quot;,
+            ex=MISSING_PRODUCT_TTL_SECONDS,
+        )
+    except RedisError:
+        logger.warning(&quot;catalog_missing_marker_write_failed&quot;)</code></pre>
+<p>SET失败保留原404，下一次重新查库；不能把保存一个性能副本失败变成“商品服务报错”。配置关闭、事务内旁路或已退化时不写负标记，避免把未提交或不可靠代号下的不存在状态分享出去。</p>
+<h1>负标记GET坏了，为什么可能是503</h1>
+<p>标记GET接入原读取熔断。如果它失败或被跳过，请求不能用缓存判断不存在，转受限MySQL回源。因为仍在Product SQL之前，名额满直接503且零商品SQL；有名额才确认真正404或返回详情。</p>
+<p>这时503描述“暂时无法确认/提供结果”，404描述“已确认当前公开对象不可用”。不能为降低错误率把满员503伪装成商品不存在，更不能根据Redis连接失败向顾客永久隐藏真实商品。</p>
+<h1>五秒为什么不是“创建后最多五秒才可见”</h1>
+<p>五秒从每次实际SET标记起算，不从MySQL创建时间起算。若绕过正常save信号，例如bulk_create或外部SQL，新商品可能未换代；若旧请求很晚才SET，其五秒起点也晚。正常save的换代如果失败，旧代仍可读。</p>
+<p>因此本项目没有承诺“数据库创建后严格五秒内所有访问可见”。五秒是首轮实验参数，正常save成功换代给更明确的新请求保证，绕过信号/失败窗口只能接受短暂旧404并继续评估恢复责任。缩短TTL降低陈旧风险，却减少对同地址重复查询的节省；加长TTL则相反。</p>
+<h1>随机slug为什么仍然绕过收益</h1>
+<p>六次请求同一地址只需要首次查库；六次请求六个不同随机地址，每个地址都没有标记，仍各查一次。首次同slug并发到来，也可能在第一份标记写好前分别查库，本轮没有合并这段查询。</p>
+<p>每个随机slug还可能产生一个五秒Key，有内存与Redis命令成本。健康已有商品也多一次负标记GET，所以收益取决于重复缺失流量比例，不能仅凭引入负缓存宣称全站更快或彻底杜绝穿透。当前共享加载名额主要保护实际详情重建，健康缺失商品的第一条查询不因此获得全局数据库上限。</p>
+<table><thead><tr><th><p>替代或补充</p></th><th><p>适用的具体问题</p></th><th><p>新成本或边界</p></th></tr></thead><tbody><tr><td><p>继续每次查MySQL</p></td><td><p>缺失访问少，优先简化与实时创建可见性</p></td><td><p>同地址重复查询不减少</p></td></tr><tr><td><p>当前短负缓存</p></td><td><p>同一旧地址反复访问</p></td><td><p>多GET、临时Key与短期旧404窗口</p></td></tr><tr><td><p>入口格式校验/流量控制</p></td><td><p>明显无效格式或随机高频请求</p></td><td><p>合法格式仍可不存在；流量规则可能误拒正常用户，需要明确预算</p></td></tr><tr><td><p>Bloom Filter，布隆过滤器</p></td><td><p>大量随机候选是否可能存在的快速筛选</p></td><td><p>有误判，新增商品与重建需要同步；过时过滤器不能错误排除刚创建对象</p></td></tr><tr><td><p>同slug缺失查询合并</p></td><td><p>同地址首次并发重复查库</p></td><td><p>新注册/等待/失败协议；不同随机slug仍无法合并</p></td></tr></tbody></table>
+<p>本项目没有实现Bloom Filter或把该模块扩成通用防攻击系统。只有具体流量证据与业务要求需要时，再选择对应补充，不能为了面试列出全部方案就全部落地。</p>
+<h1>真实验证支撑的说法</h1>
+<p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-4h-cache-penetration.md">Phase 4H记录</a>保留先失败再实现的过程：期望SQL数组 <b>[1,0,0,0,0,0]</b>，原逻辑实际 <b>[1,1,1,1,1,1]</b>；实现后同slug六次顺序请求全404且仅首次商品SQL。目标8项、目录107项/6子场景通过，并覆盖真实TTL、正常save创建后200、下架不记missing、GET故障满员503零SQL、SET故障保留404。</p>
+<p>过期验证检查真实Redis TTL，并缩短测试Key剩余有效期来验证过期路径，不是等待完整五秒的长期可见性测试。隔离MySQL/Redis与APIClient证据证明查询量和响应语义，没有吞吐、生产抗攻击能力或随机slug防护结论。</p>
+<h1>如果重新做，我会先看缺失请求的分布</h1>
+<p>我会先记录缺失地址是否重复、是否来自旧链接、是否每次随机，以及正常商品请求占比。若主要是少量旧地址重复，五秒负缓存足够简单；若主要随机高频，继续延长负TTL只会多建Key，应该先定义入口流量预算或候选存在性筛选。</p>
+<p>对创建频繁、要求马上可见的目录，我会先统一创建与改slug的写入口，保证正确换代，再决定负TTL。Bloom Filter只在数据量与随机查询证据支持时加入，并设计新增商品更新和失败后回源，不能为了省一次SQL牺牲新商品可见性。当前五秒并非最佳值，重做也应围绕业务成本选择，保留能解释的最小机制。</p>

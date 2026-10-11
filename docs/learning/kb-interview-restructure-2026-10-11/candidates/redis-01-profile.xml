@@ -1,0 +1,48 @@
+<title>为什么缓存命中后仍查MySQL？</title>
+<p>2026-10-11，源码快照 <b>29b7944860080ccddedb2c0f0c060c0a27658376</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf">Redis总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/payment-redis-interview-knowledge-base-restructure.md">本轮核对</a>。本页整理当前读路径，实测结果引用历史记录，没有重新运行测试。</p>
+<h1>先抓住这个设计决定</h1>
+<p>本项目缓存的是<b>公开商品详情副本</b>，它不是商品、价格、库存或付款的事实。Redis健康且命中时，已有商品仍查询一次MySQL，确认商品和分类是否上架；省掉的是SKU/Inventory加载与对应详情组装。未命中2 SQL、命中1 SQL，是刻意保护下架可见性的选择。</p>
+<p>用具体商品说明：Mouse M1黑色SKU原价129.00元、可售10件。正常浏览可以接受短暂看到旧价或旧库存提示；已经下架的商品不应因为Redis删除失败就继续向新请求公开。因此把“能否公开”与“详情副本”分开。下单再次校验MySQL，页面提示有货不会覆盖数据库已无货的事实。</p>
+<h1>从浏览器到响应，两条SQL各做什么</h1>
+<p>前端打开商品页，发出 <b>GET /api/catalog/products/mouse-m1/</b>。它是公开只读接口，不要求顾客Session，也不缓存用户、订单或地址。slug是商品的URL地址片段，product_id是数据库内稳定的商品主键。</p>
+<ol><li><b>先捕获代号。</b> 每个请求创建ProductDetailCache，先从Redis取得目录generation。Generation（缓存代号）把改动前后的副本隔开。本请求固定使用这一代，不能等读完数据库后再取代号。</li><li><b>先查负标记。</b> <b>missing:v1:G1:mouse-m1</b> 如果明确为<b>missing</b>，直接404。没有标记才继续；这个分支只暂存确实不存在的Product，详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/CIhuw7qlDivc0VkEVQ7cC1zBnvd">负缓存</a>。</li><li><b>第一条SQL确认商品。</b> 按slug查询Product并JOIN Category。真正不存在返回404并尽力存五秒负标记；真实存在但商品或分类下架也返回404，不能给它贴不存在标记。</li><li><b>再取详情JSON。</b> 用 <b>detail:v2:G1:product_id</b> GET。能解析为字典且顶层公开字段集合正确时返回200；不存在、坏JSON或顶层字段不符都视为miss，不能直接把坏副本交给页面。</li><li><b>第二条SQL只在需要详情时执行。</b> 真实加载者预取有效SKU与其Inventory，按价格、code排序，序列化成普通dict，SET加TTL后返回。命中时省掉这一步。</li></ol>
+<p>图可直接在<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf#doxcngJnhy6gZgv6wwmLlUTssVb">Redis读取时序图</a>中查看；上面保留了不依赖图的完整顺序。正常冷请求还有同Key合并、加载者二次GET和名额控制，详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/HO4IwNqtpi3EZ1kea0Ucx6XfnLd">并发保护</a>。</p>
+<table><thead><tr><th><p>路径</p></th><th><p>被测业务SQL</p></th><th><p>当前典型Redis操作</p></th></tr></thead><tbody><tr><td><p>缓存主动关闭或事务内旁路</p></td><td><p>2</p></td><td><p>不使用该共享缓存</p></td></tr><tr><td><p>健康已有商品热详情</p></td><td><p>1</p></td><td><p>GET代号、负标记、详情，共3次</p></td></tr><tr><td><p>健康已有商品冷详情，确需加载</p></td><td><p>2</p></td><td><p>上述读取，再复查同代详情、SET回填；代号初始化另计</p></td></tr><tr><td><p>同代负标记命中</p></td><td><p>0</p></td><td><p>GET代号、负标记，然后404</p></td></tr><tr><td><p>商品或分类已下架</p></td><td><p>1</p></td><td><p>通常GET代号、负标记；不会读取详情或新写负标记</p></td></tr></tbody></table>
+<p>这里统计请求内的商品业务查询，不等同于所有连接初始化、其他中间件SQL。Phase 4A记录未命中2/命中1；Phase 4B增加代号，Phase 4H后来增加负标记，因此旧资料的热读两次GET不再是当前健康热路径。</p>
+<h1>为什么保留这段顺序</h1>
+<p>当前核心视图片段在<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/catalog/views.py#L128">源码128行</a>。缓存对象先建立，商品可见性检查后才读详情；这两处先后分别防止新代污染与下架泄露。</p>
+<pre lang="python"><code>detail_cache = ProductDetailCache()
+slug = self.kwargs[self.lookup_field]
+if detail_cache.is_missing(slug):
+    raise Http404
+# 初次代号读取失败时，在任何商品 SQL 前申请回源名额。
+with detail_cache.fallback_scope():
+    try:
+        product = self.get_object()
+    except Http404:
+        detail_cache.remember_missing(slug)
+        raise
+    if not product.is_active or not product.category.is_active:
+        raise Http404
+    payload = detail_cache.get_or_load(product.pk, lambda: self.load_detail(product))
+    return Response(payload)</code></pre>
+<p><b>get_object()</b>这一条查数据库确认对象存在，<b>is_active</b>确认能否公开，<b>get_or_load</b>再决定用副本还是加载。回源名额范围取决于是否降级；不是这段with一定为每个健康请求取得名额。</p>
+<p>事务内读取主动旁路，在<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/catalog/cache.py#L150">缓存源码150行</a>：</p>
+<pre lang="python"><code>self.available = (
+    settings.CATALOG_CACHE_ENABLED
+    and not transaction.get_connection().in_atomic_block
+)</code></pre>
+<p>如果管理员在事务里改名但后来回滚，不能把未提交名称写进Redis；同一事务也不应依赖其他事务留下的旧副本来读取自己的改动。因此事务内走数据库原路径，不合并、不回填。这是隔离边界，不是Redis故障；当前也不为主动旁路新增回源名额限制。</p>
+<h1>价格和库存为什么还要在下单时重查</h1>
+<p>浏览读到129元，不代表把129元作为提交参数就可以决定收款。下单的服务器读取MySQL中SKU价格形成订单明细和总额，预占前校验当前可售状态及库存；<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/ordering/services.py#L227">实际取价代码</a>使用数据库对象的价格。支付随后按订单快照，不根据Redis或商品当前价格重算。</p>
+<p>例如页面有货，但数据库可售库存已经变0：详情提示可以旧，下单不能成功。历史缓存专项真实验证了这种拒绝，不生成订单且购物车保留。页面仍显示129、MySQL已改159时，订单快照和金额取159。若订单已按129生成，后来商品改159，付款仍应付原订单129；这是另一个时间边界。</p>
+<p>库存提示与名称、SKU价格的失效触发并不完全相同。当前Product/Category/SKU正常save提交后切代，库存提示可能直到详情TTL才更新。保留可见性SQL也不会把库存提示或价格强行变成每次实时数据。</p>
+<h1>为什么不把整个请求都交给Redis</h1>
+<table><thead><tr><th><p>方案</p></th><th><p>应用收益</p></th><th><p>具体代价</p></th></tr></thead><tbody><tr><td><p>全走MySQL基线</p></td><td><p>依赖少，每次读取当前数据，失效规则简单</p></td><td><p>热门详情重复SKU加载与序列化；当前观察每次2条业务SQL</p></td></tr><tr><td><p>当前保留可见性SQL、缓存详情</p></td><td><p>热命中省后一条查询；新请求实时确认下架</p></td><td><p>仍有1 SQL，至少3次Redis GET；维护TTL、失效和故障保护</p></td></tr><tr><td><p>全量Redis响应，不查可见性</p></td><td><p>健康热读可无商品SQL</p></td><td><p>要接受失效失败后旧下架内容仍公开，或另建更可靠可见性机制</p></td></tr><tr><td><p>每次重新查价格/库存，只缓存名称等稳定字段</p></td><td><p>热展示更接近实时价格与库存</p></td><td><p>减少能省掉的查询，字段来源和响应组装复杂；仍需交易重校验</p></td></tr></tbody></table>
+<p>本项目首先选择明确的业务边界和可验证的收益。缓存并非天然比查询更快：商品表小、MySQL查询简单时，额外Redis往返也有成本。没有响应分布或等价成功流量对照，就不能用“SQL减半”推导“接口快一倍”。</p>
+<h1>已有证据足够说明到哪里</h1>
+<p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-4-product-detail-cache.md">Phase 4A真实记录</a>观察冷读2 SQL、热读1 SQL，响应相同；覆盖真实Redis连接拒绝回源、下架、事务提交/回滚、事务内旁路以及陈旧价格/库存不授权交易。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-4b-cache-generations.md">Phase 4B</a>继续验证这一查询边界；<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-4h-cache-penetration.md">Phase 4H</a>解释后来增加的负标记。</p>
+<p>原实验采用隔离MySQL/Redis与DRF APIClient。SQL减少是实际观察，Redis命中意味着省掉哪份工作也可从源码解释；没有在本页把旧时延单样本当作生产延迟，更没有真实线上用户量或QPS结论。</p>
+<h1>如果重新做，我会先确定缓存字段的业务容忍度</h1>
+<p>我会把“下架立即对新请求生效”“展示价允许多旧”“库存提示是否仅供参考”在接入缓存前分别写清，再选择缓存边界。若价格展示必须紧跟改价，就优先解决失效可靠性；若库存提示要实时，就比较额外数据库摘要查询的成本。不能只把所有字段统一放进缓存再补承诺。</p>
+<p>在当前单商家、小目录范围内，我仍保留可见性guard（数据库门卫检查）和交易重新校验。只有量出这条guard成为真正瓶颈、且能给出等价下架保障时，才评估把它移入更可靠的派生读模型。代价是新的同步/恢复责任，不能把“改成零SQL”本身当作改进目标。</p>

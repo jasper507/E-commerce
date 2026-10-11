@@ -1,0 +1,82 @@
+<p>交易画板的等价解释就是以上四段：普通与秒杀只合并共同结果；建单提交、付款确认提交、库存释放与履约分别有自己的责任。可查看<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/assets/kb-overview-2026-10-11/project-loop/diagram.png">本地原图</a>及<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/assets/kb-overview-2026-10-11/project-loop/diagram.mmd">可编辑Mermaid</a>。支付事务及MQ细节见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh">支付总览</a>。</p>
+<h1>三、核心代码：为什么先认原意图，再做新订单</h1>
+<p>真正重要的不只是库存加减，还包括事务、取锁、重放位置和历史快照。普通下单由 <b>@transaction.atomic</b> 包住，以下是现有源码的原意图检查：</p>
+<pre lang="python"><code>locked_user = User.objects.select_for_update().get(pk=user.pk)
+fingerprint = _request_fingerprint(address_id)
+existing = Order.objects.filter(
+    user=locked_user,
+    creation_scope=Order.CreationScope.CART,
+    idempotency_key=idempotency_key,
+).first()
+if existing is not None:
+    if existing.request_fingerprint != fingerprint:
+        raise OrderRuleError(
+            &quot;idempotency_conflict&quot;,
+            &quot;This Idempotency-Key was already used with a different request.&quot;,
+            409,
+        )
+    return _order_with_details(existing.pk), False</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/ordering/services.py#L120">下单事务与摘录</a>，摘录为134–148行。用户行锁使同一用户并发进入这段逻辑时串行检查，数据库唯一约束再保护“用户＋入口＋Key”映射；代价是同一用户的新下单也会等待，不能说所有顾客被一把全局锁串行化。</p>
+<p>例如第一次请求已创建订单O1并清购物车，但响应丢失。原Key再请求时，此时购物车为空，<b>应该返回订单O1，不能先查购物车为空而拒绝</b>。第二次若带原Key改用地址B，指纹不同就返回冲突。幂等表示同一意图重复执行不重复产生业务效果，不表示所有POST都只处理一次。</p>
+<p>原实现的普通下单指纹只含地址，购物车不是请求传入的一份不可变明细；原Key映射的是已经创建的原订单，后续改购物车不会让原Key创建第二张单。新购买意图需要新Key。秒杀指纹则含活动商品与地址。这是当前契约，不能泛称任意请求字段都进入指纹。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/mvp-3-order-inventory-study-guide.md">建单与预占深入解释</a></p>
+<p>另一个核心位置是服务端金额与明细快照。这里的 <b>unit_price</b> 来自前面 <b>_money(item.sku.price)</b> 的Decimal计算，<b>inventory</b> 来自本事务已锁定的库存集合：</p>
+<pre lang="python"><code>order_item = OrderItem.objects.create(
+    order=order,
+    sku=sku,
+    product_name_snapshot=sku.product.name,
+    sku_code_snapshot=sku.code,
+    color_snapshot=sku.color,
+    attributes_snapshot=sku.attributes,
+    unit_price=unit_price,
+    quantity=cart_item.quantity,
+    discount_amount=discount_amount,
+    line_total=line_total,
+)
+inventory.available_stock -= cart_item.quantity
+inventory.reserved_stock += cart_item.quantity
+inventory.save(update_fields=(&quot;available_stock&quot;, &quot;reserved_stock&quot;))</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/ordering/services.py#L269">金额与快照源码</a>，摘录为269–283行。后面仍要创建Reservation与Movement；三条库存语句不能单独证明正确性。如果流水写入失败，异常离开外层事务，快照与库存变化也必须回滚。当前普通价格是后端在本次事务中读到的报价，不宣称与并发所有目录管理操作取得统一版本快照。</p>
+<h1>四、为什么选择这些组件，各自到哪里停下</h1>
+<p><b>MySQL是交易事实来源。</b> 订单、付款、库存以及幂等映射和事件预算都需要可持久追踪。Redis、队列和ES失效后仍应能回到这些事实，而不是从缓存价格、任务执行日志或搜索索引猜订单终态。</p>
+<table><thead><tr><th><p>组件与当前用途</p></th><th><p>为什么放在这个位置</p></th><th><p>一种有意义的替代与代价</p></th></tr></thead><tbody><tr><td><p>模块化单体</p></td><td><p>多个业务事实可在一份代码和一个MySQL事务中协调，易追踪失败</p></td><td><p>微服务可独立扩容，但新增跨服务一致性、网络失败、接口演进与运维责任；当前证据未要求拆分</p></td></tr><tr><td><p>Redis详情缓存</p></td><td><p>避免反复加载和序列化SKU/库存明细，命中仍查当前上架状态</p></td><td><p>全部回MySQL最简单，但重复读取成本保留；把命中改成零SQL会改变可见性边界，需新证据</p></td></tr><tr><td><p>Redis Lua秒杀准入</p></td><td><p>在MySQL订单事务前原子判断共享窗口额度，限制进入事务的尝试速率</p></td><td><p>仅靠MySQL仍可守库存正确，却接受全部竞争；Redis预扣库存另有双存储补偿与对账，当前未做</p></td></tr><tr><td><p>RabbitMQ＋Celery付款事件处理</p></td><td><p>将已持久事件交给后台，支持暂态故障后的有限重试</p></td><td><p>同步处理链路简单、结果直接，但处理成本和暂态失败留在请求；引入MQ新增投递/确认/进程中断恢复责任</p></td></tr><tr><td><p>ES商品搜索副本</p></td><td><p>使用名称/描述文本和相关性给候选；索引可从MySQL重建</p></td><td><p>MySQL完整包含搜索维护简单，但语义、排序和查询结构不同；未实测不能说ES一定更快</p></td></tr></tbody></table>
+<p>这里最值得对比的是<b>故障政策随业务责任改变</b>：详情缓存无法读取时，可以在受限回源名额内继续查MySQL；Lua无法确认是否获得名额时返回503，不自动再次EVAL或进入下单。脚本可能执行成功但响应丢失，盲目再执行会再次占用额度。</p>
+<p>搜索失败也不伪装成200空结果，不自动换回另一套文本语义。支付结果UNKNOWN则保留原付款意图查原单，不能当确定失败重新付。这些决定保护的分别是数据库压力、准入预算、搜索契约和资金事实，不能统一套“所有依赖失败都重试/都回退”。</p>
+<h1>五、三条故事怎样沿着问题、机制和证据讲透</h1>
+<h2>1. 库存：条件UPDATE为什么适合当前秒杀</h2>
+<p>最后一件库存为 <b>1/0</b>。A、B若都先读到1，再在Python写回0，最终可能创建两张订单却只少一件库存。当前单SKU、固定数量1的秒杀把判断和预占放到一条SQL：</p>
+<pre lang="python"><code>updated = Inventory.objects.filter(sku=sku, available_stock__gte=1).update(
+    available_stock=F(&quot;available_stock&quot;) - 1,
+    reserved_stock=F(&quot;reserved_stock&quot;) + 1,
+)</code></pre>
+<p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/promotions/services.py#L36">当前库存步骤</a>，摘录为40–43行。<b>F()</b>表示在数据库中用当前字段值计算。A更新1行而未提交时仍持写锁；B竞争同一行会等待。若A提交，B正常放行后条件不满足，更新0行；若A回滚，B可能更新1行继续。真实超时或死锁先出现时，是数据库异常，不是库存不足。</p>
+<p><b>UPDATE仍有锁。</b> 更新1行也只代表库存步骤成功，后续订单关联与流水仍须完成；1205/1213必须使整单事务回滚。限购靠用户串行化与资格唯一约束，Key重放靠幂等映射；一条UPDATE不同时解决全部问题。</p>
+<p>选型不是“SQL越少越好”。历史完整事务比较中，库存6、24顾客、8个工作线程、每顾客最多3次：两策略都建成6单。条件候选每轮24次调用，NOWAIT为52–55次；三轮购买旅程p95分别90.01–94.55ms与106.42–121.91ms。这里p95是本轮24位顾客中排序后的第23位，包含原请求重试等待，不能只拿一次快速拒绝当购买更快。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-6c3-flash-sale-inventory-load.md">实际比较</a> · <a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/adr/0001-flash-sale-inventory-conditional-update.md">正式选型</a></p>
+<p>这些是历史本机有限批次，不是生产QPS。成功库存步骤两种策略当时都执行两条SQL；条件策略后面还有GET。普通等待式行锁也是可行替代；当前单SKU选择条件UPDATE，代价是等待时占连接、事务和先前取得的锁。HTTP适配暂时设5秒锁等待并恢复原会话值，5秒不是整个请求期限。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md">正式失败边界</a> · <a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-6d-flash-sale-http-study-guide.md">HTTP等待</a></p>
+<p>Lua后来增加的是入口保护：历史隔离对照中，24顾客、额度4，订单事务从24次变4次，20个请求429；固定身份后拒绝路径无下单SQL。两组订单产出不同，不能据此说成交吞吐提高。它限的是窗口内尝试数，不是严格在途事务数，且默认关闭。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-6f-flash-sale-admission-study-guide.md">准入与证据</a></p>
+<h2>2. Redis：减少重复加载，同时承认展示会陈旧</h2>
+<p>旧方案“写数据库提交后删缓存”存在明确交错：A读旧价129元并暂停；B保存新价并删缓存；A再把129写回原Key；C命中旧值。当前在任何详情SQL之前捕获随机代号g1；保存成功后尝试换成g2；A始终回填g1，C取得g2后不选旧代。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-4b-cache-generation-study-guide.md">代号机制与真实竞态</a></p>
+<p>这叫逻辑失效：旧副本可暂存，但新请求不选择它。保证有前提——提交后换代成功。历史故障实验真实出现“缓存129 → MySQL169但换代失败 → 故障期回源169 → Redis恢复又命中129”，数据库没有回滚。<b>网络恢复不等于数据恢复，当前缓存不是强一致。</b> 下单仍读MySQL，所以这个反例影响浏览展示，不授权少收款或超卖。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-4f-slow-faults-and-recovery.md">恢复反例</a></p>
+<p>同一个冷商品的并发读取由进程内SingleFlight（多个请求共用一个加载结果）合并；不同商品无法共用结果，又需要共享回源名额。历史受控6商品冷波，名额2时详情加载峰值从6到2，四个请求503，商品上架检查仍6次；随后四份必要数据仍分别加载。收益是限制同一时刻重建压力，不是永久省去四份数据。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-4j-refill-admission.md">多Key名额证据</a></p>
+<p>持续Redis慢故障还需读熔断，避免每次付出同一超时；重复缺失slug用短负缓存，但随机新slug的第一次仍查MySQL。进程内合并/预算不是跨所有Worker的全局上限，全局换代也会使其他商品冷启动。细节、替代与每个问题的重做选择见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf">Redis总览</a>。</p>
+<h2>3. 支付：消息会重复，业务效果必须只发生一次</h2>
+<p>第一次付款已成功但响应丢失，原Key再请求必须返回原付款尝试；UNKNOWN要查原网关单，不能新建尝试赌一次。不同付款通知甚至使用不同事件号，也可能确认同一订单。事件唯一约束只挡相同事件号；原订单锁和终态复查才挡不同事件对同一库存的重复核销。</p>
+<p>事件处理采用三个有独立责任的事务：T1领取并提交次数/PROCESSING/租约，T2原子提交支付、订单、库存和事件终态，T3仅在T2异常回滚后记录稳定失败类别。T1留在数据库，所以Worker换进程也不能重置预算；同事件最多3次包含首次，合格暂态故障后5/10秒退避，拒绝与耗尽保留可调查状态。这不是新付款尝试的上限，两种预算不能混用。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh">支付全流程与核心代码</a></p>
+<p>引入MQ把持久事件交给后台，却新增“入箱提交后还没发布就退出”的窗口。另一种窗口是T1后Worker直接消失，没有机会执行T3；原事件会卡PROCESSING，消息重投本身不能解除资格。当前持久租约和人工恢复在Event锁内复查版本，跳过T2仍持锁的事件；不重置次数，修复后再沿原恢复/补投入口执行。</p>
+<p>历史真实Broker停机实验验证漏投补漏；真实Worker SIGKILL实验分别断在领取后、业务写入未提交、付款提交后ACK前、迟到退款提交后ACK前。后两种重投仍只一条COMMIT或一次模拟退款，前两种修复后只完成原订单。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-5c3-payment-publication-recovery.md">发布窗口</a> · <a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-5c4-payment-worker-recovery.md">中断窗口与终值</a></p>
+<p>当前默认同步，本期接受人工兜底，没有周期自动接管和恢复时限承诺。T2锁顺序及支付/到期的6场景证明具体规则，不能证明所有InnoDB物理锁都无死锁，也不能把任务执行次数或ACK数当付款成功证据。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-5d-payment-expiration-concurrency.md">并发关闭证据</a></p>
+<h1>六、支持模块怎样帮助你讲完整项目</h1>
+<p>支持材料也要能解释作用和边界，篇幅按收益分配，不把每个CRUD都展开成新技术故事。</p>
+<table><thead><tr><th><p>入口</p></th><th><p>从业务角度需要讲明白什么</p></th><th><p>目前证据与限制</p></th></tr></thead><tbody><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/mvp-1-cart-study-guide.md">购物车</a>与<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/mvp-2-minimum-address-study-guide.md">地址</a></p></td><td><p>本人归属、购物车不占库存、历史地址快照为什么独立</p></td><td><p>常规前置业务；不能用页面按钮替代后端权限</p></td></tr><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-3-order-list-pagination-study-guide.md">订单分页</a></p></td><td><p>先过滤本人再分页，固定20条，<b>-created_at/-id</b>展示最近订单且同时间顺序确定</p></td><td><p>分页限制返回条数；页码跨请求不是数据库快照，新增订单仍可能移动边界</p></td></tr><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-3-order-query-baseline-study-guide.md">订单查询计划</a>与<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-3-order-list-index-study-guide.md">正式索引</a></p></td><td><p>为什么等值用户过滤后接时间/ID排序；优化哪一步，还有哪些成本</p></td><td><p>真实计划首页订单步骤5000→20且订单Sort消失；COUNT仍5000、深页OFFSET4000仍经过4020订单/地址查找；没有生产容量结论</p></td></tr><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-7a-product-search-baseline-study-guide.md">MySQL搜索基线</a>、<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-7c-search-read-api-study-guide.md">ES读接口</a>与<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-7d-search-index-switch-study-guide.md">手动切换</a></p></td><td><p>候选相关性与当前商品事实分开；为什么MySQL回读、候选数不等于可售数、未知切换先回读</p></td><td><p>真实隔离ES/MySQL与手动alias证据；无自动同步、仅测试来源、前端仍走原MySQL列表；回读不能修复遗漏候选</p></td></tr><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-9b-local-deployment-run-study-guide.md">独立部署基础</a>与<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/phase-9c-session-csrf-operations-study-guide.md">Session/CSRF</a></p></td><td><p>浏览器身份如何经过Nginx到Django，Cookie/CSRF为何各有职责</p></td><td><p>9C通过代理入口15项真实HTTP认证验收；该轮无浏览器UI或交易验收；运维手册只是静态核对，未演练更新/恢复</p></td></tr></tbody></table>
+<p>ES切换和支付UNKNOWN有可复用的工程思路：依赖请求超时只说明响应未确认，实际操作可能已经成功；先回读事实，不能盲目重做或撤销。但两者的业务终态和恢复工具不同，不能把共同原则说成同一实现。</p>
+<h1>七、如果从头重做，我会改哪里，哪些选择保留</h1>
+<p><b>保留模块化单体和MySQL交易事实。</b> 现有跨订单、库存、支付规则正好可以用数据库事务协调；没有独立团队、扩容或故障隔离证据要求拆微服务。重做的重点是更早明确失败责任和验证入口，而不是增加更多存储和锁。</p>
+<p><b>缓存：更早明确展示新鲜度和失效恢复要求。</b> 129→169→恢复又129是实际痛点。若业务仍允许浏览短时陈旧、结算以MySQL为准，简单换代＋TTL可以保留；若要求失效失败也能可追踪补偿，我会评估在商品更新事务中保存持久失效待办。新成本是重复与乱序、积压、退避、监控及全局失效冷启动；候选没有实现，也不自动变成强一致。细节放<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf">Redis专题</a>和<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/learning/project-rebuild-retrospective-study-guide.md">横向复盘</a>。</p>
+<p><b>支付：在引入MQ前写清四个失败窗口及允许等待。</b> 网关超时、提交后漏投、T1后中断、T2后ACK前中断，需要不同恢复责任。当前人工工具和预算已存在，重做优先改变设计和验证的出现时机；只有未来业务要求无人值守时限，才评估受控周期扫描和告警。代价是调度故障、重复发布、候选饥饿、误报与调查，不采用自动UNKNOWN→FAILED、预算清零或无限重试。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh">支付重做选择</a></p>
+<p><b>库存：更早固定“相同成交产出”比较口径。</b> 最初NOWAIT保持正确但繁忙多；快速409不代表顾客买得更快。重做会先确认成交数、原意图重试和端到端旅程成本，再挑策略；当前条件UPDATE和HTTP等待边界可保留。严格在途准入、跨进程缓存预算都需要新增状态和故障回收，先有具体压力证据再决定，不从窗口额度直接推生产阈值。</p>
+<p><b>测试隔离：更早检查真实连接和清理权限。</b> 搜索路径曾有实际隔离事故，之后增强实际库名、服务来源与可清理对象检查。重做会前置这些门槛，并评估独立实例或受限账号；代价是环境、身份和权限维护。不能说一个环境变量已证明隔离，也不宣称全项目统一完成此候选。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-7b-test-isolation-incident.md">脱敏事故与改进</a></p>
+<h1>八、当前能力、启用状态和证据怎样区分</h1>
+<p>以下是2026-10-11源码与现有记录核对，不是本轮重新运行实验：</p>
+<table><thead><tr><th><p>范围</p></th><th><p>已有实现/历史验证</p></th><th><p>当前不能推到的结论</p></th></tr></thead><tbody><tr><td><p>普通订单与秒杀</p></td><td><p>事务、幂等、快照、库存/资格生命周期、真实MySQL并发；6E有浏览器原意图恢复证据</p></td><td><p>不表示所有未来执行顺序无死锁、无限流量可承受或个人讲述已验收</p></td></tr><tr><td><p>浏览缓存与Lua</p></td><td><p>真实Redis/MySQL竞态、回源保护；Lua原子额度与故障路径</p></td><td><p>Lua默认关闭；缓存非强一致，进程内预算不是全服务数据库上限</p></td></tr><tr><td><p>支付与MQ</p></td><td><p>Mock闭环、Inbox、持久预算、真实Broker/Worker故障和人工恢复</p></td><td><p>默认同步；无真实资金、周期接管、第三方Sandbox或恢复SLA</p></td></tr><tr><td><p>ES</p></td><td><p>可重建索引、测试读API、手动alias切换与结果未知分类</p></td><td><p>默认关闭、仅隔离测试来源，无自动同步、生产索引或前端ES搜索</p></td></tr><tr><td><p>独立本机部署</p></td><td><p>9B镜像/新库迁移/健康检查/14项HTTP与只读空页；9C再补15项真实HTTPSession/CSRF</p></td><td><p>四开关均关闭；该部署交易与中间件启用、公网HTTPS未验收；更新/备份恢复未演练</p></td></tr></tbody></table>
+<p>应同时记录三件事：代码有能力、某环境实际启用、某场景实际通过。它们不能相互替代。索引代码存在不证明每个开发库已应用迁移；开发或隔离MQ测试通过，也不证明独立部署启用了MQ。</p>
+<p>阅读顺序是：本文建立交易全景 → <a href="https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh">支付</a>、<a href="https://ocnbkcx1ug58.feishu.cn/wiki/O4iUwSvl1i4Je7keOL0ci1iAnLf">Redis</a>、<a href="https://ocnbkcx1ug58.feishu.cn/wiki/B49NwtiePiCqqFkz61kc4ac9n79">秒杀与库存</a>的问题页 → 对应核心代码和真实证据 → <a href="https://ocnbkcx1ug58.feishu.cn/wiki/PZoSwW7C7iJ9PlkWxwkcN0Bnn7d">项目复盘与重做选择</a>。本轮不新增搜索、认证或部署Wiki栏目。<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/PROJECT_CHARTER.md">项目总纲</a>保存当前范围。</p>
+<p>本轮停止条件是把现有核心问题、机制、取舍与证据串完整，并确认链接和源码准确；不因整理发现候选改进就自动新增实验或业务实现。知识库帮助复习，是否独立掌握需要你在后续讨论中用自己的话解释，而不是以文档长度证明。</p>

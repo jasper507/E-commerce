@@ -1,100 +1,102 @@
-# 支付总览：一笔189元订单怎样得到可信结果
+# 支付总览：怎样解释一笔189元订单的付款、幂等与故障恢复
 
-2026-10-11，源码快照`4673b9f8ea95664ce4ab886e1a9e791e6ffbd42e`，项目总纲v1.15。[学习导航](README.md) · [本轮归档核对](../verification/project-payment-overview-knowledge-base-update.md) · [飞书支付](https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh)。这是当前阅读入口；[旧支付详版](payment-learning-and-interview-guide.md)保留当时流程与历史材料。
+2026-10-11，核对源码快照 `29b7944860080ccddedb2c0f0c060c0a27658376`，项目总纲 v1.16。[项目总览](project-current-overview-study-guide.md) · [本轮归档核对](../verification/payment-redis-interview-knowledge-base-restructure.md) · [飞书支付](https://ocnbkcx1ug58.feishu.cn/wiki/PCQ7wP9kMikz0eklmNYcH1J1nwh)。本页是支付面试阅读入口；历史切片保留原日期和实验环境，本次没有重跑支付或MQ实验。
 
-## 本专题前后变化
+## 面试时先讲清这一个问题
 
-以前已有七个问题子页和真实实验，但入口仍带旧版本说明，完整流程、为什么用MQ和重做选择不够集中。本轮按当前源码补上业务流程、图、两处核心代码、证据和重做选择，保留原学习地图及七个子页。没有新增支付能力，没有重跑业务实验。
+顾客买一只189.00元鼠标。下单已经把可售库存20、预占0变成19、1，但顾客是否真的付成功，不能由浏览器的一句“成功”、一次HTTP响应或一条MQ确认决定。通知可能重复、乱序；网关可能已处理但响应丢失；本地处理也可能在任意时刻中断。
 
-## 先抓住支付的业务问题
+这个模块的主线是：**先保存可恢复的交易事实，再验证供应商结果，通过同一套MySQL事务推进付款、订单和库存；遇到不确定结果先查清原付款，遇到处理故障则按资格有限恢复。** 项目使用不处理真钱的Mock Gateway（可控制结果的模拟支付供应商），没有第三方Sandbox、实际收款或实际退款。这是工程机制与隔离故障证据，不是生产支付规模经验。
 
-顾客买一只189.00元鼠标，下单把库存从可售20、预占0变成19、1，订单为PENDING_PAYMENT。支付要查清原付款、把可信结果应用到原订单，并在重复通知或进程故障后继续处理，不能重复核销。商品后来涨价，不改变189元订单快照。
+在项目介绍中，可以围绕三句话展开：
 
-本项目使用Mock Gateway（可控制结果的模拟支付供应商）。MySQL保存付款、订单和库存事实；默认同步处理事件。RabbitMQ与Celery的可选后台路径仅限本地开发/测试，独立部署本轮未开启；没有真实资金或第三方Sandbox。
+1. **订单和一次付款分开。** 一次尝试明确失败不等于订单失败；UNKNOWN是“还不知道”，不能据此重新扣款。
+2. **请求幂等、通知去重、业务幂等分开。** 它们分别解决重复点击、相同通知重复入箱、不同通知重复产生库存效果的问题。
+3. **可靠留存和及时执行分开。** Inbox保存输入，MQ提供后台执行机会，MySQL事务决定业务结果，人工扫描覆盖漏投和未完成记录。
 
-## 从点击付款到库存核销
+## 一笔付款完整地怎样运行
 
-1. **先保存原付款尝试。** Session确定本人，付款请求带订单与支付幂等键。短事务先检查原Key与归属，再保存PaymentAttempt（一次付款尝试），金额来自订单。相同Key同订单返回原尝试；不同订单冲突；已有CREATED/PENDING/UNKNOWN时禁止第二个活跃尝试。
-2. **提交后调用供应商。** 不持订单或库存锁等待网关。调用超时且尚未确认时，把原Attempt标为UNKNOWN（结果尚不明确）；并发通知已经确认的终态不会倒退。不能猜成失败或重新付款。普通GET只是读本地状态；显式查单询问供应商原Attempt，可信查单结果也走同一事件入口。
-3. **先入箱，再处理。** 签名事件原文先在独立T0事务保存进Inbox（持久收件箱），按供应商事件号去重；相同号不同原文不能覆盖。处理时仍验签并核对金额、币种、订单和状态。无效签名的内部摘要编号不能抢占合法事件号。
-4. **领取与业务提交分开。** T1先锁Event，提交处理次数、PROCESSING和默认60秒租约。T2再锁事件、订单和原尝试，完成库存与状态变化。同一事务里，Attempt变SUCCEEDED、Order变PAID、预占变COMMITTED、reserved从1变0、available仍19；秒杀资格变CONSUMED、COMMIT流水和Event终态一起提交。
-5. **失败留下恢复依据。** T2出错先回滚业务效果，T3另用短事务复核领取版本后记录稳定错误与后续资格。重复执行终态事件不再次核销。HTTP202只说明收件留存，Broker接收和Worker ACK（确认消息已处理）也不能代替数据库付款事实。
+下单完成时，Order为PENDING_PAYMENT，库存19/1，Reservation为RESERVED；金额来自原订单快照，商品后来涨价也不改变这笔189元付款。普通订单或秒杀订单都沿用这条支付主线，秒杀额外维护购买资格。
 
-![默认同步付款：先提交Attempt，再等网关，Inbox与业务事务分别提交。](assets/kb-overview-2026-10-11/payment-normal/diagram.png)
+**第一步，确认本人并创建原付款尝试。** 前端带订单UUID与支付Idempotency-Key（标识同一次请求的幂等键），Session确定当前顾客。短事务先锁User、查这个顾客已用过的Key：同Key同订单返回原Attempt，同Key换订单返回冲突。只有新Key才继续锁订单、检查待付状态及已有尝试。这个顺序很关键：第一次付款已经成功却丢失响应时，订单已PAID，原Key仍应返回原Attempt。先拒绝“订单不是待支付”就破坏了重放语义。
 
-图展示默认同步成功及网关超时分支；可选MQ另见下一节。核心显式锁顺序为Event → Order → Attempt → 秒杀Purchase（若有）→ Reservation（inventory_id/id）→ Inventory（pk）。T1只锁Event；创建Attempt为User → Order → 已有Attempts → 秒杀Purchase；取消/到期从Order开始，不反向锁Event。JOIN、索引和约束可能产生额外物理锁，这不是完整InnoDB锁清单或全面无死锁证明。
+**第二步，提交Attempt，再调用供应商。** 等网络时不持订单/库存锁。供应商超时仅说明本地不知道结果；尚未确认的CREATED/PENDING变UNKNOWN，已经被并发通知确认的终态不会倒退。旧Key重放不会再次调用创建付款；显式查单询问原Attempt，普通GET只读本地。
 
-## 必须解释的失败分支
+**第三步，先保存供应商通知，再验证和应用。** T0（入箱事务）独立提交原始事件，按供应商与事件号去重；同号不同内容拒绝覆盖。无效签名改用内部摘要编号留审计，不能抢占后来合法通知的编号。处理时仍验签，核对供应商、订单、金额、币种与付款引用，签名正确也不代表业务内容正确。
 
-| 分支 | 业务结果与恢复边界 |
+**第四步，先持久领取，再原子提交业务。** T1只锁Event，保存处理次数、PROCESSING与默认60秒租约。T2再按Event→Order→Attempt→秒杀Purchase→Reservation→Inventory取得业务锁，在一个事务里提交Attempt成功、Order PAID、Reservation COMMITTED、预占1→0、唯一COMMIT流水与Event处理终态。可售仍19，因为下单时已经预占，付款再减可售会双扣。
+
+**第五步，区分业务结果与处理故障。** 明确FAILED结束一次Attempt，不关闭Order；金额不匹配被REJECTED；MySQL暂态异常使T2整体回滚，再用T3单独记录失败类别和恢复资格。不能把“事件处理失败”改写成“顾客付款失败”。硬中断来不及运行T3，会留下持久PROCESSING，由租约修复处理。
+
+<!-- BOARD:Cee6wMjj5hbDqRb2AHVc1uqunbh -->
+
+![默认同步付款流程](assets/kb-overview-2026-10-11/payment-normal/diagram.png)
+
+图：默认同步付款的正常路径与网关超时。事务提交、外部等待和未知结果都有独立边界；当前代码细节以本文和下方问题页为准。
+
+## 三类幂等怎样共同保护交易
+
+| 重复发生在哪里 | 标识与保护 | 单独使用它还不够的原因 |
+| --- | --- | --- |
+| 顾客重复提交同一次付款 | `(user, idempotency_key)`唯一、请求指纹、先查旧Key | 换Key仍可能重复付款，因此还检查原订单已有未确认Attempt |
+| 同一供应商通知重复到达 | `(provider, event_id)`唯一，保存原文 | 两个不同事件号仍可能描述同一笔付款成功 |
+| 两个Worker处理同一交易 | Order/Attempt锁后重查状态、同一业务事务、流水与退款唯一约束 | 不能仅凭“Broker只送一次”或“我先查到待付”决定执行副作用 |
+
+不同事件号的两名Worker会各锁自己的Event，但竞争同一Order。第一名提交成功后，第二名获得Order锁，重读Attempt SUCCEEDED，跳过库存核销并将自己的合法通知标为已处理。这是业务幂等，详见[重复、乱序与拒绝](payment-interview/04-idempotency.md)。
+
+创建付款的显式锁顺序为User→Order→已有Attempts→秒杀Purchase；事件T1只锁Event；T2为Event→Order→Attempt→Purchase→Reservation（inventory_id/id）→Inventory（pk）；取消/到期从Order开始，不反向取得Event锁。排序降低互相等待的风险，但JOIN、索引、外键约束还可能引入物理锁，不能宣称完整InnoDB锁清单或所有死锁已消除。
+
+## 为什么加入MQ，具体换来了什么
+
+默认同步路径在T0保存原文后直接处理：部署简单、调用链短，但HTTP请求承担业务处理等待；进程中断或处理失败依赖原通知重投、查单或人工恢复。RabbitMQ（保存和投递消息的中间件）与Celery（后台运行任务的Worker框架）的可选路径，在T0提交后只发送Inbox内部整数ID，后台复用同一处理器，使收件和业务执行可以分别推进。
+
+这解决的是**通知已经留存后，后台怎样执行和再次取得执行机会**。当前真实隔离证据验证了重复投递、有限重试、Broker停机补投、Worker硬中断恢复；没有测得生产吞吐、HTTP性能提升或自动恢复时限，不能直接说“用了MQ支付就快了”。MQ当前只允许本地开发/测试启用；新独立部署的PAYMENT_EVENTS_ASYNC显式关闭。
+
+<!-- BOARD:VuDgwuZZNh0gYCb4vRCc5haDnph -->
+
+![可选MQ与人工恢复](assets/kb-overview-2026-10-11/payment-mq/diagram.png)
+
+图：可选MQ投递、Worker处理与人工补漏。Inbox提交到消息发布仍有窗口，Broker确认和Worker ACK都不能代替付款事实。
+
+事件预算包含首次，最多3次，暂态失败后的等待门槛为5/10秒；无效通知、不变量破坏、耗尽预算必须停下。**这是同一Event的处理次数，不是同一订单新建Attempt的次数。** 后者由PAYMENT_MAX_ATTEMPTS控制，当前默认也为3，只有原尝试明确结束且订单仍可支付才允许新Key。重投事件不会重新发起付款。
+
+现有`recover_payment_events`提供同步恢复、`--publish`人工补投、`--recover-stale`到期租约修复及dry-run/limit/event-id；先修复再处理或补投，不重置次数。当前保留人工兜底，没有周期扫描、心跳或无人值守接管保证。详见[MQ、有限重试与恢复](payment-interview/05-mq-recovery.md)。
+
+## 失败路径最终影响什么
+
+| 场景 | 189元订单及库存怎样变化 |
 | --- | --- |
-| 原Attempt明确FAILED | 只结束这次尝试，订单仍待付、库存仍预占；规则允许时才创建新Attempt |
-| CREATED/PENDING/UNKNOWN尚未确认 | 阻止取消/到期关闭，保留预占等待查单；15分钟不是保证释放的硬截止 |
-| 无未确认支付，取消或到期关闭 | 原预占释放，可售恢复，RELEASE只一次 |
-| 已关闭后迟到成功 | 原订单保持关闭，确认Attempt成功并记录一次模拟退款；库存不再次核销或释放 |
-| 已支付且未发货取消 | 一次RESTORE恢复可售与模拟退款；秒杀已消费资格不重新释放 |
+| 原Attempt明确FAILED | 订单仍待付，库存仍19/1；允许的新尝试从原订单189元快照创建 |
+| CREATED/PENDING/UNKNOWN尚未确认 | 禁止新活跃尝试，也禁止取消/到期释放；预占可能超过15分钟 |
+| 无未确认支付且关闭订单 | 预占释放一次，19/1→20/0，订单CANCELED或EXPIRED |
+| 已关闭后可信成功迟到 | 原订单不复活，Attempt确认成功，模拟退款一次；保持20/0，不再核销 |
+| 已支付未发货取消 | COMMITTED转RESTORED，可售19→20、预占仍0，模拟退款一次；秒杀已消费资格不释放 |
+| 已发货 | 不走当前简单取消路径；本项目未实现复杂售后 |
 
-模拟退款记录不是实际资金到账；已付订单随后仍可由Admin模拟发货、本人确认收货。
+HTTP202仅表示事件收件留存待处理/排查，Attempt的HTTP201仅表示创建成功；PROCESSED也可能对应供应商PENDING/FAILED。必须查看具体业务状态，不能把传输与处理状态当作支付成功。
 
-## 为什么用MQ，另一种方法是什么
+## 带着具体问题进入七个子页
 
-支付通知需要被可靠留存，而处理可能暂时遇到MySQL锁等待或Worker中断。MQ把处理交给后台，使HTTP入口能在保存收件后结束；它支持再次投递，但不保证业务效果只执行一次，幂等仍由原MySQL记录、事务和唯一约束维护。当前没有测得生产吞吐或HTTP性能提升，不能把后台化直接说成支付更快。
+| 问题页 | 阅读后应能解释的设计 |
+| --- | --- |
+| [01 数据模型与两个状态机](payment-interview/01-models.md) | 为什么Order、Attempt、Event不能合成一个状态；哪些约束负责兜底 |
+| [02 正常付款与事务提交](payment-interview/02-normal-payment.md) | 为什么先锁User、查旧Key，为什么外部调用必须在事务外，库存如何同事务核销 |
+| [03 超时、UNKNOWN与原付款查单](payment-interview/03-unknown.md) | 超时为什么不能等同失败；查询原付款与再次付款的区别 |
+| [04 重复、乱序与业务拒绝](payment-interview/04-idempotency.md) | 同事件与不同事件的重复分别如何处理；合法签名为什么仍会拒绝 |
+| [05 MQ、有界重试与人工恢复](payment-interview/05-mq-recovery.md) | T0/T1/T2/T3、四类中断窗口、有限预算与恢复责任 |
+| [06 支付与到期关闭、迟到模拟退款](payment-interview/06-expiration.md) | 为什么拿到锁不等于能关闭订单；释放、核销、恢复与模拟退款的差别 |
+| [07 实验入口与面试证据](payment-interview/07-evidence.md) | 每项结论由什么真实实验支撑，以及哪些话证据还不支持 |
 
-**有意义的替代是同步处理加Inbox人工恢复。** 当前默认就是它：部署简单、调用链直接，但请求承担业务处理等待，恢复依赖人工。可选MQ增加Broker/Worker、发布失败与ACK前中断窗口；MySQL仍是事实来源，两种入口调用同一个处理器。
+<!-- BOARD:EALVw0LZphx322b6q93ctTDxnne -->
 
-![可选MQ：T0后发布原ID，漏投人工补投，T2后ACK，重投不重复效果。](assets/kb-overview-2026-10-11/payment-mq/diagram.png)
+![支付学习地图](payment-wiki-draft/diagrams/knowledge-map/diagram.png)
 
-Inbox提交到消息发布之间仍有窗口。现有`recover_payment_events`已支持同步恢复、`--publish`人工补投和`--recover-stale`修复到期租约；先修复再补投，不重置次数。暂态故障首次在内最多3次，后续等待5/10秒；业务拒绝、不变量破坏和预算耗尽必须停下，不能无限重试。当前没有周期自动接管。
+原支付学习地图保留为定位辅助；当前状态和证据解释以七个问题页为准。当前能力来自持续演进的历史切片，文档更新不等于新实验或个人已经掌握。
 
-## 两处核心代码怎样支撑业务规则
+## 如果重新做，优先改变什么
 
-第一段来自[支付源码192行](../../backend/apps/payments/services.py#L192)。`create_payment_attempt`有自己的atomic事务，返回后才调用网关；原Key复用跳过新调用，超时尝试保存未知，已确认终态不倒退：
+我会更早把“付款未知”“事件暂态处理失败”“提交后漏投”“领取后中断”写成四种不同故障，明确由查单、有限重试、人工补投、租约修复分别负责，并围绕它们设计状态和验证顺序。现有统一恢复命令已经实现，重做改变的是设计时机与职责表达，不应说成现在才发现需要恢复。
 
-```python
-attempt, created = create_payment_attempt(
-    user=user,
-    order_public_id=order_public_id,
-    idempotency_key=idempotency_key,
-)
-if not created:
-    return attempt, False
+如果未来明确要求无人值守在固定时间内恢复，再评估受控周期扫描与告警，复用现有资格、预算及锁内复核。它增加调度故障、重复发布、饥饿和误报成本，不能自动把UNKNOWN判失败、重置EXHAUSTED或解封BLOCKED。当前学习范围没有这项SLA，因此不为文档重构自动增加调度平台或Outbox。
 
-provider = gateway or MockGateway()
-try:
-    payload, signature = provider.create_payment(attempt)
-except (TimeoutError, ConnectionError):
-    return mark_attempt_unknown(attempt_id=attempt.pk), True
-```
-
-第二段来自[支付源码364行](../../backend/apps/payments/services.py#L364)，处于支付业务atomic事务内。库存核销和付款、订单、秒杀资格一起改变，随后保存Event终态；任一步失败整体回滚：
-
-```python
-elif outcome == "SUCCEEDED":
-    purchase = lock_flash_sale_purchase(order, expected_status=FlashSalePurchase.Status.HELD)
-    _commit_inventory(order)
-    attempt.status = PaymentAttempt.Status.SUCCEEDED
-    attempt.active_marker = None
-    attempt.save(update_fields=("status", "active_marker", "updated_at"))
-    order.status = Order.Status.PAID
-    order.save(update_fields=("status", "updated_at"))
-    transition_flash_sale_purchase(purchase, target_status=FlashSalePurchase.Status.CONSUMED)
-```
-
-这些是核对过的真实摘录，不是可脱离外围事务直接运行的完整实现。
-
-## 实际证据说明到哪里为止
-
-- [5C2有限后台重试](../verification/phase-5c2-payment-mq-retry.md)：真实MySQL1205、RabbitMQ与Worker，3项场景验证次数、到期与停止；消息数量不等于处理次数。
-- [5C3发布补漏](../verification/phase-5c3-payment-publication-recovery.md)：Broker故障后的首次与重试漏投，2项场景由新CLI人工补投原ID；补投成功不等于付款成功。
-- [5C4中断恢复](../verification/phase-5c4-payment-worker-recovery.md)：真实SIGKILL的4个窗口，业务提交前回滚、提交后ACK前重投不重复核销/模拟退款；没有周期接管保证。
-- [5D支付/到期竞争](../verification/phase-5d-payment-expiration-concurrency.md)：两种Order获锁顺序×三种未确认Attempt，共6个真实服务层MySQL场景；不是HTTP/MQ负载或全面死锁验证。
-
-上述是历史已保存证据，本轮仅静态核对、图渲染、飞书读回；不是新业务测试或个人掌握验收。
-
-## 如果重新做，我会怎样安排
-
-我会更早把付款未知、事件暂态失败、提交后漏投、领取后中断这四类问题的恢复责任和允许等待写清，再设计状态、操作步骤和故障验证。现有统一恢复命令已经存在，不能说重做才增加；重做首先改变设计与验证的时机。
-
-当前学习规模下人工兜底简单、可调查，剩余代价是依赖人发现与介入，没有无人值守恢复时限。若未来业务明确要求自动恢复，再评估受控周期扫描与告警，复用已有资格、预算与锁内复核。代价是调度故障、重复扫描/发布、候选饥饿、误报和人工调查；不能自动把UNKNOWN改失败、重置EXHAUSTED或解封BLOCKED。这是未采用的候选，不构成本轮新增实现范围。未来需要验证重复扫描、调度中断及耗尽可见性，才支持新的恢复结论。
-
-下一步先按本页解释正常与一个失败流程，再维护受代码变化影响的页面；当前证据足以支持这里的机制解释，不自动追加故障实验。
+本专题停止于已有源码与历史证据足以解释上述机制。下一步是按正常付款和一个失败窗口独立讲述，再按实际代码变化维护相关页；不以多跑实验或增加支付功能代替理解。

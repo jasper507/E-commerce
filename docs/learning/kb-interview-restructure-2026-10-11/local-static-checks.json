@@ -1,0 +1,1219 @@
+{
+  "status": "passed",
+  "source_commit": "29b7944860080ccddedb2c0f0c060c0a27658376",
+  "guides": 15,
+  "local_links": 256,
+  "python_excerpts": 23,
+  "excerpt_checks": [
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "excerpt": 1,
+      "nonblank_lines": 15,
+      "matching_source_paths": [
+        "backend/apps/ordering/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "excerpt": 2,
+      "nonblank_lines": 15,
+      "matching_source_paths": [
+        "backend/apps/ordering/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "excerpt": 3,
+      "nonblank_lines": 4,
+      "matching_source_paths": [
+        "backend/apps/promotions/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "excerpt": 1,
+      "nonblank_lines": 12,
+      "matching_source_paths": [
+        "backend/apps/payments/models.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "excerpt": 1,
+      "nonblank_lines": 13,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "excerpt": 2,
+      "nonblank_lines": 9,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "excerpt": 1,
+      "nonblank_lines": 8,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "excerpt": 2,
+      "nonblank_lines": 8,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "excerpt": 1,
+      "nonblank_lines": 12,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "excerpt": 1,
+      "nonblank_lines": 19,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "excerpt": 2,
+      "nonblank_lines": 10,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "excerpt": 1,
+      "nonblank_lines": 11,
+      "matching_source_paths": [
+        "backend/apps/ordering/lifecycle_services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "excerpt": 2,
+      "nonblank_lines": 16,
+      "matching_source_paths": [
+        "backend/apps/payments/services.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "excerpt": 1,
+      "nonblank_lines": 15,
+      "matching_source_paths": [
+        "backend/apps/catalog/views.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "excerpt": 2,
+      "nonblank_lines": 4,
+      "matching_source_paths": [
+        "backend/apps/catalog/cache.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "excerpt": 1,
+      "nonblank_lines": 7,
+      "matching_source_paths": [
+        "backend/apps/catalog/cache_signals.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "excerpt": 2,
+      "nonblank_lines": 9,
+      "matching_source_paths": [
+        "backend/apps/catalog/cache.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "excerpt": 1,
+      "nonblank_lines": 7,
+      "matching_source_paths": [
+        "backend/apps/catalog/cache.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "excerpt": 2,
+      "nonblank_lines": 8,
+      "matching_source_paths": [
+        "backend/apps/catalog/cache.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "excerpt": 1,
+      "nonblank_lines": 8,
+      "matching_source_paths": [
+        "backend/apps/catalog/cache.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "excerpt": 2,
+      "nonblank_lines": 5,
+      "matching_source_paths": [
+        "backend/apps/catalog/circuit_breaker.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "excerpt": 1,
+      "nonblank_lines": 7,
+      "matching_source_paths": [
+        "backend/apps/catalog/views.py"
+      ]
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "excerpt": 2,
+      "nonblank_lines": 11,
+      "matching_source_paths": [
+        "backend/apps/catalog/cache.py"
+      ]
+    }
+  ],
+  "link_checks": [
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "README.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "assets/kb-overview-2026-10-11/project-loop/diagram.png"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "assets/kb-overview-2026-10-11/project-loop/diagram.mmd"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../../backend/apps/ordering/services.py#L120"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "mvp-3-order-inventory-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../../backend/apps/ordering/services.py#L269"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../../backend/apps/promotions/services.py#L36"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/phase-6c3-flash-sale-inventory-load.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../adr/0001-flash-sale-inventory-conditional-update.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-6c5-flash-sale-inventory-failures-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-6d-flash-sale-http-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-6f-flash-sale-admission-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-4b-cache-generation-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/phase-4f-slow-faults-and-recovery.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/phase-4j-refill-admission.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/phase-5c3-payment-publication-recovery.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/phase-5d-payment-expiration-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "mvp-1-cart-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "mvp-2-minimum-address-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-3-order-list-pagination-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-3-order-query-baseline-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-3-order-list-index-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-7a-product-search-baseline-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-7c-search-read-api-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-7d-search-index-switch-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-9b-local-deployment-run-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "phase-9c-session-csrf-operations-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "project-rebuild-retrospective-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../verification/phase-7b-test-isolation-incident.md"
+    },
+    {
+      "guide": "docs/learning/project-current-overview-study-guide.md",
+      "target": "../../PROJECT_CHARTER.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "assets/kb-overview-2026-10-11/payment-normal/diagram.png"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/04-idempotency.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "assets/kb-overview-2026-10-11/payment-mq/diagram.png"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/05-mq-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/01-models.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/02-normal-payment.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/03-unknown.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/04-idempotency.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/05-mq-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/06-expiration.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-interview/07-evidence.md"
+    },
+    {
+      "guide": "docs/learning/payment-current-overview-study-guide.md",
+      "target": "payment-wiki-draft/diagrams/knowledge-map/diagram.png"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "redis-interview/01-read-path.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "redis-interview/02-consistency.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "redis-interview/03-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "redis-interview/04-failure-recovery.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "redis-interview/05-negative-cache.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "assets/kb-interview-2026-10-11/redis-map.jpg"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "assets/kb-interview-2026-10-11/redis-read.jpg"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "assets/kb-interview-2026-10-11/redis-generation.jpg"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "assets/kb-interview-2026-10-11/redis-failure.jpg"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "../verification/phase-4-product-detail-cache.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "../verification/phase-4b-cache-generations.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "../verification/phase-4d-detail-singleflight.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "../verification/phase-4j-refill-admission.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "../verification/phase-4g-minimal-read-breaker.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "../verification/phase-4h-cache-penetration.md"
+    },
+    {
+      "guide": "docs/learning/redis-current-overview-study-guide.md",
+      "target": "phase-6f-flash-sale-admission-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "target": "../payment-wiki-draft/diagrams/data-model/diagram.png"
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "target": "../../../backend/apps/payments/models.py#L58"
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "target": "../../verification/mvp-4-mock-payment.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "target": "../../../backend/apps/payments/tests/test_payment_models.py"
+    },
+    {
+      "guide": "docs/learning/payment-interview/01-models.md",
+      "target": "02-normal-payment.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "../../../backend/apps/payments/services.py#L99"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "01-models.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "../payment-wiki-draft/diagrams/normal-payment/diagram.png"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "../../../backend/apps/payments/services.py#L364"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "../../verification/mvp-4-mock-payment.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "05-mq-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/02-normal-payment.md",
+      "target": "03-unknown.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "../../../backend/apps/payments/services.py#L175"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "../payment-wiki-draft/diagrams/timeout-query/diagram.png"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "../../../backend/apps/payments/services.py#L629"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "../../verification/mvp-4-mock-payment.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/03-unknown.md",
+      "target": "06-expiration.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "target": "../../../backend/apps/payments/services.py#L345"
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "target": "06-expiration.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "target": "../../verification/phase-5c1-payment-mq.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/04-idempotency.md",
+      "target": "../../verification/mvp-4-mock-payment.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../../../backend/apps/payments/services.py#L531"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../../../backend/apps/payments/services.py#L477"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "01-models.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "04-idempotency.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../payment-wiki-draft/diagrams/mq-recovery/diagram.png"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "03-unknown.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../../verification/phase-5b-payment-event-retry.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../../verification/phase-5c2-payment-mq-retry.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../../verification/phase-5c3-payment-publication-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/05-mq-recovery.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../../../backend/apps/ordering/lifecycle_services.py#L40"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../payment-wiki-draft/diagrams/payment-expiration/diagram.png"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../../../backend/apps/payments/services.py#L327"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/06-expiration.md",
+      "target": "../../verification/phase-6b-flash-sale-lifecycle.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5a-payment-inbox-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5b-payment-event-retry.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c1-payment-mq.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c1-payment-mq-data.json"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c2-payment-mq-retry.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c2-payment-mq-retry-data.json"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c3-payment-publication-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c3-payment-publication-recovery-data.json"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery-data.json"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency-data.json"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-6b-flash-sale-lifecycle.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-6b-flash-sale-lifecycle-data.json"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/mvp-4-mock-payment.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c2-payment-mq-retry.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c3-payment-publication-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5c4-payment-worker-recovery.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-5d-payment-expiration-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/payment-interview/07-evidence.md",
+      "target": "../../verification/phase-9c-session-csrf-operations.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "05-negative-cache.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "03-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../../../backend/apps/catalog/views.py#L128"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../../../backend/apps/catalog/cache.py#L150"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../../../backend/apps/ordering/services.py#L227"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../../verification/phase-4-product-detail-cache.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../../verification/phase-4b-cache-generations.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/01-read-path.md",
+      "target": "../../verification/phase-4h-cache-penetration.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../../backend/apps/catalog/cache.py#L150"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../../backend/apps/catalog/cache_signals.py#L12"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../../backend/apps/catalog/cache.py#L259"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../verification/phase-4f-slow-faults-and-recovery.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../verification/phase-4-product-detail-cache.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../verification/phase-4b-cache-generations.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/02-consistency.md",
+      "target": "../../verification/phase-4i-multikey-avalanche.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../../backend/apps/catalog/cache.py#L64"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../verification/phase-4f-slow-faults-and-recovery.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../../backend/apps/catalog/cache.py#L43"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../verification/phase-4d-detail-singleflight.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../verification/phase-4j-refill-admission.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../verification/phase-4i-multikey-avalanche.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/03-concurrency.md",
+      "target": "../../verification/phase-4e-fallback-admission.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "../redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "../../../backend/apps/catalog/cache.py#L103"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "../../../backend/apps/catalog/circuit_breaker.py#L76"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "../../verification/phase-4e-fallback-admission.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "../../verification/phase-4f-slow-faults-and-recovery.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "../../verification/phase-4g-minimal-read-breaker.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/04-failure-recovery.md",
+      "target": "02-consistency.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "target": "../redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "target": "../../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "target": "../../../backend/apps/catalog/views.py#L134"
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "target": "02-consistency.md"
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "target": "../../../backend/apps/catalog/cache.py#L189"
+    },
+    {
+      "guide": "docs/learning/redis-interview/05-negative-cache.md",
+      "target": "../../verification/phase-4h-cache-penetration.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../verification/payment-redis-interview-knowledge-base-restructure.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../../PROJECT_CHARTER.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "mvp-1-cart-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "mvp-2-minimum-address-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "mvp-3-order-inventory-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "mvp-4-mock-payment-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-3-order-list-pagination-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-3-order-query-baseline-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-3-order-list-index-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "redis-interview/01-read-path.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "redis-interview/02-consistency.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "redis-interview/03-concurrency.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "redis-interview/04-failure-recovery.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "redis-interview/05-negative-cache.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-4-product-detail-cache-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-4b-cache-generation-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-4d-detail-singleflight-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-4e-fallback-admission-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-4f-slow-faults-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-4g-minimal-read-breaker.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-4h-cache-penetration-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../verification/phase-4c-cache-bursts.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../verification/phase-4i-multikey-avalanche.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../verification/phase-4j-refill-admission.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-interview/01-models.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-interview/02-normal-payment.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-interview/03-unknown.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-interview/04-idempotency.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-interview/05-mq-recovery.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-interview/06-expiration.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-interview/07-evidence.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-learning-and-interview-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "payment-learning-and-interview-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-5a-payment-inbox-recovery-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-5b-payment-event-retry-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-5c1-payment-mq-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-5c2-payment-mq-retry-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-5c3-payment-publication-recovery-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-5c4-payment-worker-recovery-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-5d-payment-expiration-concurrency-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6a-flash-sale-checkout-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6b-flash-sale-lifecycle-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6c1-flash-sale-contention-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6c2-flash-sale-inventory-comparison-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6c3-flash-sale-inventory-load-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6c4-flash-sale-strategy-decision-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6c5-flash-sale-inventory-failures-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6d-flash-sale-http-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6e-flash-sale-browser-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-6f-flash-sale-admission-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../adr/0001-flash-sale-inventory-conditional-update.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../verification/phase-6d2-flash-sale-http-wait.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-7a-product-search-baseline-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-7b-search-index-prototype-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-7c-search-read-api-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-7d-search-index-switch-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-9a-local-deployment-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-9b-local-deployment-run-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "phase-9c-session-csrf-operations-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "project-rebuild-retrospective-study-guide.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "../verification/project-rebuild-retrospective-knowledge-base.md"
+    },
+    {
+      "guide": "docs/learning/README.md",
+      "target": "knowledge-base-authoring-sop.md"
+    },
+    {
+      "guide": "docs/learning/knowledge-base-authoring-sop.md",
+      "target": "README.md"
+    },
+    {
+      "guide": "docs/verification/payment-redis-interview-knowledge-base-restructure.md",
+      "target": "../learning/project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/verification/payment-redis-interview-knowledge-base-restructure.md",
+      "target": "../learning/payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "docs/verification/payment-redis-interview-knowledge-base-restructure.md",
+      "target": "../learning/redis-current-overview-study-guide.md"
+    }
+  ]
+}

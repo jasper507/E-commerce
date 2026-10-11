@@ -1,0 +1,21 @@
+<p>图：网关超时后查询原付款，而不是创建新Attempt。若查单仍PENDING或再次超时，应停在未确认状态，不能继续进入成功核销。</p>
+<h1>普通刷新、原Key重放和显式查单是三种动作</h1>
+<table><thead><tr><th><p>顾客动作</p></th><th><p>会联系供应商吗</p></th><th><p>为什么</p></th></tr></thead><tbody><tr><td><p>GET订单/Attempt、刷新页面</p></td><td><p>不会，只读取MySQL当前状态</p></td><td><p>查询接口保持读行为；刷新不隐式触发外部交易动作</p></td></tr><tr><td><p>原Key重发支付POST</p></td><td><p>查到原记录后返回，不再次创建付款</p></td><td><p>恢复丢失响应；不能把重放变成第二次外部调用</p></td></tr><tr><td><p>POST原Attempt的reconcile</p></td><td><p>会询问原provider_reference</p></td><td><p>主动查清原付款结果；返回可信事件也走同一验签/状态/库存入口</p></td></tr><tr><td><p>换Key支付同一未确认订单</p></td><td><p>拒绝新Attempt</p></td><td><p>避免用新请求掩盖A的不确定结果</p></td></tr></tbody></table>
+<p>查询原付款的真实关键片段来自<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/backend/apps/payments/services.py#L629">查单服务629行</a>：</p>
+<pre lang="python"><code>provider = gateway or MockGateway()
+try:
+    payload, signature = provider.query_payment(attempt)
+except (TimeoutError, ConnectionError):
+    return mark_attempt_unknown(attempt_id=attempt.pk)
+receive_payment_event(payload=payload, signature=signature)
+attempt.refresh_from_db()
+return attempt</code></pre>
+<p>查单先按当前user筛选原Attempt；他人UUID返回不可见，UUID不是授权凭据。已确认终态直接返回；活跃状态才调用供应商。查单结果必须验签并匹配原189元订单，再通过原T0/T1/T2流程推进，而不是由接口直接把Order设PAID。这样查单、通知和MQ无需维护三套成功逻辑。</p>
+<p>如果查到PENDING，A保持未确认；再次通信失败也继续未知；明确FAILED清空活跃位置但订单仍待付；明确SUCCEEDED按资格核销。MQ开关开启时，可信查单结果可能只完成入箱/发布，返回的本地Attempt暂时仍UNKNOWN，顾客还要读取之后的业务状态。</p>
+<h1>Mock恢复与真实供应商边界</h1>
+<p>Attempt先提交，但进程可能在首次网关调用前中断，本地只剩CREATED且MockGatewayPayment还不存在。Mock的query会为同一Attempt补建一份供应商记录，使用同一引用生成事件；它没有创建第二个PaymentAttempt。这样可以演示“先保存原请求再恢复”的逻辑。</p>
+<p>真实供应商是否允许查不存在订单、怎样幂等补发、付款与查询的超时语义，必须按它的协议设计。当前Mock没有外部网络或真实扣款，不能用它声称已经完成支付宝/微信支付集成，也不能把Mock的补建动作推广成“任何超时都重发扣款”。</p>
+<p>另一种策略是等后台对账定期查询，让顾客只看状态，用户操作少但增加调度、速率限制、查询失败与恢复时限管理。当前选择顾客显式查单与人工兜底，依赖少且便于学习；没有周期对账或自动UNKNOWN恢复承诺。对高库存周转业务，这个等待成本必须单独评估。</p>
+<h1>如果重做，先明确等待与提示合同</h1>
+<p>我会更早写明UNKNOWN的页面提示、谁负责查单、多久后升级人工调查，以及库存能等待多久。当前保留15分钟后仍不强制释放是明确取舍，不应只告诉顾客“失败了请重付”。未来若有真正供应商与自动对账需求，再评估周期查单与告警，代价是外部调用限额、误报、长时间未确认和运维责任；不自动把超过某时长的UNKNOWN改FAILED。</p>
+<p><a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/mvp-4-mock-payment.md">早期MVP-4记录</a>保存了SQLite上的超时/查单烟测，不是MySQL锁或真实网关证据；<a href="https://github.com/jasper507/E-commerce/blob/29b7944860080ccddedb2c0f0c060c0a27658376/docs/verification/phase-5d-payment-expiration-concurrency.md">5D记录</a>实际验证CREATED/PENDING/UNKNOWN阻止到期释放的六种MySQL交错。当前超时防倒退与查单细节是本次源码核对，不冒称本轮测试通过。继续看<a href="https://ocnbkcx1ug58.feishu.cn/wiki/Kc9EwXMzni8ttTkYgk6cxSFknSd">支付与到期竞争</a>，理解这项保护如何影响库存。</p>

@@ -1,0 +1,252 @@
+{
+  "source_commit": "29b7944860080ccddedb2c0f0c060c0a27658376",
+  "existing_pages": [
+    {
+      "name": "project",
+      "guide": "project-current-overview-study-guide.md",
+      "node": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+      "doc": "P0LPd9AkmoAhq8xCgOdcqEL2nag",
+      "base_revision": 7,
+      "segments": 2,
+      "protected_boards": [
+        {
+          "token": "SDuuwOD4dhwiy6bzOgocuEuPn2b",
+          "block_id": "doxcnHonhnwhfczqeCIO1wexzZg",
+          "xml": "<whiteboard id=\"doxcnHonhnwhfczqeCIO1wexzZg\" token=\"SDuuwOD4dhwiy6bzOgocuEuPn2b\" />"
+        }
+      ]
+    },
+    {
+      "name": "payment",
+      "guide": "payment-current-overview-study-guide.md",
+      "node": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+      "doc": "T6O0deWUnowaBsxM6LgcJfuynjb",
+      "base_revision": 9,
+      "segments": 4,
+      "protected_boards": [
+        {
+          "token": "Cee6wMjj5hbDqRb2AHVc1uqunbh",
+          "block_id": "doxcnJ3duJoorqGbqCxHipNRZYf",
+          "xml": "<whiteboard id=\"doxcnJ3duJoorqGbqCxHipNRZYf\" token=\"Cee6wMjj5hbDqRb2AHVc1uqunbh\" />"
+        },
+        {
+          "token": "VuDgwuZZNh0gYCb4vRCc5haDnph",
+          "block_id": "doxcnRI1j5apuLoZD23dOal6jQb",
+          "xml": "<whiteboard id=\"doxcnRI1j5apuLoZD23dOal6jQb\" token=\"VuDgwuZZNh0gYCb4vRCc5haDnph\" />"
+        },
+        {
+          "token": "EALVw0LZphx322b6q93ctTDxnne",
+          "block_id": "doxcnGONB5l7xiGZRVfT4jcgzlb",
+          "xml": "<whiteboard id=\"doxcnGONB5l7xiGZRVfT4jcgzlb\" token=\"EALVw0LZphx322b6q93ctTDxnne\" />"
+        }
+      ]
+    },
+    {
+      "name": "redis",
+      "guide": "redis-current-overview-study-guide.md",
+      "node": "O4iUwSvl1i4Je7keOL0ci1iAnLf",
+      "doc": "KKBXdHFQqoZRCNxJv1YcFb29nkf",
+      "base_revision": 7,
+      "segments": 5,
+      "protected_boards": [
+        {
+          "token": "Wcrrw1GShhvpHSbgQGJcp8dMnhg",
+          "block_id": "doxcn8miNXgkIdUFusuSqNkNUbo",
+          "xml": "<whiteboard id=\"doxcn8miNXgkIdUFusuSqNkNUbo\" token=\"Wcrrw1GShhvpHSbgQGJcp8dMnhg\" type=\"mermaid\">mindmap\n  root((项目 Redis 主线))\n    业务边界\n      公开商品详情\n      MySQL 决定交易\n      本地隔离实验\n    商品读取\n      先捕获 generation\n      负标记与上架检查\n      命中省 SKU 查询\n      未命中加载并回填\n    更新与一致性\n      提交后切换全局代号\n      旧请求只回填旧代\n      失效失败仍会陈旧\n    缓存穿透\n      不存在的 slug\n      missing 标记存五秒\n      随机地址仍会查库\n    并发与雪崩\n      SingleFlight 合并同 Key\n      TTL 抖动分散自然过期\n      多 Key 共用两个名额\n      满员立即返回 503\n    故障与恢复\n      连接与读取超时一百毫秒\n      读取熔断冷却一秒\n      半开一个操作探测\n      epoch 隔离旧操作结果\n    面试证据\n      失败基线与对照实验\n      SQL 与并发峰值\n      本机数据与剩余代价</whiteboard>"
+        },
+        {
+          "token": "ZNyGwXM1RhMIUKbKKS4cXBtVn3g",
+          "block_id": "doxcngJnhy6gZgv6wwmLlUTssVb",
+          "xml": "<whiteboard id=\"doxcngJnhy6gZgv6wwmLlUTssVb\" token=\"ZNyGwXM1RhMIUKbKKS4cXBtVn3g\" />"
+        },
+        {
+          "token": "AZ3OwJ8qihV7plbfi3fcuy0MnCg",
+          "block_id": "doxcnu7Y0NYEQ3i3iTSRSRmwKyg",
+          "xml": "<whiteboard id=\"doxcnu7Y0NYEQ3i3iTSRSRmwKyg\" token=\"AZ3OwJ8qihV7plbfi3fcuy0MnCg\" />"
+        },
+        {
+          "token": "YOIewpstth0a4hb2G9kcQReXnQg",
+          "block_id": "doxcnFCrQ5D26bjCtAPY9T7laJh",
+          "xml": "<whiteboard id=\"doxcnFCrQ5D26bjCtAPY9T7laJh\" token=\"YOIewpstth0a4hb2G9kcQReXnQg\" />"
+        }
+      ]
+    },
+    {
+      "name": "payment-01",
+      "guide": "payment-interview/01-models.md",
+      "node": "N37xwtJ27iZ4XmkYa1uchxswnbc",
+      "doc": "Onm2dT0Two29z9xQwi5cdrrAncT",
+      "base_revision": 2,
+      "segments": 2,
+      "protected_boards": [
+        {
+          "token": "FkR3wDLYqhbSxpb6T1Uc0RdxnDf",
+          "block_id": "doxcnjP6snBqxWZYExV5OLelBLd",
+          "xml": "<whiteboard id=\"doxcnjP6snBqxWZYExV5OLelBLd\" token=\"FkR3wDLYqhbSxpb6T1Uc0RdxnDf\" />"
+        }
+      ]
+    },
+    {
+      "name": "payment-02",
+      "guide": "payment-interview/02-normal-payment.md",
+      "node": "Dn70wUIlKixYzMk0X4kcCvGsnR3",
+      "doc": "Gpgdd1UeAo4fPIx9biBc9gn4nxd",
+      "base_revision": 2,
+      "segments": 2,
+      "protected_boards": [
+        {
+          "token": "WROkw8QXMhIRPrbm2sWcaPzBnOh",
+          "block_id": "doxcnDILpQ2Bq5cnTPfMJqdSCwh",
+          "xml": "<whiteboard id=\"doxcnDILpQ2Bq5cnTPfMJqdSCwh\" token=\"WROkw8QXMhIRPrbm2sWcaPzBnOh\" />"
+        }
+      ]
+    },
+    {
+      "name": "payment-03",
+      "guide": "payment-interview/03-unknown.md",
+      "node": "JyJGwzL2CiiFKhkzrLUcx3pgnUb",
+      "doc": "Qrgid0JhEo91HcxEjktcVk0fnbe",
+      "base_revision": 2,
+      "segments": 2,
+      "protected_boards": [
+        {
+          "token": "GqFMw6eOJhhPTNbOFa5cTvawnSd",
+          "block_id": "doxcnV0QmucKYfJhGpFMXhC7tBc",
+          "xml": "<whiteboard id=\"doxcnV0QmucKYfJhGpFMXhC7tBc\" token=\"GqFMw6eOJhhPTNbOFa5cTvawnSd\" />"
+        }
+      ]
+    },
+    {
+      "name": "payment-04",
+      "guide": "payment-interview/04-idempotency.md",
+      "node": "I0a5wc7LUibRArkMkUHct0swnvc",
+      "doc": "DTCsdol7JoPH8hxKznfcHTAInUc",
+      "base_revision": 2,
+      "segments": 1,
+      "protected_boards": []
+    },
+    {
+      "name": "payment-05",
+      "guide": "payment-interview/05-mq-recovery.md",
+      "node": "CDXkw84eWiDj5ZkzitPcs1PhnIh",
+      "doc": "PHvqdJ10bob22mxCHpccJHKgn4b",
+      "base_revision": 2,
+      "segments": 2,
+      "protected_boards": [
+        {
+          "token": "XyAXwlGotha4ilbXPsqcurCKnue",
+          "block_id": "doxcndy9hRJVm8viVVeTdJzd0og",
+          "xml": "<whiteboard id=\"doxcndy9hRJVm8viVVeTdJzd0og\" token=\"XyAXwlGotha4ilbXPsqcurCKnue\" />"
+        }
+      ]
+    },
+    {
+      "name": "payment-06",
+      "guide": "payment-interview/06-expiration.md",
+      "node": "Kc9EwXMzni8ttTkYgk6cxSFknSd",
+      "doc": "AU7EdZEQ7oZRHexUSYicaQU5nHe",
+      "base_revision": 2,
+      "segments": 2,
+      "protected_boards": [
+        {
+          "token": "LxS7wKkWJhP8hwbr5SocRy0FnFc",
+          "block_id": "doxcn6wrRdJuUhV4sfM0CVWNdxb",
+          "xml": "<whiteboard id=\"doxcn6wrRdJuUhV4sfM0CVWNdxb\" token=\"LxS7wKkWJhP8hwbr5SocRy0FnFc\" />"
+        }
+      ]
+    },
+    {
+      "name": "payment-07",
+      "guide": "payment-interview/07-evidence.md",
+      "node": "KsqfwyvRZiYtsnkB09HcBsQWnpe",
+      "doc": "RMlTdRE77oLPyBxAE9GcuUuTnwh",
+      "base_revision": 2,
+      "segments": 1,
+      "protected_boards": []
+    }
+  ],
+  "new_redis_pages": [
+    {
+      "decision": {
+        "presentation_mode": "normal",
+        "genre_contract": "router.knowledge",
+        "reader_task": "结合Project One源码与历史证据解释：为什么缓存命中后仍查MySQL？",
+        "visual_plan": {
+          "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+          "blocks": []
+        },
+        "adapter": null,
+        "audience": "准备中国后端实习面试的初学者项目作者"
+      },
+      "title": "为什么缓存命中后仍查MySQL？",
+      "draft_path": "draft_cd2ad507_folder\\draft.xml",
+      "workspace": "draft_cd2ad507_folder"
+    },
+    {
+      "decision": {
+        "presentation_mode": "normal",
+        "genre_contract": "router.knowledge",
+        "reader_task": "结合Project One源码与历史证据解释：更新后怎样防止旧请求回填旧数据？",
+        "visual_plan": {
+          "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+          "blocks": []
+        },
+        "adapter": null,
+        "audience": "准备中国后端实习面试的初学者项目作者"
+      },
+      "title": "更新后怎样防止旧请求回填旧数据？",
+      "draft_path": "draft_50b1e725_folder\\draft.xml",
+      "workspace": "draft_50b1e725_folder"
+    },
+    {
+      "decision": {
+        "presentation_mode": "normal",
+        "genre_contract": "router.knowledge",
+        "reader_task": "结合Project One源码与历史证据解释：同一个热点与多个冷商品怎样保护数据库？",
+        "visual_plan": {
+          "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+          "blocks": []
+        },
+        "adapter": null,
+        "audience": "准备中国后端实习面试的初学者项目作者"
+      },
+      "title": "同一个热点与多个冷商品怎样保护数据库？",
+      "draft_path": "draft_d509b9ac_folder\\draft.xml",
+      "workspace": "draft_d509b9ac_folder"
+    },
+    {
+      "decision": {
+        "presentation_mode": "normal",
+        "genre_contract": "router.knowledge",
+        "reader_task": "结合Project One源码与历史证据解释：Redis坏了、慢了、恢复了，分别怎么办？",
+        "visual_plan": {
+          "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+          "blocks": []
+        },
+        "adapter": null,
+        "audience": "准备中国后端实习面试的初学者项目作者"
+      },
+      "title": "Redis坏了、慢了、恢复了，分别怎么办？",
+      "draft_path": "draft_ca30fb8b_folder\\draft.xml",
+      "workspace": "draft_ca30fb8b_folder"
+    },
+    {
+      "decision": {
+        "presentation_mode": "normal",
+        "genre_contract": "router.knowledge",
+        "reader_task": "结合Project One源码与历史证据解释：不存在的商品为什么也要缓存？",
+        "visual_plan": {
+          "reason": "通过具体业务时序、对照表和少量核心代码建立可口述机制，相关已发布图以链接复用",
+          "blocks": []
+        },
+        "adapter": null,
+        "audience": "准备中国后端实习面试的初学者项目作者"
+      },
+      "title": "不存在的商品为什么也要缓存？",
+      "draft_path": "draft_5deb0f8d_folder\\draft.xml",
+      "workspace": "draft_5deb0f8d_folder"
+    }
+  ],
+  "existing_node_moves": 0,
+  "existing_board_mutations": 0
+}
