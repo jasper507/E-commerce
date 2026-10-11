@@ -1,0 +1,42 @@
+<p>2026-10-11。源码核对快照：<b>7ea1963f2a7eec6018852e7d3c17b007d1e6d190</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/WN1jwXDj0iPXm7kwLyHcmneenlb">项目总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/search-interview-knowledge-base-publication.md">本轮文档与发布验证</a>。</p>
+<p><b>这条搜索故事的重点，是怎样改变商品检索语义，并守住第二份数据的陈旧、失败和切换边界。当前证据没有证明ES比MySQL更快；顾客前端仍使用MySQL列表，独立ES入口默认关闭，只能读取指定隔离测试来源。</b></p>
+<p>面试时你需要独立解释：顾客想找什么、MySQL原规则哪里有限、ES改变了哪一步、为什么搜到还要回读，以及副本变化后哪些问题仍然存在。能讲清一个正常流程、一个陈旧例子和一次未知切换结果，就已有可展示的工程理解；这轮使用已有证据，不追加服务或负载实验。</p>
+<h1>先按五个业务问题阅读</h1>
+<table><thead><tr><th><p>问题页</p></th><th><p>读完应该能够解释</p></th></tr></thead><tbody><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/DmgkwAVBpiggdFkjj8ectYmPndf">为什么用ES，MySQL搜索不够吗？</a></p></td><td><p>包含匹配、真实查询基线、文本需求变化；怎样有理由引入第二个服务</p></td></tr><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/USNKwkcJ9idNvUkUJzhcvBDbnUt">中文商品怎样被搜出来？</a></p></td><td><p>CJK词项、同字段AND、空格/换序/单字反例；什么叫可读的完成索引</p></td></tr><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/OxKOweFPWi4q2Kkc9YLc37DWnph">为什么搜到以后还要查MySQL？</a></p></td><td><p>ES候选排序、当前可见性与摘要、候选分页、短空页与漏召回</p></td></tr><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/AIHbw0c6CiOJnGkOrJkccSZvnvg">怎样重建并安全切换索引？</a></p></td><td><p>先建新副本、再切读别名；异常后回读、旧在途请求、单操作者边界</p></td></tr><tr><td><p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/CMWBwMhsiinZ4XkHoJjcRR7SnZb">ES故障或数据陈旧怎么办？</a></p></td><td><p>503与正常无命中、超时合同、测试隔离、同步替代与重做门槛</p></td></tr></tbody></table>
+<p>每页都包含业务场景、关键流程、设计理由、替代方案、核心代码、证据和“如果重新做”。总览串起主线，问题页展开容易被追问的机制；历史切片仍保留。</p>
+<h1>1. 原业务规则怎样工作，为什么会考虑另一种搜索</h1>
+<p>顾客输入“无线鼠标”，最初的MySQL商品列表检查名称或描述是否连续包含完整输入，再按名称和ID排序，每页20件。输入“无线鼠标”能命中“无线鼠标 M1”；输入“鼠标 无线”没有连续出现在商品文字中，就不命中。空白关键词继续普通浏览。</p>
+<p>这是简单且合理的起点：一个数据库就能提供当前商品、分类、有效SKU最低价和有货提示。7A在隔离数据上观察到5,000件可见商品、2件隐藏商品及10,004个SKU和对应库存记录；关键词命中500件却只返回20件，完整查询仍有过滤、聚合、排序和COUNT工作。分页限制返回量，没有把查询成本变成只读20行。</p>
+<p>考虑ES，是为了评估词项匹配、名称权重与相关性排序，以及可重建搜索副本的机制。这个理由包含明确能力目标；已有基线没有形成“原搜索太慢”的性能结论。</p>
+<p>Elasticsearch（ES，独立文本检索服务）保存可从MySQL重新生成的商品搜索资料。当前索引包含商品ID、slug、分类slug、名称、描述，<b>不含价格、库存、订单和付款状态</b>。CJK分析器将部分中文拆为相邻双字词项；查询采用<b>multi_match / best_fields / operator=and</b>，要求名称或描述中的同一个字段满足全部查询词项，允许词序变化。它不是严格短语匹配，也不是跨字段把词凑齐。</p>
+<p>7B固定数据中，完整“无线鼠标”、带空格“无线 鼠标”、换序“鼠标 无线”的ES命中分别5、6、6，MySQL为5、1、0；单字“标”则ES为0，MySQL为6。<b>这是不同检索规则的真实反例，不能说中文搜索全面更好。</b> 名称权重<b>name^3</b>影响相关性，也不能解释成所有名称命中固定得三倍分数。</p>
+<h1>2. 一次搜索怎样走到当前商品，再进入交易</h1>
+<p>当前独立接口为<b>GET /api/catalog/search/?q=无线鼠标&amp;category=mice&amp;page=1</b>，公开只读。它不会写订单、预占库存或修改索引。</p>
+<ol><li>校验关键词、分类和页码；q非空且最长80字符，page范围1～500。非法参数返回400，搜索开关关闭返回503。</li><li>核对实际MySQL为<b>test_project_one</b>，且没有外层数据库事务。实际<b>SELECT DATABASE()</b>验证的是连接身份，不能仅相信配置中的库名。</li><li>检查隔离ES集群和版本。配置精确索引，或将一个单目标、无过滤/路由的读别名解析一次；之后这次请求固定读该精确索引。</li><li>核对索引来源与完成标记；ES按相关性降序、同分ID升序返回本页最多20个候选ID和精确候选总数。超时、失败分片和异常ID等不能当成完整正常结果。</li><li>检查10,000候选窗口和页尾：候选过多返回400要求缩小范围，合法窗口中超出候选尾的后续页404。</li><li>MySQL只回读这一页ID，重新检查商品/分类当前可见性及指定分类，计算当前最低价和有货提示，再按ES原ID顺序返回摘要。</li></ol>
+<whiteboard type="blank"></whiteboard>
+<p><a href="https://github.com/jasper507/E-commerce/blob/main/docs/learning/assets/search-interview-2026-10-11/read-sequence/diagram.mmd">可编辑时序源</a>。上面的文字与图表达同一合同：不持有MySQL业务事务等待ES，各次ES操作配置2秒、零自动重试，这不是整个HTTP请求最多2秒。</p>
+<p>顾客随后点击具体SKU，加入购物车仍只记录购买意图；真正下单时，原MySQL业务事务重新校验当前商品、价格、地址和库存，保存订单快照并预占。搜索显示89元和有货，只是读取时的商品摘要。后续付款按订单金额核销原预占，ES不参与扣库存、确定成交金额或确认付款。</p>
+<h1>3. 回读为什么有效，又为什么不能修完陈旧问题</h1>
+<p>假设ES给出<b>[31, 12, 27]</b>：12已下架，27从159元改成89元并补货。MySQL回读会排除12，返回31、27；27显示当前89元和有货，顺序仍沿用ES。SQL的<b>IN</b>不会保证输入ID顺序，因此当前代码先用ID建立字典，再按候选ID组装结果。</p>
+<p>但如果27原名“陈旧键盘”，后来改名“新款音箱”，旧关键词仍可能召回它，新关键词可能完全找不到它。MySQL可以返回当前名称，不能凭空增加ES没有给出的ID。迁分类或新增商品也有同类问题。当前没有自动同步，手动重建才会让后续读别名指向新的文本副本。</p>
+<table><thead><tr><th><p>读到什么</p></th><th><p>API表达</p></th><th><p>顾客/前端应该怎样理解</p></th></tr></thead><tbody><tr><td><p>ES正常且没有候选</p></td><td><p>第一页200，<b>candidate_count=0</b>，<b>results=[]</b></p></td><td><p>可确认这套检索规则没有命中</p></td></tr><tr><td><p>有候选，但本页已全部隐藏</p></td><td><p>200空<b>results</b>，仍可能有<b>next_candidate_page</b></p></td><td><p>可以继续下一段候选，空页不等于到尾</p></td></tr><tr><td><p>ES或索引身份无法确认</p></td><td><p>503，搜索暂不可用</p></td><td><p>不能显示成“没有商品”；普通MySQL浏览仍是另一入口</p></td></tr><tr><td><p>索引旧而漏掉新增文字/商品</p></td><td><p>当前结果中没有该ID</p></td><td><p>回读不能补召回，需要处理副本新鲜度</p></td></tr></tbody></table>
+<p>例如21个候选，前20件随后下架：第一页实际返回0条，候选总数仍21，下一候选页仍为2；第二页仍返回最后一件。当前响应字段只有<b>candidate_count</b>、<b>next_candidate_page</b>、<b>previous_candidate_page</b>、<b>results</b>，实际返回数为<b>len(results)</b>。没有<b>returned_count</b>字段，也没有声称候选总数是当前可售总数。</p>
+<p>不补满短页，避免悄悄扩大回读量和制造含糊计数；代价是前端要正确解释短空页。没有固定跨请求快照，别名切换或数据变化可造成翻页位置漂移。</p>
+<h1>4. 重建怎样成为新的读副本</h1>
+<p>当前是同一builder（构建器对象）和单操作者的隔离手动流程，尚无独立运维命令或自动同步。</p>
+<p>先将MySQL搜索资料物化为内存列表，结束来源读取后再等待ES。每次创建新的随机精确索引，初始标记未完成；分批Bulk写入，检查每项失败，refresh后核对写入数、实际文档数和分片，再标记完成并加入本次构建器的可发布集合。HTTP200不表示Bulk每条文档都成功，数量相等也不证明每个字段正确。</p>
+<p>切换前重新核对读别名仍指向预期旧索引，在一个<b>update_aliases</b>请求中移除旧指向并添加新指向。这个读入口别名只是稳定名字，不是复制数据；已经解析到旧精确索引的在途请求继续读旧索引，旧资源暂时保留。</p>
+<p><b>无论切换调用正常返回还是报错，都要回读别名。</b> 新索引已成为目标是<b>switched</b>，仍为预期旧索引是<b>unchanged</b>，读不出来或目标不符合两者是<b>unknown</b>。异常可能发生在服务端已执行之后，不能盲目再切、反向回滚或删除候选。<b>response_ok</b>和实际状态分别记录。</p>
+<p>详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/AIHbw0c6CiOJnGkOrJkccSZvnvg">索引切换页及其时序图</a>。一次别名操作的原子性不等于MySQL与ES共同事务，切换前检查也不是多操作者CAS（只有预期旧值仍成立才更新的比较交换）。当前单操作者限制、旧索引资源成本、跨页变化与人工调查责任仍然存在。</p>
+<h1>5. 面试中可以引用哪些真实证据</h1>
+<p>下表均为既有隔离验证，本轮没有重跑。注入是测试主动制造的异常条件，不能冒充实际断网或多节点故障。</p>
+<table><thead><tr><th><p>阶段与日期</p></th><th><p>已观察的关键结果</p></th><th><p>结论边界</p></th></tr></thead><tbody><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7a-search-baseline.md">7A，2026-10-09</a></p></td><td><p>500/20、250/20及零命中，捕获COUNT/列表SQL和执行计划</p></td><td><p>MySQL基线；没有同条件ES时延对照</p></td></tr><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7b-search-index-prototype.md">7B，2026-10-10</a></p></td><td><p>实际ES写入、CJK词项、空格/换序/单字反例</p></td><td><p>原型与有限中文语义，不能外推全面质量</p></td></tr><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7c-search-read-api.md">7C，2026-10-10</a></p></td><td><p>修正后在线8项中5项真实ES/MySQL、3项单元/注入；真实离线1项</p></td><td><p>当前摘要、保序、短空页及503；不是前端完整链路</p></td></tr><tr><td><p><a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7d-search-index-switch.md">7D，2026-10-10</a></p></td><td><p>在线18 passed/2 skipped，目录回归24 passed/6 subtests；新2命中、旧在途完成、真实Bulk坏项不切换</p></td><td><p>指定隔离服务、单操作者场景</p></td></tr><tr><td><p>7D切换响应异常</p></td><td><p>实际POST执行后主动抛超时；回读分别switched/unknown，各只写1次并保留两索引</p></td><td><p>包装器注入，未证明真实丢包或主节点故障</p></td></tr></tbody></table>
+<p>正常非空候选读观察到2条SQL：实际来源检查与商品摘要；真实离线503只做来源检查，0商品摘要SQL，旧浏览仍200。离线单次约2秒不能用来保证全部请求时限。7C首轮查询日志有统计时机错误，最终补跑JSON才是数量依据。</p>
+<p>7B还发生过测试来源事故：拒绝测试临时修改真实连接目标后打开了开发连接，恢复配置没有切换这个活连接，teardown误清开发库4张表。修正为模块连接替身并核对实际来源，经拥有者确认恢复139条记录并逐字段核验；公开脱敏依据见<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7b-test-isolation-incident.md">隔离事故记录</a>。不能声称开发数据始终未被写过，也不能把恢复演练说成生产灾备能力。</p>
+<h1>6. 如果重新做，我会保留什么，先改什么</h1>
+<p><b>我会保留MySQL权威交易事实与搜索候选的分工，以及先建新索引、核对完成、再切读入口的思路。会更早明确检索合同和副本新鲜度，并把真实连接身份作为隔离前置条件。</b></p>
+<p>业务仍简单、完整包含匹配足够时，可以继续MySQL，先观察真实查询和需求。只有明确需要当前ES能提供的文本语义、排序或搜索工作分离，且收益超过维护第二份数据的成本，才扩大ES范围。MySQL FULLTEXT等候选也要用相同输入、中文规则和计划来评估，不能凭技术名词决定。</p>
+<p>若业务要求改名后很快被新词搜到，我会先定义允许多久陈旧、失败怎样发现、怎样全量核对，再比较定期重建与有版本的增量同步。Transactional Outbox（在源事务同时记下待发布变更）可以作为需要可靠同步时的候选；它带来发布、重复、乱序、删除和积压恢复责任，当前尚未实现，MQ本身也不能补上所有数据库提交到消息发布之间的窗口。</p>
+<p>若明确需要多人运维切换，则单操作者约定不够，需要额外协调和审计；若明确需要跨页稳定，再评估搜索快照/游标及资源成本。独立部署本轮仍关闭ES，不能因为知识库已生成就启用。每项下一步都应由具体业务缺口和最小充分证据触发，当前先把已有流程、失败与代价讲清。</p>
+<h1>历史切片入口</h1>
+<p><a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/learning/phase-7a-product-search-baseline-study-guide.md">7A MySQL基线</a> · <a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/learning/phase-7b-search-index-prototype-study-guide.md">7B索引原型</a> · <a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/learning/phase-7c-search-read-api-study-guide.md">7C候选读接口</a> · <a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/learning/phase-7d-search-index-switch-study-guide.md">7D手动切换</a>。历史“下一片”“无别名”等表述属于当时状态；后续更新沿当前问题页阅读。</p>

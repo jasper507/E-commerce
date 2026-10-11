@@ -1,0 +1,14 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "document":  {
+                                  "revision_id":  2,
+                                  "url":  "https://ocnbkcx1ug58.feishu.cn/docx/HBiyd9nJloSVcGxayeYcm7gWnkb"
+                              },
+                 "result":  "partial_success",
+                 "warnings":  [
+                                  "degrade_code=2107,msg=Whiteboard content parse failed. Check the whiteboard content format"
+                              ]
+             }
+}

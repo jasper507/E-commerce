@@ -1,6 +1,6 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-11。本页收录55份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。新增的13份是Redis总览/五问题页与支付七问题页。本轮[知识库重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)仅记录文档检查与发布，ES与部署的历史验证仍见各专题。
+更新：2026-10-11。本页收录61份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索总览与五问题页再新增6份。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)与[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)只记录文档检查与发布，服务历史验证仍见各专题。
 
 先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易和三条技术故事，再读[支付当前总览](payment-current-overview-study-guide.md)、[Redis当前总览](redis-current-overview-study-guide.md)及其问题页。以面试为最高优先级：讲清业务流程、失败交错、设计理由、替代与代价、核心代码、真实证据和“如果重做”。原图与历史资料继续保留。
 
@@ -94,6 +94,8 @@ ACK是Worker向队列确认消息已处理；业务成功仍以MySQL提交的支
 6C-4没有单独验证文件：本片静态检查及所依据的6C-2/3历史证据记录在[ADR 0001](../adr/0001-flash-sale-inventory-conditional-update.md)。6D第一轮记录与[6D-2等待验证](../verification/phase-6d2-flash-sale-http-wait.md)也应区分阅读，避免混用等待政策。
 
 ## 6. 商品搜索：从MySQL基线到可重建查询副本
+
+当前复习入口是[搜索总览](search-current-overview-study-guide.md)，按五个问题深入：[为什么用ES](search-interview/01-why-search.md)、[中文与索引](search-interview/02-chinese-index.md)、[候选回读](search-interview/03-read-path.md)、[重建切换](search-interview/04-index-switch.md)、[故障与一致性](search-interview/05-failure-consistency.md)。六页包含业务流程、核心代码、替代代价、真实证据与重做选择，两张时序图对应读请求和别名切换；默认关闭与仅测试来源的边界保留。
 
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |

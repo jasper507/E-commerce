@@ -1,0 +1,18 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_child":  false,
+                 "node_token":  "CMWBwMhsiinZ4XkHoJjcRR7SnZb",
+                 "node_type":  "origin",
+                 "obj_token":  "IIgodc9bjo7QL7x5XGWctiCQnBb",
+                 "obj_type":  "docx",
+                 "origin_node_token":  "CMWBwMhsiinZ4XkHoJjcRR7SnZb",
+                 "parent_node_token":  "KxWQwuGFsiqO3Wk4m7TcZxXBnih",
+                 "resolved_by":  "explicit_space_id",
+                 "resolved_space_id":  "7693476782908935142",
+                 "space_id":  "7693476782908935142",
+                 "title":  "ES故障或数据陈旧怎么办？",
+                 "url":  "https://ocnbkcx1ug58.feishu.cn/wiki/CMWBwMhsiinZ4XkHoJjcRR7SnZb"
+             }
+}

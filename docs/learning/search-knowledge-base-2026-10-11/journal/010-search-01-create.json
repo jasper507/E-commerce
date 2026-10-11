@@ -1,0 +1,18 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_child":  false,
+                 "node_token":  "DmgkwAVBpiggdFkjj8ectYmPndf",
+                 "node_type":  "origin",
+                 "obj_token":  "FrnmdQzjqoCvU8xWYHKcR4XCntf",
+                 "obj_type":  "docx",
+                 "origin_node_token":  "DmgkwAVBpiggdFkjj8ectYmPndf",
+                 "parent_node_token":  "KxWQwuGFsiqO3Wk4m7TcZxXBnih",
+                 "resolved_by":  "explicit_space_id",
+                 "resolved_space_id":  "7693476782908935142",
+                 "space_id":  "7693476782908935142",
+                 "title":  "为什么用ES，MySQL搜索不够吗？",
+                 "url":  "https://ocnbkcx1ug58.feishu.cn/wiki/DmgkwAVBpiggdFkjj8ectYmPndf"
+             }
+}

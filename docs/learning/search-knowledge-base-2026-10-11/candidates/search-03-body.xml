@@ -1,0 +1,62 @@
+<p>2026-10-11。源码快照：<b>7ea1963f2a7eec6018852e7d3c17b007d1e6d190</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/KxWQwuGFsiqO3Wk4m7TcZxXBnih">搜索总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/search-interview-knowledge-base-publication.md">文档核对记录</a>。</p>
+<p><b>ES返回的是旧副本中的一页候选，MySQL回读负责当前可见性和商品摘要；回读能剔除已下架商品、返回当前价格，却不能找回ES没有召回的商品。</b> 这条边界决定了为什么可能短页、空页，为什么总数叫candidate_count，以及为什么回读之后仍不能声称实现实时搜索。</p>
+<p>它支撑的面试能力是：独立解释两个存储怎样分工、哪些事实必须当前确认，以及分页与故障合同怎样避免误导用户。</p>
+<h1>1. 一次请求从输入走到商品摘要</h1>
+<p>假设顾客输入<b>无线鼠标</b>，请求<b>GET /api/catalog/search/?q=无线鼠标&amp;category=mice&amp;page=1</b>。接口为公开只读，游客可以访问；它不写订单、库存或索引。</p>
+<ol><li>校验q非空、首尾去空白、最多80字符；page默认1、范围1～500；category可选。非法参数先返回400，关闭的搜索入口返回503，不先创建ES客户端或读取商品摘要。</li><li>读适配器核对实际MySQL为隔离<b>test_project_one</b>，且没有持有外层数据库事务。这个检查包含实际<b>SELECT DATABASE()</b>，防止测试索引ID被带到另一套商品数据中。</li><li>检查ES地址、集群和版本。配置精确候选索引，或者配置一个精确单目标只读别名，两者只能选一个；如果使用别名，每个请求只解析一次，之后始终查询这个精确索引。</li><li>读取索引来源/完成标记；只有符合约定的已完成候选可读。ES按相关性降序、同分商品ID升序，取本页最多20个ID，并给出精确候选总数。</li><li>检查ES结果完整性、候选总数、ID数量/类型/唯一性，再检查10,000候选上限及是否超出候选尾。</li><li>MySQL只回读这页ID，检查当前商品、分类和指定分类，计算有效SKU最低价、有货提示，再按ES的ID顺序组装摘要响应。</li></ol>
+<p>这条流程不持有MySQL业务事务去等待ES，不锁库存；网络等待和商品浏览不是支付核销或下单预占。</p>
+<p><a href="https://github.com/jasper507/E-commerce/blob/main/docs/learning/assets/search-interview-2026-10-11/read-sequence/diagram.mmd">查看可编辑时序源</a>。图示的是当前独立隔离接口；顾客前端仍接原MySQL商品列表，ES没有在独立部署中启用。</p>
+<h1>2. 为什么把价格、库存留在MySQL</h1>
+<p>假设建索引时某鼠标最低价159元且无货，后来价格改成89元、补货7件。ES仍只有当时的名称、描述和分类标识，没有复制159元和库存数量。回读摘要时MySQL可以返回89元和<b>in_stock=true</b>，无需先重建搜索文档才能展示变化。</p>
+<p>当前摘要规则与原公开目录共用：<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/backend/apps/catalog/views.py#L30">有效SKU最低价及有货提示</a>。</p>
+<pre lang="python"><code>Product.objects.filter(is_active=True, category__is_active=True)
+.select_related(&quot;category&quot;)
+.annotate(
+    lowest_price=Min(&quot;skus__price&quot;, filter=Q(skus__is_active=True)),
+    in_stock=Exists(Inventory.objects.filter(
+        sku__product_id=OuterRef(&quot;pk&quot;), sku__is_active=True, available_stock__gt=0,
+    )),
+)</code></pre>
+<p>这是源码中的查询表达式摘录，外层函数和return括号省略。最低价只算有效SKU；例如有效SKU129元、149元，隐藏SKU1元，则最低价129元。只要任一个有效SKU可用库存大于0，有货提示就为true；隐藏SKU的99库存不能让商品冒充有货。</p>
+<p>有货提示不提供库存数量，也不为顾客保留名额。没有有效SKU的可见商品仍可返回，最低价null、有货false。顾客点击具体SKU下单时，原业务服务再次校验价格与权威库存，在MySQL事务里创建快照和预占。搜索页读过89元、显示有货，不代表之后下单一定保持这些值。</p>
+<p>将价格库存放入ES也能让展示少一次回读，但会扩大陈旧数据影响和同步责任；订单金额仍不能直接信任这个副本。本项目宁可明确保留MySQL摘要查询，也不把搜索结果当交易凭据。</p>
+<h1>3. 三个候选怎样变成两个结果，还保留顺序</h1>
+<p>设ES给出ID顺序<b>[31, 12, 27]</b>。31是名称高相关商品，12已经下架，27已经改价。</p>
+<p>MySQL使用<b>pk__in</b>找这些ID，只保留当前商品和分类有效的记录，并在指定分类时核对当前分类归属。结果31和27进入字典；最后按照原候选顺序取出31、27。27的当前名称、分类、价格和有货提示来自MySQL，12被排除。</p>
+<p>关键代码见<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/backend/apps/catalog/views.py#L70">候选回读与保序</a>：</p>
+<pre lang="python"><code>queryset = public_product_summaries().filter(pk__in=ids)
+if category:
+    queryset = queryset.filter(category__slug=category)
+current = {product.pk: product for product in queryset}
+# SQL IN不保留相关性顺序；过滤陈旧候选后也不补拉或重做LIKE匹配。
+products = [current[product_id] for product_id in ids if product_id in current]</code></pre>
+<p>SQL的<b>IN</b>表示选中这些ID，不保证按传入ID顺序返回。若直接序列化SQL结果，或者重新按名称排序，就会丢掉ES的相关性排序。字典用于方便按ID取对象，最后的列表推导式才恢复候选顺序。</p>
+<p>如果商品移到了另一分类，指定旧分类的ES可能仍把它给出来，MySQL会再过滤；新分类查询却可能根本没有该ID，因此回读没有机会补上它。这正是“过滤错误候选”和“找回遗漏候选”两个不同问题。</p>
+<h1>4. 回读能够纠正什么，不能纠正什么</h1>
+<table><thead><tr><th><p>索引构建后发生的变化</p></th><th><p>当前回读可以做什么</p></th><th><p>仍然存在什么问题</p></th></tr></thead><tbody><tr><td><p>商品下架或分类隐藏</p></td><td><p>不返回该候选</p></td><td><p>旧候选仍占ES总数和候选页位置</p></td></tr><tr><td><p>价格、有效SKU、库存变化</p></td><td><p>返回读取时的当前摘要</p></td><td><p>下单前仍可能变化，没有库存承诺</p></td></tr><tr><td><p>商品改名</p></td><td><p>返回当前名字</p></td><td><p>旧关键词仍可能让它命中，新关键词可能漏掉它</p></td></tr><tr><td><p>分类迁移</p></td><td><p>指定分类时再次检查当前归属</p></td><td><p>新分类过滤可能召回不到旧索引中的商品</p></td></tr><tr><td><p>新建可见商品</p></td><td><p>只有候选出现时才能回读</p></td><td><p>尚未入索引的商品完全不会出现在候选页</p></td></tr></tbody></table>
+<p>7C真实场景把“陈旧键盘”改名为“新款音箱”，价格159→89，库存0→7。旧关键词仍产生5个候选；当前MySQL排除下架与隐藏分类商品后返回3个，其中出现当前名称“新款音箱”、89元、有货。指定旧分类时4候选只返回2个。新名字、新分类和新增商品仍查不到。</p>
+<p>这组结果不是bug被全部修好了，而是精确展示当前合同：<b>可见性和摘要由MySQL守住，文本召回仍可能陈旧。</b> 本接口不再加MySQL <b>LIKE</b>检查，因为那会把ES换序词项匹配偷偷改回完整包含；即使再次过滤也不能找回完全未被召回的ID。</p>
+<h1>5. 为什么总数叫candidate_count，短页还能有下一页</h1>
+<p>两层读取不能共享一个含糊的count。ES算得出它的候选总数，却不知道后续MySQL会排除多少、当前分类又怎样变化。</p>
+<table><thead><tr><th><p>响应字段</p></th><th><p>表达什么</p></th></tr></thead><tbody><tr><td><p><b>candidate_count</b></p></td><td><p>本次ES查询的精确候选总数，包含可能陈旧的候选</p></td></tr><tr><td><p><b>next_candidate_page</b></p></td><td><p>是否还有下一段候选位置，有则整数页码</p></td></tr><tr><td><p><b>previous_candidate_page</b></p></td><td><p>上一段候选位置的页码</p></td></tr><tr><td><p><b>results</b></p></td><td><p>这页候选通过当前MySQL检查后的公开商品摘要</p></td></tr></tbody></table>
+<p>用21个同文本商品的真实隔离场景解释：首次第一页20件，第二页1件。下架第一件后，第一页只返回19件，但<b>candidate_count=21</b>且下一页还是2。再下架前20件，第一页返回200空结果，下一页仍为2；第二页仍可见最后1件。</p>
+<p><b>少于20条或空results，不代表候选已经到尾。</b> 若前端仅根据返回条数禁用下一页，会把第二页的可见商品挡住。200空页可能是有效候选全部被当前可见性过滤；503则是无法确认搜索结果，不能显示成“没有商品”。</p>
+<p>没有命中时第一页200空结果；超出候选尾的后续页404。page只允许1～500，20×500形成10,000个候选窗口；候选总数超过10,000返回400，要求缩小关键词或分类，不继续深翻。</p>
+<p>当前不补页，也不回读所有候选后重新计数。若要提供每页20个当前可见商品与精确当前总数，就必须读取更多甚至全部候选，按ES顺序过滤后再分页；这扩大ES请求、数据库工作和应用内存，并仍需要定义变化期间怎样保持快照。另一方案是逐段多拉一些直到凑满，但它也必须有工作上限，且不能自动得到精确全量可见总数。两者都不是当前实现。</p>
+<p>ES页码使用位置偏移，没有PIT（固定搜索快照）。同分ID排序提供单次稳定顺序，索引切换或数据变化后，跨请求页码位置仍可能漂移，产生重复或遗漏；不能承诺整次翻页一致。</p>
+<h1>6. 为什么还要检查完成标记和来源</h1>
+<p>新请求只读取一个精确候选索引，或先解析单目标别名再固定索引。7D切换之后，已经解析到旧索引的在途请求继续读旧候选，后来请求才读新候选；当前MySQL摘要仍是各自读取时的事实，不是两系统共同快照。</p>
+<p>索引必须带精确来源/完成元数据，尚未完成或来源不符返回503。只记录库名不等于记录数据代次：如果销毁<b>test_project_one</b>再用同名创建另一批商品，旧索引ID可能碰巧对应新商品。<b>索引和测试库必须属于同一生命周期，数据库重建以后旧索引与别名作废。</b></p>
+<p>ES响应HTTP200仍可能<b>timed_out=true</b>或有失败分片；近似总数、重复ID、类型错误或候选数量不符合这一页预期，也不能作为完整正常结果。读适配器会拒绝，API返回503；单字无命中等语义反例则是可确认的正常200。</p>
+<p>故障规则与替代降级详见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/CMWBwMhsiinZ4XkHoJjcRR7SnZb">ES故障与陈旧数据</a>。当前每请求建立/关闭ES客户端，多个ES调用各设置2秒、零自动重试；这不是整个HTTP请求2秒完成的保证。</p>
+<h1>7. 真实证据说明到哪里</h1>
+<p>2026-10-10的7C修正后在线8项通过，其中5项真实ES/MySQL、3项单元或注入；真实停服务后的离线1项通过。正常非空候选请求实际2条SQL：来源检查和当前商品摘要；离线503实际仅1条来源检查、0商品摘要SQL，旧浏览仍200。</p>
+<table><thead><tr><th><p>证据</p></th><th><p>支持的解释</p></th><th><p>不支持的扩大结论</p></th></tr></thead><tbody><tr><td><p>当前摘要、保序、隐藏SKU场景</p></td><td><p>ES顺序保留，MySQL当前业务摘要有效</p></td><td><p>不是交易价格/库存承诺</p></td></tr><tr><td><p>改名、下架、迁分类、增商品</p></td><td><p>过滤陈旧候选与遗漏召回是不同问题</p></td><td><p>没有实时同步</p></td></tr><tr><td><p>21候选短页、空页与第二页</p></td><td><p>候选数和当前返回数区分，不补页</p></td><td><p>没有跨页固定快照</p></td></tr><tr><td><p>实际ES离线503、旧浏览200</p></td><td><p>搜索故障明示、原浏览可用</p></td><td><p>没有自动降级或多节点容灾</p></td></tr><tr><td><p>注入10,001总数和坏响应</p></td><td><p>对窗口与完整性分支的处理</p></td><td><p>不是实际10,001文档负载或真实多节点分片故障</p></td></tr></tbody></table>
+<p>原始依据为<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7c-search-read-api.md">7C验证记录</a>、<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7c-search-read-online-final.json">最终在线JSON</a>、<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7c-search-read-offline-final.json">最终离线JSON</a>。首轮JSON曾因查询日志读取过晚把SQL数量错误记录为0，已经保留首轮并补跑修正，以上最终记录才是数量依据。</p>
+<p>7D的别名支持属于后续已实现当前行为，见<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7d-search-index-switch.md">7D验证</a>。7C历史文档中“不接受别名”的边界只描述当时，不应照抄成今天的限制。</p>
+<p>这些是隔离APIClient与指定真实服务/注入场景的证据，没有浏览器→真实HTTP→ES→MySQL整条前端搜索验收，没有同条件时延对照或生产容量结论。本轮只核对资料和代码。</p>
+<h1>8. 如果重新做，我会改什么</h1>
+<p><b>我会保留候选与当前事实的分工，先补明确的搜索页面体验和索引新鲜度合同，而不是取消MySQL回读去追求少一次查询。</b> 原方案在小范围中把不同数据角色分清，也避免交易读到ES中的陈旧金额库存，这个边界仍值得保留。</p>
+<p>会改进的是，前端明确展示暂不可用、候选空页和继续翻页，不把候选总数标成当前可售数量。如果业务必须每页尽量满，我会在已有陈旧场景上评估有上限的多拉候选；只有真实需求需要跨页稳定浏览时，才比较固定搜索快照和后续游标方案。</p>
+<p>对于召回遗漏，改进方向是可核对的商品变更版本与同步/重建流程，具体候选放在故障与新鲜度页。单纯补一个MySQL过滤条件不能解决ES缺少ID的问题。</p>
+<p>新增成本包括更多候选读取、页面状态、同步失败处理和快照资源维护。采用门槛是业务明确要求，以及现有小场景能够展示改进和剩余限制；当前实现不能被写成已具备这些能力。已有保序、当前摘要、短空页与故障证据足够解释本页，整理到此收束。</p>

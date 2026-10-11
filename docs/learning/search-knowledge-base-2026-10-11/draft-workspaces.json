@@ -1,0 +1,142 @@
+[
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\search-knowledge-base-2026-10-11",
+        "title":  "商品搜索：MySQL → Elasticsearch",
+        "key":  "search",
+        "board":  "read-sequence",
+        "draft_path":  "draft_80de8236_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+                                                            {
+                                                                "purpose":  "解释真实读流程或索引发布、失败回读与剩余边界",
+                                                                "type":  "whiteboard",
+                                                                "min_count":  1
+                                                            }
+                                                        ],
+                                             "reason":  "以业务解释和核心代码为主，关键交互用时序图"
+                                         },
+                         "adapter":  "knowledge-base",
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "电商项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "独立讲清业务问题、完整流程、失败例子、替代代价、真实证据与重做选择"
+                     },
+        "workspace":  "draft_80de8236_folder",
+        "guide":  "search-current-overview-study-guide.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\search-knowledge-base-2026-10-11",
+        "title":  "为什么用ES，MySQL搜索不够吗？",
+        "key":  "search-01",
+        "board":  "",
+        "draft_path":  "draft_cf0012f0_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "以业务解释和核心代码为主，关键交互用时序图"
+                                         },
+                         "adapter":  "knowledge-base",
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "电商项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "独立讲清业务问题、完整流程、失败例子、替代代价、真实证据与重做选择"
+                     },
+        "workspace":  "draft_cf0012f0_folder",
+        "guide":  "search-interview/01-why-search.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\search-knowledge-base-2026-10-11",
+        "title":  "中文商品怎样被搜出来？",
+        "key":  "search-02",
+        "board":  "",
+        "draft_path":  "draft_e51f4cef_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "以业务解释和核心代码为主，关键交互用时序图"
+                                         },
+                         "adapter":  "knowledge-base",
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "电商项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "独立讲清业务问题、完整流程、失败例子、替代代价、真实证据与重做选择"
+                     },
+        "workspace":  "draft_e51f4cef_folder",
+        "guide":  "search-interview/02-chinese-index.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\search-knowledge-base-2026-10-11",
+        "title":  "为什么搜到以后还要查MySQL？",
+        "key":  "search-03",
+        "board":  "",
+        "draft_path":  "draft_0405e09e_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "以业务解释和核心代码为主，关键交互用时序图"
+                                         },
+                         "adapter":  "knowledge-base",
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "电商项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "独立讲清业务问题、完整流程、失败例子、替代代价、真实证据与重做选择"
+                     },
+        "workspace":  "draft_0405e09e_folder",
+        "guide":  "search-interview/03-read-path.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\search-knowledge-base-2026-10-11",
+        "title":  "怎样重建并安全切换索引？",
+        "key":  "search-04",
+        "board":  "switch-sequence",
+        "draft_path":  "draft_ea6fd3f3_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+                                                            {
+                                                                "purpose":  "解释真实读流程或索引发布、失败回读与剩余边界",
+                                                                "type":  "whiteboard",
+                                                                "min_count":  1
+                                                            }
+                                                        ],
+                                             "reason":  "以业务解释和核心代码为主，关键交互用时序图"
+                                         },
+                         "adapter":  "knowledge-base",
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "电商项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "独立讲清业务问题、完整流程、失败例子、替代代价、真实证据与重做选择"
+                     },
+        "workspace":  "draft_ea6fd3f3_folder",
+        "guide":  "search-interview/04-index-switch.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\search-knowledge-base-2026-10-11",
+        "title":  "ES故障或数据陈旧怎么办？",
+        "key":  "search-05",
+        "board":  "",
+        "draft_path":  "draft_e5b05b09_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "以业务解释和核心代码为主，关键交互用时序图"
+                                         },
+                         "adapter":  "knowledge-base",
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "电商项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "独立讲清业务问题、完整流程、失败例子、替代代价、真实证据与重做选择"
+                     },
+        "workspace":  "draft_e5b05b09_folder",
+        "guide":  "search-interview/05-failure-consistency.md"
+    }
+]

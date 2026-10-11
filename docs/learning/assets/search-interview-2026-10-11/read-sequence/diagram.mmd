@@ -1,0 +1,42 @@
+sequenceDiagram
+    participant U as 顾客 / 调用方
+    participant A as 搜索 API
+    participant M as MySQL
+    participant E as Elasticsearch
+
+    Note over U,E: 源码解释：独立、默认关闭的隔离测试入口；前端仍使用普通商品列表
+    U->>A: GET /api/catalog/search/<br/>q=无线鼠标，page=1
+    activate A
+    A->>A: 校验关键词、页码和功能开关
+    A->>M: SELECT DATABASE()：确认实际测试来源
+    M-->>A: test_project_one
+    Note over A,M: 要求 autocommit；不持 MySQL 事务或业务行锁等待 ES
+
+    A->>E: info：核对隔离集群与版本
+    E-->>A: 正确集群，ES 8.19.x
+    A->>E: get_alias：本请求只解析一次读别名
+    E-->>A: 唯一、空配置的精确索引 A
+    A->>E: get_mapping(index=A)：核对来源与完成标记
+    E-->>A: 同源且构建完成
+    Note over A,E: 后续固定读索引 A；切换别名不改变本次在途请求的目标
+    A->>E: search(index=A)：最多 20 个候选<br/>按 _score 降序、product_id 升序；禁止部分结果
+    E-->>A: 候选 IDs、精确 candidate_count
+
+    alt ES 各步成功且响应完整
+        A->>A: 校验候选窗口与页尾<br/>candidate_count 不超过 10000
+        alt 响应完整且窗口 / 页尾检查通过
+            A->>M: 按 IDs 回读当前商品与分类可见性<br/>有效 SKU 最低价、有货提示
+            M-->>A: 当前可展示的商品摘要
+            A->>A: 恢复 ES 候选顺序；过滤后不补页
+            A-->>U: 200：results、candidate_count<br/>next_candidate_page / previous_candidate_page
+        else candidate_count 超过 10000
+            A-->>U: 400：候选过多，请缩小关键词或分类范围
+        else 窗口合法，但 page 大于 1 且页起点已到候选尾
+            A-->>U: 404：候选页不存在
+        end
+    else 任一 ES 步骤失败或返回不完整
+        A-->>U: 503：搜索暂不可用<br/>已执行来源 SQL；不执行商品摘要 SQL
+    end
+    deactivate A
+    Note over U,E: 200 可短页或空页；候选分页继续走 ES，不自动退回 LIKE<br/>MySQL 回读不能补回新商品、新关键词的召回；价格和有货提示不是下单承诺
+    Note over A,E: 每次 ES 请求的超时为 2 秒、无自动重试；不是整个 HTTP 请求的总期限

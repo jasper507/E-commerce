@@ -1,0 +1,33 @@
+{
+  "board_token": "CIOHwtC8yhTCSAbqq4QcmkQFnBg",
+  "block_id": "doxcnzxyxbLNUjvCfmEzoOS6y9g",
+  "idempotent_token": "search-read-20261011-publish-1",
+  "before_state": "whiteboard is empty",
+  "write_ok": true,
+  "input_node_count": 32,
+  "readback_node_count": 32,
+  "semantic_text_count": 59,
+  "missing_text": [],
+  "extra_text": [],
+  "preview": {
+    "path": "published-preview.jpg",
+    "width": 2560,
+    "height": 2560,
+    "size_bytes": 284566,
+    "visual_review": "Actual remote preview viewed; four participants, all messages, 200/400/404/503 branches, and notes visible without clipping."
+  },
+  "source_export": "Native nodes have no embedded code block; export reports no code blocks found. Editable source retained in diagram.mmd.",
+  "verification_scope": "Readback and visual review only. No new HTTP, MySQL or ES experiment.",
+  "sensitive_metadata_scan": "No credential or personal identity fields detected in saved JSON.",
+  "created_node_count": 32,
+  "node_type_counts": {
+    "life_line": 4,
+    "connector": 20,
+    "composite_shape": 5,
+    "combined_fragment": 2,
+    "activation": 1
+  },
+  "text_comparison_method": "Compare all text recursively except the redundant top-level combined_fragment.text. The server drops that duplicate but preserves the bracketed condition in table.cells.text and rich text.",
+  "semantic_readback_passed": true,
+  "publication_passed": true
+}

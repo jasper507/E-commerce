@@ -1,0 +1,394 @@
+{
+  "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190",
+  "guides": 6,
+  "local_links": 78,
+  "core_snippets": 10,
+  "links": [
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "../verification/search-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "search-interview/01-why-search.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "search-interview/02-chinese-index.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "search-interview/03-read-path.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "search-interview/04-index-switch.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "search-interview/05-failure-consistency.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "assets/search-interview-2026-10-11/read-sequence/diagram.png"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "assets/search-interview-2026-10-11/read-sequence/diagram.mmd"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "search-interview/04-index-switch.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "../verification/phase-7a-search-baseline.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "../verification/phase-7b-search-index-prototype.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "../verification/phase-7c-search-read-api.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "../verification/phase-7d-search-index-switch.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "../verification/phase-7b-test-isolation-incident.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "phase-7a-product-search-baseline-study-guide.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "phase-7b-search-index-prototype-study-guide.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "phase-7c-search-read-api-study-guide.md"
+    },
+    {
+      "guide": "search-current-overview-study-guide.md",
+      "target": "phase-7d-search-index-switch-study-guide.md"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "../search-current-overview-study-guide.md"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "../../verification/search-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "../../../backend/apps/catalog/views.py#L102"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "03-read-path.md"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "../../verification/phase-7a-search-baseline.md"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "../../verification/phase-7a-search-baseline.json"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "02-chinese-index.md"
+    },
+    {
+      "guide": "search-interview/01-why-search.md",
+      "target": "03-read-path.md"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../search-current-overview-study-guide.md"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../verification/search-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../../backend/apps/catalog/search_prototype.py#L61"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../../backend/apps/catalog/search_prototype.py#L77"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../../backend/apps/catalog/search_prototype.py#L20"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../verification/phase-7b-search-index-prototype.md"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../verification/phase-7b-search-index-prototype-online-final.json"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../../backend/apps/catalog/search_prototype.py#L129"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "04-index-switch.md"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "../../verification/phase-7b-test-isolation-incident.md"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "target": "03-read-path.md"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../search-current-overview-study-guide.md"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../../verification/search-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../assets/search-interview-2026-10-11/read-sequence/diagram.png"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../assets/search-interview-2026-10-11/read-sequence/diagram.mmd"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../../../backend/apps/catalog/views.py#L30"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../../../backend/apps/catalog/views.py#L70"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "05-failure-consistency.md"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../../verification/phase-7c-search-read-api.md"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../../verification/phase-7c-search-read-online-final.json"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../../verification/phase-7c-search-read-offline-final.json"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "target": "../../verification/phase-7d-search-index-switch.md"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../search-current-overview-study-guide.md"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../verification/search-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../phase-7d-search-index-switch-study-guide.md"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../verification/phase-7d-search-index-switch.md"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../../backend/apps/catalog/search_prototype.py#L124"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../../backend/apps/catalog/search_alias.py#L63"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../../backend/apps/catalog/search_alias.py#L78"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../../backend/apps/catalog/search_alias.py#L98"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../assets/search-interview-2026-10-11/switch-sequence/diagram.png"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../assets/search-interview-2026-10-11/switch-sequence/diagram.mmd"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../../backend/apps/catalog/search_read.py#L48"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../../backend/apps/catalog/search_alias.py#L29"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "05-failure-consistency.md"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../verification/phase-7d-search-index-switch-online.json"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "target": "../../verification/phase-7d-search-index-switch.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../search-current-overview-study-guide.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../verification/search-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../verification/phase-7c-search-read-api.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "04-index-switch.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../verification/phase-7c-search-read-online-final.json"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../../backend/apps/catalog/tests/test_search_read_api.py#L215"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "03-read-path.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../../backend/apps/catalog/views.py#L62"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../../backend/apps/catalog/search_read.py#L55"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../verification/phase-7d-search-read-offline-regression.json"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../../backend/apps/catalog/search_prototype.py#L46"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "../../verification/phase-7b-test-isolation-incident.md"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "target": "04-index-switch.md"
+    }
+  ],
+  "code_checks": [
+    {
+      "guide": "search-interview/01-why-search.md",
+      "source": "backend/apps/catalog/views.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "source": "backend/apps/catalog/search_prototype.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/02-chinese-index.md",
+      "source": "backend/apps/catalog/search_prototype.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "source": "backend/apps/catalog/views.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/03-read-path.md",
+      "source": "backend/apps/catalog/views.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "source": "backend/apps/catalog/search_prototype.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "source": "backend/apps/catalog/search_alias.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/04-index-switch.md",
+      "source": "backend/apps/catalog/search_alias.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "source": "backend/apps/catalog/views.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    },
+    {
+      "guide": "search-interview/05-failure-consistency.md",
+      "source": "backend/apps/catalog/search_prototype.py",
+      "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190"
+    }
+  ],
+  "fixed_snapshot_paths": [
+    "backend/apps/catalog/search_alias.py",
+    "backend/apps/catalog/search_prototype.py",
+    "backend/apps/catalog/search_read.py",
+    "backend/apps/catalog/tests/test_search_read_api.py",
+    "backend/apps/catalog/views.py",
+    "docs/learning/phase-7a-product-search-baseline-study-guide.md",
+    "docs/learning/phase-7b-search-index-prototype-study-guide.md",
+    "docs/learning/phase-7c-search-read-api-study-guide.md",
+    "docs/learning/phase-7d-search-index-switch-study-guide.md",
+    "docs/verification/phase-7a-search-baseline.json",
+    "docs/verification/phase-7a-search-baseline.md",
+    "docs/verification/phase-7b-search-index-prototype-online-final.json",
+    "docs/verification/phase-7b-search-index-prototype.md",
+    "docs/verification/phase-7b-test-isolation-incident.md",
+    "docs/verification/phase-7c-search-read-api.md",
+    "docs/verification/phase-7c-search-read-offline-final.json",
+    "docs/verification/phase-7c-search-read-online-final.json",
+    "docs/verification/phase-7d-search-index-switch-online.json",
+    "docs/verification/phase-7d-search-index-switch.md",
+    "docs/verification/phase-7d-search-read-offline-regression.json"
+  ]
+}

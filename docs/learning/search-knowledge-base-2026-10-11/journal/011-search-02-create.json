@@ -1,0 +1,18 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_child":  false,
+                 "node_token":  "USNKwkcJ9idNvUkUJzhcvBDbnUt",
+                 "node_type":  "origin",
+                 "obj_token":  "Flc4dsp5moVJAgxl7TacoEZTngd",
+                 "obj_type":  "docx",
+                 "origin_node_token":  "USNKwkcJ9idNvUkUJzhcvBDbnUt",
+                 "parent_node_token":  "KxWQwuGFsiqO3Wk4m7TcZxXBnih",
+                 "resolved_by":  "explicit_space_id",
+                 "resolved_space_id":  "7693476782908935142",
+                 "space_id":  "7693476782908935142",
+                 "title":  "中文商品怎样被搜出来？",
+                 "url":  "https://ocnbkcx1ug58.feishu.cn/wiki/USNKwkcJ9idNvUkUJzhcvBDbnUt"
+             }
+}

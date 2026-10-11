@@ -1,0 +1,52 @@
+sequenceDiagram
+    participant O as 操作者
+    participant P as 重建与发布器
+    participant M as MySQL 事实库
+    participant E as ES 索引与别名
+
+    O->>P: rebuild_and_publish(expected_index=I1)
+    P->>M: 核对配置、autocommit、实际 SELECT DATABASE()
+    M-->>P: 实际来源为 test_project_one
+    P->>E: 回读别名 A：实际旧目标是否为 I1？
+    E-->>P: A 唯一指向预期旧索引 I1
+    P->>M: 再核对来源，查询当前可见商品
+    M-->>P: 物化文档列表到应用内存
+    Note over P,M: 无外层 MySQL 事务；物化后不持数据库事务等待 ES<br/>这不是 MySQL 与 ES 的共同快照
+
+    P->>E: 创建随机新候选 I2：build_complete=False
+    E-->>P: 新索引创建返回
+    P->>E: Bulk 分批写入：逐项检查，失败即抛出
+    E-->>P: 每项成功，written 数量
+    P->>E: refresh + count：核对失败分片与实际数量
+    E-->>P: failed=0，written=count=来源文档数
+    P->>E: 写入同源元数据：build_complete=True
+    E-->>P: 完成标记写入返回
+    P->>P: 将 I2 加入本 builder 的 _ready
+    Note over P,E: 上述构建任一步异常就退出；没有提交别名更新<br/>旧入口不被本次构建改变，失败候选不发布
+
+    P->>M: 发布前再核对实际来源与事务条件
+    M-->>P: 仍为同一隔离测试来源
+    P->>E: 再读别名 A + I2 的完成来源元数据
+    E-->>P: 旧目标仍 I1；I2 已完成且同源
+    Note over P,E: 旧目标不符、非本会话 ready 或元数据异常：写前拒绝
+    P->>E: 一次 _aliases 请求：remove I1（must_exist=True）+ add I2
+    Note over P,E: 同一 ES 操作内更新别名关系；不删除索引本体<br/>不构成 MySQL / ES 跨存储事务
+
+    alt 收到更新响应
+        E-->>P: acknowledged、errors、action_results
+    else 更新响应丢失或超时
+        E-xP: 捕获异常；不能据此断定没有切换
+    end
+    P->>P: 检查响应并记录 response_ok / 请求异常
+    P->>E: 两种路径都精确回读 A 的实际目标
+    alt 回读实际目标为 I2
+        E-->>P: state=switched
+    else 回读实际目标仍为 I1
+        E-->>P: state=unchanged
+    else 回读失败或目标与新旧预期均不同
+        E-->>P: state=unknown
+    end
+    P-->>O: 返回 state + 当前指针 + 更新响应 / 异常记录
+    Note over O,E: unknown 先人工调查；不盲重发、不自动反向回滚、不删候选
+    Note over P,E: 保留旧索引 I1：已解析 I1 的在途请求继续查 I1<br/>后来的请求重新解析 A 后读 I2；摘要仍回读当前 MySQL<br/>没有自动安全回收，也不是跨页共同快照
+    Note over O,E: 单操作者、同 builder、同测试库生命周期；前置核对不是多操作者 CAS<br/>当前仅隔离原型、默认关闭，未接开发或部署；每次 2 秒不是整体期限

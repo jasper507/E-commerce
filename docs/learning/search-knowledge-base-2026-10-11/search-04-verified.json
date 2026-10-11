@@ -1,0 +1,15 @@
+{
+  "key": "search-04",
+  "status": "passed",
+  "revision": 2,
+  "headings": 9,
+  "links": 16,
+  "core_snippets": 3,
+  "boards": [
+    {
+      "block_id": "doxcnbF7YGxLugf3MzQvJ9Vwpsc",
+      "token": "JxXBw98fkhVfSwbR0dRcoqVjnLg",
+      "diagram": "switch-sequence"
+    }
+  ]
+}

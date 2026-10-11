@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "source_commit": "7ea1963f2a7eec6018852e7d3c17b007d1e6d190",
+  "guides": 6,
+  "question_pages": 5,
+  "native_boards": [
+    {
+      "diagram": "read-sequence",
+      "native_nodes": 32,
+      "visible_text_and_node_types": "matched",
+      "preview_visually_reviewed": true
+    },
+    {
+      "diagram": "switch-sequence",
+      "native_nodes": 42,
+      "visible_text_and_node_types": "matched",
+      "preview_visually_reviewed": true
+    }
+  ],
+  "root_children": 5,
+  "search_children": 5,
+  "existing_nodes_preserved": true,
+  "original_root_board_preserved": true,
+  "application_tests_run": false
+}

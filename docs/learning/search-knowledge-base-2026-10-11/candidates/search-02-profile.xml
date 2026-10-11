@@ -1,0 +1,61 @@
+<title>中文商品怎样被搜出来？</title>
+<p>2026-10-11。源码快照：<b>7ea1963f2a7eec6018852e7d3c17b007d1e6d190</b>。<a href="https://ocnbkcx1ug58.feishu.cn/wiki/KxWQwuGFsiqO3Wk4m7TcZxXBnih">搜索总览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/search-interview-knowledge-base-publication.md">文档核对记录</a>。</p>
+<p><b>当前ES把名称和描述转换成词项，要求全部查询词项在同一个字段里匹配；它没有要求词序相同，也没有理解中文词义。</b> 这让部分换序输入可以命中，也使单字或跨空格的输入出现漏匹配。面试需要用实际词项说明原因，而非只说“用了中文分词”。</p>
+<h1>1. 索引保存什么，为什么这些字段足够</h1>
+<p>Index（搜索索引）是供ES检索的一组商品副本。每份文档来自当前有效商品与有效分类，仅有五个字段：</p>
+<table><thead><tr><th><p>字段</p></th><th><p>用途</p></th><th><p>ES类型</p></th></tr></thead><tbody><tr><td><p><b>product_id</b></p></td><td><p>把候选交给MySQL，并作为同分排序依据</p></td><td><p>long整数</p></td></tr><tr><td><p><b>slug</b></p></td><td><p>原型结果中识别商品</p></td><td><p>keyword完整值</p></td></tr><tr><td><p><b>category_slug</b></p></td><td><p>分类精确过滤</p></td><td><p>keyword完整值</p></td></tr><tr><td><p><b>name</b></p></td><td><p>名称文本检索</p></td><td><p>text，使用catalog_cjk</p></td></tr><tr><td><p><b>description</b></p></td><td><p>描述文本检索</p></td><td><p>text，使用catalog_cjk</p></td></tr></tbody></table>
+<p>Keyword（完整值字段）适合分类标识这样的精确匹配；Text（分析文本字段）先生成词项，再按词项匹配。名称与描述采用同一个分析器，使建索引和查询对文本使用同一套规则。</p>
+<p>这里不因缺货或无SKU排除商品：搜索服务的是发现商品，有货与最低价稍后由MySQL生成。<b>价格和库存不进入索引</b>，能减少易变化业务字段带来的同步责任；搜索文档本身仍会因名称、描述、分类和可见性变化而陈旧。</p>
+<p>Mapping（索引字段规则）设置<b>dynamic=&quot;strict&quot;</b>，没有声明的字段不能悄悄进入文档。这是约束文档形状，不是业务数据完整性证明。索引使用单分片、零副本，属于本地隔离验证配置，不能说已经具备节点故障切换能力。</p>
+<p>字段来源与规则见<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/backend/apps/catalog/search_prototype.py#L61">公开商品导出</a>和<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/backend/apps/catalog/search_prototype.py#L77">索引定义</a>。</p>
+<h1>2. 无线鼠标怎样变成可查找的词项</h1>
+<p>Analyzer（文本分析器，把文字转换成检索用词项）在当前索引叫<b>catalog_cjk</b>，使用内置CJK且<b>stopwords=[]</b>。这避免添加第三方中文插件；它不是基于词典识别“无线”和“鼠标”的中文语义分词器。</p>
+<p>Phase 7B实际调用ES <b>_analyze</b>得到：</p>
+<table><thead><tr><th><p>输入</p></th><th><p>catalog_cjk词项</p></th><th><p>本例说明</p></th></tr></thead><tbody><tr><td><p><b>无线鼠标</b></p></td><td><p><b>无线</b>、<b>线鼠</b>、<b>鼠标</b></p></td><td><p>连续中文形成相邻双字项，跨词边界也有<b>线鼠</b></p></td></tr><tr><td><p><b>无线 鼠标</b></p></td><td><p><b>无线</b>、<b>鼠标</b></p></td><td><p>空格阻断了<b>线鼠</b>这项</p></td></tr><tr><td><p><b>标</b></p></td><td><p><b>标</b></p></td><td><p>单字查询不是自动展开到含它的所有双字项</p></td></tr><tr><td><p><b>M1</b></p></td><td><p><b>m1</b></p></td><td><p>此型号例子做了英文大小写归一</p></td></tr></tbody></table>
+<p>同一组数据中的standard分析器把<b>无线鼠标</b>分成<b>无</b>、<b>线</b>、<b>鼠</b>、<b>标</b>。这只是实际词项对照，不代表把分析器切成standard就解决中文搜索：候选、排序和噪声都需要按同一组业务输入重新验证。</p>
+<p>可把当前机制理解为：建立索引时先生成词项与商品的关联；查询时再生成查询词项并找关联。ES不是逐件商品重新执行MySQL的完整子串判断。<b>查询单字<b>标</b>时，包含“无线鼠标”的文档并没有因此拥有单独的<b>标</b>词项</b>，所以这组数据没有命中。</p>
+<h1>3. AND和best_fields到底要求什么</h1>
+<p>核心查询来自<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/backend/apps/catalog/search_prototype.py#L20">文本与分类条件</a>：</p>
+<pre lang="python"><code>text_query = {&quot;multi_match&quot;: {
+    &quot;query&quot;: keyword, &quot;fields&quot;: [&quot;name^3&quot;, &quot;description&quot;],
+    &quot;type&quot;: &quot;best_fields&quot;, &quot;operator&quot;: &quot;and&quot;, &quot;zero_terms_query&quot;: &quot;none&quot;,
+}} if keyword else {&quot;match_all&quot;: {}}
+query = {&quot;bool&quot;: {&quot;must&quot;: [text_query], &quot;filter&quot;: []}}
+if category:
+    query[&quot;bool&quot;][&quot;filter&quot;].append({&quot;term&quot;: {&quot;category_slug&quot;: category}})</code></pre>
+<p><b>multi_match</b>在多个字段上执行文本查询；这里<b>best_fields</b>配合<b>operator=&quot;and&quot;</b>，意味着名称满足全部分析词项，或者描述满足全部分析词项，才能命中。不能把一半词放在名称、另一半放在描述，就当作已经满足。</p>
+<p>例如查询<b>蓝牙 耳机</b>：名称为<b>蓝牙</b>、描述为<b>耳机</b>的商品在该实验中不命中；名称为<b>蓝牙 耳机</b>的商品命中。跨字段拼接是另一种业务语义，当前没有采用。</p>
+<p><b>这里不是match_phrase（要求词项位置与顺序的短语匹配）。</b> 查询<b>鼠标 无线</b>生成<b>鼠标</b>和<b>无线</b>，这些词项同时出现在商品的名称即可，不必以输入顺序连续出现。这正是它与完整包含匹配的重要区别。</p>
+<p><b>name^3</b>为名称匹配增加评分权重；不是“名称命中分数永远是描述的三倍”，也不是名称商品在任意数据中永远排第一。词项频率、字段长度等仍会影响评分。本项目只在等长名称/描述互换的固定对里观察到名称6.5429316、描述5.8075876，不能把这组数字泛化。</p>
+<p>分类是<b>filter</b>里的精确条件，不负责提高相关性分数。候选按<b>_score</b>降序、同分<b>product_id</b>升序；这个ID顺序用于确定同分顺序，不表示商品越新越值得展示。</p>
+<p>原型允许空词查全部用于实验；独立顾客搜索API要求非空词。因此<b>match_all</b>的原型行为不能说成新搜索API也把空关键词当作浏览。</p>
+<h1>4. 同一组商品上的命中与反例</h1>
+<p>7B用12件人工商品，其中10件构建时可见，按预先指定商品集合核对结果。下表是这组数据的实际结果，数量不代表全站搜索质量指标：</p>
+<table><thead><tr><th><p>输入</p></th><th><p>原MySQL完整包含</p></th><th><p>当前ES词项规则</p></th><th><p>为什么</p></th></tr></thead><tbody><tr><td><p><b>无线鼠标</b></p></td><td><p>5</p></td><td><p>5</p></td><td><p>这五件名称或描述满足完整连写文字和三个词项</p></td></tr><tr><td><p><b>无线 鼠标</b></p></td><td><p>1</p></td><td><p>6</p></td><td><p>MySQL必须包含中间空格；ES只要求无线与鼠标</p></td></tr><tr><td><p><b>鼠标 无线</b></p></td><td><p>0</p></td><td><p>6</p></td><td><p>ES不要求词项按输入顺序相邻</p></td></tr><tr><td><p><b>标</b></p></td><td><p>6</p></td><td><p>0</p></td><td><p>子串命中不等于索引拥有单字词项</p></td></tr></tbody></table>
+<p>还有一个容易误判的反例：查询<b>无线鼠标</b>会要求<b>线鼠</b>，名称<b>无线 鼠标</b>却没有这项，因此未命中；把查询也写成<b>无线 鼠标</b>才会命中它。不能只背“ES支持分词”，忽略空格导致的查询差别。</p>
+<p>名称命中、描述命中、分类交集、同字段AND、相同文本同分ID顺序和m1型号都保存了独立预期。详见<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7b-search-index-prototype.md">7B验证记录</a>及<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7b-search-index-prototype-online-final.json">修正后的在线原始JSON</a>。这些是2026-10-10的隔离实测，本轮没有重新调用ES。</p>
+<h1>5. 搜得到之前，还要证明索引真的建完</h1>
+<p>导出商品后创建随机新候选，不先删除旧成功索引。Build（构建）包含几个不同门槛：Bulk逐项写入成功，refresh让写入可以被搜索看到，count和失败分片核对确认数量，再把来源/完成元数据写成已完成。</p>
+<p>当前索引元数据是<b>search_schema=1</b>、<b>source_database=test_project_one</b>、<b>build_complete</b>。开始时为未完成；通过门槛后才改成完成，新请求也会读取此标记。这比仅靠构建器进程内的ready集合更持久，但它不是内容签名，也没有记录同名测试库的数据代次。</p>
+<p>关键完成门槛来自<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/backend/apps/catalog/search_prototype.py#L129">构建结果核对</a>：</p>
+<pre lang="python"><code>refreshed = self.client.indices.refresh(index=index)
+counted = self.client.count(index=index)
+if refreshed[&quot;_shards&quot;][&quot;failed&quot;] or counted[&quot;_shards&quot;][&quot;failed&quot;]:
+    raise RuntimeError(&quot;Search index validation returned failed shards.&quot;)
+actual = counted[&quot;count&quot;]
+if written != len(documents) or actual != len(documents):
+    raise RuntimeError(&quot;Incomplete search index build.&quot;)
+self.client.indices.put_mapping(index=index, _meta=build_metadata(True))
+self._ready.add(index)</code></pre>
+<p>前面使用Bulk的逐项错误检查。真实实验注入一份类型错误的文档后，Bulk请求HTTP200，但一项400，合法项仍写入；失败候选只有1份文档，不能进入可查询集合，旧完整索引仍有10份。<b>HTTP成功只表示收到请求结果，不能等同于所有文档构建完成。</b></p>
+<p>数量相同也不能证明所有名称、描述与分类正确；原型另用固定商品集合和实际响应核对字段/结果。重建与安全切换的完整过程见<a href="https://ocnbkcx1ug58.feishu.cn/wiki/AIHbw0c6CiOJnGkOrJkccSZvnvg">索引重建与发布</a>。</p>
+<p>隔离验证也有必须保留的历史限制：7B首轮测试曾通过临时修改真实连接目标的错误写法误清开发库4表，不能把首轮通过当成隔离安全。后来改为替换模块连接引用的替身，并在明确授权后恢复139条记录、逐字段核对。这里仅引用<a href="https://github.com/jasper507/E-commerce/blob/7ea1963f2a7eec6018852e7d3c17b007d1e6d190/docs/verification/phase-7b-test-isolation-incident.md">公开脱敏事故记录</a>，不复制原始行值或恢复材料；恢复事实不能包装成搜索功能的新增能力。</p>
+<h1>6. 为什么这样选，替代方案会改什么</h1>
+<p>内置CJK的优点是无需安装插件，当前词项生成、命中和反例都能复现；代价是它不理解业务词语，同义词、纠错和中文单字/空格体验尚未解决。</p>
+<table><thead><tr><th><p>候选改变</p></th><th><p>能针对什么问题</p></th><th><p>新成本和范围变化</p></th></tr></thead><tbody><tr><td><p>词典型中文分析器或专门字符切片</p></td><td><p>改进明确业务词与单字输入的匹配</p></td><td><p>插件/词典或更多词项成本，仍需建立质量样本，不能先断言效果</p></td></tr><tr><td><p>combined_fields等跨字段查询</p></td><td><p>允许名称“蓝牙”加描述“耳机”共同满足</p></td><td><p>改变当前“至少一个字段满足全部词项”的合同，可能多出噪声</p></td></tr><tr><td><p>match_phrase</p></td><td><p>需要把词序和位置作为约束</p></td><td><p>会改变当前换序可命中的体验，不是当前实现</p></td></tr><tr><td><p>同义词或纠错</p></td><td><p>顾客使用别名、错别字</p></td><td><p>需要业务词维护、误召回控制和独立证据，当前未实现</p></td></tr></tbody></table>
+<p>选择不只看命中条数。把所有商品都召回也能提高“找到”的数量，却可能让顾客翻很多不相关结果。实际需求应同时定义该找到什么、不该找到什么和该优先展示什么。</p>
+<h1>7. 如果重新做，我会先改哪里</h1>
+<p><b>我会先把单字、空格、换序和跨字段反例变成明确的搜索需求，再决定分析器与查询类型。</b> 原本选内置CJK，是为了先在一个可控原型中验证索引和副本边界，这个顺序仍有价值。</p>
+<p>会保留最小搜索文档和MySQL回读价格库存；会改进的是，不把当前分词器当作通用中文搜索默认答案。若业务要求<b>标</b>也应找到鼠标，或连写/空格应等价，就用相同人工商品和查询样本比较候选规则，核对漏匹配和误匹配，再决定是否值得付插件、索引空间与查询维护成本。</p>
+<p>改变分析器通常需要重建已有索引，不能只修改一个Python查询参数就假装旧词项已经变化。新成本是词项与排序验证、重建发布和历史副本清理；采用门槛是明确重要输入变好且噪声可接受。本轮只解释已观察规则，不自动新增分析器、同义词或搜索质量实验。</p>
+<p>接着阅读：<a href="https://ocnbkcx1ug58.feishu.cn/wiki/OxKOweFPWi4q2Kkc9YLc37DWnph">为什么ES命中后还要查MySQL</a>。</p>

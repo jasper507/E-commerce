@@ -1,0 +1,76 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "assessment":  {
+                                    "status":  "passed"
+                                },
+                 "profile":  {
+                                 "word_count":  3662,
+                                 "char_count":  5126,
+                                 "block_count":  124,
+                                 "blocks":  [
+                                                {
+                                                    "type":  "p",
+                                                    "count":  77,
+                                                    "ratio":  0.620968
+                                                },
+                                                {
+                                                    "type":  "tr",
+                                                    "count":  14,
+                                                    "ratio":  0.112903
+                                                },
+                                                {
+                                                    "type":  "h1",
+                                                    "count":  9,
+                                                    "ratio":  0.072581
+                                                },
+                                                {
+                                                    "type":  "li",
+                                                    "count":  8,
+                                                    "ratio":  0.064516
+                                                },
+                                                {
+                                                    "type":  "pre",
+                                                    "count":  3,
+                                                    "ratio":  0.024194
+                                                },
+                                                {
+                                                    "type":  "table",
+                                                    "count":  3,
+                                                    "ratio":  0.024194
+                                                },
+                                                {
+                                                    "type":  "tbody",
+                                                    "count":  3,
+                                                    "ratio":  0.024194
+                                                },
+                                                {
+                                                    "type":  "thead",
+                                                    "count":  3,
+                                                    "ratio":  0.024194
+                                                },
+                                                {
+                                                    "type":  "ol",
+                                                    "count":  1,
+                                                    "ratio":  0.008065
+                                                },
+                                                {
+                                                    "type":  "title",
+                                                    "count":  1,
+                                                    "ratio":  0.008065
+                                                },
+                                                {
+                                                    "type":  "ul",
+                                                    "count":  1,
+                                                    "ratio":  0.008065
+                                                },
+                                                {
+                                                    "type":  "whiteboard",
+                                                    "count":  1,
+                                                    "ratio":  0.008065
+                                                }
+                                            ]
+                             }
+             }
+}

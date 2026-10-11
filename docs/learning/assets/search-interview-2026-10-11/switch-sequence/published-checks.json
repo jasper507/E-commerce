@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-11",
+  "board_token": "JxXBw98fkhVfSwbR0dRcoqVjnLg",
+  "block_id": "doxcnbF7YGxLugf3MzQvJ9Vwpsc",
+  "idempotent_token": "search-switch-20261011-publish-1",
+  "before": "whiteboard is empty",
+  "update_ok": true,
+  "remote_node_count": 42,
+  "remote_types": {
+    "connector": 29,
+    "composite_shape": 7,
+    "combined_fragment": 2,
+    "life_line": 4
+  },
+  "visible_texts_equal": true,
+  "comparison_note": "Combined-fragment top-level redundant text omitted by export; visible table-cell conditions retained. IDs and native styles normalized by server.",
+  "preview_dimensions": {
+    "width": 2560,
+    "height": 2560
+  },
+  "preview_review": "Actual remote preview viewed: all four participants, build gates, alias update, response and readback branches, and bottom caveats visible. No clipped or overlapping key text. Square preview margins make full-view text small; native board is zoomable.",
+  "source_export": "no code blocks found in whiteboard; native nodes published, editable Mermaid remains local",
+  "sensitive_named_fields_found": false,
+  "scope": "Only this new blank board; no document text, other boards, Git, or database operations."
+}
