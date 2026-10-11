@@ -1,0 +1,11 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "document":  {
+                                  "content":  "\u003ctitle id=\"XLlWddocEon7AMx0nV1c8BL6nkh\"\u003eMySQL与订单：事务、幂等与查询优化\u003c/title\u003e",
+                                  "document_id":  "XLlWddocEon7AMx0nV1c8BL6nkh",
+                                  "revision_id":  1
+                              }
+             }
+}

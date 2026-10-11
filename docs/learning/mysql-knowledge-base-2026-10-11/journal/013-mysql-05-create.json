@@ -1,0 +1,18 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_child":  false,
+                 "node_token":  "X45TwLMm9iYDBukhAXecyF0Qnlc",
+                 "node_type":  "origin",
+                 "obj_token":  "UtBMdhK5Ko9ofJxmrJrccao7nDg",
+                 "obj_type":  "docx",
+                 "origin_node_token":  "X45TwLMm9iYDBukhAXecyF0Qnlc",
+                 "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+                 "resolved_by":  "explicit_space_id",
+                 "resolved_space_id":  "7693476782908935142",
+                 "space_id":  "7693476782908935142",
+                 "title":  "联合索引改善了什么，还剩哪些成本？",
+                 "url":  "https://ocnbkcx1ug58.feishu.cn/wiki/X45TwLMm9iYDBukhAXecyF0Qnlc"
+             }
+}

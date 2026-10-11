@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant U as 顾客
+    participant A as 订单 API / 分页器
+    participant D as MySQL
+    participant S as 序列化 / JSON 渲染
+
+    Note over U,S: 本人订单列表：先保护归属，再限制每页数量，再优化读取路径
+    U->>A: GET /api/orders/?page=1
+    Note over U,A: Session 确定 request.user<br/>身份相关 SQL 不计入下面的 3 条订单数据 SQL
+    A->>A: orders_for(request.user) 构造查询集
+    Note over A,D: WHERE user_id = 当前用户<br/>ORDER BY created_at DESC, id DESC；固定每页 20 单
+
+    A->>D: SQL 1：COUNT 本人的订单
+    D-->>A: 合成样本 count = 5000
+    Note over A,D: COUNT 与页查询分开执行<br/>不承诺同一快照，也不承诺跨页请求的固定快照
+
+    A->>D: SQL 2：订单 + 地址 JOIN，LIMIT 20 OFFSET 0
+    Note over A,D: 历史首页计划：旧索引输出 5000 → Sort → 20<br/>联合索引反向扫描输出 20；无订单 Sort，地址查找 20 次
+    D-->>A: 本页 20 单及各自的地址快照
+    A->>D: SQL 3：items WHERE order_id IN 本页 20 个 ID
+    D-->>A: 合成样本 40 条商品快照，按明细 ID 排序
+    Note over A,S: paginate_queryset 返回 list(page)<br/>订单及 items 预加载已完成；不是序列化时每单再查一次
+
+    A->>S: OrderSerializer.data + 分页封套
+    S->>S: JSONRenderer 编码为响应字节
+    S-->>A: count / next / previous / results
+    A-->>U: HTTP 200，本页 20 单
+
+    Note over A,D: 索引留下的成本：COUNT 仍读取 5000；items 40 仍有 Sort<br/>第 201 页 OFFSET 4000，仍经过 4020 单及地址查找，只返回 20 单
+    Note over U,S: 数字来自历史隔离样本：本人 / 他人各 5000 单，每单 2 条明细<br/>不是本轮业务实测，也不是整个 HTTP 只读 20 行或端到端延迟结论
+    Note over U,A: 空订单第一页：200 + 空 results<br/>非法或越界页码：404

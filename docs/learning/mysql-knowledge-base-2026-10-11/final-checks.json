@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b",
+  "guides": 6,
+  "question_pages": 5,
+  "native_boards": [
+    {
+      "diagram": "order-sequence",
+      "native_nodes": 43,
+      "visible_text_and_node_types": "matched",
+      "preview_visually_reviewed": true
+    },
+    {
+      "diagram": "query-sequence",
+      "native_nodes": 25,
+      "visible_text_and_node_types": "matched",
+      "preview_visually_reviewed": true
+    }
+  ],
+  "root_children": 6,
+  "mysql_children": 5,
+  "existing_nodes_preserved": true,
+  "original_root_board_preserved": true,
+  "application_tests_run": false
+}

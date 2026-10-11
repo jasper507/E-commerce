@@ -1,0 +1,15 @@
+{
+  "key": "mysql",
+  "status": "passed",
+  "revision": 2,
+  "headings": 9,
+  "links": 25,
+  "core_snippets": 0,
+  "boards": [
+    {
+      "block_id": "doxcng56jJPd9jxviUeUFAjHhRg",
+      "token": "KxXfwWvIZhv0AQbc4zDc4Q7Gn5i",
+      "diagram": "order-sequence"
+    }
+  ]
+}

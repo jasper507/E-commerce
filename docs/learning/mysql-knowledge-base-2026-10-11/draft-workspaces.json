@@ -1,0 +1,142 @@
+[
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\mysql-knowledge-base-2026-10-11",
+        "title":  "MySQL与订单：事务、幂等与查询优化",
+        "key":  "mysql",
+        "board":  "order-sequence",
+        "draft_path":  "draft_2db883e2_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+                                                            {
+                                                                "purpose":  "解释建单提交/回滚或订单查询的工作与边界",
+                                                                "type":  "whiteboard",
+                                                                "min_count":  1
+                                                            }
+                                                        ],
+                                             "reason":  "核心业务交互配时序图，问题页用正文和代码解释取舍"
+                                         },
+                         "adapter":  null,
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "讲清MySQL交易事实、事务/锁/约束和查询优化证据，比较替代与重做选择"
+                     },
+        "workspace":  "draft_2db883e2_folder",
+        "guide":  "mysql-current-overview-study-guide.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\mysql-knowledge-base-2026-10-11",
+        "title":  "下单为什么要保存快照并使用事务？",
+        "key":  "mysql-01",
+        "board":  "",
+        "draft_path":  "draft_644e36d3_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "核心业务交互配时序图，问题页用正文和代码解释取舍"
+                                         },
+                         "adapter":  null,
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "讲清MySQL交易事实、事务/锁/约束和查询优化证据，比较替代与重做选择"
+                     },
+        "workspace":  "draft_644e36d3_folder",
+        "guide":  "mysql-interview/01-data-transaction.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\mysql-knowledge-base-2026-10-11",
+        "title":  "幂等、行锁和数据库约束怎样配合？",
+        "key":  "mysql-02",
+        "board":  "",
+        "draft_path":  "draft_232c7c2d_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "核心业务交互配时序图，问题页用正文和代码解释取舍"
+                                         },
+                         "adapter":  null,
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "讲清MySQL交易事实、事务/锁/约束和查询优化证据，比较替代与重做选择"
+                     },
+        "workspace":  "draft_232c7c2d_folder",
+        "guide":  "mysql-interview/02-idempotency-locks.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\mysql-knowledge-base-2026-10-11",
+        "title":  "订单分页为什么先过滤本人，再排序？",
+        "key":  "mysql-03",
+        "board":  "",
+        "draft_path":  "draft_ea22b77a_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "核心业务交互配时序图，问题页用正文和代码解释取舍"
+                                         },
+                         "adapter":  null,
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "讲清MySQL交易事实、事务/锁/约束和查询优化证据，比较替代与重做选择"
+                     },
+        "workspace":  "draft_ea22b77a_folder",
+        "guide":  "mysql-interview/03-pagination.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\mysql-knowledge-base-2026-10-11",
+        "title":  "每页20单，数据库究竟做了多少工作？",
+        "key":  "mysql-04",
+        "board":  "query-sequence",
+        "draft_path":  "draft_ab2bd8cf_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+                                                            {
+                                                                "purpose":  "解释建单提交/回滚或订单查询的工作与边界",
+                                                                "type":  "whiteboard",
+                                                                "min_count":  1
+                                                            }
+                                                        ],
+                                             "reason":  "核心业务交互配时序图，问题页用正文和代码解释取舍"
+                                         },
+                         "adapter":  null,
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "讲清MySQL交易事实、事务/锁/约束和查询优化证据，比较替代与重做选择"
+                     },
+        "workspace":  "draft_ab2bd8cf_folder",
+        "guide":  "mysql-interview/04-query-cost.md"
+    },
+    {
+        "cwd":  "C:\\project-one-ecommerce\\docs\\learning\\mysql-knowledge-base-2026-10-11",
+        "title":  "联合索引改善了什么，还剩哪些成本？",
+        "key":  "mysql-05",
+        "board":  "",
+        "draft_path":  "draft_4188dc89_folder\\draft.xml",
+        "decision":  {
+                         "visual_plan":  {
+                                             "blocks":  [
+
+                                                        ],
+                                             "reason":  "核心业务交互配时序图，问题页用正文和代码解释取舍"
+                                         },
+                         "adapter":  null,
+                         "presentation_mode":  "normal",
+                         "genre_contract":  "router.knowledge",
+                         "audience":  "项目拥有者，准备中国后端实习面试",
+                         "reader_task":  "讲清MySQL交易事实、事务/锁/约束和查询优化证据，比较替代与重做选择"
+                     },
+        "workspace":  "draft_4188dc89_folder",
+        "guide":  "mysql-interview/05-composite-index.md"
+    }
+]

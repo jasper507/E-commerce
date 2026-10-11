@@ -1,0 +1,15 @@
+{
+  "key": "mysql-04",
+  "status": "passed",
+  "revision": 2,
+  "headings": 6,
+  "links": 11,
+  "core_snippets": 2,
+  "boards": [
+    {
+      "block_id": "doxcnPfRnl4A2DSr9rbUtPHGUBc",
+      "token": "Ygcowkej0hWgXRbiaXgcnCVVnKh",
+      "diagram": "query-sequence"
+    }
+  ]
+}

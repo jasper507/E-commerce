@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-11",
+  "board_token": "KxXfwWvIZhv0AQbc4zDc4Q7Gn5i",
+  "block_id": "doxcng56jJPd9jxviUeUFAjHhRg",
+  "before": "ok=true; whiteboard is empty; export did not create a raw file for the empty board",
+  "idempotent_token": "mysql-order-20261011-publish-1",
+  "writes": 1,
+  "update_ok": true,
+  "local_node_count": 43,
+  "published_node_count": 43,
+  "published_types": {
+    "connector": 28,
+    "composite_shape": 9,
+    "combined_fragment": 2,
+    "life_line": 4
+  },
+  "visible_text_type_multiset_match": true,
+  "comparison": "combined_fragment uses table.cells visible texts and excludes the redundant top-level fragment text; whitespace normalized",
+  "preview_path": "published-preview.jpg",
+  "preview_pixels": [
+    2560,
+    2560
+  ],
+  "visual_check": "Actual exported JPEG inspected with view_image: complete nonempty four-participant sequence; all three idempotency branches, five ordered locks, nested success/rollback branches and final boundary notes visible; no clipping or obstruction observed.",
+  "remote_source": "no code blocks found in whiteboard",
+  "editable_source": "diagram.mmd retained locally; remote board contains native nodes, not a Mermaid code block",
+  "scope": "Only this new board populated; no document text, other boards, Git, business database or application tests modified."
+}

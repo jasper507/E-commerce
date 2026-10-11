@@ -1,0 +1,66 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "assessment":  {
+                                    "status":  "passed"
+                                },
+                 "profile":  {
+                                 "word_count":  4196,
+                                 "char_count":  4973,
+                                 "block_count":  135,
+                                 "blocks":  [
+                                                {
+                                                    "type":  "p",
+                                                    "count":  85,
+                                                    "ratio":  0.62963
+                                                },
+                                                {
+                                                    "type":  "tr",
+                                                    "count":  21,
+                                                    "ratio":  0.155556
+                                                },
+                                                {
+                                                    "type":  "h1",
+                                                    "count":  9,
+                                                    "ratio":  0.066667
+                                                },
+                                                {
+                                                    "type":  "li",
+                                                    "count":  5,
+                                                    "ratio":  0.037037
+                                                },
+                                                {
+                                                    "type":  "table",
+                                                    "count":  4,
+                                                    "ratio":  0.02963
+                                                },
+                                                {
+                                                    "type":  "tbody",
+                                                    "count":  4,
+                                                    "ratio":  0.02963
+                                                },
+                                                {
+                                                    "type":  "thead",
+                                                    "count":  4,
+                                                    "ratio":  0.02963
+                                                },
+                                                {
+                                                    "type":  "ol",
+                                                    "count":  1,
+                                                    "ratio":  0.007407
+                                                },
+                                                {
+                                                    "type":  "title",
+                                                    "count":  1,
+                                                    "ratio":  0.007407
+                                                },
+                                                {
+                                                    "type":  "whiteboard",
+                                                    "count":  1,
+                                                    "ratio":  0.007407
+                                                }
+                                            ]
+                             }
+             }
+}

@@ -1,0 +1,18 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_child":  false,
+                 "node_token":  "FttSwh1nai5p23k9ifdcLMo5nLc",
+                 "node_type":  "origin",
+                 "obj_token":  "IGkHdqofno7BRzxfAwAcEUPgnsd",
+                 "obj_type":  "docx",
+                 "origin_node_token":  "FttSwh1nai5p23k9ifdcLMo5nLc",
+                 "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+                 "resolved_by":  "explicit_space_id",
+                 "resolved_space_id":  "7693476782908935142",
+                 "space_id":  "7693476782908935142",
+                 "title":  "下单为什么要保存快照并使用事务？",
+                 "url":  "https://ocnbkcx1ug58.feishu.cn/wiki/FttSwh1nai5p23k9ifdcLMo5nLc"
+             }
+}

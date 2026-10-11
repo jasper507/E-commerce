@@ -1,0 +1,11 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "document":  {
+                                  "content":  "\u003ctitle id=\"ZZqFdeJwYodBslxgPejcN8jNnCe\"\u003e幂等、行锁和数据库约束怎样配合？\u003c/title\u003e",
+                                  "document_id":  "ZZqFdeJwYodBslxgPejcN8jNnCe",
+                                  "revision_id":  1
+                              }
+             }
+}

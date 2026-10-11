@@ -1,0 +1,18 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_child":  false,
+                 "node_token":  "EB5XwzJTziOqqVk7TF3cg8GTnsg",
+                 "node_type":  "origin",
+                 "obj_token":  "D5bCdGNcwo6YZBxDuPocLqbdneg",
+                 "obj_type":  "docx",
+                 "origin_node_token":  "EB5XwzJTziOqqVk7TF3cg8GTnsg",
+                 "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+                 "resolved_by":  "explicit_space_id",
+                 "resolved_space_id":  "7693476782908935142",
+                 "space_id":  "7693476782908935142",
+                 "title":  "每页20单，数据库究竟做了多少工作？",
+                 "url":  "https://ocnbkcx1ug58.feishu.cn/wiki/EB5XwzJTziOqqVk7TF3cg8GTnsg"
+             }
+}

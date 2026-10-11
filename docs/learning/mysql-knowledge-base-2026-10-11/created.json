@@ -1,0 +1,44 @@
+[
+    {
+        "node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+        "title":  "MySQL与订单：事务、幂等与查询优化",
+        "key":  "mysql",
+        "parent_node_token":  "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "obj_token":  "XLlWddocEon7AMx0nV1c8BL6nkh"
+    },
+    {
+        "node_token":  "FttSwh1nai5p23k9ifdcLMo5nLc",
+        "title":  "下单为什么要保存快照并使用事务？",
+        "key":  "mysql-01",
+        "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+        "obj_token":  "IGkHdqofno7BRzxfAwAcEUPgnsd"
+    },
+    {
+        "node_token":  "MneywSqYCiQ8dbk5lXMc8EPyncf",
+        "title":  "幂等、行锁和数据库约束怎样配合？",
+        "key":  "mysql-02",
+        "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+        "obj_token":  "ZZqFdeJwYodBslxgPejcN8jNnCe"
+    },
+    {
+        "node_token":  "VoiEwxT10ixPM8kN8wLcS7Rvnif",
+        "title":  "订单分页为什么先过滤本人，再排序？",
+        "key":  "mysql-03",
+        "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+        "obj_token":  "TeeRd91gao5AJQxynlMcAPpbnef"
+    },
+    {
+        "node_token":  "EB5XwzJTziOqqVk7TF3cg8GTnsg",
+        "title":  "每页20单，数据库究竟做了多少工作？",
+        "key":  "mysql-04",
+        "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+        "obj_token":  "D5bCdGNcwo6YZBxDuPocLqbdneg"
+    },
+    {
+        "node_token":  "X45TwLMm9iYDBukhAXecyF0Qnlc",
+        "title":  "联合索引改善了什么，还剩哪些成本？",
+        "key":  "mysql-05",
+        "parent_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+        "obj_token":  "UtBMdhK5Ko9ofJxmrJrccao7nDg"
+    }
+]

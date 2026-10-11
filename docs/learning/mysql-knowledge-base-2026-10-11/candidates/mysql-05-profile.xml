@@ -1,0 +1,47 @@
+<title>联合索引改善了什么，还剩哪些成本？</title>
+<p>这页准备的面试能力是：从业务查询推导字段顺序，再用真实计划证明索引减少了哪一步工作。项目没有因为“联合索引听起来高级”直接增加它，而是先在相同数据上做候选对照，再把有效候选表达为模型和迁移。</p>
+<p>返回<a href="https://ocnbkcx1ug58.feishu.cn/wiki/CNaVwwMJsidse6k5d7zc2VLSnEf">MySQL与订单查询总览</a>。当前代码核对基于<b>886600018badf0d157a6cd6d7164a308c4bd1c2b</b>。候选与正式证据均为2026-10-09，见<a href="https://github.com/jasper507/E-commerce/blob/886600018badf0d157a6cd6d7164a308c4bd1c2b/docs/verification/phase-3-order-query-baseline.md">基线</a>、<a href="https://github.com/jasper507/E-commerce/blob/886600018badf0d157a6cd6d7164a308c4bd1c2b/docs/verification/phase-3-order-list-index.md">正式迁移验证</a>和<a href="https://github.com/jasper507/E-commerce/blob/886600018badf0d157a6cd6d7164a308c4bd1c2b/docs/verification/phase-3-order-list-index-plans.json">原始正式计划</a>；本轮仅整理，见<a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/mysql-interview-knowledge-base-publication.md">发布验证</a>。</p>
+<h1>从查询需要推导索引需要</h1>
+<p>“我的订单”业务条件固定为登录用户，主要排列规则是最新时间优先，同时间时ID较大优先；一页取20单。把完整SQL的字段和地址JOIN暂时省略，逻辑就是<b>WHERE user_id=本人</b>，再按<b>created_at DESC, id DESC</b>取<b>LIMIT20</b>。省略只用于讲解，真实完整SQL和计划保存在证据JSON中。</p>
+<p>Composite Index（联合索引）可以看作先按第一个字段分组排列，再在相同首字段内按第二个字段排列，以此类推。因此顺序选<b>user、created_at、id</b>：先进入本人订单范围，再按时间和ID方向继续取最近记录。若把<b>created_at</b>放第一，不能用同样的首字段等值条件直接定位某用户的连续范围；若把无关的scope放在user与created_at之间，则当前查询没有固定scope，后面的时间顺序就不直接等同于整个本人订单的时间顺序。<a href="https://dev.mysql.com/doc/refman/8.4/en/multiple-column-indexes.html">MySQL 8.4联合索引与最左前缀说明</a></p>
+<p>核心声明在<a href="https://github.com/jasper507/E-commerce/blob/886600018badf0d157a6cd6d7164a308c4bd1c2b/backend/apps/ordering/models.py#L112">Order.Meta，第112行</a>：</p>
+<pre lang="python"><code>        indexes = (
+            models.Index(
+                fields=(&quot;user&quot;, &quot;created_at&quot;, &quot;id&quot;),
+                name=&quot;ordering_order_user_created_id&quot;,
+            ),
+        )</code></pre>
+<p>模型里的<b>user</b>在数据库中对应外键列<b>user_id</b>。显式写id与查询的稳定第二排序条件对齐，也让索引意图清楚。不能据此宣称“所有数据库必须显式第三列才有这种能力”：InnoDB二级索引还涉及主键扩展，其他候选是否等效需要以实际结构和计划验证，本项目没有比较<b>(user, created_at)</b>与三列索引。</p>
+<p>虽然模型没有声明降序索引，本次MySQL对这个升序索引采用<b>反向扫描</b>，满足两个排序字段同为DESC；查询也没有使用FORCE INDEX。能否采用由优化器根据查询和数据决定，不是写了模型就强制每个SQL都走它。混合升降序或不同过滤条件要重新看索引是否匹配，不能套用本次结果。<a href="https://dev.mysql.com/doc/refman/8.4/en/order-by-optimization.html">MySQL 8.4 ORDER BY优化说明</a></p>
+<h1>为什么原来已经有user开头的索引还要加一个？</h1>
+<p>旧索引是唯一的<b>(user_id, creation_scope, idempotency_key)</b>。它能按user_id找到本人订单，所以基线不是全表无索引；但找到的本人范围没有按照created_at/id组织。首页实际从旧索引产出5,000笔，再做订单Sort取20。</p>
+<p>当前新增索引是<b>普通非唯一索引</b>，负责读取路径；旧唯一约束负责同一用户、同一下单入口、同一Key不能出现第二条订单。它们的责任不同。普通索引不能保证幂等Key唯一；唯一约束也不自动给最新订单提供时间排序路径。不能为了减少索引数量删掉幂等约束，也不能把读取索引误讲成“防止重复订单”的机制。</p>
+<p>这是具体的设计取舍：多一个索引占额外空间，创建订单及相关字段更新时需要维护它，但能让这一类读取避免先拿出全部本人订单再排序。本项目没有测量新增索引的空间、写入放大或大表建索引锁等待，因此能报告读取路径的变化，不能报告整个系统无代价地变快。</p>
+<h1>实际改善在哪里，剩余成本在哪里？</h1>
+<p>隔离实验合成本人和他人各5,000单，每单一个地址、两条明细。先在旧结构上测，再临时创建同字段顺序的候选，最后删除候选确认旧路径恢复；响应内容、字节和哈希保持一致。随后正式0005结构再次用相同类型数据确认路径。</p>
+<table><thead><tr><th><p>实际查询步骤</p></th><th><p>旧结构</p></th><th><p>候选及正式索引结构</p></th></tr></thead><tbody><tr><td><p>首页订单索引节点输出</p></td><td><p>5,000笔，再做Sort取20</p></td><td><p>20笔反向扫描，无订单Sort</p></td></tr><tr><td><p>第201页订单节点输出</p></td><td><p>5,000笔，再Sort输出4,020</p></td><td><p>4,020笔反向扫描，无订单Sort</p></td></tr><tr><td><p>第201页地址查找loops</p></td><td><p>4,020次</p></td><td><p>4,020次</p></td></tr><tr><td><p>COUNT覆盖索引节点输出</p></td><td><p>本人5,000笔</p></td><td><p>本人5,000笔</p></td></tr><tr><td><p>本页items</p></td><td><p>40条，有自身Sort</p></td><td><p>40条，有自身Sort</p></td></tr></tbody></table>
+<p>“5,000→20”指<b>首页订单索引节点的实际输出</b>，不是把所有SQL和所有树节点合计后得到的总扫描行数。正式计划的COUNT依然读5,000，地址查20次，items查40条；只说“数据库每页读20行”会把这些工作漏掉。</p>
+<p>“订单Sort消失”也不是“所有查询都没有排序”，items还要按自己的ID排序。<b>filesort</b>是额外排序的计划描述，不自动等于磁盘排序；本项目没有实际落盘证据。EXPLAIN估计行数与EXPLAIN ANALYZE的实际节点产出也必须分开。</p>
+<p>候选片五次本地三阶段和中位数：首页10.38→7.42ms，第201页14.52→13.55ms。深页收益小，因为OFFSET4000和4,020次地址查找仍在；COUNT也没有被消除。阶段先后、预热和缓存会影响耗时，不能把这两组本机合成值变成固定百分比或生产承诺。正式片每页仅一次路径观察，不报告新的提升比例。</p>
+<p>全量5,000单的三阶段和中位数在候选前后为711.57/717.28ms，没有观察到明确全量收益。返回大量对象、序列化和JSON成本不会因时间索引自动消失；这也说明索引与分页是互补措施，不能只选一个再声称解决全部列表成本。</p>
+<h1>为什么还要做模型和迁移，手动CREATE INDEX不就够了吗？</h1>
+<p>临时候选证明“在这个隔离库有效”，却不会让后来新建环境得到同样结构。Migration（数据库迁移）记录结构从旧版到新版怎样变化，模型声明表达当前期望，迁移表达演进路径，两者都需要保存。</p>
+<p><a href="https://github.com/jasper507/E-commerce/blob/886600018badf0d157a6cd6d7164a308c4bd1c2b/backend/apps/ordering/migrations/0005_order_list_index.py#L14">0005迁移第14行</a>的重要操作只有：</p>
+<pre lang="python"><code>    operations = [
+        migrations.AddIndex(
+            model_name=&#x27;order&#x27;,
+            index=models.Index(fields=[&#x27;user&#x27;, &#x27;created_at&#x27;, &#x27;id&#x27;], name=&#x27;ordering_order_user_created_id&#x27;),
+        ),
+    ]</code></pre>
+<p>0005依赖0004与可替换用户模型，没有改旧迁移、字段、查询或业务约束。这里存在三个不同状态：模型和迁移文件写好；某数据库实际执行迁移；该数据库的优化器在某查询中采用索引。检查迁移漂移只确认声明一致，不代表已在开发库建好；sqlmigrate只是预览SQL，不执行结构变化；实际SHOW INDEX和计划才验证后两种状态。</p>
+<p>2026-10-09正式片在可销毁MySQL中执行<b>0004→0005→0004→0005</b>：先保存两笔既有订单及地址、明细和完整接口响应，每次迁移都比较三表字段、响应字节、索引存在/消失和原幂等唯一约束。finally恢复0005。它验证的不只是Python迁移文件能导入。</p>
+<p>反向迁移表示执行相反的结构操作，并不代表MySQL建/删索引在任何失败时都能像普通业务事务一样回滚。反向SQL预览还受默认库当时外键支撑索引元数据影响，不能冒充隔离真实逆迁移的逐条日志。本次已另行用真实迁移往返验证，最终SHOW INDEX没有新增独立user_id索引。</p>
+<p>环境状态要分开说：2026-10-09索引切片<b>没有对原开发库执行0005迁移</b>；2026-10-11的<a href="https://github.com/jasper507/E-commerce/blob/886600018badf0d157a6cd6d7164a308c4bd1c2b/docs/verification/phase-9b-local-deployment-run.md">9B独立部署验证</a>则确认新库<b>project_one_deployment_local</b>应用36项迁移，其中包含订单0005，并记录待迁移0。这是新独立库的证据，不表示原开发库也执行过。当前知识库整理没有实时查询原开发库迁移状态；9B当时新部署库订单数为0，迁移成功也不能当作在该库重跑了5,000单查询计划或交易验收。</p>
+<h1>一个真实工程陷阱：旧实验不能悄悄变成新基线</h1>
+<p>测试库默认应用最新迁移。模型加入0005后，再在最新版本重跑旧实验，起点已经带有正式索引；若还叫“原无排序索引基线”，结果就无法解释。</p>
+<p>因此当前旧实验先按<b>实际列顺序</b>检测<b>user_id、created_at、id</b>索引，存在就明确拒绝；不是只检查某个索引名字。迁移到0004时允许旧基线，恢复0005后应拒绝。旧实验要在e85e592的隔离版本复现，旧JSON保留；原始JSON的source_commit记录实验启动时的业务提交92709b1，之后实验代码随e85e592保存，两个版本标签的用途不能混淆。</p>
+<p>这是面试可以讲的工程能力：不只相信一张“优化前后”表，还检查两次起点、夹具、源码和结构是否真可比较。修正基线保护不会自动升级成新性能实验，本轮也没有重跑数据库测量。</p>
+<h1>如果重新做，我会改哪里？</h1>
+<p>我会在订单列表第一版明确本人过滤、时间/ID顺序和固定页长，然后让索引设计跟着真实查询出现。先查看数据库已有索引与计划，避免重复索引；当本人历史变多而首页出现5,000笔排序时，做一个隔离候选对照，再通过模型与可逆迁移把结构保存。</p>
+<p>若以后出现真实深页需求，下一候选是游标分页：用上一条时间和ID定位，减少OFFSET；代价是接口与任意跳页体验变化，准确总数仍须另行选择。若当前深页地址查找成为明显瓶颈，可比较“先取本页ID，再查询完整快照”，代价是多一个查询阶段及一致性窗口。若大订单明细撑大响应，优先评估列表摘要，缓存则需要单独证明失效与归属正确性。这些方案当前未实现或实测。</p>
+<p>停止条件是索引被正式模型/迁移表达，真实往返保留数据与响应，计划采用且权限/排序/快照回归通过。历史正式目标2项、相关29项与171子场景通过，显式大数据实验日常默认skip。没有生产容量、冷缓存、并发、索引空间、写成本或大表DDL影响证据；也不把MySQL订单列表优化写成ES搜索加速。已有证据足够形成这一段面试故事，继续堆方案会挤占你独立理解数据库基础的时间。</p>

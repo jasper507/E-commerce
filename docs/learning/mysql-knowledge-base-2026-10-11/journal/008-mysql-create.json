@@ -1,0 +1,18 @@
+{
+    "ok":  true,
+    "identity":  "user",
+    "data":  {
+                 "has_child":  false,
+                 "node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+                 "node_type":  "origin",
+                 "obj_token":  "XLlWddocEon7AMx0nV1c8BL6nkh",
+                 "obj_type":  "docx",
+                 "origin_node_token":  "CNaVwwMJsidse6k5d7zc2VLSnEf",
+                 "parent_node_token":  "WN1jwXDj0iPXm7kwLyHcmneenlb",
+                 "resolved_by":  "explicit_space_id",
+                 "resolved_space_id":  "7693476782908935142",
+                 "space_id":  "7693476782908935142",
+                 "title":  "MySQL与订单：事务、幂等与查询优化",
+                 "url":  "https://ocnbkcx1ug58.feishu.cn/wiki/CNaVwwMJsidse6k5d7zc2VLSnEf"
+             }
+}

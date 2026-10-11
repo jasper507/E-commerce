@@ -1,0 +1,49 @@
+sequenceDiagram
+    participant U as 顾客
+    participant A as 订单API
+    participant S as 下单服务
+    participant D as MySQL
+    U->>A: POST /api/orders/，地址ID + Idempotency-Key
+    Note over U,A: Session身份、CSRF与参数格式校验通过后进入服务
+    A->>S: 当前用户 + 地址ID + 幂等键
+    S->>D: BEGIN（transaction.atomic）
+    S->>D: ① User FOR UPDATE：串行化同一用户下单
+    S->>D: 查询 user + cart_checkout + key；比较地址指纹
+    alt 已存在：相同键、相同指纹
+        D-->>S: 原订单及地址、商品快照
+        Note over S,D: 跳过购物车和库存，不重复预占
+        S->>D: COMMIT；释放User锁
+        S-->>A: 原订单，created=false
+        A-->>U: 200，仍是同一张订单
+    else 已存在：相同键、不同指纹
+        S->>D: ROLLBACK；释放锁
+        S-->>A: idempotency_conflict
+        A-->>U: 409：同一键不能换下单参数
+    else 全新请求
+        Note over S,D: 任一步抛错立即回滚；后续步骤不执行
+        S->>D: ② Address FOR UPDATE：必须属于当前用户
+        S->>D: ③ Cart FOR UPDATE：本人的活动购物车
+        S->>D: ④ CartItem FOR UPDATE OF self；按 sku_id、id
+        D-->>S: 车项 + 本次目录读取的SKU价格、上架信息
+        S->>D: ⑤ Inventory FOR UPDATE NOWAIT；按 sku_id
+        Note over S,D: NOWAIT只用于库存；前面的行锁仍可能等待
+        S->>S: 校验本次上架读数与已锁库存；Decimal服务端重算
+        alt 校验和后续写入全部成功
+            S->>D: 创建待付款Order + 地址、商品快照
+            S->>D: 预占库存 + Reservation + RESERVE流水
+            Note over S,D: 示例：可售20 / 预留0，买1件 → 19 / 1
+            S->>D: 删除本次CartItem；读取订单快照
+            S->>D: COMMIT：订单、库存、流水、车项一起提交
+            D-->>S: 提交完成；释放全部锁
+            S-->>A: 新订单，created=true
+            A-->>U: 201：订单已建立，等待支付
+        else 任一步失败（库存忙、库存不足或其他错误）
+            S->>D: ROLLBACK：撤销本次全部写入，释放锁
+            Note over S,D: 不留下半张订单；库存与购物车恢复到事务前
+            S-->>A: 业务错误；其他异常继续上抛
+            A-->>U: 对应错误；stock_busy不等于售罄
+        end
+    end
+    Note over S,D: 这是普通购物车行锁方案；秒杀条件UPDATE另见秒杀模块
+    Note over U,D: 支付是提交后的另一流程；此处只预占，不最终核销
+    Note over S,D: 目录没有全部加锁；顺序取锁降低死锁风险，不保证无死锁或总HTTP期限

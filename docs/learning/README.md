@@ -1,6 +1,6 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-11。本页收录61份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索总览与五问题页再新增6份。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)与[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)只记录文档检查与发布，服务历史验证仍见各专题。
+更新：2026-10-11。本页收录67份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索与MySQL专题各新增总览及五问题页。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)、[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)、[MySQL知识库记录](../verification/mysql-interview-knowledge-base-publication.md)只记录文档检查与发布，服务历史验证仍见各专题。
 
 先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易和三条技术故事，再读[支付当前总览](payment-current-overview-study-guide.md)、[Redis当前总览](redis-current-overview-study-guide.md)及其问题页。以面试为最高优先级：讲清业务流程、失败交错、设计理由、替代与代价、核心代码、真实证据和“如果重做”。原图与历史资料继续保留。
 
@@ -30,6 +30,8 @@
 前四篇是早期长版，可优先读变化块和业务规则。MVP-4的MySQL待验证属于当时状态；后续支付已有真实证据，请沿支付专题查阅，不能把它冒充MVP-4该轮已运行。
 
 ## 2. 订单查询：从“返回少”到“数据库怎样读”
+
+当前复习入口是[MySQL与订单总览](mysql-current-overview-study-guide.md)，串起[数据/事务/快照](mysql-interview/01-data-transaction.md)、[幂等/锁/约束](mysql-interview/02-idempotency-locks.md)、[归属与分页](mysql-interview/03-pagination.md)、[完整查询成本](mysql-interview/04-query-cost.md)、[联合索引](mysql-interview/05-composite-index.md)。六页侧重业务流、取舍和真实证据，两图解释普通建单与订单读取；不把分页、索引和正确性约束混为同一种优化。
 
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |

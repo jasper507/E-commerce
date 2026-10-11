@@ -1,0 +1,396 @@
+{
+  "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b",
+  "guides": 6,
+  "local_links": 77,
+  "core_snippets": 10,
+  "links": [
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "../verification/mysql-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mysql-interview/01-data-transaction.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mysql-interview/02-idempotency-locks.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mysql-interview/03-pagination.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mysql-interview/04-query-cost.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mysql-interview/05-composite-index.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "redis-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "search-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "assets/mysql-interview-2026-10-11/order-sequence/diagram.png"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "assets/mysql-interview-2026-10-11/order-sequence/diagram.mmd"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "phase-6c5-flash-sale-inventory-failures-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mvp-4-mock-payment-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mysql-interview/04-query-cost.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mysql-interview/05-composite-index.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "../verification/mvp-3-order-inventory.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "../verification/phase-3-order-list-pagination.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "../verification/phase-3-order-query-baseline.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "../verification/phase-3-order-list-index.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "../verification/phase-9b-local-deployment-run.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "../verification/phase-7b-test-isolation-incident.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "mvp-3-order-inventory-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "phase-3-order-list-pagination-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "phase-3-order-query-baseline-study-guide.md"
+    },
+    {
+      "guide": "mysql-current-overview-study-guide.md",
+      "target": "phase-3-order-list-index-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../mysql-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../../verification/mysql-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "02-idempotency-locks.md"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../assets/mysql-interview-2026-10-11/order-sequence/diagram.png"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../assets/mysql-interview-2026-10-11/order-sequence/diagram.mmd"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../../../backend/apps/ordering/services.py#L224"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../../../backend/apps/ordering/services.py#L281"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../../verification/mvp-3-order-inventory.md"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../../verification/phase-3-checkout-contention.md"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "target": "../../../backend/apps/ordering/tests/test_order_api.py#L135"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../mysql-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../verification/mysql-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "01-data-transaction.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "03-pagination.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../../backend/apps/ordering/services.py#L133"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../../backend/apps/ordering/models.py#L119"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../../backend/apps/ordering/services.py#L170"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../phase-6c5-flash-sale-inventory-failures-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../verification/mvp-3-order-inventory.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../verification/phase-3-inventory-race-baseline.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../verification/phase-3-inventory-strategy-comparison.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../verification/phase-3-checkout-contention.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../verification/phase-6c5-flash-sale-inventory-failures.md"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "target": "../../../backend/apps/ordering/tests/test_order_concurrency.py#L61"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "../mysql-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "../../verification/mysql-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "../../../backend/apps/ordering/views.py#L144"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "04-query-cost.md"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "../../../backend/apps/ordering/views.py#L155"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "../../../frontend/src/views/OrdersView.vue#L14"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "../../verification/phase-3-order-list-pagination.md"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "04-query-cost.md"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "target": "05-composite-index.md"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../mysql-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../../verification/phase-3-order-query-baseline.md"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../../verification/phase-3-order-query-baseline-data.json"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../../verification/mysql-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../assets/mysql-interview-2026-10-11/query-sequence/diagram.png"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../assets/mysql-interview-2026-10-11/query-sequence/diagram.mmd"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../../../backend/apps/ordering/views.py#L147"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "../../../backend/apps/ordering/serializers.py#L137"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "target": "05-composite-index.md"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../mysql-current-overview-study-guide.md"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../../verification/phase-3-order-query-baseline.md"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../../verification/phase-3-order-list-index.md"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../../verification/phase-3-order-list-index-plans.json"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../../verification/mysql-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../../../backend/apps/ordering/models.py#L112"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../../../backend/apps/ordering/migrations/0005_order_list_index.py#L14"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "target": "../../verification/phase-9b-local-deployment-run.md"
+    }
+  ],
+  "code_checks": [
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "source": "backend/apps/ordering/services.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/01-data-transaction.md",
+      "source": "backend/apps/ordering/services.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "source": "backend/apps/ordering/services.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/02-idempotency-locks.md",
+      "source": "backend/apps/ordering/services.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "source": "backend/apps/ordering/views.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/03-pagination.md",
+      "source": "backend/apps/ordering/views.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "source": "backend/apps/ordering/views.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/04-query-cost.md",
+      "source": "backend/apps/ordering/serializers.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "source": "backend/apps/ordering/models.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    },
+    {
+      "guide": "mysql-interview/05-composite-index.md",
+      "source": "backend/apps/ordering/migrations/0005_order_list_index.py",
+      "source_commit": "886600018badf0d157a6cd6d7164a308c4bd1c2b"
+    }
+  ],
+  "fixed_snapshot_paths": [
+    "backend/apps/ordering/migrations/0005_order_list_index.py",
+    "backend/apps/ordering/models.py",
+    "backend/apps/ordering/serializers.py",
+    "backend/apps/ordering/services.py",
+    "backend/apps/ordering/tests/test_order_api.py",
+    "backend/apps/ordering/tests/test_order_concurrency.py",
+    "backend/apps/ordering/views.py",
+    "docs/learning/mvp-3-order-inventory-study-guide.md",
+    "docs/learning/mvp-4-mock-payment-study-guide.md",
+    "docs/learning/phase-3-order-list-index-study-guide.md",
+    "docs/learning/phase-3-order-list-pagination-study-guide.md",
+    "docs/learning/phase-3-order-query-baseline-study-guide.md",
+    "docs/learning/phase-6c5-flash-sale-inventory-failures-study-guide.md",
+    "docs/verification/mvp-3-order-inventory.md",
+    "docs/verification/phase-3-checkout-contention.md",
+    "docs/verification/phase-3-inventory-race-baseline.md",
+    "docs/verification/phase-3-inventory-strategy-comparison.md",
+    "docs/verification/phase-3-order-list-index-plans.json",
+    "docs/verification/phase-3-order-list-index.md",
+    "docs/verification/phase-3-order-list-pagination.md",
+    "docs/verification/phase-3-order-query-baseline-data.json",
+    "docs/verification/phase-3-order-query-baseline.md",
+    "docs/verification/phase-6c5-flash-sale-inventory-failures.md",
+    "docs/verification/phase-7b-test-isolation-incident.md",
+    "docs/verification/phase-9b-local-deployment-run.md",
+    "frontend/src/views/OrdersView.vue"
+  ]
+}

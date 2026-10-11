@@ -1,0 +1,22 @@
+{
+  "whiteboard_token": "Ygcowkej0hWgXRbiaXgcnCVVnKh",
+  "block_id": "doxcnPfRnl4A2DSr9rbUtPHGUBc",
+  "idempotent_token": "mysql-query-20261011-publish-1",
+  "before": "CLI export returned whiteboard is empty; empty export did not produce a raw file",
+  "local_nodes": 25,
+  "published_nodes": 25,
+  "published_connectors": 12,
+  "published_life_lines": 4,
+  "unique_node_ids": true,
+  "local_text_blocks": 25,
+  "published_text_blocks": 25,
+  "text_match": true,
+  "text_walk_includes_table_cells": true,
+  "table_nodes": 0,
+  "missing_text": [],
+  "unexpected_text": [],
+  "source_export": "no code blocks found in whiteboard; editable local diagram.mmd retained",
+  "preview": "published-preview.jpg",
+  "preview_visual_review": "Viewed actual remote preview: all participants, messages, notes and boundaries are readable; no clipping or overlap observed",
+  "verification_scope": "Only new diagram publication and readback; no business database or application tests"
+}
