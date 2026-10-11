@@ -27,7 +27,7 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 
 ## 面试优先的设计门槛
 
-项目最终要形成“一条可演示的业务闭环 + 三个讲得透的后端技术亮点”。业务闭环是浏览、登录、购物车、地址、下单与库存预占、Mock 支付与核销、模拟发货、确认收货；三个亮点是库存并发与秒杀正确性、Redis 缓存一致性与故障降级、支付状态与 Webhook 幂等。
+项目最终要形成“一条可运行、证据可复现的业务闭环 + 三个讲得透的后端技术亮点”。拥有者不要求面试展示站，当前工程收尾以PROJECT_CHARTER.md v1.17和Phase10A验收为准；个人掌握另验，不因旧勾选自动追加模块/中间件部署/压测。业务闭环是浏览、登录、购物车、地址、下单与库存预占、Mock 支付与核销、模拟发货、确认收货；三个亮点是库存并发与秒杀正确性、Redis 缓存一致性与故障降级、支付状态与 Webhook 幂等。
 
 - 每项数据库、代码、架构、基础设施或项目范围设计，先说清它服务于闭环或哪一条亮点。重大设计至少说明业务问题、关键不变量或失败场景、最小方案、一个替代方案与取舍、支持面试说法所需的可复现证据；普通辅助工作可简述。无法建立清楚关联的需求应延期或不做。
 - 每条技术亮点最终应能按“简单基线 → 实际失败或限制 → 方案选择 → 代码与验证 → 数据和取舍”独立讲解。合成流量与模拟服务可以用，但不能冒充线上经验或捏造指标。
@@ -53,7 +53,7 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 - Order 主链为 `PENDING_PAYMENT → PAID → SHIPPED → COMPLETED`，另有终态 `CANCELED/EXPIRED`。
 - PaymentAttempt 使用 `CREATED/PENDING/UNKNOWN/SUCCEEDED/FAILED/EXPIRED/CANCELED`；每单最多一个活跃 Attempt，UNKNOWN 必须查单，任一成功后禁止新建。
 - Event Inbox 以 `(provider, event_id)` 唯一；Provider Adapter 统一创建支付、查单、验签、事件解析和发起模拟退款；简单取消、库存释放、迟到支付和 Refund Simulation 都必须幂等。
-- 2026-10-01 已确认范围：Phase 5 必须以 RabbitMQ + Celery 完成支付事件后台处理、有界重试、消费者幂等与 Inbox 恢复；这是待实现要求，不代表 MQ 已接入或故障行为已经验证。其他异步业务场景不因 MQ 必做而自动扩展。
+- 2026-10-01确认必做的支付RabbitMQ/Celery已在5C1–C4真实集成、故障与人工恢复验证；默认同步，没有周期自动接管。历史“待实现”属于当时状态，其他异步业务场景不自动扩展；本轮CI/默认回归不冒充MQ故障矩阵重跑。
 - 第一批 Django App 为 `accounts/catalog/inventory/ordering/payments`；`promotions/engagement` 在闭环后按需增加。
 - 业务事实不硬删除；字段、约束和索引按已确认不变量及真实查询在纵向切片中细化。
 
@@ -61,7 +61,7 @@ Project One 是面向中国 Backend / Software Engineering Internship 的主力�
 
 三条旗舰主线必须做深：
 
-1. 库存并发与秒杀：超卖复现、事务、原子条件更新/行锁对比、预占/核销/释放、Redis Lua 候选（拥有者2026-10-08决定暂缓、后续评估）、一人一单、补偿、分布式锁 Gate、压测。
+1. 库存并发与秒杀：超卖复现、事务、原子条件更新/行锁对比、预占/核销/释放、已隔离验证的Redis Lua尝试准入（不预扣库存）、一人一单、资格生命周期与有限负载；分布式锁默认No-Go。
 2. Redis 缓存正确性：Cache-Aside、一致性、失效、穿透、击穿、雪崩、热点、故障降级、性能对比。
 3. 支付状态与幂等：后端 Mock Gateway、状态机、Webhook/Event Inbox、唯一事件、重复/乱序回调、UNKNOWN、校验、RabbitMQ + Celery 支付事件异步处理、有界重试、消费者幂等、Inbox 恢复、Worker/Broker 故障验证和退款模拟。
 

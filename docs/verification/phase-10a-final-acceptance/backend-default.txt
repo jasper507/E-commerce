@@ -1,0 +1,104 @@
+............................................................... [ 14%]
+.................................................ssssssssssssssssssssssssssssssssssssssssssssssssssss [ 37%]
+ssssssssssssssssssssssssssssssssssss........................ssssssss.... [ 54%]
+..........ssssssssssss................. [ 62%]
+...................................................................sssssssssssss........................................s........ [ 92%]
+......................ss.........                               [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] backend\apps\catalog\tests\test_cache_avalanche.py:93: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\catalog\tests\test_cache_burst.py:117: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:29: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:76: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:112: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:149: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:204: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:229: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:251: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_generation.py:265: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_penetration.py:28: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_penetration.py:46: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_penetration.py:67: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\catalog\tests\test_cache_penetration.py:88: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_penetration.py:106: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_penetration.py:132: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_cache_penetration.py:159: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:131: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:153: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:160: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [4] backend\apps\catalog\tests\test_detail_cache.py:177: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\catalog\tests\test_detail_cache.py:189: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:200: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:216: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:229: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:252: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:272: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:290: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\catalog\tests\test_detail_cache.py:327: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:355: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:374: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_detail_cache.py:388: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_fallback_limit.py:101: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\catalog\tests\test_fallback_limit.py:193: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [4] backend\apps\catalog\tests\test_fallback_limit.py:220: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\catalog\tests\test_fallback_limit.py:244: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_fallback_limit.py:289: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_read_breaker_api.py:29: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_read_breaker_api.py:45: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_read_breaker_api.py:84: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_read_breaker_api.py:109: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [5] backend\apps\catalog\tests\test_read_breaker_api.py:129: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_read_breaker_recovery.py:59: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_read_breaker_recovery.py:140: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_redis_slow_recovery.py:70: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_redis_slow_recovery.py:282: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\catalog\tests\test_refill_limit.py:127: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_refill_limit.py:209: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_refill_limit.py:239: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_prototype.py:141: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_prototype.py:211: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_prototype.py:239: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_prototype.py:288: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_switch.py:177: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_switch.py:207: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_switch.py:246: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_switch.py:323: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_switch.py:384: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_query_baseline.py:56: explicit product-search experiment only
+SKIPPED [1] backend\apps\catalog\tests\test_search_read_api.py:183: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_read_api.py:214: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_read_api.py:262: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_read_api.py:294: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_read_api.py:308: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_read_api.py:468: explicit offline flag; stop isolated ES before this separate run
+SKIPPED [1] backend\apps\catalog\tests\test_singleflight.py:263: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_singleflight.py:312: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [3] backend\apps\catalog\tests\test_singleflight.py:361: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\catalog\tests\test_slow_detail_loader.py:31: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\ordering\tests\test_order_list_index.py:109: explicit formal-index plan verification only
+SKIPPED [1] backend\apps\ordering\tests\test_order_query_baseline.py:252: explicit order-query experiment only
+SKIPPED [6] backend\apps\ordering\tests\test_payment_expiration_concurrency.py:178: Requires explicit local MySQL lock observation experiment.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq.py:155: Requires explicit isolated RabbitMQ/Worker configuration.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq.py:181: Requires explicit isolated RabbitMQ/Worker configuration.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq.py:202: Requires explicit isolated RabbitMQ/Worker configuration.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_crash.py:163: Requires explicit isolated crash experiment Worker.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_crash.py:191: Requires explicit isolated crash experiment Worker.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_crash.py:140: Requires explicit isolated crash experiment Worker.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_crash.py:209: Requires explicit isolated crash experiment Worker.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_recovery.py:120: Requires explicit isolated Broker outage experiment configuration.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_recovery.py:189: Requires explicit isolated Broker outage experiment configuration.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_retry.py:175: Requires explicit isolated retry experiment Worker.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_retry.py:143: Requires explicit isolated retry experiment Worker.
+SKIPPED [1] backend\apps\payments\tests\test_event_mq_retry.py:103: Requires explicit isolated retry experiment Worker.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_admission.py:131: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_admission.py:153: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [4] backend\apps\promotions\tests\test_flash_sale_admission.py:169: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_admission.py:192: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_admission.py:220: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_admission.py:240: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_admission.py:256: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_admission.py:282: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [2] backend\apps\promotions\tests\test_flash_sale_admission.py:294: Set PROJECT_ONE_TEST_REDIS_URL to an isolated real Redis service.
+SKIPPED [1] backend\apps\promotions\tests\test_flash_sale_inventory_load.py:433: Requires PROJECT_ONE_TEST_FLASH_SALE_LOAD=true and isolated MySQL.
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_prototype.py:270: explicit isolated Elasticsearch URL required
+SKIPPED [1] backend\apps\catalog\tests\test_search_index_prototype.py:311: explicit offline flag; stop isolated ES before this separate run
+313 passed, 124 skipped, 685 subtests passed in 208.66s (0:03:28)

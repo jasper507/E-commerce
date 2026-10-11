@@ -1,6 +1,6 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-12。本页收录80份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索与MySQL专题各新增总览及五问题页，秒杀再补当前总览与Lua问题页；认证新增总览及四个业务问题页，部署新增完整请求链专题；测试证据与故障排查新增总览及四个问题页。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)、[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)、[MySQL知识库记录](../verification/mysql-interview-knowledge-base-publication.md)、[秒杀/Lua更新](../verification/flash-sale-lua-knowledge-base-update.md)只记录文档检查与发布，服务历史验证仍见各专题。
+更新：2026-10-12。本页收录81份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索与MySQL专题各新增总览及五问题页，秒杀再补当前总览与Lua问题页；认证新增总览及四个业务问题页，部署新增完整请求链专题；测试证据与故障排查新增总览及四个问题页。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)、[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)、[MySQL知识库记录](../verification/mysql-interview-knowledge-base-publication.md)、[秒杀/Lua更新](../verification/flash-sale-lua-knowledge-base-update.md)只记录文档检查与发布，服务历史验证仍见各专题。
 
 先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易和三条技术故事，再读[支付当前总览](payment-current-overview-study-guide.md)、[Redis当前总览](redis-current-overview-study-guide.md)及其问题页。以面试为最高优先级：讲清业务流程、失败交错、设计理由、替代与代价、核心代码、真实证据和“如果重做”。原图与历史资料继续保留。
 
@@ -129,6 +129,10 @@ ACK是Worker向队列确认消息已处理；业务成功仍以MySQL提交的支
 ## 9. 测试证据与故障排查：证明、定位与安全复现
 
 当前入口是[测试证据与故障排查总览](testing-current-overview-study-guide.md)：[证据层级与终值](testing-interview/01-evidence.md)、[并发与故障验证](testing-interview/02-concurrency.md)、[从症状定位第一错误](testing-interview/03-diagnosis.md)、[隔离与安全复现](testing-interview/04-isolation.md)。一张5D验证方法时序图展示原锁SQL、真实等待、释放与终值；正文分别标明真实依赖、异常注入、APIClient、HTTP客户端和浏览器。保留7B事故的原因与数量口径差异，本轮不操作数据，见[发布核验](../verification/testing-evidence-knowledge-base-publication.md)。
+
+## 10. 收尾：把最终版本与真实证据对齐
+
+[最终版本验收指南](phase-10a-final-acceptance-study-guide.md)与[验证记录](../verification/phase-10a-final-acceptance.md)核实当前默认回归、前端构建、基线CI及历史中间件证据。总纲v1.17收窄为已有业务/三主线/隔离扩展/基础部署；未做环境与个人掌握分开，不自动加新模块或压测。随后先读项目总览重建完整交易理解。
 
 ## 其他辅助材料建议：按实际困惑再补
 

@@ -1,0 +1,110 @@
+{
+  "queried_date": "2026-10-12",
+  "repo": "jasper507/E-commerce",
+  "head_sha": "0a94676f9f74b314fb5ea2fb1c93b982893cebcc",
+  "total_count": 1,
+  "runs": [
+    {
+      "id": 38165837589,
+      "name": "Backend CI",
+      "event": "push",
+      "head_sha": "0a94676f9f74b314fb5ea2fb1c93b982893cebcc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/jasper507/E-commerce/actions/runs/38165837589",
+      "created_at": "2026-10-11T18:55:21Z",
+      "updated_at": "2026-10-11T18:59:13Z",
+      "run_attempt": 1
+    }
+  ],
+  "jobs": [
+    {
+      "id": 114548088997,
+      "name": "test",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 38165837589,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Initialize containers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install MySQL build dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Grant access to the isolated test database",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check Django configuration and migrations",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Post Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Stop containers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        }
+      ]
+    }
+  ]
+}

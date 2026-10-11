@@ -9,6 +9,16 @@ change, and its resulting limits, with historical stages kept distinct from
 current progress. The earlier documentation-only pass is recorded in the
 [verification](docs/verification/learning-guide-change-overviews.md).
 
+Final acceptance (2026-10-12): source baseline `0a94676` passed Backend CI
+(313 tests, 124 opt-in skips) and the local isolated MySQL default suite
+(313 tests / 685 subtests, 124 skips). Frontend type checking/build also passed.
+Historical Redis/MQ/ES and load evidence remain separate from this execution.
+The [acceptance record](docs/verification/phase-10a-final-acceptance.md) and
+[study guide](docs/learning/phase-10a-final-acceptance-study-guide.md) define the
+closing scope: the business loop, three depth tracks, isolated extensions and
+basic local deployment. Personal mastery and résumé preparation remain pending;
+full middleware deployment, public HTTPS and restore drills are not claimed.
+
 First local deployment (2026-10-11): the authorized standalone stack now runs
 Vue build output, Nginx, Gunicorn/Django and an independent MySQL database.
 Linux image builds, 36 migrations, 154 static files and 14 HTTP checks passed;

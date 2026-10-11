@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-12",
+  "checked_markdown_files": 8,
+  "local_links_checked": 259,
+  "missing_links": [],
+  "json_parsed": 6,
+  "raw_junit_result_consistent": true,
+  "ci_sha_job_conclusion_consistent": true,
+  "source_manifest_paths_and_diffs_consistent": true,
+  "source_tree_normalized_hash_consistent": true,
+  "application_and_configuration_worktree_unchanged": true,
+  "sensitive_value_matches": 0,
+  "review_corrections": [
+    "separate backend/deployment/script commits",
+    "actual closure service path and changes",
+    "UTF-8 LF source tree hash format"
+  ],
+  "boundary": "Static document/evidence validation, not additional business tests."
+}

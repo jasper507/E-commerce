@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-12",
+  "tested_head": "0a94676f9f74b314fb5ea2fb1c93b982893cebcc",
+  "source_tree_sha256": "2283822502d1901be8b71e868a93b12f3a8fcb92e41f978ed0b72929db2cf49a",
+  "entries": [
+    {
+      "track": "redis",
+      "record": "docs/verification/phase-4j-refill-admission.md",
+      "record_first_commit": "80caf34f9b2dbf39b588e27745bb29a1460cc39b",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/catalog/cache.py",
+        "backend/apps/catalog/cache_signals.py",
+        "backend/apps/catalog/tests"
+      ],
+      "changed_paths_since_record_commit": [
+        "backend/apps/catalog/tests/test_product_search.py",
+        "backend/apps/catalog/tests/test_search_index_prototype.py",
+        "backend/apps/catalog/tests/test_search_index_switch.py",
+        "backend/apps/catalog/tests/test_search_query_baseline.py",
+        "backend/apps/catalog/tests/test_search_read_api.py"
+      ],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "mq-worker",
+      "record": "docs/verification/phase-5c4-payment-worker-recovery.md",
+      "record_first_commit": "5096d972a01508f429c73a32d9f330cf0cc8e585",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/payments",
+        "compose.yaml",
+        "docker/payments",
+        "scripts/verify_payment_mq.ps1"
+      ],
+      "changed_paths_since_record_commit": [
+        "backend/apps/payments/services.py"
+      ],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "payment-expiration",
+      "record": "docs/verification/phase-5d-payment-expiration-concurrency.md",
+      "record_first_commit": "d34a9506675397e35c637da674a02410c042271f",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/payments",
+        "backend/apps/ordering/lifecycle_services.py",
+        "backend/apps/ordering/tests/test_payment_expiration_concurrency.py"
+      ],
+      "changed_paths_since_record_commit": [
+        "backend/apps/ordering/lifecycle_services.py",
+        "backend/apps/payments/services.py"
+      ],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "flash-sale-load",
+      "record": "docs/verification/phase-6c3-flash-sale-inventory-load.md",
+      "record_first_commit": "9d27804367d28a81985d0cf7158075c98e8d3c23",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/promotions"
+      ],
+      "changed_paths_since_record_commit": [
+        "backend/apps/promotions/admission.lua",
+        "backend/apps/promotions/admission.py",
+        "backend/apps/promotions/http_services.py",
+        "backend/apps/promotions/serializers.py",
+        "backend/apps/promotions/services.py",
+        "backend/apps/promotions/tests/test_flash_sale_admission.py",
+        "backend/apps/promotions/tests/test_flash_sale_api.py",
+        "backend/apps/promotions/tests/test_flash_sale_contention.py",
+        "backend/apps/promotions/tests/test_flash_sale_http_wait.py",
+        "backend/apps/promotions/tests/test_flash_sale_inventory_comparison.py",
+        "backend/apps/promotions/tests/test_flash_sale_inventory_failures.py",
+        "backend/apps/promotions/tests/test_flash_sale_inventory_load.py",
+        "backend/apps/promotions/urls.py",
+        "backend/apps/promotions/views.py"
+      ],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "flash-sale",
+      "record": "docs/verification/phase-6c5-flash-sale-inventory-failures.md",
+      "record_first_commit": "b4456bd1d498c7fe370e8a793f63e11ffa5f4fae",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/promotions"
+      ],
+      "changed_paths_since_record_commit": [
+        "backend/apps/promotions/admission.lua",
+        "backend/apps/promotions/admission.py",
+        "backend/apps/promotions/http_services.py",
+        "backend/apps/promotions/serializers.py",
+        "backend/apps/promotions/services.py",
+        "backend/apps/promotions/tests/test_flash_sale_admission.py",
+        "backend/apps/promotions/tests/test_flash_sale_api.py",
+        "backend/apps/promotions/tests/test_flash_sale_http_wait.py",
+        "backend/apps/promotions/urls.py",
+        "backend/apps/promotions/views.py"
+      ],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "lua",
+      "record": "docs/verification/phase-6f-flash-sale-admission.md",
+      "record_first_commit": "36dc6d122dcdb658d278409df3136c6e0e4c1ff1",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/promotions"
+      ],
+      "changed_paths_since_record_commit": [],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "order-index",
+      "record": "docs/verification/phase-3-order-list-index.md",
+      "record_first_commit": "59b54b9d4a73cada5d94df325d8b2565bc97f51e",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/ordering"
+      ],
+      "changed_paths_since_record_commit": [],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "es",
+      "record": "docs/verification/phase-7d-search-index-switch.md",
+      "record_first_commit": "6a159eecd5d1ca40a824e4170dfbf944b1460afb",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "backend/apps/catalog/search_prototype.py",
+        "backend/apps/catalog/search_read.py",
+        "backend/apps/catalog/search_alias.py",
+        "backend/apps/catalog/tests/test_search_index_prototype.py",
+        "backend/apps/catalog/tests/test_search_read_api.py",
+        "backend/apps/catalog/tests/test_search_index_switch.py"
+      ],
+      "changed_paths_since_record_commit": [],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    },
+    {
+      "track": "deployment",
+      "record": "docs/verification/phase-9c-session-csrf-operations.md",
+      "record_first_commit": "29b7944860080ccddedb2c0f0c060c0a27658376",
+      "ancestor_of_baseline": true,
+      "inspected_source_scope": [
+        "compose.deployment-local.yaml",
+        "docker/deployment",
+        "scripts/verify_local_session_csrf.py"
+      ],
+      "changed_paths_since_record_commit": [],
+      "boundary": "Historical execution at its recorded date/version, not rerun in this slice. Changed paths require reading current integration and default regression; ancestry alone is not proof."
+    }
+  ],
+  "source_tree_hash_format": "SHA256 of UTF-8 LF text, including final newline; normalize CRLF to LF when verifying."
+}

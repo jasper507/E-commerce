@@ -1,14 +1,33 @@
-# Project One — Project Charter v1.16
+# Project One — Project Charter v1.17
 
 ## 0. 文档状态
 
 - 项目名称：Project One — Django E-commerce
-- 当前阶段：Phase9C获准完成代理入口Session/CSRF真实HTTP验收15项、临时账号/会话精确清理；更新/停机/备份恢复手册及语法/选项核对完成，运维未演练。9B基础运行证据保留；交易、中间件启用、公网HTTPS未验收，进入整体梳理与复习前按收益决定是否补一次恢复演练。
-- 文档版本：v1.16
-- 路线图进度更新：2026-10-11
+- 当前阶段：Phase10A最终版本验收：基线CI成功、本机默认MySQL回归313项/685子场景通过、124项显式实验默认跳过，前端构建通过。交易主链与三条深度主线工程证据已收束，进入整体理解与简历准备；个人掌握待验收。9B/9C基础部署/认证已验证，该部署环境的交易、中间件启用、公网HTTPS与运维演练未验收。
+- 文档版本：v1.17
+- 路线图进度更新：2026-10-12
 - Charter 状态：Final（项目范围与首轮设计基线已确认）
 - 技术定位：Backend-heavy Django E-commerce System
 - 主要用途：中国 Backend / Software Engineering Internship 面试主力项目
+
+### 本期收尾口径（2026-10-12，优先于旧阶段勾选）
+
+拥有者明确不需要面试展示站，要求项目收尾，并授权核对最终版本、CI与必要回归及统一旧范围。[最终验收](docs/verification/phase-10a-final-acceptance.md)与[学习指南](docs/learning/phase-10a-final-acceptance-study-guide.md)区分本轮运行、历史实测、环境启用和Learning Done。
+
+| 项目部分 | 当前工程状态 | 保留的边界 |
+| --- | --- | --- |
+| 最小交易主链/账户权限/快照 | 真实MySQL历史证据＋本轮默认回归通过 | 不是本次新部署库完整交易或一次普通浏览器全链路验收 |
+| 库存并发与秒杀 | 正式条件UPDATE、回滚、幂等/资格、HTTP/浏览器与有限负载证据已形成 | 部分异常注入；没有生产容量或无死锁保证 |
+| Redis详情缓存 | 4A–4J既定范围已验证 | 不做分类/列表缓存；回源名额/请求合并按进程，非强一致 |
+| 支付与MQ | 同步基线、真实MQ/Worker故障、有界预算/租约与人工补漏已验证 | 默认同步、恢复需人工；未做周期自动接管或真实资金 |
+| Lua | 原子尝试流量准入已隔离验证 | 默认关闭、不预扣库存、不保证严格在途上限 |
+| ES | 测试来源原型、读API和手动别名切换已隔离验证 | 前端仍MySQL；开发启用/独立管理入口/自动同步本期延期 |
+| MySQL查询 | 分页、实际查询基线与联合索引及迁移验证完成 | COUNT/深OFFSET成本保留；开发库未应用新索引迁移 |
+| 部署与CI | 基础本机Linux部署、Session/CSRF、基线CI及本轮构建/回归通过 | 全中间件集中部署、公网HTTPS、重启/更新/备份恢复实测未做 |
+| 本人理解与求职材料 | 文档已提供，等待独立讲述/修改/排错与简历定稿 | 工程通过不等于Learning Done |
+
+旧“完整环境一条流程”和“三种负载各有基线及优化”不原样标完成：本期改为基础部署流程＋各中间件隔离复现入口、复用已有查询/缓存/下单/秒杀有限证据并标清口径。依据上述拥有者收尾目标，不追加全服务部署或新压测。必要正确性、MQ真实故障证据和默认回归要求保留；新范围不覆盖已经确认的安全规则。下面阶段叙述保留原日期，未勾选不自动成为下一任务。
+
 - 当前状态：已有 Mock Payment 业务闭环、持久重试预算、真实 MQ 基线、有界后台重试及人工发布补漏。Phase 5C-4 增加默认60秒的持久处理租约与显式 `--recover-stale`：逐条短事务锁内核对原领取版本，跳过正在持锁的业务事务，修复后由原恢复/补投入口继续处理；不重置次数。真实隔离 Worker 的领取后、业务提交前、支付/退款提交后但 ACK 前中断已验证，见 `docs/verification/phase-5c4-payment-worker-recovery.md`。Phase 5D增加两种Order锁顺序×三种未确认Attempt状态的六场景，真实观察记录锁等待，验证成功后只一次核销，见 `docs/verification/phase-5d-payment-expiration-concurrency.md`；业务实现未改。默认同步，项目拥有者确认本期保留人工兜底，没有周期自动补漏、心跳或全自动接管。Redis当前进度见 `CONTEXT.md` 第32节。前序成果已于2026-10-05提交并推送main（`2dacc9a`），C4/5D及Phase 6A增量已分组保存；Phase 6A真实隔离MySQL目标10项与相关回归151项通过；Phase 6B新增资格生命周期目标11项、promotions/ordering/payments回归171项通过；Phase 6C-1补当前NOWAIT完整秒杀双顾客竞争；6C-2同完整事务候选正确性通过；6C-3完成8worker/24顾客、两库存/预算/策略各3轮共24批次的时延/重试/连接成本，全部有效且默认未换策略，见docs/verification/phase-6c3-flash-sale-inventory-load.md；Git整合状态以提交历史为准。生成新代码前先commit/push的持续授权见PROJECT_INSTRUCTIONS.md；该段所记前序阶段未执行开发库恢复、迁移或浏览器验收；Phase7B恢复事实见本文件最新记录。
 
 前序状态（2026-10-08）：单活动 SKU 条件 UPDATE 已在 Phase 6C-5 正式落地，见 [ADR 0001](docs/adr/0001-flash-sale-inventory-conditional-update.md) 和 [验证记录](docs/verification/phase-6c5-flash-sale-inventory-failures.md)。当时拥有者选择沿用现有会话上限，本机观察 50 秒；库存 UPDATE 的 1205/1213 返回繁忙并退出整单事务，未知错误上抛，无自动重试。目标9项/198子场景、相关回归183项/403子场景通过；普通多 SKU、Redis Lua 范围不变。上段及阶段条目中“默认未换策略”描述各片当时状态。
@@ -632,7 +651,7 @@ Mock Payment Gateway、PaymentAttempt、Webhook Inbox、RabbitMQ + Celery 支付
 
 | 技术/能力 | 引入时机 | 必须留下的证据 |
 |---|---|---|
-| Docker Compose | 服务依赖增加或需要可复现环境 | 一条流程启动完整环境 |
+| Docker Compose | 服务依赖增加或需要可复现环境 | 本期基础部署流程＋各真实中间件的独立实验入口，不要求一份Compose同时启用全部能力 |
 | Nginx/Gunicorn/Linux | 进入部署阶段 | 可访问服务、日志与健康检查 |
 | CI | 从最小 CI 逐步扩展 | 实际执行记录、失败与修复证据 |
 | 日志与可观测性 | 业务闭环形成后逐步增强 | 能定位关键请求、任务和故障 |
@@ -890,7 +909,8 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [x] Order/PaymentAttempt 最小状态机的代码与 SQLite 功能烟测
 - [x] 事务提交后的最小同步 Provider Adapter、Mock Payment、Event Inbox baseline 和库存核销代码
 - [x] Django Admin 模拟发货；Customer 确认完成的代码与 SQLite 功能烟测
-- [ ] MySQL 隔离测试数据库中的约束、并发与全项目回归，以及浏览器端到端验收
+- [x] 后续Phase2B/5提供MySQL约束、并发与交易回归，Phase10A再次默认回归；不把后来实测改写为MVP-4当轮已运行
+- [ ] 普通交易一次完整浏览器端到端验收（本期不追加展示任务；6E只验证秒杀浏览器链路）
 
 本切片未执行开发数据库迁移，不处理真实资金。15 分钟超时关闭、取消、库存释放、迟到成功退款模拟仍属于 Phase 2B；本阶段不能宣称这些分支已完成。
 
@@ -898,7 +918,7 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 
 ### Phase 2B — Correctness and Business Enhancements After the Loop
 
-- [ ] 已确认的取消/过期、迟到支付、库存释放与 Refund Simulation
+- [x] 已确认的取消/过期、迟到支付、库存释放与Refund Simulation（Phase2B与支付主线已验证；到期需命令触发，不是自动15分钟关单）
 - [ ] 固定满减且不可叠加的 Coupon
 - [ ] Favorite
 - [ ] Completed OrderItem 的单条 Review
@@ -907,27 +927,27 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 
 ### Phase 3 — Database Correctness & Optimization
 
-- [ ] Transaction
-- [ ] 唯一约束
+- [x] Transaction（完整订单/库存/支付事务及回滚证据）
+- [x] 唯一约束（幂等、活跃Attempt与事件等数据库约束）
 - [x] naive 库存并发失败复现（Phase3最小错误基线已于2026-09-26观察2单/2预占，库存0/1；见phase-3-inventory-race-baseline.md，不等于完整秒杀或性能验证）
 - [x] 原子条件更新与 `select_for_update()` 对比及 Evidence-backed ADR（Phase3/6C-2正确性与6C-3有限负载证据已有，6C-4/ADR0001接受；6C-5正式替换、真实1205与相关回归通过）
-- [ ] N+1、索引、EXPLAIN
-- [ ] SQL 数量和延迟基线
+- [x] 订单分页/实际关联查询、联合索引及EXPLAIN/EXPLAIN ANALYZE证据（不称所有慢SQL都已优化）
+- [x] 已选读取路径的SQL数量和测量基线（COUNT/深OFFSET及测量边界保留）
 
 ### Phase 4 — Redis Cache Track
 
-- [ ] Category/Product Cache-Aside
-- [ ] `transaction.on_commit` 后失效与 TTL 随机抖动
-- [ ] 穿透、击穿、雪崩
-- [ ] Redis unavailable fallback to MySQL
-- [ ] 性能证据
+- [x] Product Detail Cache-Aside（公开商品详情范围；Category/列表缓存未引入，不因旧合并条目追加）
+- [x] `transaction.on_commit` 后换代失效与TTL随机抖动（换代失败/信号旁路边界保留）
+- [x] 穿透、击穿、多Key集中回源的失败与保护证据（4A–4J）
+- [x] Redis故障受限回源与读熔断（满员503，进程内预算）
+- [x] 已选路径查询量/并发峰值与受控测量证据（不是生产容量）
 
 ### Phase 5 — Payment Track Deepening
 
-- [ ] Provider Adapter 合约与故障边界深化
-- [ ] Mock Gateway 故障场景
-- [ ] Webhook Inbox 的重复、乱序、验证失败和处理失败路径
-- [ ] 幂等、乱序、重试
+- [x] Provider Adapter合约与故障边界、UNKNOWN原Attempt确认（Mock范围）
+- [x] Mock Gateway故障场景（真实DB与受控模拟网关）
+- [x] Webhook Inbox重复、乱序、验证失败和处理失败路径
+- [x] 幂等、乱序、有界重试与持久预算（非消息恰好执行一次）
 - [x] 已入箱 `RECEIVED/ERROR` 的人工一次性恢复扫描与独立事务基线（Phase 5A 历史基线）
 - [x] 事件失败分类、持久累计预算、到期门槛和耗尽状态（Phase 5B；人工触发，无自动调度/处理中接管）
 - [x] RabbitMQ + Celery 支付事件异步处理基础链路（Phase 5C-1，真实正常/重复/伪造事件验证，默认同步）
@@ -936,9 +956,9 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [x] 持久处理租约、人工过期领取修复与真实 Worker 中断恢复（Phase 5C-4；不自动调度）
 - [x] 已选配置的消息确认、有界重试、重复消费、Worker/Broker 故障与人工发布补漏证据（C1–C4；限制见各期记录）
 - [x] 原活跃Attempt下支付成功与订单到期两种Order获锁顺序、真实记录锁等待与重复效果验证（Phase 5D；六场景）
-- [ ] 原活跃 Attempt 查单恢复；与 Inbox 重处理区分，避免重新付款
-- [ ] Refund/Reconciliation 思路
-- [ ] 支付与 MQ Evidence Pack；保留同步基线、失败复现、方案取舍与限制
+- [x] 原活跃Attempt查单确认；与Inbox重处理区分，UNKNOWN不重新付款
+- [x] 迟到成功Refund Simulation及人工核查边界（不包含第三方退款/完整自动对账）
+- [x] 支付/MQ Evidence Pack（5A–5D；历史日期、故障注入/真实场景与人工限制分开）
 
 第三方 Sandbox 本期 No-Go；支付异步处理先基于已有状态机与事务分切片接入，不一次重写整个 payments 模块。
 
@@ -956,12 +976,12 @@ MVP-1 中普通 GET/POST/PATCH/DELETE、Serializer/View/URL 与页面样板走 C
 - [x] Redis Lua 原子流量准入首片（Phase6F默认关闭；真实隔离额度/事务保护/失败与原Key恢复通过；不预扣库存）
 - [x] 每个 Customer + FlashSaleItem 正常成功限购、数量 1（Phase 6A/B资格及旧订单隔离证据；6D HTTP与6E浏览器已验收，独立讲述待完成）
 - [ ] Distributed Lock Gate（默认 No-Go）
-- [ ] 压测和补偿
+- [x] 已选有限负载、资格释放/旧订单事件隔离证据（不是生产压测或Redis预扣补偿）
 - [x] 最小秒杀 HTTP 查询/下单入口（6D及6D-2权限/输入/重放、临时5秒与恢复、真实锁超时及相关回归通过；Git整合以核对为准）
 - [x] 极简顾客入口与浏览器端到端（6E原意图恢复/真实重放与拒绝/Mock支付/桌面手机通过）
 - [ ] 项目拥有者独立面试讲述验收（不得从一题409正确判断推导为完整掌握）
 
-拥有者2026-10-08明确“先不加入Redis Lua，后续再进行评估”，解除旧Level2必做表与候选清单的歧义：当前暂缓，将其列入条件性后续评估。不是永久拒绝，不自动实施预扣、补偿或对账；既有Redis缓存任务不受影响。原“压测和补偿”总验收复用有限负载及资格生命周期证据，只有具体新失败或入口验证需要才增加实验。
+Lua暂缓历史：拥有者2026-10-08先要求暂缓，随后决定加入Lua原子流量准入，6F已隔离验证；当前范围以第0节与6F为准。不实施Redis库存预扣、双存储补偿或对账。原“压测和补偿”复用有限负载及资格生命周期证据，只有具体新失败才增加实验。
 
 ### Phase 7 — Conditional: Further Async Reliability
 
@@ -973,28 +993,30 @@ RabbitMQ + Celery 的支付事件处理、重试、消费者幂等与 Worker/Bro
 
 ### Phase 8 — Conditional: Search
 
-- [ ] MySQL Search Baseline
-- [ ] Elasticsearch
-- [ ] 中文分词和过滤
-- [ ] 索引同步、重建和对账
+- [x] MySQL完整关键词搜索基线（7A）
+- [x] Elasticsearch最小派生索引/候选API（7B/7C，只允许测试来源，前端仍MySQL）
+- [x] CJK词项差异、过滤与短页/漏召回边界（不称通用中文搜索质量已解决）
+- [x] 手动完整候选重建、别名切换和结果回读（7D，单构建会话/操作者）
+- [ ] 自动同步、完整对账与开发/部署来源启用（本期延期，不作为收尾阻塞）
 
-只有 MySQL 搜索基线暴露真实限制且最近一次工时审计允许时才进入 Elasticsearch 实现，否则延期。
+该进入门槛在7A–7D已按拥有者决定执行；当前隔离范围收束，不因剩余自动同步条目继续扩展。
 
 ### Phase 9 — Deployment, CI & Performance
 
-- [ ] Docker Compose
-- [ ] Gunicorn/Nginx/Linux
-- [ ] GitHub Actions
-- [ ] 健康检查、日志和配置
-- [ ] 三种负载的性能报告
+- [x] Docker Compose基础部署及各实验隔离入口（不是全能力单栈部署）
+- [x] Gunicorn/Nginx/Linux镜像真实运行（9B）
+- [x] GitHub Actions默认MySQL回归及配置/迁移检查（10A基线成功）
+- [x] 本机健康检查、日志/配置、代理Session/CSRF（9B/9C）
+- [x] 本期复用已有查询、缓存、下单/秒杀受控性能与成本证据（替代旧三种新负载门槛，不声称旧条目原样完成）
+- [ ] 公网HTTPS、全部中间件部署、重启/更新/备份恢复实测（本期未做；备份恢复可另选一次）
 
 ### Phase 10 — Portfolio & Interview Package
 
-- [ ] README
-- [ ] 架构图与 ERD
-- [ ] ADR
-- [ ] Evidence Packs
-- [ ] 演示脚本
+- [x] README与本地学习导航/当前范围入口
+- 架构/数据关系资料：已有模块知识库辅助理解，不自动新增一套图作为收尾门槛。
+- [x] ADR（已验证选型与边界）
+- [x] Evidence Packs及最终版本/历史证据映射
+- 演示站/完整展示脚本：拥有者不需要，本期不自动建设；保留已有复现命令。
 - [ ] 简历描述
 - [ ] 面试问题与无 AI 讲解演练
 
@@ -1002,15 +1024,17 @@ RabbitMQ + Celery 的支付事件处理、重试、消费者幂等与 Worker/Bro
 
 ---
 
-## 15. Definition of Done（项目完成标准）
+## 15. Definition of Done（项目完成标准，2026-10-12收尾口径）
+
+本节采用拥有者已确认的不需展示站/准备收尾目标；原“完整环境”“三负载齐测”收窄事实与未做范围见第0节，不能声称旧标准全部原样完成。Business/Engineering/Learning分开判断。
 
 ### Business Done
 
-- 顾客端业务主链端到端可运行；
+- 顾客请求/业务主链在真实MySQL与Mock网关可运行，并保留最薄顾客入口和自动化证据；不要求面试打开网站或新部署库创建整套演示数据；
 - Django Admin 可完成普通商品、SKU、库存和订单运营；只有深度主线需要时才提供极简 Vue 管理/实验入口；
 - 权限与历史快照行为正确；
-- Session/CSRF、Decimal 金额、订单幂等、状态机与库存预占/核销/释放合同均有端到端和自动化证据；
-- 模拟支付和物流状态可完整演示。
+- Session/CSRF、Decimal金额、订单幂等、状态机与库存预占/核销/释放合同均有对应层级的自动化证据；实际HTTP/浏览器范围见各记录，不泛称所有路径都是浏览器端到端；
+- 模拟支付与物流状态链完整，有可复现测试；普通全流程浏览器演示未整体验收，不作为本期新任务。
 - 未支付取消/过期与库存最多释放一次在支付深度主线中验证；Paid 取消、迟到支付和 Refund Simulation 根据 Track C 证据需要进入，不阻塞首次 MVP 闭环。
 - 第三方 Sandbox 本期 No-Go，Production Payment 不接入；Mock 支付闭环和支付证据包必须完成。
 
@@ -1019,11 +1043,11 @@ RabbitMQ + Celery 的支付事件处理、重试、消费者幂等与 Worker/Bro
 - 库存并发、缓存正确性、支付幂等三条旗舰主线均有 Evidence Pack；
 - 三条主线均包含失败复现、至少两种方案比较和证据支持的结论；实验最终可以合理选择“不采用”某个候选；
 - RabbitMQ + Celery 支付链路必须完成真实集成、有界重试、重复消费、Worker/Broker 故障及持久事件补漏恢复证据；仅安装依赖或使用即时执行模式不算完成；
-- Distributed Lock、Transactional Outbox 和 Elasticsearch 仍为条件性，不属于 Interview Core 完成阻塞项；若实际引入，必须提供真实集成以及可靠性、故障或一致性证据；第三方 Sandbox 本期不进入；
-- Docker Compose 可以复现完整环境；
-- 自动化测试和 CI 通过；
-- 浏览、下单、秒杀至少三种负载有基线和优化对比；
-- 关键失败场景经过真实测试。
+- Distributed Lock、Transactional Outbox默认不引入；Lua准入与ES隔离扩展已按后来确认范围提供真实证据。ES完整顾客运行集成/自动同步延期，第三方Sandbox不进入；
+- Docker Compose可复现基础本机部署和各中间件的独立实验环境；不宣称完整能力在一套部署中同时启用；
+- 最终代码组合的默认MySQL自动化回归、前端构建和对应提交CI通过，跳过实验与历史服务证据分列；
+- 复用已有查询/缓存/下单/秒杀基线、方案对照及有限负载，标注成功量、重试、拒绝和测量条件；不再要求为补齐旧三负载条目追加新实验；
+- 关键失败场景有真实测试，确定性故障注入与静态复核单独说明；历史记录不冒充本轮重新执行。
 
 ### Learning Done
 
@@ -1033,7 +1057,7 @@ RabbitMQ + Celery 的支付事件处理、重试、消费者幂等与 Worker/Bro
 - 解释关键不变量和状态机；
 - 解释为什么订单与库存预占在数据库事务内，而 Gateway 网络调用必须在提交后；
 - 解释 Decimal/API 字符串、Session/CSRF 和后端权限边界；
-- 比较已经验证的MySQL锁与条件更新，解释取舍和证据；说明Redis Lua暂缓、分布式锁默认No-Go及后续评估条件，不冒充已实现候选；
+- 比较已经验证的MySQL锁与条件更新，解释取舍和证据；说明Lua尝试流量准入与库存最终事实的区别、429/503及原Key恢复取舍，分布式锁默认No-Go；
 - 解释缓存一致性和故障降级；
 - 解释支付与消息幂等；
 - 解释 RabbitMQ、Celery Worker 与 MySQL Inbox 各自职责，提交后投递的崩溃窗口、消息确认与有界重试规则；
@@ -1215,9 +1239,11 @@ LEARNING_LOG.md          个人理解、错误与复盘
 
 ## 20. Immediate Next Step（下一步）
 
+最终验收（2026-10-12，v1.17）：源码基线0a94676的push CI成功，本机默认MySQL313项/685子场景通过、124项显式实验默认skip；前端类型检查/构建通过，开发30表只读行摘要前后相同，测试schema/连接0。历史Redis/MQ/ES/性能与本轮分列，见[验收](docs/verification/phase-10a-final-acceptance.md)。当前下一步是完整交易理解→库存→支付/MQ→Redis/Lua→MySQL→ES→部署，再整理简历和独立表达，不自动增加新代码、全服务部署或恢复演练。下面下一步段落属于历史阶段。
+
 登录与流程收尾（2026-10-11，v1.16）：拥有者明确批准只新部署库创建1随机普通账号、登录/退出及精确清理。通过回环8080的15项真实HTTP验证Session保持、CSRF轮换、三种拒绝退出仍保留会话及正确退出；最终用户/Session/商品/订单0。使用独立CookieJar，不是浏览器UI登录。业务、依赖、配置及四开关不改；更新/停机/备份恢复只整理可审阅手册，9段PowerShell与Shell语法/7个mysqldump选项核对不冒称运维实测。见[9C指南](docs/learning/phase-9c-session-csrf-operations-study-guide.md)、[验收](docs/verification/phase-9c-session-csrf-operations.md)与[操作参考](docs/deployment/local-operations-runbook.md)。当前基础部署/认证最小证据足够，先整体梳理与复习；是否补一次独立备份恢复按收益决定且影响另行确认，不自动扩公网、中间件或展示数据。下面9B/9A/7D段保留历史。
 
-首次运行（2026-10-11，v1.15）：拥有者理解影响后明确恢复执行。独立环境文件/随机凭据仅Git外保存，镜像构建、只迁移新库、collectstatic、db/web/nginx启动完成；实际SELECT DATABASE为project_one_deployment_local，36迁移且待迁移0、154静态文件。14项HTTP检查及真实浏览器空目录/深路由刷新/Admin资源通过，用户/Session/商品/订单均0。当前仍development、DEBUG=false、本机HTTP，四可选模块显式关闭。见[指南](docs/learning/phase-9b-local-deployment-run-study-guide.md)与[运行验收](docs/verification/phase-9b-local-deployment-run.md)。最小后续建议是独立学习账号的Session/CSRF边界，再整理更新/停机/备份与公网部署流程；不自动扩商品演示、中间件启用或故障矩阵。原开发库未访问或修改，没有业务闭环、生产安全、重启恢复或个人掌握证据。以下9A与7D段保留历史。
+首次运行（2026-10-11，v1.15）：拥有者理解影响后明确恢复执行。独立环境文件/随机凭据仅Git外保存，镜像构建、只迁移新库、collectstatic、db/web/nginx启动完成；实际SELECT DATABASE为project_one_deployment_local，36迁移且待迁移0、154静态文件。14项HTTP检查及真实浏览器空目录/深路由刷新/Admin资源通过，用户/Session/商品/订单均0。当前仍development、DEBUG=false、本机HTTP，四可选模块显式关闭。见[指南](docs/learning/phase-9b-local-deployment-run-study-guide.md)与[运行验收](docs/verification/phase-9b-local-deployment-run.md)。最小后续建议是独立学习账号的Session/CSRF边界，再整理更新/停机/备份与公网部署流程；不自动扩商品演示、中间件启用或故障矩阵。原开发库未访问或修改；9B这一部署切片没有交易闭环、生产安全、重启恢复或个人掌握证据，不否认普通交易已有MySQL证据。以下9A与7D段保留历史。
 
 部署准备（2026-10-11，v1.14）：拥有者确认下一篇进入部署，采用完整指南加逐步操作，复习在后，不要求建设面试展示站。Phase9A新增独立本机HTTP候选，只包含Vue/Nginx、Gunicorn/Django与独立MySQL；固定回环8080、新库与项目卷，不使用原开发Compose或根.env。development加DEBUG=false，缓存/Lua/MQ/ES关闭，不放宽现有生产与模块保护。Compose结构/缺值拒绝检查、宿主前端构建及部署依赖dry-run通过；镜像、迁移、HTTP/Session与持久化尚未运行。见[指南](docs/learning/phase-9a-local-deployment-study-guide.md)与[验证](docs/verification/phase-9a-local-deployment.md)。先获准创建独立运行环境，再分步构建、迁移与启动；中间件适配和公网HTTPS各自后续，不把候选当成完整部署成功。下段保留7D阶段历史。
 

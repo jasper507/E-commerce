@@ -1,0 +1,7 @@
+Source: GitHub Actions job 114548088997, run 38165837589, attempt 1.
+Scope: selected original configuration/migration/collection/result lines, not the complete job log.
+2026-10-11T18:56:22.3685427Z System check identified no issues (0 silenced).
+2026-10-11T18:56:23.1149494Z No changes detected
+2026-10-11T18:56:25.3140312Z   Applying ordering.0005_order_list_index... OK
+2026-10-11T18:56:28.7585900Z collected 437 items
+2026-10-11T18:59:10.3904774Z ================= 313 passed, 124 skipped in 162.93s (0:02:42) =================

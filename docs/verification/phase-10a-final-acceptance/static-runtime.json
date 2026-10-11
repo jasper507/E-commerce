@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-12",
+  "checks": [
+    {
+      "command": "python -m pip check",
+      "exit_code": 0,
+      "output": "No broken requirements found.\n"
+    },
+    {
+      "command": "python backend/manage.py check",
+      "exit_code": 0,
+      "output": "System check identified no issues (0 silenced).\n"
+    }
+  ],
+  "boundary": "Configuration check and installed dependency compatibility; no default database migration or local migration-history query."
+}

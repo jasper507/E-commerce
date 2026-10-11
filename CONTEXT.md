@@ -1,11 +1,11 @@
-# Project One — Domain Context v1.39
+# Project One — Domain Context v1.40
 
 ## 0. 文档状态
 
-- 当前阶段：6E极简顾客入口与浏览器验收通过；独立讲述待完成，Redis Lua仍暂缓
-- 文档版本：v1.39
-- 更新日期：2026-10-08
-- 范围来源：`PROJECT_CHARTER.md` v1.7、2026-10-01 支付范围决定（第 33 节）、ADR 0001及2026-10-08 Lua暂缓决定（第55节）
+- 当前阶段：10A最终版本/证据验收完成；交易与三主线工程证据收束，Lua准入与ES隔离扩展、9B/9C基础部署/认证已有证据；本人理解与简历待完成
+- 文档版本：v1.40
+- 更新日期：2026-10-12
+- 范围来源：`PROJECT_CHARTER.md` v1.17、已确认支付MQ范围（第33节）、Lua后续采用（第63节）、搜索7A–7D与部署9A–9C，以及第71节本期收尾决定；第55节暂缓保留为历史
 - 当前内容：记录项目拥有者已经确认的稳定术语、业务规则、技术采用边界和实验候选
 
 本文件用于统一 Project One 中的业务与工程语言，不替代 `PROJECT_CHARTER.md`。如果两份文件发生冲突，以 `PROJECT_CHARTER.md` 和后续正式 ADR 为准。
@@ -1533,3 +1533,13 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - 双交付docs/learning/phase-9c-session-csrf-operations-study-guide.md与docs/verification/phase-9c-session-csrf-operations.md互链，含preflight/http/static JSON和脚本；docs/deployment/local-operations-runbook.md补更新/保卷停机/备份/独立空卷恢复，PowerShell7参考，无秘密argv/PowerShell转码SQL/覆盖旧库/清卷。9个PS块AST、sh-n语法/实际mysqldump帮助7选项通过，没执行任何运维正文/SQL备份/恢复或重启。
 - 9B只补后续不改历史；README/Charterv1.16更新。临时数据许可与结果分开记录，15项是HTTP状态检查，不是15条业务或性能实验；没有旧pytest/Redis/MQ/ES/浏览器矩阵重跑，也没有生产HTTPS/容量/零停机/自动回滚/PITR或个人掌握证据。
 - 当前部署基础与认证证据足够，先按用户安排整体梳理与复习；可按收益另选一次明确批准的隔离备份恢复，不自动加公网/中间件/商品演示或故障矩阵。
+
+## 71. 最终版本验收与本期收尾口径（2026-10-12）
+
+- 用户选中最终验收要求开始；Supporting/Delivery目标是让本人准确区分工程完成、环境启用和个人理解，停止追加模块/压测。开始main与远端0a94676一致，原6E指南用户修改保留。
+- 对精确SHA查询GitHub push run38165837589/job114548088997：completed/success；配置check0、无迁移漂移、真实迁移包含ordering.0005，437collected/313passed124skipped162.93秒。CI只有MySQL，不运行前端build或真实Redis/MQ/ES，空旧status或PR-only结果不作成功证据。
+- 本机默认完整pytest串行313passed124skipped685subtests208.66秒，前端类型检查/Vite56modules构建通过，pipcheck与Djangocheck通过。四模块false、无集成URL/性能开关；默认占位库project_one_validation_parent不存在，TEST.NAME精确test_project_one，预检testschema/连接0，pytest生命周期后仍0。开发30表全行只读摘要前后相同，原始值与hashGit外；部署库未访问，不执行默认migrate。
+- 124skip分为Redis/Lua85、ES17、RabbitMQ/Worker12、MySQL显式诊断/负载10；不是失败或通过，也不是marker筛选deselected。历史9组证据提交均为基线祖先，保存相关代码变化与源码blob清单；Lua/订单索引/ES/部署相关实现未变，MQ services后加秒杀资格锁/状态，当前回归保护组合；不重写旧JSON/日期或假称重杀Worker/重跑负载。
+- Charterv1.17统一顶部与Done/阶段勾选：已验证交易主链/三旗舰、Lua准入与ES测试扩展、基础部署与认证。旧完整能力单栈/三新负载门槛按拥有者不需演示、准备收尾决定收窄，未做范围不勾全；ES开发启用/自动同步、周期MQ接管、公网HTTPS、更新/备份恢复实测本期延期或可选。LearningDone、独立改错和简历口述仍待本人完成。
+- 双交付docs/verification/phase-10a-final-acceptance.md与docs/learning/phase-10a-final-acceptance-study-guide.md互链；保存CI摘要/日志摘录、pytest raw/JUnit/隔离结果、前端raw、来源清单。只改当前文档/证据，业务/测试/依赖/工作流/部署Compose/.env未改；不操作开发缓存或真实支付，不运行恢复演练。
+- 下一步按总览复习完整交易，再库存→支付/MQ→Redis/Lua→MySQL查询→ES→部署，最后简历与独立表达；不自动进入新的实现。提交后CI精确run在最终回复核实，基线CI不冒充材料提交结果。
