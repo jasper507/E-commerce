@@ -1,6 +1,6 @@
 # Project One 学习导航：按业务问题看项目变化
 
-更新：2026-10-11。本页收录69份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索与MySQL专题各新增总览及五问题页，秒杀再补当前总览与Lua问题页。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)、[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)、[MySQL知识库记录](../verification/mysql-interview-knowledge-base-publication.md)、[秒杀/Lua更新](../verification/flash-sale-lua-knowledge-base-update.md)只记录文档检查与发布，服务历史验证仍见各专题。
+更新：2026-10-11。本页收录74份正式本地学习指南；归档草稿、图资产与飞书发布记录保留原样。支付/Redis重构新增13份，搜索与MySQL专题各新增总览及五问题页，秒杀再补当前总览与Lua问题页；认证新增总览及四个业务问题页。[支付/Redis重构记录](../verification/payment-redis-interview-knowledge-base-restructure.md)、[搜索知识库记录](../verification/search-interview-knowledge-base-publication.md)、[MySQL知识库记录](../verification/mysql-interview-knowledge-base-publication.md)、[秒杀/Lua更新](../verification/flash-sale-lua-knowledge-base-update.md)只记录文档检查与发布，服务历史验证仍见各专题。
 
 先读[项目当前总览](project-current-overview-study-guide.md)串起完整交易和三条技术故事，再读[支付当前总览](payment-current-overview-study-guide.md)、[Redis当前总览](redis-current-overview-study-guide.md)及其问题页。以面试为最高优先级：讲清业务流程、失败交错、设计理由、替代与代价、核心代码、真实证据和“如果重做”。原图与历史资料继续保留。
 
@@ -110,7 +110,11 @@ ACK是Worker向队列确认消息已处理；业务成功仍以MySQL提交的支
 
 7D补上手动切换的成功/失败/未知边界；先整理理解并评估演示与收尾缺口，不自动扩大同步。导航与历史页链接更新是文档检查，不代表重跑旧浏览器或性能实验。
 
-## 7. 部署：先理解完整运行方式，再分步执行
+## 7. 认证、CSRF与数据权限：身份正确以后还要检查什么
+
+当前入口是[认证总览](auth-current-overview-study-guide.md)：[Session登录与退出](auth-interview/01-session.md)、[CSRF及Token轮换](auth-interview/02-csrf.md)、[本人数据与越权拒绝](auth-interview/03-ownership.md)、[顾客/管理员/网关边界](auth-interview/04-trust-boundaries.md)。两张时序图配真实核心代码与重做取舍；匿名403、普通写请求与登录CSRF路径不同，管理员仍需模型权限。9C的15项真实HTTP是历史证据，本轮只核对文档和图，见[发布记录](../verification/auth-interview-knowledge-base-publication.md)。
+
+## 8. 部署：先理解完整运行方式，再分步执行
 
 | 指南 | 本片最重要的变化 | 阅读重点 |
 | --- | --- | --- |

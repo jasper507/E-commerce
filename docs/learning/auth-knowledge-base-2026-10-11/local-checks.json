@@ -1,0 +1,246 @@
+{
+  "status": "passed",
+  "source_commit": "a5d4b04995552a340a471d31e68973e89f67e54c",
+  "guides": 5,
+  "local_links": 44,
+  "core_snippets": 8,
+  "links": [
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "project-current-overview-study-guide.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "../verification/auth-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "auth-interview/01-session.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "auth-interview/02-csrf.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "auth-interview/03-ownership.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "auth-interview/04-trust-boundaries.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "auth-interview/02-csrf.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "auth-interview/03-ownership.md"
+    },
+    {
+      "guide": "auth-current-overview-study-guide.md",
+      "target": "../verification/phase-9c-session-csrf-operations.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "../auth-current-overview-study-guide.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "../../verification/auth-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "../README.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "02-csrf.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "03-ownership.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "../../verification/mvp-1-authenticated-cart.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "../../verification/phase-9c-session-csrf-operations.md"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "target": "../../verification/phase-9c-session-csrf-http.json"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "target": "../auth-current-overview-study-guide.md"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "target": "../../verification/auth-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "target": "../../verification/phase-9c-session-csrf-operations.md"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "target": "../assets/auth-interview-2026-10-11/csrf-sequence/diagram.png"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "target": "../assets/auth-interview-2026-10-11/csrf-sequence/diagram.mmd"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "target": "../../verification/phase-9c-session-csrf-operations.md"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "target": "../../verification/phase-9c-session-csrf-http.json"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../auth-current-overview-study-guide.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "04-trust-boundaries.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../README.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../../verification/auth-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../assets/auth-interview-2026-10-11/ownership-sequence/diagram.png"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../assets/auth-interview-2026-10-11/ownership-sequence/diagram.mmd"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../../verification/mvp-2-minimum-address.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../../verification/mvp-3-order-inventory.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../../verification/phase-3-order-list-pagination.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../../verification/phase-6d-flash-sale-http.md"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "target": "../../verification/auth-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../auth-current-overview-study-guide.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "03-ownership.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../payment-current-overview-study-guide.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../README.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../../verification/auth-interview-knowledge-base-publication.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../../verification/mvp-4-mock-payment.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../../verification/phase-6d-flash-sale-http.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../../verification/phase-3-order-list-pagination.md"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "target": "../../verification/phase-9c-session-csrf-operations.md"
+    }
+  ],
+  "source_excerpts": [
+    {
+      "guide": "auth-interview/01-session.md",
+      "language": "python",
+      "source": "backend/apps/accounts/views.py",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    },
+    {
+      "guide": "auth-interview/01-session.md",
+      "language": "python",
+      "source": "backend/apps/accounts/views.py",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "language": "python",
+      "source": "backend/apps/accounts/views.py",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    },
+    {
+      "guide": "auth-interview/02-csrf.md",
+      "language": "typescript",
+      "source": "frontend/src/api/auth.ts",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "language": "python",
+      "source": "backend/apps/ordering/views.py",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    },
+    {
+      "guide": "auth-interview/03-ownership.md",
+      "language": "python",
+      "source": "backend/apps/ordering/lifecycle_services.py",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "language": "python",
+      "source": "backend/apps/ordering/fulfillment_services.py",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    },
+    {
+      "guide": "auth-interview/04-trust-boundaries.md",
+      "language": "python",
+      "source": "backend/apps/payments/gateway.py",
+      "commit": "a5d4b04995552a340a471d31e68973e89f67e54c"
+    }
+  ],
+  "fixed_snapshot_paths": [
+    "docs/learning/README.md",
+    "docs/verification/mvp-1-authenticated-cart.md",
+    "docs/verification/mvp-2-minimum-address.md",
+    "docs/verification/mvp-3-order-inventory.md",
+    "docs/verification/mvp-4-mock-payment.md",
+    "docs/verification/phase-3-order-list-pagination.md",
+    "docs/verification/phase-6d-flash-sale-http.md",
+    "docs/verification/phase-9c-session-csrf-http.json",
+    "docs/verification/phase-9c-session-csrf-operations.md"
+  ]
+}

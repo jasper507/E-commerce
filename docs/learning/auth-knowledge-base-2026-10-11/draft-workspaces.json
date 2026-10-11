@@ -1,0 +1,114 @@
+[
+  {
+    "title": "认证、CSRF与数据权限",
+    "decision": {
+      "adapter": null,
+      "genre_contract": "router.knowledge",
+      "presentation_mode": "normal",
+      "reader_task": "Explain session identity, CSRF and resource authorization with current code, evidence and redesign tradeoffs",
+      "visual_plan": {
+        "reason": "Two distinct security boundaries need sequence diagrams; all have equivalent prose",
+        "blocks": []
+      },
+      "audience": "Project owner preparing backend interviews"
+    },
+    "guide": "auth-current-overview-study-guide.md",
+    "workspace": "draft_4ef0b1f8_folder",
+    "draft_path": "draft_4ef0b1f8_folder\\draft.xml",
+    "board": "",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\auth-knowledge-base-2026-10-11",
+    "key": "auth"
+  },
+  {
+    "title": "01 登录以后，后端怎样认出我？",
+    "decision": {
+      "adapter": null,
+      "genre_contract": "router.knowledge",
+      "presentation_mode": "normal",
+      "reader_task": "Explain session identity, CSRF and resource authorization with current code, evidence and redesign tradeoffs",
+      "visual_plan": {
+        "reason": "Two distinct security boundaries need sequence diagrams; all have equivalent prose",
+        "blocks": []
+      },
+      "audience": "Project owner preparing backend interviews"
+    },
+    "guide": "auth-interview/01-session.md",
+    "workspace": "draft_d2fc3a76_folder",
+    "draft_path": "draft_d2fc3a76_folder\\draft.xml",
+    "board": "",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\auth-knowledge-base-2026-10-11",
+    "key": "auth-01"
+  },
+  {
+    "title": "02 已经登录，为什么还需要CSRF？",
+    "decision": {
+      "adapter": null,
+      "genre_contract": "router.knowledge",
+      "presentation_mode": "normal",
+      "reader_task": "Explain session identity, CSRF and resource authorization with current code, evidence and redesign tradeoffs",
+      "visual_plan": {
+        "reason": "Two distinct security boundaries need sequence diagrams; all have equivalent prose",
+        "blocks": [
+          {
+            "min_count": 1,
+            "type": "whiteboard",
+            "purpose": "Explain the login/CSRF or owner-filtered read/write sequence"
+          }
+        ]
+      },
+      "audience": "Project owner preparing backend interviews"
+    },
+    "guide": "auth-interview/02-csrf.md",
+    "workspace": "draft_2309adcd_folder",
+    "draft_path": "draft_2309adcd_folder\\draft.xml",
+    "board": "csrf-sequence",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\auth-knowledge-base-2026-10-11",
+    "key": "auth-02"
+  },
+  {
+    "title": "03 知道订单ID，为什么仍不能访问他人订单？",
+    "decision": {
+      "adapter": null,
+      "genre_contract": "router.knowledge",
+      "presentation_mode": "normal",
+      "reader_task": "Explain session identity, CSRF and resource authorization with current code, evidence and redesign tradeoffs",
+      "visual_plan": {
+        "reason": "Two distinct security boundaries need sequence diagrams; all have equivalent prose",
+        "blocks": [
+          {
+            "min_count": 1,
+            "type": "whiteboard",
+            "purpose": "Explain the login/CSRF or owner-filtered read/write sequence"
+          }
+        ]
+      },
+      "audience": "Project owner preparing backend interviews"
+    },
+    "guide": "auth-interview/03-ownership.md",
+    "workspace": "draft_2eecdec5_folder",
+    "draft_path": "draft_2eecdec5_folder\\draft.xml",
+    "board": "ownership-sequence",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\auth-knowledge-base-2026-10-11",
+    "key": "auth-03"
+  },
+  {
+    "title": "04 顾客、管理员和支付回调怎样划分信任边界？",
+    "decision": {
+      "adapter": null,
+      "genre_contract": "router.knowledge",
+      "presentation_mode": "normal",
+      "reader_task": "Explain session identity, CSRF and resource authorization with current code, evidence and redesign tradeoffs",
+      "visual_plan": {
+        "reason": "Two distinct security boundaries need sequence diagrams; all have equivalent prose",
+        "blocks": []
+      },
+      "audience": "Project owner preparing backend interviews"
+    },
+    "guide": "auth-interview/04-trust-boundaries.md",
+    "workspace": "draft_b8405dee_folder",
+    "draft_path": "draft_b8405dee_folder\\draft.xml",
+    "board": "",
+    "cwd": "C:\\project-one-ecommerce\\docs\\learning\\auth-knowledge-base-2026-10-11",
+    "key": "auth-04"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_child": false,
+    "node_token": "ClJNwFzuDi4Fpskvrioc3WRpnVb",
+    "node_type": "origin",
+    "obj_token": "ZZ1ZdOV5Losn3sxzK4Vcg9pbnbh",
+    "obj_type": "docx",
+    "origin_node_token": "ClJNwFzuDi4Fpskvrioc3WRpnVb",
+    "parent_node_token": "TS8SwlKxKi8gJ5kIjlScjyyFn3d",
+    "resolved_by": "explicit_space_id",
+    "resolved_space_id": "7693476782908935142",
+    "space_id": "7693476782908935142",
+    "title": "01 登录以后，后端怎样认出我？",
+    "url": "https://ocnbkcx1ug58.feishu.cn/wiki/ClJNwFzuDi4Fpskvrioc3WRpnVb"
+  }
+}

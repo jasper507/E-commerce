@@ -1,0 +1,2912 @@
+{
+  "nodes": [
+    {
+      "id": "r001:1",
+      "type": "life_line",
+      "x": 0,
+      "y": 20,
+      "width": 132.2699966430664,
+      "height": 60,
+      "text": {
+        "text": "浏览器 / 同源前端",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "浏览器 / 同源前端"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#4e83fd",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#e1eaff",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "lifeline": {
+        "size": 2830.6639999999998,
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "r001:2",
+      "type": "life_line",
+      "x": 565.5699844360352,
+      "y": 20,
+      "width": 120,
+      "height": 60,
+      "text": {
+        "text": "Django / DRF",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "Django / DRF"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#4e83fd",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#e1eaff",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "lifeline": {
+        "size": 2830.6639999999998,
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "r001:3",
+      "type": "life_line",
+      "x": 1007.4099807739258,
+      "y": 20,
+      "width": 120,
+      "height": 60,
+      "text": {
+        "text": "MySQL",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "MySQL"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#4e83fd",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#e1eaff",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "lifeline": {
+        "size": 2830.6639999999998,
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "o001:1",
+      "type": "composite_shape",
+      "x": 33.0674991607666,
+      "y": 95,
+      "width": 1064.3424816131592,
+      "height": 40.272,
+      "text": {
+        "text": "当前Session登录链；Cookie只用A、B、S代号，不展示真实凭据",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "当前Session登录链；Cookie只用A、B、S代号，不展示真实凭据"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#ffa53d",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#feead2",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "composite_shape": {
+        "type": "note_shape"
+      }
+    },
+    {
+      "id": "c001:1",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 207.44,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 207.44
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 207.44
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "GET /api/auth/csrf/",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "GET /api/auth/csrf/"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:2",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 279.608,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 279.608
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 279.608
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "204；设置可读csrftoken=A",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "204；设置可读csrftoken=A"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "c001:3",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 351.776,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 351.776
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 351.776
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "POST login：有效凭据、Cookie A、Header A、同源Origin",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "POST login：有效凭据、Cookie A、Header A、同源Origin"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:4",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 423.944,
+      "width": 0,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 403.944
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 463.944
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "polyline",
+        "captions": {
+          "data": [
+            {
+              "text": "显式csrf_protect：先检查Origin与Token",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "显式csrf_protect：先检查Origin与Token"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 60,
+            "y": -20
+          },
+          {
+            "x": 60,
+            "y": 40
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:5",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 682.112,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 682.112
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 682.112
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "403明确CSRF错误；不执行登录",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "403明确CSRF错误；不执行登录"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "c001:6",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 829.28,
+      "width": 441.8399963378906,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 829.28
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 1067.4099807739258,
+            "y": 829.28
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "authenticate：读取用户与密码哈希",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "authenticate：读取用户与密码哈希"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:7",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 901.448,
+      "width": 441.8399963378906,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 1067.4099807739258,
+            "y": 901.448
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 901.448
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "用户记录",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "用户记录"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "c001:8",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 973.616,
+      "width": 0,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 953.616
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1013.616
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "polyline",
+        "captions": {
+          "data": [
+            {
+              "text": "Django认证后端校验密码哈希与账号状态",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "Django认证后端校验密码哈希与账号状态"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 60,
+            "y": -20
+          },
+          {
+            "x": 60,
+            "y": 40
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:9",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 1231.7839999999999,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1231.7839999999999
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 1231.7839999999999
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "400统一凭据错误；不建立登录会话",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "400统一凭据错误；不建立登录会话"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "c001:10",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 1378.9519999999998,
+      "width": 0,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1358.9519999999998
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1418.9519999999998
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "polyline",
+        "captions": {
+          "data": [
+            {
+              "text": "django_login：更新请求会话、旋转CSRF为B",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "django_login：更新请求会话、旋转CSRF为B"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 60,
+            "y": -20
+          },
+          {
+            "x": 60,
+            "y": 40
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "o001:2",
+      "type": "composite_shape",
+      "x": 595.5699844360352,
+      "y": 1453.9519999999998,
+      "width": 501.8399963378906,
+      "height": 40.272,
+      "text": {
+        "text": "匿名已有会话会cycle_key；同身份重复登录不保证再换Session Key",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "匿名已有会话会cycle_key；同身份重复登录不保证再换Session Key"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#ffa53d",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#feead2",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "composite_shape": {
+        "type": "note_shape"
+      }
+    },
+    {
+      "id": "c001:11",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 1566.3919999999996,
+      "width": 441.8399963378906,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1566.3919999999996
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 1067.4099807739258,
+            "y": 1566.3919999999996
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "last_login更新；响应阶段保存数据库Session",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "last_login更新；响应阶段保存数据库Session"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:12",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 1638.5599999999995,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1638.5599999999995
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 1638.5599999999995
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "200本人资料；sessionid=S为HttpOnly；csrftoken=B可读",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "200本人资料；sessionid=S为HttpOnly；csrftoken=B可读"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "f001:2",
+      "type": "combined_fragment",
+      "x": 46.1349983215332,
+      "y": 1063.616,
+      "width": 1041.2749824523926,
+      "height": 0,
+      "text": {
+        "text": "凭据无效",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#eff0f1",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "table": {
+        "title": "",
+        "meta": {
+          "row_sizes": [
+            36,
+            147.1679999999999,
+            411.7759999999996
+          ],
+          "col_sizes": [
+            1041.2749824523926
+          ],
+          "style": {
+            "fill_opacity": 100,
+            "border_opacity": 100,
+            "border_style": "solid",
+            "border_width": "narrow",
+            "fill_color_type": 0,
+            "border_color_type": 0
+          },
+          "text": {
+            "text": "",
+            "font_weight": "bold",
+            "font_size": 14,
+            "horizontal_align": "center",
+            "vertical_align": "top",
+            "line_through": false,
+            "underline": false,
+            "italic": false,
+            "angle": 0,
+            "text_color": "#1f2329",
+            "text_color_type": 0,
+            "text_background_color_type": 0,
+            "theme_text_color_code": -1,
+            "theme_text_background_color_code": -1
+          },
+          "row_num": 3,
+          "col_num": 1
+        },
+        "cells": [
+          {
+            "row_index": 1,
+            "col_index": 1,
+            "children": [],
+            "text": {
+              "text": "alt",
+              "font_weight": "bold",
+              "font_size": 14,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            },
+            "style": {
+              "fill_opacity": 100,
+              "fill_color_type": 0
+            }
+          },
+          {
+            "row_index": 2,
+            "col_index": 1,
+            "children": [],
+            "text": {
+              "text": "[凭据无效]",
+              "font_weight": "bold",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "[凭据无"
+                        }
+                      },
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text": "效]"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            },
+            "style": {
+              "fill_opacity": 100,
+              "fill_color_type": 0
+            }
+          },
+          {
+            "row_index": 3,
+            "col_index": 1,
+            "children": [],
+            "text": {
+              "text": "[凭据有效]",
+              "font_weight": "bold",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "[凭据有"
+                        }
+                      },
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text": "效]"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            },
+            "style": {
+              "fill_opacity": 100,
+              "fill_color_type": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "f001:1",
+      "type": "combined_fragment",
+      "x": 46.1349983215332,
+      "y": 513.944,
+      "width": 1041.2749824523926,
+      "height": 0,
+      "text": {
+        "text": "CSRF缺失或不匹配",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#eff0f1",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "table": {
+        "title": "",
+        "meta": {
+          "row_sizes": [
+            36,
+            147.168,
+            971.4479999999995
+          ],
+          "col_sizes": [
+            1041.2749824523926
+          ],
+          "style": {
+            "fill_opacity": 100,
+            "border_opacity": 100,
+            "border_style": "solid",
+            "border_width": "narrow",
+            "fill_color_type": 0,
+            "border_color_type": 0
+          },
+          "text": {
+            "text": "",
+            "font_weight": "bold",
+            "font_size": 14,
+            "horizontal_align": "center",
+            "vertical_align": "top",
+            "line_through": false,
+            "underline": false,
+            "italic": false,
+            "angle": 0,
+            "text_color": "#1f2329",
+            "text_color_type": 0,
+            "text_background_color_type": 0,
+            "theme_text_color_code": -1,
+            "theme_text_background_color_code": -1
+          },
+          "row_num": 3,
+          "col_num": 1
+        },
+        "cells": [
+          {
+            "row_index": 1,
+            "col_index": 1,
+            "children": [],
+            "text": {
+              "text": "alt",
+              "font_weight": "bold",
+              "font_size": 14,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            },
+            "style": {
+              "fill_opacity": 100,
+              "fill_color_type": 0
+            }
+          },
+          {
+            "row_index": 2,
+            "col_index": 1,
+            "children": [],
+            "text": {
+              "text": "[CSRF缺失或不匹配]",
+              "font_weight": "bold",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "[CSRF缺失或不匹"
+                        }
+                      },
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text": "配]"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            },
+            "style": {
+              "fill_opacity": 100,
+              "fill_color_type": 0
+            }
+          },
+          {
+            "row_index": 3,
+            "col_index": 1,
+            "children": [],
+            "text": {
+              "text": "[CSRF通过]",
+              "font_weight": "bold",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "[CSRF通"
+                        }
+                      },
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text": "过]"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            },
+            "style": {
+              "fill_opacity": 100,
+              "fill_color_type": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "o001:3",
+      "type": "composite_shape",
+      "x": 33.0674991607666,
+      "y": 1673.5599999999995,
+      "width": 1064.3424816131592,
+      "height": 40.272,
+      "text": {
+        "text": "以下以正确登录成功为前提；后续Cookie自动携带，前端不读取sessionid",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "以下以正确登录成功为前提；后续Cookie自动携带，前端不读取sessionid"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#ffa53d",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#feead2",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "composite_shape": {
+        "type": "note_shape"
+      }
+    },
+    {
+      "id": "c001:13",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 1785.9999999999993,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 1785.9999999999993
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1785.9999999999993
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "GET /api/auth/me/；携带S，不需CSRF Header",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "GET /api/auth/me/；携带S，不需CSRF Header"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:14",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 1858.1679999999992,
+      "width": 441.8399963378906,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1858.1679999999992
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 1067.4099807739258,
+            "y": 1858.1679999999992
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "Session/Authentication确定登录用户",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "Session/Authentication确定登录用户"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:15",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 1930.335999999999,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 1930.335999999999
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 1930.335999999999
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "200本人资料；匿名或失效Session为403",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "200本人资料；匿名或失效Session为403"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "c001:16",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 2002.503999999999,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 2002.503999999999
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2002.503999999999
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "POST logout；Cookie S、当前B，但Header仍为旧A",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "POST logout；Cookie S、当前B，但Header仍为旧A"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:17",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 2074.671999999999,
+      "width": 0,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2054.671999999999
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2114.671999999999
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "polyline",
+        "captions": {
+          "data": [
+            {
+              "text": "显式CSRF检查失败",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "显式CSRF检查失败"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 60,
+            "y": -20
+          },
+          {
+            "x": 60,
+            "y": 40
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:18",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 2206.8399999999992,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2206.8399999999992
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 2206.8399999999992
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "403；不执行logout，原Session仍有效",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "403；不执行logout，原Session仍有效"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "o001:4",
+      "type": "composite_shape",
+      "x": 33.0674991607666,
+      "y": 2221.8399999999992,
+      "width": 622.5024852752686,
+      "height": 40.272,
+      "text": {
+        "text": "正确Header但错误Origin同样拒绝；失败退出不删除会话",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "正确Header但错误Origin同样拒绝；失败退出不删除会话"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#ffa53d",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#feead2",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "composite_shape": {
+        "type": "note_shape"
+      }
+    },
+    {
+      "id": "c001:19",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 2334.2799999999993,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 2334.2799999999993
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2334.2799999999993
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "重新GET csrf，读取当前Cookie B，再POST logout",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "重新GET csrf，读取当前Cookie B，再POST logout"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:20",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 2406.4479999999994,
+      "width": 0,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2386.4479999999994
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2446.4479999999994
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "polyline",
+        "captions": {
+          "data": [
+            {
+              "text": "当前Header B与同源Origin通过",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "当前Header B与同源Origin通过"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 60,
+            "y": -20
+          },
+          {
+            "x": 60,
+            "y": 40
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:21",
+      "type": "connector",
+      "x": 625.5699844360352,
+      "y": 2538.6159999999995,
+      "width": 441.8399963378906,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2538.6159999999995
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 1067.4099807739258,
+            "y": 2538.6159999999995
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "django_logout：flush当前服务端会话",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "django_logout：flush当前服务端会话"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:22",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 2610.7839999999997,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2610.7839999999997
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 2610.7839999999997
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "204；清除客户端Session Cookie",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "204；清除客户端Session Cookie"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "c001:23",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 2682.9519999999998,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 2682.9519999999998
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2682.9519999999998
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "再GET me",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "再GET me"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 1
+      }
+    },
+    {
+      "id": "c001:24",
+      "type": "connector",
+      "x": 66.1349983215332,
+      "y": 2755.12,
+      "width": 559.434986114502,
+      "height": 0,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#bbbfc4",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "dot"
+      },
+      "connector": {
+        "start": {
+          "position": {
+            "x": 625.5699844360352,
+            "y": 2755.12
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "position": {
+            "x": 66.1349983215332,
+            "y": 2755.12
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "straight",
+        "captions": {
+          "data": [
+            {
+              "text": "403；已无本次登录身份",
+              "font_weight": "regular",
+              "font_size": 16,
+              "horizontal_align": "center",
+              "vertical_align": "mid",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1,
+              "rich_text": {
+                "paragraphs": [
+                  {
+                    "paragraph_type": 0,
+                    "elements": [
+                      {
+                        "element_type": 0,
+                        "text_element": {
+                          "text_style": {
+                            "italic": false,
+                            "underline": false,
+                            "line_through": false
+                          },
+                          "text": "403；已无本次登录身份"
+                        }
+                      }
+                    ],
+                    "indent": 0,
+                    "list_begin_index": 0,
+                    "quote": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "caption_position_type": 2
+      }
+    },
+    {
+      "id": "o001:5",
+      "type": "composite_shape",
+      "x": 33.0674991607666,
+      "y": 2770.12,
+      "width": 1064.3424816131592,
+      "height": 60.544,
+      "text": {
+        "text": "普通订单写请求由SessionAuthentication检查CSRF，错误正文路径不同\nCSRF通过以后仍须查本人归属与订单状态；本图不证明浏览器跨站或生产HTTPS已验收",
+        "font_weight": "regular",
+        "font_size": 14,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#1f2329",
+        "text_color_type": 0,
+        "text_background_color_type": 0,
+        "theme_text_color_code": -1,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "普通订单写请求由SessionAuthentication检查CSRF，错误正文路径不同"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            },
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false
+                    },
+                    "text": "CSRF通过以后仍须查本人归属与订单状态；本图不证明浏览器跨站或生产HTTPS已验收"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      },
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#ffa53d",
+        "border_color_type": 0,
+        "theme_border_color_code": -1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#feead2",
+        "fill_color_type": 0,
+        "theme_fill_color_code": -1
+      },
+      "composite_shape": {
+        "type": "note_shape"
+      }
+    }
+  ]
+}

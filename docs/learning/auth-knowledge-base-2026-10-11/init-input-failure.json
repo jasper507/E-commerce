@@ -1,0 +1,12 @@
+{
+  "status": "failed_before_initialization",
+  "shell": "Windows PowerShell 5",
+  "command": "init.ps1 invoking docs +script init-draft",
+  "observed_error_type": "validation/invalid_argument",
+  "observed_message": "--presentation-decision must be a valid Presentation Decision JSON object: invalid character 'v' looking for beginning of object key string",
+  "cause": "Native-command JSON quotation was lost by the legacy shell",
+  "drafts_created_in_failed_attempt": 0,
+  "remote_writes": false,
+  "correction": "Run the unchanged structured decision in configured PowerShell 7.6.5",
+  "corrected_initializations": 5
+}

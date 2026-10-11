@@ -1,0 +1,15 @@
+{
+  "key": "auth-03",
+  "status": "passed",
+  "revision": 2,
+  "headings": 10,
+  "links": 13,
+  "core_snippets": 2,
+  "boards": [
+    {
+      "block_id": "doxcnxCg2JsRYJdtEBrzp3SyPZe",
+      "token": "AzN8wmeMXhDLHPbnyjecurEHnJg",
+      "diagram": "ownership-sequence"
+    }
+  ]
+}

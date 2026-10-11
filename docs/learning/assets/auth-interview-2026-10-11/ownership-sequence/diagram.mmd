@@ -1,0 +1,37 @@
+sequenceDiagram
+    participant B as 顾客A / 浏览器
+    participant A as API / 业务服务
+    participant M as MySQL
+    Note over B,M: 已识别顾客A；登录身份来自Session，不能由请求里的user_id替换
+    B->>A: GET orders?page=1&user_id=B
+    A->>M: 先WHERE user=A，再统计、稳定排序和分页
+    M-->>A: 仅A的count和最多20单
+    A-->>B: 200本人列表；user_id=B不改变归属
+    B->>A: GET B的订单UUID
+    A->>M: 查询public_id=目标且user=A
+    M-->>A: 本人查询集中无匹配
+    A-->>B: 404；不返回B的地址/明细快照
+    Note over B,M: UUID只是标识；不可猜与不可越权是两件事
+    B->>A: POST cancel：目标UUID、Session与CSRF Header
+    A->>A: Session认证及CSRF检查 → IsAuthenticated
+    alt 无登录身份或CSRF失败
+        A-->>B: 403；不调用取消业务
+    else 入口检查通过
+        A->>M: BEGIN；按public_id与user=A查询并FOR UPDATE
+        alt 目标不属于A或不存在
+            M-->>A: 无本人订单
+            A->>M: ROLLBACK；不执行库存或支付操作
+            A-->>B: 404 order_not_found
+        else 本人订单已锁定
+            A->>M: 按当前订单/付款/预占状态校验并处理
+            Note over A,M: 不能只检查owner；未确认付款可能拒绝关闭，库存/退款按既有规则
+            alt 规则允许且全部写入成功
+                A->>M: COMMIT：订单与对应库存/退款效果一起生效
+                A-->>B: 返回本人订单的业务结果
+            else 状态冲突或业务写入失败
+                A->>M: ROLLBACK：本次业务写入撤销
+                A-->>B: 对应业务错误；不留下半套效果
+            end
+        end
+    end
+    Note over B,M: 行锁负责并发顺序，user过滤负责归属；一个不能代替另一个<br/>此图描述顾客订单读/取消，管理员发货和可信支付回调另有身份/权限规则

@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "source_commit": "a5d4b04995552a340a471d31e68973e89f67e54c",
+  "guides": 5,
+  "core_snippets": 8,
+  "local_document_links_checked": 58,
+  "remote_page_headings": 54,
+  "remote_page_links": 62,
+  "remote_pages": 5,
+  "new_section": "TS8SwlKxKi8gJ5kIjlScjyyFn3d",
+  "auth_children": 4,
+  "project_children": 7,
+  "all_existing_project_nodes_preserved": true,
+  "project_modified_paragraphs": 1,
+  "all_original_project_resources_preserved": true,
+  "native_boards": [
+    {
+      "diagram": "csrf-sequence",
+      "status": "passed",
+      "native_nodes": 34,
+      "node_types": {
+        "connector": 24,
+        "life_line": 3,
+        "composite_shape": 5,
+        "combined_fragment": 2
+      },
+      "visible_text_node_types_and_arrow_directions": "matched",
+      "actual_preview_dimensions": [
+        2560,
+        2560
+      ],
+      "local_and_remote_previews_visually_reviewed": true,
+      "idempotent_token": "auth-20261011-csrf-sequence-publish-1",
+      "source_export_message": "no code blocks found in whiteboard",
+      "editable_mermaid": "diagram.mmd"
+    },
+    {
+      "diagram": "ownership-sequence",
+      "status": "passed",
+      "native_nodes": 30,
+      "node_types": {
+        "connector": 20,
+        "composite_shape": 4,
+        "combined_fragment": 3,
+        "life_line": 3
+      },
+      "visible_text_node_types_and_arrow_directions": "matched",
+      "actual_preview_dimensions": [
+        2560,
+        2560
+      ],
+      "local_and_remote_previews_visually_reviewed": true,
+      "idempotent_token": "auth-20261011-ownership-sequence-publish-1",
+      "source_export_message": "no code blocks found in whiteboard",
+      "editable_mermaid": "diagram.mmd"
+    }
+  ],
+  "application_tests_run": false
+}

@@ -1,0 +1,7 @@
+[
+  {"key":"auth","title":"认证、CSRF与数据权限","guide":"auth-current-overview-study-guide.md","board":""},
+  {"key":"auth-01","title":"01 登录以后，后端怎样认出我？","guide":"auth-interview/01-session.md","board":""},
+  {"key":"auth-02","title":"02 已经登录，为什么还需要CSRF？","guide":"auth-interview/02-csrf.md","board":"csrf-sequence"},
+  {"key":"auth-03","title":"03 知道订单ID，为什么仍不能访问他人订单？","guide":"auth-interview/03-ownership.md","board":"ownership-sequence"},
+  {"key":"auth-04","title":"04 顾客、管理员和支付回调怎样划分信任边界？","guide":"auth-interview/04-trust-boundaries.md","board":""}
+]

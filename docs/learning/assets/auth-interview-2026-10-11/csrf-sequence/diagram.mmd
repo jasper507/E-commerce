@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant B as 浏览器 / 同源前端
+    participant A as Django / DRF
+    participant M as MySQL
+    Note over B,M: 当前Session登录链；Cookie只用A、B、S代号，不展示真实凭据
+    B->>A: GET /api/auth/csrf/
+    A-->>B: 204；设置可读csrftoken=A
+    B->>A: POST login：有效凭据、Cookie A、Header A、同源Origin
+    A->>A: 显式csrf_protect：先检查Origin与Token
+    alt CSRF缺失或不匹配
+        A-->>B: 403明确CSRF错误；不执行登录
+    else CSRF通过
+        A->>M: authenticate：读取用户与密码哈希
+        M-->>A: 用户记录
+        A->>A: Django认证后端校验密码哈希与账号状态
+        alt 凭据无效
+            A-->>B: 400统一凭据错误；不建立登录会话
+        else 凭据有效
+            A->>A: django_login：更新请求会话、旋转CSRF为B
+            Note over A,M: 匿名已有会话会cycle_key；同身份重复登录不保证再换Session Key
+            A->>M: last_login更新；响应阶段保存数据库Session
+            A-->>B: 200本人资料；sessionid=S为HttpOnly；csrftoken=B可读
+        end
+    end
+    Note over B,M: 以下以正确登录成功为前提；后续Cookie自动携带，前端不读取sessionid
+    B->>A: GET /api/auth/me/；携带S，不需CSRF Header
+    A->>M: Session/Authentication确定登录用户
+    A-->>B: 200本人资料；匿名或失效Session为403
+    B->>A: POST logout；Cookie S、当前B，但Header仍为旧A
+    A->>A: 显式CSRF检查失败
+    A-->>B: 403；不执行logout，原Session仍有效
+    Note over B,A: 正确Header但错误Origin同样拒绝；失败退出不删除会话
+    B->>A: 重新GET csrf，读取当前Cookie B，再POST logout
+    A->>A: 当前Header B与同源Origin通过
+    A->>M: django_logout：flush当前服务端会话
+    A-->>B: 204；清除客户端Session Cookie
+    B->>A: 再GET me
+    A-->>B: 403；已无本次登录身份
+    Note over B,M: 普通订单写请求由SessionAuthentication检查CSRF，错误正文路径不同<br/>CSRF通过以后仍须查本人归属与订单状态；本图不证明浏览器跨站或生产HTTPS已验收

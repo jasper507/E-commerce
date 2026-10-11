@@ -1,0 +1,20 @@
+{
+  "diagram": "ownership-sequence",
+  "status": "passed",
+  "native_nodes": 30,
+  "node_types": {
+    "connector": 20,
+    "composite_shape": 4,
+    "combined_fragment": 3,
+    "life_line": 3
+  },
+  "visible_text_node_types_and_arrow_directions": "matched",
+  "actual_preview_dimensions": [
+    2560,
+    2560
+  ],
+  "local_and_remote_previews_visually_reviewed": true,
+  "idempotent_token": "auth-20261011-ownership-sequence-publish-1",
+  "source_export_message": "no code blocks found in whiteboard",
+  "editable_mermaid": "diagram.mmd"
+}

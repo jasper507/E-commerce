@@ -1,0 +1,67 @@
+<p>2026-10-11整理。本文帮助你从真实订单流程解释Authorization（授权：判断这个身份可以操作哪些资源），重点是本人资源过滤、拒绝越权、归属与状态的事务内检查。适用源码快照为<b>a5d4b04995552a340a471d31e68973e89f67e54c</b>。本轮核对源码和历史证据，没有运行业务测试。</p>
+<p><a href="https://ocnbkcx1ug58.feishu.cn/wiki/TS8SwlKxKi8gJ5kIjlScjyyFn3d">认证当前总览</a> · <a href="https://ocnbkcx1ug58.feishu.cn/wiki/NRfSw08LXiNKW5ksGyKcldlynGc">顾客、管理员与网关的边界</a> · <a href="https://github.com/jasper507/E-commerce/blob/a5d4b04995552a340a471d31e68973e89f67e54c/docs/learning/README.md">学习导航</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/auth-interview-knowledge-base-publication.md">本轮文档验证</a></p>
+<h1>本专题前后变化</h1>
+<p><b>开始前：</b> 地址、购物车、订单和支付接口已经分别实现归属限制，但只记住“要求登录”，容易漏掉第二个问题：登录的这个人，是不是目标资源的主人？</p>
+<p><b>本次整理：</b> 把服务端确定身份、筛选本人集合、定位目标、锁内判断状态、提交业务事实串成一条流程。既有接口没有因为整理知识库而改变。</p>
+<p><b>当前边界：</b> 本项目顾客只能通过顾客接口操作自己的资源。管理员发货采用另一套角色权限，支付通知采用签名与交易匹配，见下一篇。这里不把Django/DRF框架自动等同于所有权保护，也没有完成全面安全审计或渗透测试。</p>
+<h1>两个都已登录的人，为什么仍会产生攻击？</h1>
+<p>顾客甲买了一件89元的活动商品，订单公开号为<b>O-A</b>。顾客乙也有合法账号、有效Session和正确CSRF Token。他从聊天截图、浏览器历史或日志中知道了<b>O-A</b>，随后把自己的请求地址改成甲的订单详情或取消地址。</p>
+<p>Session只回答“现在请求的是乙”；CSRF校验只防止另一个网站借浏览器登录状态伪造写请求。它们不会自动证明“<b>O-A</b>属于乙”。如果服务器仅执行<b>Order.objects.get(public_id=O-A)</b>，这个已登录用户就可能读到甲的地址快照，甚至取消甲的订单。</p>
+<p>这类IDOR（直接对象引用越权：换一个资源编号就操作到别人数据）不要求攻破密码。UUID降低随机猜中订单号的机会，但知道UUID以后，服务器仍必须核对归属。<b>资源编号用于找到对象，身份与归属用于决定能否操作对象。</b></p>
+<h1>不变量：请求参数不能决定“我是谁”</h1>
+<p>本项目顾客HTTP入口把<b>request.user</b>交给业务服务。它来自服务端Session认证，不来自URL中的<b>user_id</b>、JSON中的<b>user_id</b>，也不来自前端展示的用户名。</p>
+<p>例如乙请求<b>GET /api/orders/?user_id=甲&amp;page_size=1000</b>，订单View仍调用<b>orders_for(request.user)</b>，先限定乙，再统计总数、排序和分页。<b>user_id</b>不是切换账号的入口，<b>page_size</b>也不能扩大固定20条页长。不能先查询所有订单、分页后再在前端删掉甲的数据：那会泄露数据，还可能让总数、页码和页面条数错误。</p>
+<p>创建订单也是同一个原则。普通下单请求声明的业务输入是地址ID；秒杀下单是活动项ID与地址ID。服务端分别从本人购物车或活动配置计算价格、数量和范围，并写入本人订单。当前这些Serializer会忽略未声明字段，不能把“忽略<b>user_id</b>”描述成“所有陌生字段都会400”；真正的保护是服务端没有把这些字段作为身份和业务权威。</p>
+<h1>从本人读取到取消，一次完整请求怎样运行</h1>
+<ol><li>乙的浏览器携带Session。Django/DRF认出乙，<b>IsAuthenticated</b>要求他已经登录；涉及写入时还要通过CSRF。缺少这些条件时，请求不会进入顾客业务处理。本项目Session接口的匿名拒绝通常为403，不要机械地把所有未登录情况背成401。</li><li>读取订单列表时，服务器先执行<b>user=乙</b>过滤，再统计本人总数、按创建时间和ID倒序分页，最后序列化地址和商品快照。普通订单与秒杀订单共用这个本人集合。</li><li>读取<b>O-A</b>详情时，在这个本人集合中再加<b>public_id=O-A</b>。查不到就返回404，不输出甲的订单快照。这里统一了不存在与不属于本人两种响应含义，减少对他人对象是否存在的直接确认；它不保证响应时间等所有信息侧信道完全一致。</li><li>如果乙尝试取消<b>O-A</b>，View把Session中的乙和URL订单号交给<b>cancel_order</b>。该服务开启事务，在<b>select_for_update</b>查询中同时限制订单号与<b>user=乙</b>；目标不匹配时抛404，没有机会调用释放库存或退款模拟。</li><li>甲取消自己的订单时，服务锁住本人Order行后读取当前状态。<b>PENDING_PAYMENT</b>先复查付款尝试：存在<b>CREATED/PENDING/UNKNOWN</b>时返回409 <b>payment_unresolved</b>，保留预占；确认可关闭才释放。<b>PAID</b>走未发货取消与退款模拟；已经<b>CANCELED</b>只返回原结果；其他不可取消状态返回409。具体关闭和退款机制见支付总览，归属检查不能取代这些状态门槛。</li><li>成功时，相应状态和库存效果一起提交。发生业务异常则回滚。订单行锁还让付款、发货、取消的状态判断围绕同一订单串行进行；这里没有承诺整个项目绝无死锁，也没有声称Order锁会锁住所有HTTP请求。</li></ol>
+<whiteboard type="blank"></whiteboard>
+<p><a href="https://github.com/jasper507/E-commerce/blob/main/docs/learning/assets/auth-interview-2026-10-11/ownership-sequence/diagram.png">本地流程图预览</a> · <a href="https://github.com/jasper507/E-commerce/blob/main/docs/learning/assets/auth-interview-2026-10-11/ownership-sequence/diagram.mmd">可编辑Mermaid来源</a></p>
+<p>假设甲的订单为待支付且没有未确认付款，库存是<b>available=4, reserved=1</b>：乙的越权取消返回404，甲的订单与这两项库存均保持原状；甲随后成功取消，才允许按关闭规则释放自己的那份预占。这个例子区分了两个必须独立成立的条件：<b>你有权操作这张订单，并且这张订单当前允许执行这个动作。</b></p>
+<h1>为什么读操作过滤，修改还要在业务服务里保护？</h1>
+<p>读取只需返回本人集合中的对象。修改除了归属，还依赖会变化的订单状态。若在View先查“本人且待支付”，再在事务外等一会儿、最后直接更新，付款可能在这段间隔中已经提交，旧判断就不能代表当前事实。</p>
+<p>本项目取消和收货把所有权条件放进实际锁查询，并在同一事务里检查状态、写入结果。这样业务服务从API或其他受信代码调用时仍有自己的规则，不依赖“某个按钮一定隐藏了”或“每个View调用前一定做过检查”。锁的目的主要是让竞争中的状态判断与修改一致；<b>不是靠锁本身创造归属权限</b>，归属来自查询中的<b>user</b>条件。</p>
+<p>不能由此推广成每个流程都把网络等待包在事务中。支付查单服务先按本人Attempt过滤，然后在事务外调用Mock网关；查单结果再走事件处理器的验签、交易匹配与锁内状态机。它没有在等待网关时持有整张订单的锁。</p>
+<h1>两段真正决定边界的代码</h1>
+<p>第一段是订单读取的公共入口。它先过滤本人，详情和分页才能复用同一范围。关联预加载用于完整返回快照，不会把过滤条件改成“任意订单”。<a href="https://github.com/jasper507/E-commerce/blob/a5d4b04995552a340a471d31e68973e89f67e54c/backend/apps/ordering/views.py#L144">固定源码：ordering/views.py</a></p>
+<pre lang="python"><code>def orders_for(user):
+    &quot;&quot;&quot;订单列表和详情共用所有权过滤，避免仅凭公开 UUID 读取他人订单。&quot;&quot;&quot;
+
+    return (
+        Order.objects.filter(user=user)
+        .select_related(&quot;address_snapshot&quot;)
+        .prefetch_related(&quot;items&quot;)
+        .order_by(&quot;-created_at&quot;, &quot;-id&quot;)
+    )</code></pre>
+<p>第二段是顾客取消。前面的<b>@transaction.atomic</b>使后续关闭或取消与这次检查处于同一事务；<b>select_for_update</b>锁的是匹配到的Order。摘录后的<b>else</b>会拒绝其他状态，不允许任意状态直接变为取消。<a href="https://github.com/jasper507/E-commerce/blob/a5d4b04995552a340a471d31e68973e89f67e54c/backend/apps/ordering/lifecycle_services.py#L161">固定源码：ordering/lifecycle_services.py</a></p>
+<pre lang="python"><code>@transaction.atomic
+def cancel_order(*, public_id, user):
+    &quot;&quot;&quot;顾客取消自己的待支付或未发货已支付订单；重复请求不再改库存。&quot;&quot;&quot;
+
+    order = Order.objects.select_for_update().filter(
+        public_id=public_id, user=user
+    ).first()
+    if order is None:
+        raise OrderLifecycleError(&quot;order_not_found&quot;, &quot;订单不存在，或你无权取消。&quot;, 404)
+    if order.status == Order.Status.CANCELED:
+        return order, False
+    if order.status == Order.Status.PENDING_PAYMENT:
+        return _close_pending_order_locked(order, target_status=Order.Status.CANCELED), True
+    if order.status == Order.Status.PAID:
+        return _cancel_paid_order_locked(order), True</code></pre>
+<h1>同一个原则在完整业务闭环里怎样落地</h1>
+<table><thead><tr><th><p>本人资源与动作</p></th><th><p>当前服务端边界</p></th><th><p>越权后的关键结果</p></th></tr></thead><tbody><tr><td><p>地址列表、修改、删除、设默认</p></td><td><p>列表<b>user=request.user</b>；写服务先锁本人User，再以地址ID与user共同查地址</p></td><td><p>他人地址写操作404，字段与默认状态不变</p></td></tr><tr><td><p>购物车读取、加购、改量、删除</p></td><td><p>通过当前user找到本人Cart；修改查询限定<b>cart__user</b>；删除同样限定当前用户</p></td><td><p>不会因为SKU编码相同而修改另一人的购物车；购物车操作不预占库存</p></td></tr><tr><td><p>普通订单、秒杀订单创建</p></td><td><p>从Session传入user；新建时锁内检查本人地址；幂等查询含user与创建范围</p></td><td><p>他人地址404，不新建订单/资格/预占；别人同Key不会读到你的订单</p></td></tr><tr><td><p>订单列表与详情</p></td><td><p>公共本人QuerySet先过滤，详情再匹配公开号</p></td><td><p>列表count/results只属本人，他人详情404</p></td></tr><tr><td><p>取消与确认收货</p></td><td><p>同一事务内按user与公开号锁Order，再判断状态；收货还核对Shipment事实</p></td><td><p>他人请求404；本人的非法状态动作409</p></td></tr><tr><td><p>支付Attempt列表、详情、创建、查单</p></td><td><p>列表/详情限定本人；创建在锁内限定本人Order；查单先过滤本人Attempt</p></td><td><p>不能看别人支付记录、替别人创建Attempt或触发其查单</p></td></tr></tbody></table>
+<p>这些是逐项读到的实现，不是某个DRF开关自动实现。<b>IsAuthenticated</b>只要求登录；当前自写APIView需要自己组织归属查询，不能假设框架会自动筛选所有列表或自动执行所有对象权限。</p>
+<h1>替代方案与真实收益</h1>
+<p>可以先按公开号查任意订单，再比较<b>order.user_id</b>与当前user；正确实现也能拒绝越权。当前把归属直接写进查询，更容易复用为本人列表与详情，返回数据前就缩小范围，也减少某个分支忘记比较的机会。代价是各业务查询必须坚持使用正确过滤，新增入口仍需审查；它不是一劳永逸的全局安全开关。</p>
+<p>对于复杂角色规则，可以引入统一对象权限类或策略服务。当前单商家项目用显式归属查询加少量角色门槛，较容易理解和测试。角色、租户和共享订单需求增多后才值得集中抽象；否则可能增加框架层数，却仍没有解决列表过滤与事务内状态判断。</p>
+<p>当前可陈述的提升是“其他顾客换ID仍被服务端拒绝，且业务事实不变”，而不是“权限更快”或“安全提升百分之多少”。没有这类性能或综合风险量化实验。</p>
+<h1>已有证据、当前静态核对与缺口</h1>
+<p>以下均为历史业务实测，不是2026-10-11整理时新跑的结果：</p>
+<ul><li><a href="https://github.com/jasper507/E-commerce/blob/a5d4b04995552a340a471d31e68973e89f67e54c/docs/verification/mvp-2-minimum-address.md">MVP-2地址验证，2026-09-18</a>：真实MySQL地址目标16项、6个子场景；包括他人地址PATCH/DELETE/设默认均404且原数据不变。</li><li><a href="https://github.com/jasper507/E-commerce/blob/a5d4b04995552a340a471d31e68973e89f67e54c/docs/verification/mvp-3-order-inventory.md">MVP-3订单验证，2026-09-18</a>：真实MySQL目标14项、9个子场景；包括他人地址不可结账、他人订单不可见。</li><li><a href="https://github.com/jasper507/E-commerce/blob/a5d4b04995552a340a471d31e68973e89f67e54c/docs/verification/phase-3-order-list-pagination.md">订单分页验证，2026-10-08</a>：目标28项、171个子场景，相关回归63项、8个子场景。21笔本人、2笔他人数据证明总数与结果隔离，伪造<b>user_id</b>不能改读别人。页面翻页检查使用模拟响应，不能当作真实网络安全验收。</li><li><a href="https://github.com/jasper507/E-commerce/blob/a5d4b04995552a340a471d31e68973e89f67e54c/docs/verification/phase-6d-flash-sale-http.md">秒杀HTTP验证，2026-10-08</a>：目标12项、162个子场景，验证用户/金额/数量来自服务端、他人地址和订单404；APIClient使用真实Session并执行CSRF检查，与浏览器端到端不同。</li></ul>
+<p>本次静态核对还定位了购物车越权、取消归属和支付Attempt隔离的测试断言；支付/订单相关测试进入上述分页与秒杀历史回归。不能将“测试代码存在”单独当作“本轮已运行”，也不能由这些用例推出所有新增接口或整个部署环境已经安全。<a href="https://github.com/jasper507/E-commerce/blob/main/docs/verification/auth-interview-knowledge-base-publication.md">本轮文档检查</a>记录本次检查范围。</p>
+<p>仍缺完整公网部署下的权限回归、全面对象枚举/滥用评估与所有入口的自动安全矩阵。Phase9C的真实HTTP证明代理入口的Session/CSRF，不包括真实商品下单、越权付款或Admin UI整条交易验收；这些边界要分开讲。</p>
+<h1>如果重新做，我会改哪里？</h1>
+<p>我会保留“身份由服务端决定、所有权进入查询、状态在实际事务中复查”。它们直接保护业务事实，不能为了少几行代码移到前端。</p>
+<p>如果新增入口明显变多，我会抽出命名明确的本人资源查询方法，并维护一份“匿名、本人、他人、非法状态”的关键动作测试矩阵。现在已有<b>orders_for(user)</b>，重做的改变是把确实重复的归属读取整理到一致入口，并让新支付/地址/订单动作必须补一条他人身份失败用例；不是宣称现有代码完全没有归属检查。</p>
+<p>我也会考虑对身份、金额和角色等敏感的未声明字段给出明确拒绝，减少客户端误以为这些字段有效。代价是改变现有输入兼容行为，需要确定接口契约并补客户端与API回归，不能借知识库整理直接改实现。</p>
+<p>只有出现共享资源或多商家规则时，才考虑更集中的对象权限策略与审计。停止条件是：现有顾客闭环的每个关键入口都能解释身份来源、归属条件、状态门槛和一条可复现的拒绝证据；这次没有因此扩展业务、权限系统或新的实验。</p>

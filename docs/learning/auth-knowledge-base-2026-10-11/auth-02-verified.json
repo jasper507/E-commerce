@@ -1,0 +1,15 @@
+{
+  "key": "auth-02",
+  "status": "passed",
+  "revision": 2,
+  "headings": 11,
+  "links": 13,
+  "core_snippets": 2,
+  "boards": [
+    {
+      "block_id": "doxcnq9R8QP00aRExBqkiGPPgjc",
+      "token": "VmP4wF4suh9Lfebqegpcynkpnfo",
+      "diagram": "csrf-sequence"
+    }
+  ]
+}
