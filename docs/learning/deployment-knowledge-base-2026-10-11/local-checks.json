@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "source_commit": "57329d80fd6afd13f78b2f6e2ea45f61a898ea6b",
+  "guides": 1,
+  "local_links": 15,
+  "source_fragments": [
+    {
+      "language": "typescript",
+      "source": "frontend/vite.config.ts",
+      "commit": "57329d80fd6afd13f78b2f6e2ea45f61a898ea6b"
+    },
+    {
+      "language": "nginx",
+      "source": "docker/deployment/nginx.conf",
+      "commit": "57329d80fd6afd13f78b2f6e2ea45f61a898ea6b"
+    },
+    {
+      "language": "nginx",
+      "source": "docker/deployment/nginx.conf",
+      "commit": "57329d80fd6afd13f78b2f6e2ea45f61a898ea6b"
+    }
+  ],
+  "links": [
+    "README.md",
+    "project-current-overview-study-guide.md",
+    "../verification/deployment-request-chain-knowledge-base-publication.md",
+    "phase-9a-local-deployment-study-guide.md",
+    "../verification/phase-9b-local-deployment-run.md",
+    "assets/deployment-request-chain-2026-10-11/request-sequence/diagram.png",
+    "assets/deployment-request-chain-2026-10-11/request-sequence/diagram.mmd",
+    "auth-current-overview-study-guide.md",
+    "phase-9c-session-csrf-operations-study-guide.md",
+    "../verification/phase-9a-local-deployment.md",
+    "../verification/phase-9b-local-deployment-run.md",
+    "../verification/phase-9b-local-deployment-browser.json",
+    "../verification/phase-9c-session-csrf-operations.md",
+    "../verification/deployment-request-chain-knowledge-base-publication.md",
+    "../deployment/local-operations-runbook.md"
+  ],
+  "owner_exclusions_respected": true,
+  "fixed_snapshot_paths": [
+    "docs/deployment/local-operations-runbook.md",
+    "docs/learning/README.md",
+    "docs/learning/phase-9a-local-deployment-study-guide.md",
+    "docs/learning/phase-9c-session-csrf-operations-study-guide.md",
+    "docs/verification/phase-9a-local-deployment.md",
+    "docs/verification/phase-9b-local-deployment-browser.json",
+    "docs/verification/phase-9b-local-deployment-run.md",
+    "docs/verification/phase-9c-session-csrf-operations.md"
+  ]
+}

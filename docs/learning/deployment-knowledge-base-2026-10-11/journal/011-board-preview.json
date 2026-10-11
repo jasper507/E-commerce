@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "preview_image_path": "./published-preview.jpg",
+    "size_bytes": 239874
+  }
+}

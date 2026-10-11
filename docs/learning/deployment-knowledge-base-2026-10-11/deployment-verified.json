@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "revision": 2,
+  "headings": 10,
+  "links": 27,
+  "source_fragments": 3,
+  "boards": [
+    {
+      "token": "BuMWwID03hyZizbPhUqc7i4Dnog",
+      "block_id": "doxcn6NDe6kKk9TewoHS8H2L4Pg"
+    }
+  ],
+  "native_board_verification": "required separately"
+}

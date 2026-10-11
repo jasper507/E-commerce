@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "source_commit": "57329d80fd6afd13f78b2f6e2ea45f61a898ea6b",
+  "guides": 1,
+  "source_fragments": 3,
+  "local_document_links_checked": 159,
+  "remote_page_headings": 10,
+  "remote_page_links": 27,
+  "remote_pages": 1,
+  "new_page": "LlbLwU9mSi2CoIkYi5tcELbKn4e",
+  "deployment_children": 0,
+  "project_children": 8,
+  "all_existing_project_nodes_preserved": true,
+  "project_modified_paragraphs": 1,
+  "all_original_project_resources_preserved": true,
+  "native_board": {
+    "status": "passed",
+    "token": "BuMWwID03hyZizbPhUqc7i4Dnog",
+    "native_nodes": 60,
+    "node_types": {
+      "connector": 40,
+      "composite_shape": 13,
+      "life_line": 5,
+      "combined_fragment": 2
+    },
+    "visible_text_node_types_and_arrow_directions": "matched",
+    "actual_preview_dimensions": [
+      2560,
+      2560
+    ],
+    "local_and_remote_previews_visually_reviewed": true,
+    "idempotent_token": "deployment-request-chain-20261011-publish-1",
+    "source_export_message": "no code blocks found in whiteboard",
+    "editable_mermaid": "diagram.mmd"
+  },
+  "local_geometry_check": {
+    "errors": 0,
+    "warnings": 0,
+    "summary": {
+      "textOverflow": 0,
+      "nodeOverlap": 0,
+      "textOcclusion": 0
+    },
+    "issues": []
+  },
+  "application_tests_run": false,
+  "services_or_database_accessed": false
+}

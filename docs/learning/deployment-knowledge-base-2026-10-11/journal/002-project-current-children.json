@@ -1,0 +1,83 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_more": false,
+    "nodes": [
+      {
+        "has_child": true,
+        "node_token": "PCQ7wP9kMikz0eklmNYcH1J1nwh",
+        "node_type": "origin",
+        "obj_token": "T6O0deWUnowaBsxM6LgcJfuynjb",
+        "obj_type": "docx",
+        "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "space_id": "7693476782908935142",
+        "title": "支付"
+      },
+      {
+        "has_child": true,
+        "node_token": "O4iUwSvl1i4Je7keOL0ci1iAnLf",
+        "node_type": "origin",
+        "obj_token": "KKBXdHFQqoZRCNxJv1YcFb29nkf",
+        "obj_type": "docx",
+        "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "space_id": "7693476782908935142",
+        "title": "Redis 学习与面试总结"
+      },
+      {
+        "has_child": true,
+        "node_token": "B49NwtiePiCqqFkz61kc4ac9n79",
+        "node_type": "origin",
+        "obj_token": "MVBrdxZAPoDcPzxQnTPctXXgn3g",
+        "obj_type": "docx",
+        "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "space_id": "7693476782908935142",
+        "title": "秒杀与库存并发"
+      },
+      {
+        "has_child": false,
+        "node_token": "PZoSwW7C7iJ9PlkWxwkcN0Bnn7d",
+        "node_type": "origin",
+        "obj_token": "NaVAdr4oDoyaDqxiTf3cupAznpc",
+        "obj_type": "docx",
+        "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "space_id": "7693476782908935142",
+        "title": "项目复盘与重做选择"
+      },
+      {
+        "has_child": true,
+        "node_token": "KxWQwuGFsiqO3Wk4m7TcZxXBnih",
+        "node_type": "origin",
+        "obj_token": "HBiyd9nJloSVcGxayeYcm7gWnkb",
+        "obj_type": "docx",
+        "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "space_id": "7693476782908935142",
+        "title": "商品搜索：MySQL → Elasticsearch"
+      },
+      {
+        "has_child": true,
+        "node_token": "CNaVwwMJsidse6k5d7zc2VLSnEf",
+        "node_type": "origin",
+        "obj_token": "XLlWddocEon7AMx0nV1c8BL6nkh",
+        "obj_type": "docx",
+        "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "space_id": "7693476782908935142",
+        "title": "MySQL与订单：事务、幂等与查询优化"
+      },
+      {
+        "has_child": true,
+        "node_token": "TS8SwlKxKi8gJ5kIjlScjyyFn3d",
+        "node_type": "origin",
+        "obj_token": "UrxodXFI4okSkexK0yyctmwynRd",
+        "obj_type": "docx",
+        "parent_node_token": "WN1jwXDj0iPXm7kwLyHcmneenlb",
+        "space_id": "7693476782908935142",
+        "title": "认证、CSRF与数据权限"
+      }
+    ],
+    "page_token": ""
+  },
+  "meta": {
+    "count": 7
+  }
+}

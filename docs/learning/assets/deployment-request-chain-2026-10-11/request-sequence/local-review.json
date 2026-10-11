@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-11",
+  "source_snapshot": "57329d80fd6afd13f78b2f6e2ea45f61a898ea6b",
+  "lark_cli": "1.0.95",
+  "whiteboard_cli": "0.2.13",
+  "model_family": "GPT",
+  "native_nodes": 60,
+  "connectors": 40,
+  "lifelines": 5,
+  "preview_pixels": [
+    3503,
+    9466
+  ],
+  "render_and_native_conversion": "passed",
+  "geometry_check": {
+    "errors": 0,
+    "warnings": 0,
+    "summary": {
+      "textOverflow": 0,
+      "nodeOverlap": 0,
+      "textOcclusion": 0
+    },
+    "issues": []
+  },
+  "visual_review": {
+    "status": "passed",
+    "reviewed": "final diagram.png through view_image",
+    "observations": [
+      "Clear ordered sections: static entry, public API, independent deep-route/Admin/error scenarios.",
+      "Full labels and branch frames are visible with no overlap.",
+      "Long diagram should be read vertically and zoomed in the native whiteboard."
+    ]
+  },
+  "facts_checked": [
+    "8080 to Nginx80; web:8000 and db:3306 on isolated container network.",
+    "Gunicorn and Django share the web container and use in-process WSGI.",
+    "Public catalog GET skips Session authentication and CSRF Header.",
+    "Root returns index200; Vue Router redirects on browser to products.",
+    "Vue code runs in browser; category GET is independent and can overlap products GET.",
+    "Admin HTML goes through web; admin CSS uses read-only shared collectstatic volume.",
+    "Missing API/assets/static produce404, not SPA fallback.",
+    "Four middleware feature flags off; no transaction/production/backup proof."
+  ],
+  "source_files": [
+    "compose.deployment-local.yaml",
+    "docker/deployment/nginx.conf",
+    "docker/deployment/web.Dockerfile",
+    "docker/deployment/frontend.Dockerfile",
+    "backend/config/urls.py",
+    "backend/apps/catalog/urls.py",
+    "backend/apps/catalog/views.py",
+    "frontend/src/api/catalog.ts",
+    "frontend/src/router/index.ts",
+    "frontend/src/views/ProductListView.vue",
+    "docs/verification/phase-9b-local-deployment-run.md",
+    "docs/verification/phase-9c-session-csrf-operations.md"
+  ],
+  "corrections": [
+    "Mermaid treats the double slash in an HTTP URL as a comment; proxy label uses service host web:8000 to keep full text.",
+    "Initial illustrative page=1 query changed to actual default-first-page URL.",
+    "Explicit browser route redirect and independent classification note added.",
+    "Final historical labels specify the empty catalog as the 9B observation, not a fresh database read."
+  ],
+  "remote_writes": false,
+  "business_or_configuration_changes": false,
+  "database_access": false,
+  "final_root_review": {
+    "local_png": "visually reviewed after the historical-label correction",
+    "actual_remote_preview": "visually reviewed after publication",
+    "native_nodes": "matched separately in published-verification.json"
+  }
+}

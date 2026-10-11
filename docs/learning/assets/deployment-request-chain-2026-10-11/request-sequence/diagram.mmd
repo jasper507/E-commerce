@@ -1,0 +1,71 @@
+sequenceDiagram
+    participant B as 浏览器（执行 Vue）
+    participant N as Nginx 容器
+    participant G as Gunicorn
+    participant D as Django
+    participant M as MySQL 容器
+
+    Note over B,M: 部署准备只做在运行前：构建镜像 → 启动并确认独立库 → migrate<br/>collectstatic 写共享静态卷 → 启动 web 与 Nginx；不是每次请求执行
+    Note over G,D: 同一个 web 容器：Gunicorn worker 在进程内调用 Django WSGI<br/>下方分列展示职责；这里没有第二段 HTTP 网络连接
+
+    Note over B,N: ① 打开页面：127.0.0.1:8080 映射到 Nginx 的 80 端口
+    B->>N: GET /（第一次打开网站）
+    N->>N: 读取镜像内 /usr/share/nginx/html/index.html
+    N-->>B: 200 HTML
+    par 浏览器获取构建后的 JS
+        B->>N: GET /assets/某个构建文件.js
+        N-->>B: 200 JS
+    and 浏览器获取构建后的 CSS
+        B->>N: GET /assets/某个构建文件.css
+        N-->>B: 200 CSS
+    end
+    B->>B: 执行 JS，启动 Vue；Router 将 / 定位到 /products
+    Note over B,N: 这是浏览器内路由，不是 Nginx 返回 302 跳转
+    Note over B,N: JS 在浏览器执行；这些静态请求不经过 Gunicorn、Django 或 MySQL
+
+    Note over B,M: ② 页面发 API：前端用相对地址访问同一个浏览器入口
+    B->>N: GET /api/catalog/products/（默认第一页）
+    N->>G: 代理原 URI 到 web:8000
+    Note over N,D: 保留 Host（含浏览器的 8080）、客户端地址和协议<br/>web 是容器服务名；8000 是 Gunicorn 监听端口
+    G->>D: 在 worker 内调用 config.wsgi:application
+    D->>D: 中间件 → URL 路由 → 公开权限与参数校验
+    Note over B,D: 商品列表 AllowAny、不执行 Session 认证；公开 GET 无需 CSRF Header<br/>另有独立 GET 分类，可并行，不承诺固定先后
+    D->>M: ORM 通过 db:3306 查询公开商品与分页数据
+    M-->>D: 查询结果（9B 实测为空目录）
+    D->>D: 序列化为 JSON：count / next / previous / results
+    D-->>G: Django HTTP 响应
+    G-->>N: HTTP 200 + JSON
+    N-->>B: HTTP 200 + JSON
+    B->>B: 读取 JSON，更新 Vue 页面（9B 示例：空商品提示）
+
+    Note over B,M: ③ 以下是独立场景，不是每次商品请求之后自动发生
+    alt 刷新前端深路由 /products
+        B->>N: GET /products（浏览器刷新）
+        N->>N: try_files 未找到同名文件，回退 /index.html
+        N-->>B: 200 前端 HTML
+        B->>B: 加载所需资源，Vue Router 解释 /products
+        Note over B,D: 页面再次按需发商品 API；沿用上方 ② 的请求链
+    else 打开 Django Admin 登录页
+        B->>N: GET /admin/login/
+        N->>G: 代理原 URI 到 web:8000
+        G->>D: 同进程 WSGI 调用
+        D-->>G: 生成 Admin 登录 HTML
+        G-->>N: 200 HTML
+        N-->>B: 200 Admin 登录页面
+        B->>N: GET /static/admin/css/base.css
+        N->>N: 从只读共享静态卷读取 CSS
+        N-->>B: 200 Admin CSS（不再转给 Django）
+        Note over N,D: Admin 静态来自 collectstatic 共享卷<br/>Vue JS/CSS 来自前端 dist 镜像目录，两者来源不同
+    else 未知 API 或缺失静态文件
+        B->>N: GET /api/不存在/
+        N->>G: /api/ 始终代理到 web:8000
+        G->>D: WSGI 调用；URL 无匹配
+        D-->>G: 404
+        G-->>N: 404
+        N-->>B: 404（不回退 Vue HTML）
+        B->>N: GET /assets/缺失.js 或 /static/缺失.css
+        N-->>B: 404（不回退 Vue HTML）
+    end
+
+    Note over B,M: 本人 API 需要 Session；登录/退出与已认证写请求还按各自入口检查 CSRF<br/>没有权限则在适用检查处拒绝，不继续受保护业务；详细流程见认证知识库
+    Note over B,M: 当前是本机 HTTP，只有 Nginx 发布宿主端口；浏览器不直连 MySQL<br/>缓存、Lua、异步支付、ES 四开关关闭；9B 验入口与空目录，9C 验认证 HTTP<br/>交易闭环、公网 HTTPS、更新回滚和备份恢复尚未在该部署完整验收
