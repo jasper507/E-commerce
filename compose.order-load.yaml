@@ -1,0 +1,69 @@
+# Independent namespace, database, user and volume. Never merge with compose.yaml.
+name: project-one-order-load-${ORDER_LOAD_RUN:?Create a reviewed order-load plan first}
+
+x-load-environment: &load-environment
+  ORDER_LOAD_ISOLATED: "1"
+  ORDER_LOAD_RUN: ${ORDER_LOAD_RUN:?Required}
+  ORDER_LOAD_MYSQL_PASSWORD: ${ORDER_LOAD_MYSQL_PASSWORD:?Required}
+  ORDER_LOAD_DJANGO_SECRET: ${ORDER_LOAD_DJANGO_SECRET:?Required}
+  ORDER_LOAD_TOKEN: ${ORDER_LOAD_TOKEN:?Required}
+  ORDER_LOAD_PASSWORD: ${ORDER_LOAD_PASSWORD:?Required}
+  DJANGO_SETTINGS_MODULE: loadtests.order_list.settings
+
+services:
+  db:
+    image: mysql:8.4.10
+    cpus: 2.0
+    mem_limit: 2g
+    environment:
+      MYSQL_DATABASE: project_one_order_load
+      MYSQL_USER: project_one_order_load
+      MYSQL_PASSWORD: ${ORDER_LOAD_MYSQL_PASSWORD:?Required}
+      MYSQL_ROOT_PASSWORD: ${ORDER_LOAD_MYSQL_ROOT_PASSWORD:?Required}
+      TZ: UTC
+    command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_0900_ai_ci, --default-time-zone=+00:00, --innodb-buffer-pool-size=536870912]
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [CMD-SHELL, 'mysqladmin ping --host=127.0.0.1 --user=root --password=$$MYSQL_ROOT_PASSWORD --silent']
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+
+  app:
+    image: project-one-order-load:${ORDER_LOAD_RUN:?Required}
+    build:
+      context: .
+      dockerfile: docker/order-load/Dockerfile
+    cpus: 2.0
+    mem_limit: 768m
+    user: "${ORDER_LOAD_UID:?Required}:${ORDER_LOAD_GID:?Required}"
+    environment: *load-environment
+    ports:
+      - "127.0.0.1:18080:8000"
+    volumes:
+      - ./artifacts/order-load/${ORDER_LOAD_RUN:?Required}:/artifacts
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/', timeout=2).read()"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  loadgen:
+    image: project-one-order-load:${ORDER_LOAD_RUN:?Required}
+    profiles: [load]
+    cpus: 1.0
+    mem_limit: 768m
+    user: "${ORDER_LOAD_UID:?Required}:${ORDER_LOAD_GID:?Required}"
+    environment: *load-environment
+    volumes:
+      - ./artifacts/order-load/${ORDER_LOAD_RUN:?Required}:/artifacts
+    entrypoint: [python, -m, locust]
+    command: [--help]
+
+volumes:
+  mysql_data:

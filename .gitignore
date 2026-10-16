@@ -57,3 +57,6 @@ Desktop.ini
 # Local Docker data if a future bind mount is used
 docker-data/
 mysql-data/
+
+# Dedicated order-load datasets, generated credentials, logs and tool environment
+artifacts/order-load/

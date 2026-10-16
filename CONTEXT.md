@@ -1543,3 +1543,10 @@ CRUD Fast Track 不能跳过权限、数据归属、数据库约束、一个正�
 - Charterv1.17统一顶部与Done/阶段勾选：已验证交易主链/三旗舰、Lua准入与ES测试扩展、基础部署与认证。旧完整能力单栈/三新负载门槛按拥有者不需演示、准备收尾决定收窄，未做范围不勾全；ES开发启用/自动同步、周期MQ接管、公网HTTPS、更新/备份恢复实测本期延期或可选。LearningDone、独立改错和简历口述仍待本人完成。
 - 双交付docs/verification/phase-10a-final-acceptance.md与docs/learning/phase-10a-final-acceptance-study-guide.md互链；保存CI摘要/日志摘录、pytest raw/JUnit/隔离结果、前端raw、来源清单。只改当前文档/证据，业务/测试/依赖/工作流/部署Compose/.env未改；不操作开发缓存或真实支付，不运行恢复演练。
 - 下一步按总览复习完整交易，再库存→支付/MQ→Redis/Lua→MySQL查询→ES→部署，最后简历与独立表达；不自动进入新的实现。提交后CI精确run在最终回复核实，基线CI不冒充材料提交结果。
+
+## 72. 用户新增订单列表压测工具需求（2026-10-16）
+
+- 拥有者在简历准备中明确要求实现压测/合成大数据/拐点观察，并选择订单列表；这是新授权，旧收尾“不自动追加压测”不阻止本轮工具实现。Supporting/Pair，业务与原部署不改，真实库写入/启动/负载仍须对具体计划确认。
+- main/远端926814b核对后在codex/order-list-locust开发独立候选；原6E指南修改保留。新增独立Compose/数据库/专用账号/卷、严格目标与环境归属保护、每批500单的查询夹具、Session/CSRF Locust场景、阶段统计与候选分析。百万是订单数量，与模拟用户负载分开；不声称百万交易或已有容量结果。
+- 默认计划1万订单/20账号/每人500单，1/5/10/20用户，每档暖机10秒/测量30秒；可另建不同数据量、深页或显式无普通读取索引的对照。持久数据仅在artifacts/order-load忽略目录及独立卷；不自动清库/删卷，失败命名空间拒绝重用。
+- 离线规则/保护/统计与真实Locust对假HTTP服务的流程检查已执行，详见[验证记录](docs/verification/order-list-load-tooling.md)与[学习指南](docs/learning/order-list-load-study-guide.md)。未构建镜像、未连接MySQL、未造业务数据或运行项目HTTP压测；Docker未启动且当时可用内存约1GiB。需要先释放资源、确认独立环境及小规模计划，再实际验证；候选不合main，不把离线检查写成性能证据。

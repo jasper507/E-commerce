@@ -1,0 +1,11 @@
+**
+!requirements/
+!requirements/base.txt
+!requirements/deployment.txt
+!requirements/load.txt
+!backend/
+!backend/**
+!loadtests/
+!loadtests/**
+**/__pycache__/
+**/*.pyc

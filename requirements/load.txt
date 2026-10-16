@@ -1,0 +1,2 @@
+# Only the independent load-test image / tool environment uses this dependency.
+locust==2.46.7

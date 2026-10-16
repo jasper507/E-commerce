@@ -1,0 +1,6 @@
+test_real_locust_login_measure_drain_and_wrong_payload_stop (test_order_load_runtime.LocustRuntimeTests.test_real_locust_login_measure_drain_and_wrong_payload_stop) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 8.919s
+
+OK
