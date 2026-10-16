@@ -28,7 +28,7 @@ Locust用Python描述HTTP用户行为，能直接处理本项目的Cookie、CSRF
 
 固定数据量、页码、索引模式及资源后，若相邻有效档位的用户数至少增加50%、成功RPS增长不超过10%、p95至少增加50%，报告“拐点候选区间”。这是一条预先声明的筛查规则，不是数学证明；需要在相邻档位重复，并结合应用/数据库资源判断。没有出现时报告未找到，不能预设“达到几百万就一定出现拐点”。
 
-报告要求目标、压测端资源样本；客户端CPU连续3次采样达到85%、容器OOM/退出/重启、响应正确性出错、延迟或失败越过停止阈值，都会停止后续升档。缺少资源证据的档位不用于容量结论。2个sync worker、同宿主争用或客户端限制，都可能先成为瓶颈，不能直接归因MySQL。
+报告要求目标、压测端资源样本；客户端CPU连续3次采样达到85%、容器OOM/退出/重启、宿主可用内存采样低于1GiB、响应正确性出错、延迟或失败越过停止阈值，都会停止后续升档。缺少资源证据的档位不用于容量结论。2个sync worker、同宿主争用或客户端限制，都可能先成为瓶颈，不能直接归因MySQL。
 
 默认每档暖机10秒、测量30秒，p95上限2秒、失败率上限1%，至少100个测量样本；超过阈值的结果仍保存。最多200个模拟用户、300万订单是工具参数上限，不是已经验证可承受的规模。
 
@@ -40,7 +40,7 @@ Locust用Python描述HTTP用户行为，能直接处理本项目的Cookie、CSRF
 .\.venv\Scripts\python.exe scripts/order_load.py plan --run sample10k --orders 10000 --accounts 20 --users 1,5,10,20
 ```
 
-先看artifacts/order-load/sample10k/plan.json。不加--execute时，prepare/run只展示计划。获得对启动服务和写测试库的确认，且主机可用内存与Docker总内存均至少5GiB、磁盘满足预留门槛后，再执行：
+先看artifacts/order-load/sample10k/plan.json。不加--execute时，prepare/run只展示计划。获得对启动服务和写测试库的确认后再执行。至多1万订单、20用户、每档测量不超过30秒的小规模短测要求主机至少3GiB可用内存；更大或更长计划仍要求5GiB。Docker总内存始终至少5GiB，磁盘须满足预留门槛。运行时资源记录包含宿主可用内存，低于1GiB停止后续负载。
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/order_load.py prepare --run sample10k --execute

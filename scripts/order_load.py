@@ -83,10 +83,18 @@ def available_memory():
     raise RuntimeError("Available-memory preflight supports Windows and Linux only.")
 
 
+def host_memory_requirement(plan):
+    users = plan.get("users", [])
+    small_smoke = (plan["total_orders"] <= 10_000 and users
+                   and max(users) <= 20 and plan.get("measure_seconds", 301) <= 30)
+    return (3 if small_smoke else 5) * 1024**3
+
+
 def resource_gate(plan):
     minimum_disk = max(10, plan["total_orders"] / 1_000_000 * 15) * 1024**3
-    if available_memory() < 5 * 1024**3:
-        raise RuntimeError("Need at least 5 GiB available host memory before this experiment.")
+    minimum_memory = host_memory_requirement(plan)
+    if available_memory() < minimum_memory:
+        raise RuntimeError(f"Need at least {minimum_memory // 1024**3} GiB available host memory before this experiment.")
     if shutil.disk_usage(ROOT).free < minimum_disk:
         raise RuntimeError("Insufficient disk reserve for the selected dataset size.")
     require_local_engine()
@@ -257,9 +265,13 @@ def run_stages(folder, plan, execute):
                 while process.poll() is None:
                     try:
                         row = sample_resources(project)
+                        row["host_available_memory_bytes"] = available_memory()
                         snapshots.append(row)
                         resources.write(json.dumps(row) + "\n")
                         resources.flush()
+                        if row["host_available_memory_bytes"] < 1024**3:
+                            stop_reason = "host_memory_below_1gib"
+                            break
                     except ResourceStop as exc:
                         stop_reason = str(exc)
                         resources.write(json.dumps({"timestamp": time.time(), "stop_reason": stop_reason}) + "\n")
