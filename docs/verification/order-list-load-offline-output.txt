@@ -46,6 +46,6 @@ test_zero_baselines_are_not_used_for_relative_comparison (test_order_load_metric
 test_real_locust_login_measure_drain_and_wrong_payload_stop (test_order_load_runtime.LocustRuntimeTests.test_real_locust_login_measure_drain_and_wrong_payload_stop) ... skipped 'Run with the separate Locust tool environment.'
 
 ----------------------------------------------------------------------
-Ran 46 tests in 0.044s
+Ran 46 tests in 0.048s
 
 OK (skipped=1)

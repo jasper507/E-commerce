@@ -40,7 +40,7 @@ Locust用Python描述HTTP用户行为，能直接处理本项目的Cookie、CSRF
 .\.venv\Scripts\python.exe scripts/order_load.py plan --run sample10k --orders 10000 --accounts 20 --users 1,5,10,20
 ```
 
-先看artifacts/order-load/sample10k/plan.json。不加--execute时，prepare/run只展示计划。获得对启动服务和写测试库的确认后再执行。至多1万订单、20用户、每档测量不超过30秒的小规模短测要求主机至少3GiB可用内存；更大或更长计划仍要求5GiB。Docker总内存始终至少5GiB，磁盘须满足预留门槛。运行时资源记录包含宿主可用内存，低于1GiB停止后续负载。
+先看artifacts/order-load/sample10k/plan.json。不加--execute时，prepare/run只展示计划。获得对启动服务和写测试库的确认后再执行。至多1万订单、20用户、每档测量不超过30秒的小规模短测，准备前要求主机至少3GiB可用内存；目标服务已启动后，运行前要求2GiB，避免重复预留已占用的目标内存。更大或更长计划仍要求5GiB。Docker总内存始终至少5GiB，磁盘须满足预留门槛。运行时资源记录包含宿主可用内存，低于1GiB停止后续负载。
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/order_load.py prepare --run sample10k --execute

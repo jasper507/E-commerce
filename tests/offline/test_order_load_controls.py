@@ -12,9 +12,11 @@ class ControlTests(unittest.TestCase):
     def test_short_small_smoke_has_a_bounded_lower_memory_budget(self):
         small = {"total_orders": 10_000, "users": [1, 5, 10, 20], "measure_seconds": 30}
         self.assertEqual(order_load.host_memory_requirement(small), 3 * 1024**3)
+        self.assertEqual(order_load.host_memory_requirement(small, target_prepared=True), 2 * 1024**3)
         for change in ({"total_orders": 100_000}, {"users": [1, 50]}, {"measure_seconds": 60}):
             with self.subTest(change=change):
                 self.assertEqual(order_load.host_memory_requirement({**small, **change}), 5 * 1024**3)
+                self.assertEqual(order_load.host_memory_requirement({**small, **change}, target_prepared=True), 5 * 1024**3)
 
     def test_compose_project_is_explicit_and_cannot_follow_host_project_name(self):
         with patch.dict(os.environ, {"COMPOSE_PROJECT_NAME": "unrelated"}):

@@ -79,7 +79,7 @@ class ContainerEdgeTests(unittest.TestCase):
             snapshots = resource_snapshots((101, 103, 106))
             with patch.object(order_load, "resource_gate"), (
                 patch.object(order_load, "capture", side_effect=[
-                    "sha256:reviewed", "app-id", "sha256:reviewed", "app\ndb",
+                    "reviewed-controller", "sha256:reviewed", "app-id", "sha256:reviewed", "app\ndb",
                 ])
             ), patch.object(order_load.subprocess, "Popen", side_effect=completed_stage_launch(folder, process)), (
                 patch.object(order_load, "sample_resources", side_effect=snapshots)
@@ -91,6 +91,7 @@ class ContainerEdgeTests(unittest.TestCase):
             self.assertEqual(report["stages"][0]["status"], "complete")
             self.assertTrue(report["stages"][0]["valid_for_capacity"])
             self.assertEqual(report["stages"][0]["resource_samples"], 2)
+            self.assertEqual(report["controller_commit"], "reviewed-controller")
 
     def test_low_host_memory_invalidates_complete_stage_and_prevents_next_load_level(self):
         plan = stage_plan([1, 5])
@@ -101,7 +102,7 @@ class ContainerEdgeTests(unittest.TestCase):
             memory = [8 * 1024**3, 8 * 1024**3, 512 * 1024**2]
             with patch.object(order_load, "resource_gate"), (
                 patch.object(order_load, "capture", side_effect=[
-                    "sha256:reviewed", "app-id", "sha256:reviewed", "app\ndb",
+                    "reviewed-controller", "sha256:reviewed", "app-id", "sha256:reviewed", "app\ndb",
                 ])
             ), patch.object(
                 order_load.subprocess, "Popen", side_effect=completed_stage_launch(folder, process),

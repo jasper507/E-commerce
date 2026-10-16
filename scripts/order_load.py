@@ -83,16 +83,17 @@ def available_memory():
     raise RuntimeError("Available-memory preflight supports Windows and Linux only.")
 
 
-def host_memory_requirement(plan):
+def host_memory_requirement(plan, *, target_prepared=False):
     users = plan.get("users", [])
     small_smoke = (plan["total_orders"] <= 10_000 and users
                    and max(users) <= 20 and plan.get("measure_seconds", 301) <= 30)
-    return (3 if small_smoke else 5) * 1024**3
+    # The prepared target already occupies memory reserved before construction.
+    return ((2 if target_prepared else 3) if small_smoke else 5) * 1024**3
 
 
-def resource_gate(plan):
+def resource_gate(plan, *, target_prepared=False):
     minimum_disk = max(10, plan["total_orders"] / 1_000_000 * 15) * 1024**3
-    minimum_memory = host_memory_requirement(plan)
+    minimum_memory = host_memory_requirement(plan, target_prepared=target_prepared)
     if available_memory() < minimum_memory:
         raise RuntimeError(f"Need at least {minimum_memory // 1024**3} GiB available host memory before this experiment.")
     if shutil.disk_usage(ROOT).free < minimum_disk:
@@ -226,7 +227,8 @@ def run_stages(folder, plan, execute):
         print(json.dumps({"dry_run": True, "users": plan["users"], "page": plan["page"],
                           "total_orders": plan["total_orders"], "requires": "prepared independent target"}, indent=2))
         return
-    resource_gate(plan)
+    resource_gate(plan, target_prepared=True)
+    controller_commit = capture(["git", "rev-parse", "HEAD"])
     source = json.loads((folder / "execution-source.json").read_text(encoding="utf-8"))
     if capture(["docker", "image", "inspect", "project-one-order-load:" + plan["run_id"],
                 "--format", "{{.Id}}"]) != source["image_id"]:
@@ -312,7 +314,8 @@ def run_stages(folder, plan, execute):
         if stage["status"] != "complete" or not stage["valid_for_capacity"]:
             break
         time.sleep(5)
-    report = {"plan": plan, "source": source, "stages": stages, "analysis": analyze_stages(stages)}
+    report = {"plan": plan, "source": source, "controller_commit": controller_commit,
+              "stages": stages, "analysis": analyze_stages(stages)}
     with (folder / "report.json").open("x", encoding="utf-8") as stream:
         json.dump(report, stream, indent=2)
 
