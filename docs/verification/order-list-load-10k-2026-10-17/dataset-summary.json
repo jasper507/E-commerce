@@ -1,0 +1,16 @@
+{
+  "run_id": "review10k-1016",
+  "database": "project_one_order_load",
+  "total_orders": 10000,
+  "page": 1,
+  "index_mode": "indexed",
+  "counts": {
+    "orders": 10000,
+    "addresses": 10000,
+    "items": 20000,
+    "accounts": 20
+  },
+  "orders_per_account": 500,
+  "items_per_order": 2,
+  "fixture_method": "synthetic completed-order query fixtures; no checkout or payment"
+}

@@ -1,0 +1,18 @@
+{
+  "stage-01-requests.jsonl.gz": {
+    "decompressed_sha256": "a1340f33bb76c0f1e563b5b161bdbcb2f79eb34b98dfda5d5a8aa0d91007aca2",
+    "requests": 275
+  },
+  "stage-02-requests.jsonl.gz": {
+    "decompressed_sha256": "d4ccd94b4481d5cf5231b7df42139fc58e8c9b64fcc9539732302f3250f03919",
+    "requests": 1370
+  },
+  "stage-03-requests.jsonl.gz": {
+    "decompressed_sha256": "904796feeb261ec2f9444c0cfcdc5296e84ccbba9a15b71ee8a53896a1bfb844",
+    "requests": 2766
+  },
+  "stage-04-requests.jsonl.gz": {
+    "decompressed_sha256": "138b9fbfa7c27024d25ba144c1d17f7bf3779e0c062039eea9c125adcda6fc17",
+    "requests": 5518
+  }
+}

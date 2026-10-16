@@ -1,0 +1,16 @@
+{
+  "mysql_version": "8.4.10",
+  "database": "project_one_order_load",
+  "database_user": "project_one_order_load@%",
+  "counts_after_load": {
+    "orders": 10000,
+    "addresses": 10000,
+    "items": 20000,
+    "accounts": 20
+  },
+  "order_list_index_columns": [
+    "user_id",
+    "created_at",
+    "id"
+  ]
+}
